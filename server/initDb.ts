@@ -146,26 +146,26 @@ export async function initDatabase() {
     // Additional courses
     await db.insert(courses).values({
       name: "Refresher",
-      studentCount: 21,
+      studentCount: 40,
       startDate: new Date("2024-12-01").toISOString(),
       endDate: new Date("2025-05-22").toISOString(),
       instructorId: johnSmith.id,
       schoolId: knfa.id,
       status: "Starting Soon",
       progress: 0,
-      benchmark: "N/A"
+      benchmark: "45 ALCPT"
     });
     
     await db.insert(courses).values({
       name: "MMSC-223/224",
       studentCount: 5,
-      startDate: new Date("2024-01-01").toISOString(),
+      startDate: new Date("2025-01-01").toISOString(),
       endDate: new Date("2025-05-30").toISOString(),
       instructorId: patrickHughes.id,
       schoolId: nfsWest.id,
-      status: "In Progress",
-      progress: 65,
-      benchmark: "50 ALCPT"
+      status: "Starting Soon",
+      progress: 0,
+      benchmark: "45 ALCPT"
     });
     
     // Create sample events

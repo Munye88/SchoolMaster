@@ -114,6 +114,14 @@ const Courses = () => {
           <div className="flex items-center text-sm text-gray-500">
             <span>Total: {filteredCourses.length} courses</span>
           </div>
+          
+          <Button 
+            onClick={() => window.location.reload()} 
+            variant="secondary"
+            className="ml-2"
+          >
+            Refresh Data
+          </Button>
         </div>
         
         <TabsContent value="grid" className="mt-6">
