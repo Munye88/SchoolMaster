@@ -13,6 +13,11 @@ import Documents from "@/pages/Documents";
 import Administration from "@/pages/Administration";
 import Sidebar from "@/components/layout/Sidebar";
 import TopNavigation from "@/components/layout/TopNavigation";
+import SchoolInstructorProfiles from "@/pages/school/InstructorProfiles";
+import SchoolTimetable from "@/pages/school/Timetable";
+import SchoolStudentDaySchedule from "@/pages/school/StudentDaySchedule";
+import SchoolYearlySchedule from "@/pages/school/YearlySchedule";
+import SchoolSOP from "@/pages/school/SOP";
 
 function Router() {
   return (
@@ -29,11 +34,21 @@ function Router() {
           <Route path="/test-tracker" component={TestTracker} />
           <Route path="/reports" component={Reports} />
           <Route path="/documents" component={Documents} />
+          
+          {/* Administration routes */}
           <Route path="/administration/company-policy" component={Administration} />
           <Route path="/administration/evaluation-guideline" component={Administration} />
           <Route path="/administration/employee-handbook" component={Administration} />
           <Route path="/administration/performance-policy" component={Administration} />
           <Route path="/administration/classroom-evaluation" component={Administration} />
+          
+          {/* School-specific document routes */}
+          <Route path="/schools/:schoolCode/instructor-profiles" component={SchoolInstructorProfiles} />
+          <Route path="/schools/:schoolCode/timetable" component={SchoolTimetable} />
+          <Route path="/schools/:schoolCode/student-day-schedule" component={SchoolStudentDaySchedule} />
+          <Route path="/schools/:schoolCode/yearly-schedule" component={SchoolYearlySchedule} />
+          <Route path="/schools/:schoolCode/sop" component={SchoolSOP} />
+          
           {/* Fallback to 404 */}
           <Route component={NotFound} />
         </Switch>

@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { 
   Home, School, Users, BookOpen, GraduationCap, ListChecks, 
   BarChart2, FileText, ChevronDown, ChevronUp, Settings, 
-  Calendar, BookIcon
+  Calendar, BookIcon, Clock, CalendarDays, ClipboardList, UserSquare
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
@@ -14,9 +14,17 @@ const Sidebar = () => {
   const { schools, selectedSchool, setSelectedSchool } = useSchool();
   const [schoolsExpanded, setSchoolsExpanded] = useState(true);
   const [adminExpanded, setAdminExpanded] = useState(false);
+  const [expandedSchool, setExpandedSchool] = useState<string | null>(null);
   
   const handleSchoolSelect = (schoolCode: string) => {
     setSelectedSchool(schoolCode);
+    
+    // Toggle expansion of school documents
+    if (expandedSchool === schoolCode) {
+      setExpandedSchool(null);
+    } else {
+      setExpandedSchool(schoolCode);
+    }
   };
   
   const isActive = (path: string) => {
@@ -63,16 +71,72 @@ const Sidebar = () => {
             
             {schoolsExpanded && schools.map(school => (
               <li className="mb-1" key={school.id}>
-                <button
-                  onClick={() => handleSchoolSelect(school.code)}
-                  className={cn(
-                    "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200 w-full text-left",
-                    selectedSchool === school.code && "bg-[#1A3473]"
+                <div>
+                  <button
+                    onClick={() => handleSchoolSelect(school.code)}
+                    className={cn(
+                      "flex items-center justify-between px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200 w-full text-left",
+                      (selectedSchool === school.code || expandedSchool === school.code) && "bg-[#1A3473]"
+                    )}
+                  >
+                    <div className="flex items-center">
+                      <School className="h-5 w-5 mr-3" />
+                      <span>{school.name}</span>
+                    </div>
+                    {expandedSchool === school.code ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
+                  
+                  {/* School specific documents */}
+                  {expandedSchool === school.code && (
+                    <ul className="pl-10 py-1">
+                      <li className="mb-1">
+                        <Link href={`/schools/${school.code}/instructor-profiles`} className={cn(
+                          "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                          isActive(`/schools/${school.code}/instructor-profiles`) && "text-blue-200"
+                        )}>
+                          <UserSquare className="h-4 w-4 mr-2" />
+                          Instructor Profiles
+                        </Link>
+                      </li>
+                      <li className="mb-1">
+                        <Link href={`/schools/${school.code}/timetable`} className={cn(
+                          "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                          isActive(`/schools/${school.code}/timetable`) && "text-blue-200"
+                        )}>
+                          <Clock className="h-4 w-4 mr-2" />
+                          Timetable
+                        </Link>
+                      </li>
+                      <li className="mb-1">
+                        <Link href={`/schools/${school.code}/student-day-schedule`} className={cn(
+                          "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                          isActive(`/schools/${school.code}/student-day-schedule`) && "text-blue-200"
+                        )}>
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Student Day Schedule
+                        </Link>
+                      </li>
+                      <li className="mb-1">
+                        <Link href={`/schools/${school.code}/yearly-schedule`} className={cn(
+                          "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                          isActive(`/schools/${school.code}/yearly-schedule`) && "text-blue-200"
+                        )}>
+                          <CalendarDays className="h-4 w-4 mr-2" />
+                          Yearly Schedule
+                        </Link>
+                      </li>
+                      <li className="mb-1">
+                        <Link href={`/schools/${school.code}/sop`} className={cn(
+                          "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                          isActive(`/schools/${school.code}/sop`) && "text-blue-200"
+                        )}>
+                          <ClipboardList className="h-4 w-4 mr-2" />
+                          Standard Operating Procedure
+                        </Link>
+                      </li>
+                    </ul>
                   )}
-                >
-                  <School className="h-5 w-5 mr-3" />
-                  {school.name}
-                </button>
+                </div>
               </li>
             ))}
             
