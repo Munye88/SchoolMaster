@@ -1,5 +1,5 @@
 import { db } from './db';
-import { schools, instructors, courses, activities, events } from '@shared/schema';
+import { schools, instructors, courses, activities, events, documents } from '@shared/schema';
 
 export async function initDatabase() {
   try {
@@ -191,6 +191,47 @@ export async function initDatabase() {
       end: new Date("2024-10-12T16:00:00").toISOString(),
       description: "Orientation for new technical course",
       schoolId: nfsWest.id
+    });
+    
+    // Create administrative documents
+    await db.insert(documents).values({
+      title: "Company Policy Document",
+      type: "policy",
+      uploadDate: new Date(),
+      fileUrl: "https://docs.google.com/document/d/e/2PACX-1vQvnKG47TsZRIAqF4UlO67DbdX1dfRWWcKT3UQ-Yt-Wax0wrfae3YYXBbLM-h0ptCOC9dDzXjjwsC3-/pub?embedded=true",
+      schoolId: null
+    });
+
+    await db.insert(documents).values({
+      title: "Instructor Evaluation Guidelines",
+      type: "evaluation",
+      uploadDate: new Date(),
+      fileUrl: "https://docs.google.com/document/d/e/2PACX-1vR9A_nz-xjjLCiqWx3kZN1QFQGUXHbnL_4SdI6fmSC9d5zMNKbhV-eCsxfmB7h4AaUbEZuiHoR-OFDW/pub?embedded=true",
+      schoolId: null
+    });
+
+    await db.insert(documents).values({
+      title: "Employee Handbook",
+      type: "handbook",
+      uploadDate: new Date(),
+      fileUrl: "https://docs.google.com/document/d/e/2PACX-1vTuiO-YS6YrG6jMujVzAGQQx-N-WKzLIKJnB78GWcTiYSPXpj8ZjLLTZfm0JOGrSD7EINVbK9YjZ0Vc/pub?embedded=true",
+      schoolId: null
+    });
+
+    await db.insert(documents).values({
+      title: "Performance Evaluation Policy",
+      type: "performance",
+      uploadDate: new Date(),
+      fileUrl: "https://docs.google.com/document/d/e/2PACX-1vTPkJarxZUO-3qLXV9EJc7fP11dQU8Pgg0IUw-R_20bXiSVQBCRc-wVJMylf7WJQsOA_PNKZmDbBNUz/pub?embedded=true",
+      schoolId: null
+    });
+
+    await db.insert(documents).values({
+      title: "Training Guide for Classroom Evaluation",
+      type: "training",
+      uploadDate: new Date(),
+      fileUrl: "https://docs.google.com/document/d/e/2PACX-1vQEvgfxBCRGXxKqS3LvsZ2Ai5xfDakM22hiYWZh1HiHNXXLvdsRYyT2OkQ1TZ2wRbLCRcV9lrXY7vFW/pub?embedded=true",
+      schoolId: null
     });
     
     // Create sample activities

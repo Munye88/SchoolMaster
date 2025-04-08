@@ -2,8 +2,8 @@ import { useSchool } from "@/hooks/useSchool";
 import { Link, useLocation } from "wouter";
 import { 
   Home, School, Users, BookOpen, GraduationCap, ListChecks, 
-  BarChart2, FileText, ChevronDown, ChevronUp, Settings,
-  ClipboardList, Calendar
+  BarChart2, FileText, ChevronDown, ChevronUp, Settings, 
+  Calendar, BookIcon
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
@@ -13,13 +13,14 @@ const Sidebar = () => {
   const [location] = useLocation();
   const { schools, selectedSchool, setSelectedSchool } = useSchool();
   const [schoolsExpanded, setSchoolsExpanded] = useState(true);
+  const [adminExpanded, setAdminExpanded] = useState(false);
   
   const handleSchoolSelect = (schoolCode: string) => {
     setSelectedSchool(schoolCode);
   };
   
   const isActive = (path: string) => {
-    return location === path;
+    return location === path || location.startsWith(path + "/");
   };
 
   return (
@@ -40,14 +41,12 @@ const Sidebar = () => {
           <ul>
             {/* Dashboard Link */}
             <li className="mb-1">
-              <Link href="/">
-                <a className={cn(
-                  "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
-                  isActive("/") && "bg-[#1A3473]"
-                )}>
-                  <Home className="h-5 w-5 mr-3" />
-                  Dashboard
-                </a>
+              <Link href="/" className={cn(
+                "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
+                isActive("/") && "bg-[#1A3473]"
+              )}>
+                <Home className="h-5 w-5 mr-3" />
+                Dashboard
               </Link>
             </li>
             
@@ -82,94 +81,109 @@ const Sidebar = () => {
               <h3 className="text-xs uppercase tracking-wider text-gray-300 font-semibold">Categories</h3>
             </li>
             
-            {/* Administration */}
+            {/* Administration Section */}
             <li className="mb-1">
-              <Link href="/administration">
-                <a className={cn(
-                  "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
-                  isActive("/administration") && "bg-[#1A3473]"
-                )}>
+              <button 
+                onClick={() => setAdminExpanded(!adminExpanded)}
+                className={cn(
+                  "flex items-center justify-between w-full px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
+                  (isActive("/administration") || adminExpanded) && "bg-[#1A3473]"
+                )}
+              >
+                <div className="flex items-center">
                   <Settings className="h-5 w-5 mr-3" />
-                  Administration
-                </a>
-              </Link>
+                  <span>Administration</span>
+                </div>
+                {adminExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </button>
+              
+              {adminExpanded && (
+                <ul className="pl-10 py-1">
+                  <li className="mb-1">
+                    <Link href="/administration/company-policy" className={cn(
+                      "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                      isActive("/administration/company-policy") && "text-blue-200"
+                    )}>
+                      Company Policy
+                    </Link>
+                  </li>
+                  <li className="mb-1">
+                    <Link href="/administration/evaluation-guideline" className={cn(
+                      "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                      isActive("/administration/evaluation-guideline") && "text-blue-200"
+                    )}>
+                      Instructor Evaluation Guideline
+                    </Link>
+                  </li>
+                  <li className="mb-1">
+                    <Link href="/administration/employee-handbook" className={cn(
+                      "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                      isActive("/administration/employee-handbook") && "text-blue-200"
+                    )}>
+                      Employee Handbook
+                    </Link>
+                  </li>
+                  <li className="mb-1">
+                    <Link href="/administration/performance-policy" className={cn(
+                      "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                      isActive("/administration/performance-policy") && "text-blue-200"
+                    )}>
+                      Performance Evaluation Policy
+                    </Link>
+                  </li>
+                  <li className="mb-1">
+                    <Link href="/administration/classroom-evaluation" className={cn(
+                      "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                      isActive("/administration/classroom-evaluation") && "text-blue-200"
+                    )}>
+                      Training Guide Classroom Evaluation
+                    </Link>
+                  </li>
+                </ul>
+              )}
             </li>
             
             {/* Courses */}
             <li className="mb-1">
-              <Link href="/courses">
-                <a className={cn(
-                  "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
-                  isActive("/courses") && "bg-[#1A3473]"
-                )}>
-                  <BookOpen className="h-5 w-5 mr-3" />
-                  Courses
-                </a>
-              </Link>
-            </li>
-            
-            {/* Policy & Procedures */}
-            <li className="mb-1">
-              <Link href="/policy-procedures">
-                <a className={cn(
-                  "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
-                  isActive("/policy-procedures") && "bg-[#1A3473]"
-                )}>
-                  <ClipboardList className="h-5 w-5 mr-3" />
-                  Policy & Procedures
-                </a>
+              <Link href="/courses" className={cn(
+                "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
+                isActive("/courses") && "bg-[#1A3473]"
+              )}>
+                <BookOpen className="h-5 w-5 mr-3" />
+                Courses
               </Link>
             </li>
             
             {/* Test Tracker */}
             <li className="mb-1">
-              <Link href="/test-tracker">
-                <a className={cn(
-                  "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
-                  isActive("/test-tracker") && "bg-[#1A3473]"
-                )}>
-                  <ListChecks className="h-5 w-5 mr-3" />
-                  Test Tracker
-                </a>
+              <Link href="/test-tracker" className={cn(
+                "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
+                isActive("/test-tracker") && "bg-[#1A3473]"
+              )}>
+                <ListChecks className="h-5 w-5 mr-3" />
+                Test Tracker
               </Link>
             </li>
             
             {/* Reports */}
             <li className="mb-1">
-              <Link href="/reports">
-                <a className={cn(
-                  "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
-                  isActive("/reports") && "bg-[#1A3473]"
-                )}>
-                  <BarChart2 className="h-5 w-5 mr-3" />
-                  Reports
-                </a>
+              <Link href="/reports" className={cn(
+                "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
+                isActive("/reports") && "bg-[#1A3473]"
+              )}>
+                <BarChart2 className="h-5 w-5 mr-3" />
+                Reports
               </Link>
             </li>
             
             {/* Students */}
             <li className="mb-1">
-              <Link href="/students">
-                <a className={cn(
-                  "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
-                  isActive("/students") && "bg-[#1A3473]"
-                )}>
-                  <GraduationCap className="h-5 w-5 mr-3" />
-                  Students
-                </a>
-              </Link>
-            </li>
-            
-            {/* Documents (moved to admin section) */}
-            <li className="mb-1">
-              <Link href="/documents">
-                <a className={cn(
-                  "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
-                  isActive("/documents") && "bg-[#1A3473]"
-                )}>
-                  <FileText className="h-5 w-5 mr-3" />
-                  Documents
-                </a>
+              <Link href="/students" className={cn(
+                "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
+                isActive("/students") && "bg-[#1A3473]"
+              )}>
+                <GraduationCap className="h-5 w-5 mr-3" />
+                Students
               </Link>
             </li>
           </ul>

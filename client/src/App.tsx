@@ -10,6 +10,7 @@ import Students from "@/pages/Students";
 import TestTracker from "@/pages/TestTracker";
 import Reports from "@/pages/Reports";
 import Documents from "@/pages/Documents";
+import Administration from "@/pages/Administration";
 import Sidebar from "@/components/layout/Sidebar";
 import TopNavigation from "@/components/layout/TopNavigation";
 
@@ -28,6 +29,11 @@ function Router() {
           <Route path="/test-tracker" component={TestTracker} />
           <Route path="/reports" component={Reports} />
           <Route path="/documents" component={Documents} />
+          <Route path="/administration/company-policy" component={Administration} />
+          <Route path="/administration/evaluation-guideline" component={Administration} />
+          <Route path="/administration/employee-handbook" component={Administration} />
+          <Route path="/administration/performance-policy" component={Administration} />
+          <Route path="/administration/classroom-evaluation" component={Administration} />
           {/* Fallback to 404 */}
           <Route component={NotFound} />
         </Switch>
