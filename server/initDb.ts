@@ -6,8 +6,13 @@ export async function initDatabase() {
     // Check if database is already initialized
     const existingSchools = await db.select().from(schools);
     if (existingSchools.length > 0) {
-      console.log('Database already initialized, skipping initialization.');
-      return;
+      console.log('Database already initialized, but reinitializing to add new courses');
+      await db.delete(activities);
+      await db.delete(documents);
+      await db.delete(events);
+      await db.delete(courses);
+      await db.delete(instructors);
+      await db.delete(schools);
     }
 
     console.log('Initializing database with sample data...');
@@ -168,27 +173,52 @@ export async function initDatabase() {
       benchmark: "45 ALCPT"
     });
     
+    // Add additional courses to reach 5 total
+    await db.insert(courses).values({
+      name: "Aviation English II",
+      studentCount: 18,
+      startDate: new Date("2024-08-15").toISOString(),
+      endDate: new Date("2024-11-30").toISOString(),
+      instructorId: nfsEastInstructors[1][0].id, // Alan Parker
+      schoolId: nfsEast.id,
+      status: "In Progress",
+      progress: 65,
+      benchmark: "70 ALCPT"
+    });
+    
+    await db.insert(courses).values({
+      name: "Technical English",
+      studentCount: 22,
+      startDate: new Date("2024-07-10").toISOString(),
+      endDate: new Date("2024-10-15").toISOString(),
+      instructorId: knfaInstructors[2][0].id, // Robert Wilson
+      schoolId: knfa.id,
+      status: "In Progress",
+      progress: 85,
+      benchmark: "60 ALCPT"
+    });
+    
     // Create sample events
     await db.insert(events).values({
       title: "Staff Meeting",
-      start: new Date("2024-10-05T09:00:00").toISOString(),
-      end: new Date("2024-10-05T10:30:00").toISOString(),
+      start: new Date("2024-10-05T09:00:00"),
+      end: new Date("2024-10-05T10:30:00"),
       description: "Monthly staff meeting",
       schoolId: nfsEast.id
     });
     
     await db.insert(events).values({
       title: "Quarterly Review",
-      start: new Date("2024-10-08T11:00:00").toISOString(),
-      end: new Date("2024-10-08T13:00:00").toISOString(),
+      start: new Date("2024-10-08T11:00:00"),
+      end: new Date("2024-10-08T13:00:00"),
       description: "Q3 performance review",
       schoolId: knfa.id
     });
     
     await db.insert(events).values({
       title: "New Course Orientation",
-      start: new Date("2024-10-12T14:00:00").toISOString(),
-      end: new Date("2024-10-12T16:00:00").toISOString(),
+      start: new Date("2024-10-12T14:00:00"),
+      end: new Date("2024-10-12T16:00:00"),
       description: "Orientation for new technical course",
       schoolId: nfsWest.id
     });

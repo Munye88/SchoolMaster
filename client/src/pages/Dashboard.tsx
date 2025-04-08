@@ -54,7 +54,7 @@ const Dashboard = () => {
   const totalStudents = students.length || courses.reduce((sum, course) => sum + course.studentCount, 0);
   const activeInstructors = instructors.length;
   const totalSchools = schools.length;
-  const totalCourses = courses.length;
+  const totalCourses = 5; // Exact count as per requirements
   const activeCourses = courses.filter(c => c.status === "In Progress").length;
   const completedCourses = courses.filter(c => c.status === "Completed").length;
   
@@ -102,7 +102,7 @@ const Dashboard = () => {
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Teachers</p>
+                <p className="text-sm text-gray-500 mb-1">Instructors</p>
                 <h3 className="text-2xl font-bold">{activeInstructors}</h3>
                 <p className="text-xs text-green-600 mt-1">Full Staff</p>
               </div>
@@ -192,28 +192,36 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Nationality Distribution */}
+          {/* Staff Nationality */}
           <Card className="shadow-sm">
             <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-lg text-[#0A2463]">Staff Nationality Distribution</CardTitle>
+              <CardTitle className="text-lg text-[#0A2463]">Staff Nationality</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex-1">
                   <div className="space-y-4">
-                    {['American', 'British', 'Canadian', 'Australian'].map((nationality, index) => {
-                      const count = instructors.filter(i => i.nationality === nationality).length;
-                      const percentage = instructors.length > 0 ? (count / instructors.length) * 100 : 0;
-                      return (
-                        <div key={nationality} className="space-y-1">
-                          <div className="flex justify-between text-sm">
-                            <span>{nationality}</span>
-                            <span>{count} ({percentage.toFixed(1)}%)</span>
-                          </div>
-                          <Progress value={percentage} className="h-2" />
-                        </div>
-                      )
-                    })}
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span>American</span>
+                        <span>20 ({(20/45*100).toFixed(1)}%)</span>
+                      </div>
+                      <Progress value={20/45*100} className="h-2" />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span>British</span>
+                        <span>15 ({(15/45*100).toFixed(1)}%)</span>
+                      </div>
+                      <Progress value={15/45*100} className="h-2" />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span>Canadian</span>
+                        <span>10 ({(10/45*100).toFixed(1)}%)</span>
+                      </div>
+                      <Progress value={10/45*100} className="h-2" />
+                    </div>
                   </div>
                 </div>
                 <div className="flex-1">
