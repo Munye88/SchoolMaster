@@ -1,6 +1,7 @@
-import { pgTable, text, serial, integer, boolean, date, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, date, timestamp, foreignKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 export const schools = pgTable("schools", {
   id: serial("id").primaryKey(),
@@ -22,7 +23,7 @@ export const instructors = pgTable("instructors", {
   credentials: text("credentials").notNull(),
   startDate: date("start_date").notNull(),
   compound: text("compound").notNull(),
-  schoolId: integer("school_id").notNull(),
+  schoolId: integer("school_id").notNull().references(() => schools.id),
   phone: text("phone").notNull(),
   accompaniedStatus: text("accompanied_status").notNull(),
   imageUrl: text("image_url"),
@@ -48,8 +49,8 @@ export const courses = pgTable("courses", {
   studentCount: integer("student_count").notNull(),
   startDate: date("start_date").notNull(),
   endDate: date("end_date"),
-  instructorId: integer("instructor_id").notNull(),
-  schoolId: integer("school_id").notNull(),
+  instructorId: integer("instructor_id").notNull().references(() => instructors.id),
+  schoolId: integer("school_id").notNull().references(() => schools.id),
   status: text("status").notNull(),
   progress: integer("progress").notNull(),
 });
@@ -69,7 +70,7 @@ export const students = pgTable("students", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   rank: text("rank"),
-  schoolId: integer("school_id").notNull(),
+  schoolId: integer("school_id").notNull().references(() => schools.id),
   enrollmentDate: date("enrollment_date").notNull(),
 });
 
@@ -82,8 +83,8 @@ export const insertStudentSchema = createInsertSchema(students).pick({
 
 export const testResults = pgTable("test_results", {
   id: serial("id").primaryKey(),
-  studentId: integer("student_id").notNull(),
-  courseId: integer("course_id").notNull(),
+  studentId: integer("student_id").notNull().references(() => students.id),
+  courseId: integer("course_id").notNull().references(() => courses.id),
   testDate: date("test_date").notNull(),
   score: integer("score").notNull(),
   type: text("type").notNull(),
@@ -99,12 +100,12 @@ export const insertTestResultSchema = createInsertSchema(testResults).pick({
 
 export const evaluations = pgTable("evaluations", {
   id: serial("id").primaryKey(),
-  instructorId: integer("instructor_id").notNull(),
+  instructorId: integer("instructor_id").notNull().references(() => instructors.id),
   quarter: text("quarter").notNull(),
   year: text("year").notNull(),
   score: integer("score").notNull(),
   feedback: text("feedback"),
-  evaluatorId: integer("evaluator_id"),
+  evaluatorId: integer("evaluator_id").references(() => users.id),
 });
 
 export const insertEvaluationSchema = createInsertSchema(evaluations).pick({
@@ -120,7 +121,7 @@ export const documents = pgTable("documents", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   type: text("type").notNull(),
-  schoolId: integer("school_id"),
+  schoolId: integer("school_id").references(() => schools.id),
   uploadDate: timestamp("upload_date").notNull(),
   fileUrl: text("file_url").notNull(),
 });
@@ -138,7 +139,7 @@ export const activities = pgTable("activities", {
   type: text("type").notNull(),
   description: text("description").notNull(),
   timestamp: timestamp("timestamp").notNull(),
-  userId: integer("user_id"),
+  userId: integer("user_id").references(() => users.id),
 });
 
 export const insertActivitySchema = createInsertSchema(activities).pick({
@@ -153,7 +154,7 @@ export const events = pgTable("events", {
   title: text("title").notNull(),
   start: timestamp("start").notNull(),
   end: timestamp("end").notNull(),
-  schoolId: integer("school_id"),
+  schoolId: integer("school_id").references(() => schools.id),
   description: text("description"),
 });
 
@@ -181,6 +182,87 @@ export const insertUserSchema = createInsertSchema(users).pick({
   name: true,
   email: true,
 });
+
+// Relations
+export const schoolsRelations = relations(schools, ({ many }) => ({
+  instructors: many(instructors),
+  courses: many(courses),
+  students: many(students),
+  documents: many(documents),
+  events: many(events),
+}));
+
+export const instructorsRelations = relations(instructors, ({ one, many }) => ({
+  school: one(schools, {
+    fields: [instructors.schoolId],
+    references: [schools.id],
+  }),
+  courses: many(courses),
+  evaluations: many(evaluations),
+}));
+
+export const coursesRelations = relations(courses, ({ one, many }) => ({
+  instructor: one(instructors, {
+    fields: [courses.instructorId],
+    references: [instructors.id],
+  }),
+  school: one(schools, {
+    fields: [courses.schoolId],
+    references: [schools.id],
+  }),
+  testResults: many(testResults),
+}));
+
+export const studentsRelations = relations(students, ({ one, many }) => ({
+  school: one(schools, {
+    fields: [students.schoolId],
+    references: [schools.id],
+  }),
+  testResults: many(testResults),
+}));
+
+export const testResultsRelations = relations(testResults, ({ one }) => ({
+  student: one(students, {
+    fields: [testResults.studentId],
+    references: [students.id],
+  }),
+  course: one(courses, {
+    fields: [testResults.courseId],
+    references: [courses.id],
+  }),
+}));
+
+export const evaluationsRelations = relations(evaluations, ({ one }) => ({
+  instructor: one(instructors, {
+    fields: [evaluations.instructorId],
+    references: [instructors.id],
+  }),
+  evaluator: one(users, {
+    fields: [evaluations.evaluatorId],
+    references: [users.id],
+  }),
+}));
+
+export const documentsRelations = relations(documents, ({ one }) => ({
+  school: one(schools, {
+    fields: [documents.schoolId],
+    references: [schools.id],
+  }),
+}));
+
+export const activitiesRelations = relations(activities, ({ one }) => ({
+  user: one(users, {
+    fields: [activities.userId],
+    references: [users.id],
+  }),
+}));
+
+export const eventsRelations = relations(events, ({ one }) => ({
+  school: one(schools, {
+    fields: [events.schoolId],
+    references: [schools.id],
+  }),
+}));
 
 // Type exports
 export type School = typeof schools.$inferSelect;

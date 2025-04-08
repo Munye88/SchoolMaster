@@ -1,15 +1,17 @@
 import {
-  type User, type InsertUser,
-  type School, type InsertSchool,
-  type Instructor, type InsertInstructor,
-  type Course, type InsertCourse,
-  type Student, type InsertStudent,
-  type TestResult, type InsertTestResult,
-  type Evaluation, type InsertEvaluation,
-  type Document, type InsertDocument,
-  type Activity, type InsertActivity,
-  type Event, type InsertEvent
+  type User, type InsertUser, users,
+  type School, type InsertSchool, schools,
+  type Instructor, type InsertInstructor, instructors,
+  type Course, type InsertCourse, courses,
+  type Student, type InsertStudent, students,
+  type TestResult, type InsertTestResult, testResults,
+  type Evaluation, type InsertEvaluation, evaluations,
+  type Document, type InsertDocument, documents,
+  type Activity, type InsertActivity, activities,
+  type Event, type InsertEvent, events
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, lt, gt, and, isNull, or } from "drizzle-orm";
 
 export interface IStorage {
   // User methods
@@ -454,4 +456,226 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+  
+  // School methods
+  async getSchools(): Promise<School[]> {
+    return db.select().from(schools);
+  }
+  
+  async getSchool(id: number): Promise<School | undefined> {
+    const [school] = await db.select().from(schools).where(eq(schools.id, id));
+    return school;
+  }
+  
+  async getSchoolByCode(code: string): Promise<School | undefined> {
+    const [school] = await db.select().from(schools).where(eq(schools.code, code));
+    return school;
+  }
+  
+  async createSchool(insertSchool: InsertSchool): Promise<School> {
+    const [school] = await db.insert(schools).values(insertSchool).returning();
+    return school;
+  }
+  
+  // Instructor methods
+  async getInstructors(): Promise<Instructor[]> {
+    return db.select().from(instructors);
+  }
+  
+  async getInstructor(id: number): Promise<Instructor | undefined> {
+    const [instructor] = await db.select().from(instructors).where(eq(instructors.id, id));
+    return instructor;
+  }
+  
+  async getInstructorsBySchool(schoolId: number): Promise<Instructor[]> {
+    return db.select().from(instructors).where(eq(instructors.schoolId, schoolId));
+  }
+  
+  async createInstructor(insertInstructor: InsertInstructor): Promise<Instructor> {
+    const [instructor] = await db.insert(instructors).values(insertInstructor).returning();
+    return instructor;
+  }
+  
+  async updateInstructor(id: number, instructor: Partial<InsertInstructor>): Promise<Instructor | undefined> {
+    const [updated] = await db
+      .update(instructors)
+      .set(instructor)
+      .where(eq(instructors.id, id))
+      .returning();
+    return updated;
+  }
+  
+  // Course methods
+  async getCourses(): Promise<Course[]> {
+    return db.select().from(courses);
+  }
+  
+  async getCourse(id: number): Promise<Course | undefined> {
+    const [course] = await db.select().from(courses).where(eq(courses.id, id));
+    return course;
+  }
+  
+  async getCoursesBySchool(schoolId: number): Promise<Course[]> {
+    return db.select().from(courses).where(eq(courses.schoolId, schoolId));
+  }
+  
+  async getCoursesByInstructor(instructorId: number): Promise<Course[]> {
+    return db.select().from(courses).where(eq(courses.instructorId, instructorId));
+  }
+  
+  async createCourse(insertCourse: InsertCourse): Promise<Course> {
+    const [course] = await db.insert(courses).values(insertCourse).returning();
+    return course;
+  }
+  
+  async updateCourse(id: number, course: Partial<InsertCourse>): Promise<Course | undefined> {
+    const [updated] = await db
+      .update(courses)
+      .set(course)
+      .where(eq(courses.id, id))
+      .returning();
+    return updated;
+  }
+  
+  // Student methods
+  async getStudents(): Promise<Student[]> {
+    return db.select().from(students);
+  }
+  
+  async getStudent(id: number): Promise<Student | undefined> {
+    const [student] = await db.select().from(students).where(eq(students.id, id));
+    return student;
+  }
+  
+  async getStudentsBySchool(schoolId: number): Promise<Student[]> {
+    return db.select().from(students).where(eq(students.schoolId, schoolId));
+  }
+  
+  async createStudent(insertStudent: InsertStudent): Promise<Student> {
+    const [student] = await db.insert(students).values(insertStudent).returning();
+    return student;
+  }
+  
+  // Test Result methods
+  async getTestResults(): Promise<TestResult[]> {
+    return db.select().from(testResults);
+  }
+  
+  async getTestResult(id: number): Promise<TestResult | undefined> {
+    const [testResult] = await db.select().from(testResults).where(eq(testResults.id, id));
+    return testResult;
+  }
+  
+  async getTestResultsByStudent(studentId: number): Promise<TestResult[]> {
+    return db.select().from(testResults).where(eq(testResults.studentId, studentId));
+  }
+  
+  async getTestResultsByCourse(courseId: number): Promise<TestResult[]> {
+    return db.select().from(testResults).where(eq(testResults.courseId, courseId));
+  }
+  
+  async createTestResult(insertTestResult: InsertTestResult): Promise<TestResult> {
+    const [testResult] = await db.insert(testResults).values(insertTestResult).returning();
+    return testResult;
+  }
+  
+  // Evaluation methods
+  async getEvaluations(): Promise<Evaluation[]> {
+    return db.select().from(evaluations);
+  }
+  
+  async getEvaluation(id: number): Promise<Evaluation | undefined> {
+    const [evaluation] = await db.select().from(evaluations).where(eq(evaluations.id, id));
+    return evaluation;
+  }
+  
+  async getEvaluationsByInstructor(instructorId: number): Promise<Evaluation[]> {
+    return db.select().from(evaluations).where(eq(evaluations.instructorId, instructorId));
+  }
+  
+  async createEvaluation(insertEvaluation: InsertEvaluation): Promise<Evaluation> {
+    const [evaluation] = await db.insert(evaluations).values(insertEvaluation).returning();
+    return evaluation;
+  }
+  
+  // Document methods
+  async getDocuments(): Promise<Document[]> {
+    return db.select().from(documents);
+  }
+  
+  async getDocument(id: number): Promise<Document | undefined> {
+    const [document] = await db.select().from(documents).where(eq(documents.id, id));
+    return document;
+  }
+  
+  async getDocumentsBySchool(schoolId: number): Promise<Document[]> {
+    return db.select()
+      .from(documents)
+      .where(or(eq(documents.schoolId, schoolId), isNull(documents.schoolId)));
+  }
+  
+  async createDocument(insertDocument: InsertDocument): Promise<Document> {
+    const [document] = await db.insert(documents).values(insertDocument).returning();
+    return document;
+  }
+  
+  // Activity methods
+  async getActivities(): Promise<Activity[]> {
+    return db.select().from(activities);
+  }
+  
+  async getRecentActivities(limit: number): Promise<Activity[]> {
+    return db.select()
+      .from(activities)
+      .orderBy(desc(activities.timestamp))
+      .limit(limit);
+  }
+  
+  async createActivity(insertActivity: InsertActivity): Promise<Activity> {
+    const [activity] = await db.insert(activities).values(insertActivity).returning();
+    return activity;
+  }
+  
+  // Event methods
+  async getEvents(): Promise<Event[]> {
+    return db.select().from(events);
+  }
+  
+  async getEvent(id: number): Promise<Event | undefined> {
+    const [event] = await db.select().from(events).where(eq(events.id, id));
+    return event;
+  }
+  
+  async getUpcomingEvents(limit: number): Promise<Event[]> {
+    const now = new Date();
+    return db.select()
+      .from(events)
+      .where(gt(events.start, now))
+      .orderBy(events.start)
+      .limit(limit);
+  }
+  
+  async createEvent(insertEvent: InsertEvent): Promise<Event> {
+    const [event] = await db.insert(events).values(insertEvent).returning();
+    return event;
+  }
+}
+
+// Switch from MemStorage to DatabaseStorage
+export const storage = new DatabaseStorage();
