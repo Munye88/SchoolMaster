@@ -5,18 +5,54 @@ import { Instructor } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText, Share2, Search, Filter } from "lucide-react";
+import { Download, FileText, Share2, Search, Filter, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { InstructorProfileCard } from "@/components/instructors/InstructorProfileCard";
+import { useState } from "react";
+
+// Individual Instructor Profile Page
+const InstructorProfile = ({ instructor, schoolName, onBack }: { 
+  instructor: Instructor; 
+  schoolName: string;
+  onBack: () => void;
+}) => {
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-6">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onBack}
+          className="gap-2"
+        >
+          <ChevronRight className="h-4 w-4 rotate-180" /> Back to Instructors
+        </Button>
+      </div>
+      
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold text-[#0A2463] mb-6 text-center">
+          Instructor Profile
+        </h1>
+        
+        <InstructorProfileCard 
+          instructor={instructor} 
+          schoolName={schoolName}
+        />
+      </div>
+    </div>
+  )
+};
 
 const SchoolInstructorProfiles = () => {
   const { currentSchool } = useSchool();
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [selectedView, setSelectedView] = React.useState("all");
-  const [selectedTab, setSelectedTab] = React.useState("grid");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedView, setSelectedView] = useState("all");
+  const [selectedTab, setSelectedTab] = useState("grid");
+  const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);
   
   // Fetch instructors
   const { data: instructors = [], isLoading } = useQuery<Instructor[]>({
@@ -27,10 +63,23 @@ const SchoolInstructorProfiles = () => {
     instructor.schoolId === currentSchool?.id
   );
   
-  // Filter instructors based on search
-  const filteredInstructors = schoolInstructors.filter(instructor => 
-    instructor.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter instructors based on search and nationality
+  const filteredInstructors = schoolInstructors.filter(instructor => {
+    // Apply nationality filter
+    if (selectedView !== "all" && instructor.nationality.toLowerCase() !== selectedView.toLowerCase()) {
+      return false;
+    }
+    
+    // Apply search filter
+    return instructor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      instructor.credentials.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      instructor.compound.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+  
+  // Handle clicking on instructor to view their profile
+  const handleViewInstructor = (instructor: Instructor) => {
+    setSelectedInstructor(instructor);
+  };
   
   if (isLoading) {
     return (
@@ -49,6 +98,19 @@ const SchoolInstructorProfiles = () => {
     );
   }
   
+  // If an instructor is selected, show their individual profile
+  if (selectedInstructor) {
+    return (
+      <div className="flex-1 p-8 bg-gray-50 overflow-y-auto">
+        <InstructorProfile
+          instructor={selectedInstructor}
+          schoolName={currentSchool?.name || ""}
+          onBack={() => setSelectedInstructor(null)}
+        />
+      </div>
+    );
+  }
+  
   return (
     <div className="flex-1 p-8 bg-gray-50 overflow-y-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -56,7 +118,7 @@ const SchoolInstructorProfiles = () => {
           <h1 className="text-2xl font-bold text-[#0A2463]">
             {currentSchool ? `${currentSchool.name} Instructor Profiles` : 'Instructor Profiles'}
           </h1>
-          <p className="text-gray-500">View and manage instructor profiles</p>
+          <p className="text-gray-500">View and manage instructor profiles for {currentSchool?.name}</p>
         </div>
         
         <div className="flex gap-2">
@@ -89,7 +151,7 @@ const SchoolInstructorProfiles = () => {
             <SelectValue placeholder="View" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Instructors</SelectItem>
+            <SelectItem value="all">All Nationalities</SelectItem>
             <SelectItem value="american">American</SelectItem>
             <SelectItem value="british">British</SelectItem>
             <SelectItem value="canadian">Canadian</SelectItem>
@@ -151,13 +213,13 @@ const SchoolInstructorProfiles = () => {
             <div className="flex justify-between">
               <div>
                 <div className="text-xl font-bold text-green-600">
-                  {schoolInstructors.filter(i => i.accompaniedStatus === "Yes").length}
+                  {schoolInstructors.filter(i => i.accompaniedStatus === "Accompanied").length}
                 </div>
                 <div className="text-xs text-gray-500">Accompanied</div>
               </div>
               <div>
                 <div className="text-xl font-bold text-amber-600">
-                  {schoolInstructors.filter(i => i.accompaniedStatus === "No").length}
+                  {schoolInstructors.filter(i => i.accompaniedStatus === "Unaccompanied").length}
                 </div>
                 <div className="text-xs text-gray-500">Unaccompanied</div>
               </div>
@@ -178,7 +240,7 @@ const SchoolInstructorProfiles = () => {
         <TabsContent value="grid" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredInstructors.map((instructor) => (
-              <Card key={instructor.id} className="overflow-hidden">
+              <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="h-32 bg-[#0A2463] flex items-center justify-center">
                   <img 
                     src={instructor.imageUrl || "https://via.placeholder.com/150?text=Instructor"} 
@@ -233,7 +295,13 @@ const SchoolInstructorProfiles = () => {
                   </div>
                   
                   <div className="mt-4 flex gap-2">
-                    <Button size="sm" className="w-full bg-[#0A2463] hover:bg-[#071A4A]">View Full Profile</Button>
+                    <Button 
+                      size="sm" 
+                      className="w-full bg-[#0A2463] hover:bg-[#071A4A]"
+                      onClick={() => handleViewInstructor(instructor)}
+                    >
+                      View Full Profile
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -284,7 +352,14 @@ const SchoolInstructorProfiles = () => {
                       </TableCell>
                       <TableCell>{instructor.phone}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm" className="text-[#0A2463]">View</Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-[#0A2463]"
+                          onClick={() => handleViewInstructor(instructor)}
+                        >
+                          View
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
