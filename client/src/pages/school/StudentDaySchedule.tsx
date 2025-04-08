@@ -2,7 +2,7 @@ import React from "react";
 import { useSchool } from "@/hooks/useSchool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, FileText, Share2 } from "lucide-react";
+import { Download, FileText, Share2, Printer } from "lucide-react";
 
 const SchoolStudentDaySchedule = () => {
   const { currentSchool } = useSchool();
@@ -14,7 +14,7 @@ const SchoolStudentDaySchedule = () => {
           <h1 className="text-2xl font-bold text-[#0A2463]">
             {currentSchool ? `${currentSchool.name} Student Day Schedule` : 'Student Day Schedule'}
           </h1>
-          <p className="text-gray-500">View daily student activities and schedules</p>
+          <p className="text-gray-500">View academic calendar and student schedule</p>
         </div>
         
         <div className="flex gap-2">
@@ -24,26 +24,83 @@ const SchoolStudentDaySchedule = () => {
           <Button variant="outline" className="gap-2">
             <Share2 size={16} /> Share
           </Button>
-          <Button className="bg-[#0A2463] hover:bg-[#071A4A] gap-2">
-            <FileText size={16} /> PowerBI Dashboard
+          <Button variant="outline" className="gap-2">
+            <Printer size={16} /> Print
           </Button>
         </div>
       </div>
       
-      <Card>
+      <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Student Day Schedule</CardTitle>
+          <CardTitle>Naval Forces Schools - English Language School Calendar</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-16">
-            <h3 className="text-lg font-medium text-gray-500 mb-4">Student day schedule will be populated from PowerBI</h3>
-            <p className="text-sm text-gray-400 max-w-md mx-auto">
-              Connect your Excel sheets with student schedule data to populate this section with daily schedules.
-            </p>
-            <Button className="mt-4 bg-[#0A2463] hover:bg-[#071A4A]">Connect PowerBI</Button>
+          <div className="flex justify-center">
+            <div className="max-w-4xl w-full overflow-hidden rounded-lg shadow-md">
+              <img 
+                src="/student-day-schedule.jpg" 
+                alt="Student Day Schedule" 
+                className="w-full object-contain" 
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Key Dates</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-3 bg-blue-50 rounded-md">
+                <span className="font-medium">Student Days</span>
+                <span>October 3, 2024 - May 1, 2025</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-green-50 rounded-md">
+                <span className="font-medium">Founding Day</span>
+                <span>February 23, 2025</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-red-50 rounded-md">
+                <span className="font-medium">Ramadan Break</span>
+                <span>March 20, 2025 - April 5, 2025</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-amber-50 rounded-md">
+                <span className="font-medium">Eid Al Adha</span>
+                <span>May 29, 2025 - June 14, 2025</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Return to Work Dates</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-3 bg-purple-50 rounded-md">
+                <span className="font-medium">After Ramadan</span>
+                <span>April 6, 2025</span>
+              </div>
+              <div className="flex justify-between items-center p-3 bg-purple-50 rounded-md">
+                <span className="font-medium">After Eid Al Adha</span>
+                <span>June 15, 2025</span>
+              </div>
+              
+              <div className="mt-8">
+                <h4 className="font-medium text-gray-600 mb-3">Calendar Notes</h4>
+                <ul className="list-disc pl-5 space-y-2 text-gray-600">
+                  <li>Student days are typically on Thursdays, with the exception of Founding Day</li>
+                  <li>All dates follow both Georgian and Hijri calendars</li>
+                  <li>Schedule is subject to change based on official announcements</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
