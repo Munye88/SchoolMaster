@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { type Course, type Instructor } from "@shared/schema";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
+import { Target, Calendar } from "lucide-react";
 
 interface CourseCardProps {
   course: Course;
@@ -14,7 +15,7 @@ const CourseCard = ({ course }: CourseCardProps) => {
     queryKey: ['/api/instructors', course.instructorId],
   });
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | string) => {
     return format(new Date(date), "MMM dd, yyyy");
   };
 
@@ -32,9 +33,24 @@ const CourseCard = ({ course }: CourseCardProps) => {
           <span className="text-sm text-gray-500">Start Date:</span>
           <span className="text-sm font-medium">{formatDate(course.startDate)}</span>
         </div>
-        <div className="flex justify-between mb-4">
+        
+        <div className="flex justify-between mb-2">
+          <span className="text-sm text-gray-500">End Date:</span>
+          <span className="text-sm font-medium">{course.endDate ? formatDate(course.endDate) : 'TBD'}</span>
+        </div>
+        
+        <div className="flex justify-between mb-2">
           <span className="text-sm text-gray-500">Instructor:</span>
           <span className="text-sm font-medium">{instructor?.name || 'Loading...'}</span>
+        </div>
+        
+        {/* Benchmark */}
+        <div className="flex justify-between mb-4 items-center">
+          <div className="flex items-center">
+            <Target className="h-4 w-4 text-blue-600 mr-1" />
+            <span className="text-sm text-gray-500">Benchmark:</span>
+          </div>
+          <span className="text-sm font-medium">{course.benchmark || 'N/A'}</span>
         </div>
         
         {/* Progress Bar */}

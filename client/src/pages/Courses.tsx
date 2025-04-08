@@ -55,7 +55,7 @@ const Courses = () => {
   };
   
   // Format date helper
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | string) => {
     return format(new Date(date), "MMM dd, yyyy");
   };
   
@@ -203,6 +203,8 @@ const Courses = () => {
                     <TableHead>Instructor</TableHead>
                     <TableHead>Students</TableHead>
                     <TableHead>Start Date</TableHead>
+                    <TableHead>End Date</TableHead>
+                    <TableHead>Benchmark</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Progress</TableHead>
                   </TableRow>
@@ -211,14 +213,14 @@ const Courses = () => {
                   {coursesLoading ? (
                     [1, 2, 3, 4, 5].map(i => (
                       <TableRow key={i}>
-                        <TableCell colSpan={7}>
+                        <TableCell colSpan={9}>
                           <Skeleton className="h-10 w-full" />
                         </TableCell>
                       </TableRow>
                     ))
                   ) : filteredCourses.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
+                      <TableCell colSpan={9} className="text-center py-8">
                         <p className="text-gray-500">
                           {searchQuery 
                             ? "No courses match your search criteria." 
@@ -239,6 +241,8 @@ const Courses = () => {
                           </div>
                         </TableCell>
                         <TableCell>{formatDate(course.startDate)}</TableCell>
+                        <TableCell>{course.endDate ? formatDate(course.endDate) : 'TBD'}</TableCell>
+                        <TableCell>{course.benchmark || 'N/A'}</TableCell>
                         <TableCell>
                           <span className={`px-2 py-1 rounded-full text-xs ${
                             course.status === "In Progress" ? "bg-blue-100 text-blue-800" :
