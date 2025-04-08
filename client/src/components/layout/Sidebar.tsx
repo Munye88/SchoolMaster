@@ -108,7 +108,7 @@ const Sidebar = () => {
                           Timetable
                         </Link>
                       </li>
-                      {school.code === "NFS East" && (
+                      {school.code === "NFS_EAST" && (
                         <li className="mb-1">
                           <Link href={`/schools/${school.code}/student-day-schedule`} className={cn(
                             "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
