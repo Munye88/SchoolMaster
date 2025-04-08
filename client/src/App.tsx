@@ -13,11 +13,13 @@ import Documents from "@/pages/Documents";
 import Administration from "@/pages/Administration";
 import Sidebar from "@/components/layout/Sidebar";
 import TopNavigation from "@/components/layout/TopNavigation";
-import SchoolInstructorProfiles from "@/pages/school/InstructorProfiles";
-import SchoolTimetable from "@/pages/school/Timetable";
-import SchoolStudentDaySchedule from "@/pages/school/StudentDaySchedule";
-import SchoolYearlySchedule from "@/pages/school/YearlySchedule";
-import SchoolSOP from "@/pages/school/SOP";
+import SchoolInstructorProfiles from "./pages/school/InstructorProfiles";
+import SchoolTimetable from "./pages/school/Timetable";
+import SchoolStudentDaySchedule from "./pages/school/StudentDaySchedule";
+import SchoolYearlySchedule from "./pages/school/YearlySchedule";
+import SchoolSOP from "./pages/school/SOP";
+import StaffEvaluations from "./pages/school/StaffEvaluations";
+import StaffAttendance from "./pages/school/StaffAttendance";
 
 function Router() {
   return (
@@ -48,6 +50,8 @@ function Router() {
           <Route path="/schools/:schoolCode/student-day-schedule" component={SchoolStudentDaySchedule} />
           <Route path="/schools/:schoolCode/yearly-schedule" component={SchoolYearlySchedule} />
           <Route path="/schools/:schoolCode/sop" component={SchoolSOP} />
+          <Route path="/schools/:schoolCode/staff-evaluations" component={StaffEvaluations} />
+          <Route path="/schools/:schoolCode/staff-attendance" component={StaffAttendance} />
           
           {/* Fallback to 404 */}
           <Route component={NotFound} />

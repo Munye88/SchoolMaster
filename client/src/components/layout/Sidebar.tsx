@@ -3,7 +3,8 @@ import { Link, useLocation } from "wouter";
 import { 
   Home, School, Users, BookOpen, GraduationCap, ListChecks, 
   BarChart2, FileText, ChevronDown, ChevronUp, Settings, 
-  Calendar, BookIcon, Clock, CalendarDays, ClipboardList, UserSquare
+  Calendar, BookIcon, Clock, CalendarDays, ClipboardList, UserSquare,
+  Clipboard, CheckSquare
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
@@ -132,6 +133,24 @@ const Sidebar = () => {
                         )}>
                           <ClipboardList className="h-4 w-4 mr-2" />
                           Standard Operating Procedure
+                        </Link>
+                      </li>
+                      <li className="mb-1">
+                        <Link href={`/schools/${school.code}/staff-evaluations`} className={cn(
+                          "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                          isActive(`/schools/${school.code}/staff-evaluations`) && "text-blue-200"
+                        )}>
+                          <Clipboard className="h-4 w-4 mr-2" />
+                          Staff Evaluations
+                        </Link>
+                      </li>
+                      <li className="mb-1">
+                        <Link href={`/schools/${school.code}/staff-attendance`} className={cn(
+                          "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                          isActive(`/schools/${school.code}/staff-attendance`) && "text-blue-200"
+                        )}>
+                          <CheckSquare className="h-4 w-4 mr-2" />
+                          Staff Attendance
                         </Link>
                       </li>
                     </ul>
