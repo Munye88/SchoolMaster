@@ -78,6 +78,7 @@ const SchoolInstructorProfiles = () => {
   
   // Handle clicking on instructor to view their profile
   const handleViewInstructor = (instructor: Instructor) => {
+    console.log("Selected instructor:", instructor);
     setSelectedInstructor(instructor);
   };
   
