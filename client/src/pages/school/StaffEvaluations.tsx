@@ -15,7 +15,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Share2, Download, FileText, PieChart } from "lucide-react";
+import { Share2, Download, FileText, PieChart as PieChartIcon } from "lucide-react";
 import { 
   BarChart, 
   Bar, 
@@ -24,7 +24,10 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  Cell 
+  Cell,
+  PieChart,
+  Pie,
+  Legend
 } from "recharts";
 
 const PASSING_SCORE = 85; // As per requirement, the passing score is 85%
@@ -59,7 +62,8 @@ const StaffEvaluations = () => {
         return {
           name: instructor.name,
           score: Math.round(avgScore),
-          passing: avgScore >= PASSING_SCORE
+          passing: avgScore >= PASSING_SCORE,
+          nationality: instructor.nationality
         };
       });
       
@@ -82,6 +86,61 @@ const StaffEvaluations = () => {
     { quarter: "Q2", avgScore: 88 },
     { quarter: "Q3", avgScore: 84 },
     { quarter: "Q4", avgScore: 89 }
+  ];
+
+  // Process nationality data
+  const americanCount = schoolInstructors.filter(i => i.nationality === 'American').length;
+  const britishCount = schoolInstructors.filter(i => i.nationality === 'British').length;
+  const canadianCount = schoolInstructors.filter(i => i.nationality === 'Canadian').length;
+
+  const americanPercent = schoolInstructors.length > 0 
+    ? Math.round((americanCount / schoolInstructors.length) * 100) 
+    : 0;
+  const britishPercent = schoolInstructors.length > 0 
+    ? Math.round((britishCount / schoolInstructors.length) * 100) 
+    : 0;
+  const canadianPercent = schoolInstructors.length > 0 
+    ? Math.round((canadianCount / schoolInstructors.length) * 100) 
+    : 0;
+
+  const nationalityData = [
+    { name: 'American', value: americanCount, percent: americanPercent, color: '#3498db' },
+    { name: 'British', value: britishCount, percent: britishPercent, color: '#e74c3c' },
+    { name: 'Canadian', value: canadianCount, percent: canadianPercent, color: '#2ecc71' }
+  ];
+
+  // Process nationality evaluation performance data
+  const nationalityPerformanceData = [
+    { 
+      name: 'American', 
+      avgScore: evalData.filter(i => i.nationality === 'American').length > 0 
+        ? Math.round(evalData.filter(i => i.nationality === 'American')
+            .reduce((sum, item) => sum + item.score, 0) / evalData.filter(i => i.nationality === 'American').length) 
+        : 0,
+      count: americanCount,
+      passing: evalData.filter(i => i.nationality === 'American' && i.passing).length,
+      color: '#3498db'
+    },
+    { 
+      name: 'British', 
+      avgScore: evalData.filter(i => i.nationality === 'British').length > 0 
+        ? Math.round(evalData.filter(i => i.nationality === 'British')
+            .reduce((sum, item) => sum + item.score, 0) / evalData.filter(i => i.nationality === 'British').length) 
+        : 0,
+      count: britishCount,
+      passing: evalData.filter(i => i.nationality === 'British' && i.passing).length,
+      color: '#e74c3c'
+    },
+    { 
+      name: 'Canadian', 
+      avgScore: evalData.filter(i => i.nationality === 'Canadian').length > 0 
+        ? Math.round(evalData.filter(i => i.nationality === 'Canadian')
+            .reduce((sum, item) => sum + item.score, 0) / evalData.filter(i => i.nationality === 'Canadian').length) 
+        : 0,
+      count: canadianCount,
+      passing: evalData.filter(i => i.nationality === 'Canadian' && i.passing).length,
+      color: '#2ecc71'
+    }
   ];
 
   if (isLoadingInstructors || isLoadingEvaluations) {
@@ -134,7 +193,7 @@ const StaffEvaluations = () => {
             <div className="flex items-center justify-between">
               <div className="text-3xl font-bold">{passRate}%</div>
               <div className="p-2 bg-green-100 text-green-800 rounded-full">
-                <PieChart size={20} />
+                <PieChartIcon size={20} />
               </div>
             </div>
             <Progress 
@@ -155,7 +214,7 @@ const StaffEvaluations = () => {
             <div className="flex items-center justify-between">
               <div className="text-3xl font-bold">{avgScore}%</div>
               <div className={`p-2 rounded-full ${avgScore >= 85 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
-                <PieChart size={20} />
+                <PieChartIcon size={20} />
               </div>
             </div>
             <Progress 
@@ -170,30 +229,52 @@ const StaffEvaluations = () => {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Quarterly Trend</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-500">Nationality Distribution</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-24">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={quarterlyData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="quarter" axisLine={false} tickLine={false} />
-                  <YAxis hide domain={[75, 100]} />
-                  <Tooltip />
-                  <Bar dataKey="avgScore" fill="#0A2463" radius={[4, 4, 0, 0]}>
-                    {quarterlyData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={entry.avgScore >= 85 ? "#10B981" : "#F59E0B"}
-                      />
+                <PieChart>
+                  <Pie
+                    data={nationalityData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={30}
+                    outerRadius={50}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {nationalityData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
-                  </Bar>
-                </BarChart>
+                  </Pie>
+                  <Tooltip formatter={(value, _, entry) => {
+                    const percent = Math.round((Number(value) / schoolInstructors.length) * 100);
+                    return [`${value} (${percent}%)`, entry.payload.name];
+                  }} />
+                </PieChart>
               </ResponsiveContainer>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              Quarterly average evaluation scores trends
-            </p>
+            <div className="flex justify-between mt-2">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-[#3498db] rounded-full mr-1"></div>
+                <p className="text-xs text-gray-500">
+                  {americanPercent}% American
+                </p>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-[#e74c3c] rounded-full mr-1"></div>
+                <p className="text-xs text-gray-500">
+                  {britishPercent}% British
+                </p>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-[#2ecc71] rounded-full mr-1"></div>
+                <p className="text-xs text-gray-500">
+                  {canadianPercent}% Canadian
+                </p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -205,6 +286,7 @@ const StaffEvaluations = () => {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="detailed">Detailed View</TabsTrigger>
             <TabsTrigger value="history">Evaluation History</TabsTrigger>
+            <TabsTrigger value="nationality">Nationality Breakdown</TabsTrigger>
           </TabsList>
         </div>
         
@@ -331,6 +413,129 @@ const StaffEvaluations = () => {
                     })}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="nationality" className="space-y-6">
+          <Card>
+            <CardHeader className="border-b">
+              <CardTitle>PowerBI Nationality Analysis</CardTitle>
+              <p className="text-sm text-gray-500 mt-1">
+                Detailed breakdown of instructor nationalities and their evaluation performance
+              </p>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Nationality Distribution</h3>
+                  <div className="h-72">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={nationalityData}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={100}
+                          innerRadius={60}
+                          paddingAngle={2}
+                          dataKey="value"
+                          label={({name, percent}) => `${name}: ${percent}%`}
+                          labelLine={false}
+                        >
+                          {nationalityData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value, _, entry) => [
+                          `${value} instructors (${entry.payload.percent}%)`, 
+                          entry.payload.name
+                        ]} />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Performance by Nationality</h3>
+                  <div className="h-72">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={nationalityPerformanceData}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="name" />
+                        <YAxis domain={[0, 100]} />
+                        <Tooltip formatter={(value, name) => {
+                          return name === "avgScore" ? [`${value}%`, "Average Score"] : [value, "Count"];
+                        }} />
+                        <Legend />
+                        <Bar 
+                          dataKey="avgScore" 
+                          name="Average Score" 
+                          radius={[4, 4, 0, 0]}
+                        >
+                          {nationalityPerformanceData.map((entry, index) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={entry.avgScore >= PASSING_SCORE ? "#10B981" : "#F59E0B"}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold mb-4">Nationality Performance Metrics</h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nationality</TableHead>
+                      <TableHead>Number of Instructors</TableHead>
+                      <TableHead>Distribution</TableHead>
+                      <TableHead>Average Score</TableHead>
+                      <TableHead>Passing Rate</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {nationalityPerformanceData.map((data, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center">
+                            <div className="w-3 h-3 rounded-full mr-2" style={{backgroundColor: data.color}}></div>
+                            {data.name}
+                          </div>
+                        </TableCell>
+                        <TableCell>{data.count}</TableCell>
+                        <TableCell>
+                          {Math.round((data.count / schoolInstructors.length) * 100)}%
+                        </TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            data.avgScore >= PASSING_SCORE ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
+                          }`}>
+                            {data.avgScore}%
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          {data.count > 0 ? Math.round((data.passing / data.count) * 100) : 0}%
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <div className="flex items-center justify-center mt-8 mb-4">
+                <Button className="bg-[#0A2463] hover:bg-[#071A4A] gap-2">
+                  <FileText size={16} /> Open in PowerBI Dashboard
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
