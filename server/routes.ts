@@ -218,6 +218,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Events
+  app.get("/api/events", async (req, res) => {
+    const events = await storage.getEvents();
+    res.json(events);
+  });
+  
+  app.get("/api/schools/:id/events", async (req, res) => {
+    const schoolId = parseInt(req.params.id);
+    if (isNaN(schoolId)) {
+      return res.status(400).json({ message: "Invalid school ID" });
+    }
+    
+    const events = await storage.getEvents();
+    const schoolEvents = events.filter(event => event.schoolId === schoolId);
+    res.json(schoolEvents);
+  });
+  
   app.get("/api/events/upcoming", async (req, res) => {
     const limit = parseInt(req.query.limit as string || '5');
     const events = await storage.getUpcomingEvents(limit);

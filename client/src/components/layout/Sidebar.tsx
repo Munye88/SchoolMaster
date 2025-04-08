@@ -2,7 +2,8 @@ import { useSchool } from "@/hooks/useSchool";
 import { Link, useLocation } from "wouter";
 import { 
   Home, School, Users, BookOpen, GraduationCap, ListChecks, 
-  BarChart2, FileText, ChevronDown, ChevronUp
+  BarChart2, FileText, ChevronDown, ChevronUp, Settings,
+  ClipboardList, Calendar
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
@@ -76,20 +77,20 @@ const Sidebar = () => {
               </li>
             ))}
             
-            {/* Features Section */}
+            {/* Categories Section */}
             <li className="mt-6 mb-2 px-4">
-              <h3 className="text-xs uppercase tracking-wider text-gray-300 font-semibold">Features</h3>
+              <h3 className="text-xs uppercase tracking-wider text-gray-300 font-semibold">Categories</h3>
             </li>
             
-            {/* Instructors */}
+            {/* Administration */}
             <li className="mb-1">
-              <Link href="/instructors">
+              <Link href="/administration">
                 <a className={cn(
                   "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
-                  isActive("/instructors") && "bg-[#1A3473]"
+                  isActive("/administration") && "bg-[#1A3473]"
                 )}>
-                  <Users className="h-5 w-5 mr-3" />
-                  Instructors
+                  <Settings className="h-5 w-5 mr-3" />
+                  Administration
                 </a>
               </Link>
             </li>
@@ -107,15 +108,15 @@ const Sidebar = () => {
               </Link>
             </li>
             
-            {/* Students */}
+            {/* Policy & Procedures */}
             <li className="mb-1">
-              <Link href="/students">
+              <Link href="/policy-procedures">
                 <a className={cn(
                   "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
-                  isActive("/students") && "bg-[#1A3473]"
+                  isActive("/policy-procedures") && "bg-[#1A3473]"
                 )}>
-                  <GraduationCap className="h-5 w-5 mr-3" />
-                  Students
+                  <ClipboardList className="h-5 w-5 mr-3" />
+                  Policy & Procedures
                 </a>
               </Link>
             </li>
@@ -146,7 +147,20 @@ const Sidebar = () => {
               </Link>
             </li>
             
-            {/* Documents */}
+            {/* Students */}
+            <li className="mb-1">
+              <Link href="/students">
+                <a className={cn(
+                  "flex items-center px-4 py-3 text-white hover:bg-[#1A3473] rounded-r-md ml-2 transition-colors duration-200",
+                  isActive("/students") && "bg-[#1A3473]"
+                )}>
+                  <GraduationCap className="h-5 w-5 mr-3" />
+                  Students
+                </a>
+              </Link>
+            </li>
+            
+            {/* Documents (moved to admin section) */}
             <li className="mb-1">
               <Link href="/documents">
                 <a className={cn(

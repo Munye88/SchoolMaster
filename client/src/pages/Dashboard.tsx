@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { useSchool } from "@/hooks/useSchool";
 import { Link } from "wouter";
 import { format } from "date-fns";
+import { Calendar as CalendarComponent } from "@/components/dashboard/Calendar";
 
 const Dashboard = () => {
   const { selectedSchool, currentSchool } = useSchool();
@@ -152,9 +153,7 @@ const Dashboard = () => {
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-lg text-[#0A2463]">Active Courses</CardTitle>
-                <Link href="/courses">
-                  <a className="text-blue-600 hover:underline text-sm font-medium">View All</a>
-                </Link>
+                <Link href="/courses" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
               </div>
             </CardHeader>
             <CardContent className="p-0">
@@ -222,10 +221,8 @@ const Dashboard = () => {
                     <div className="text-center">
                       <BarChart2 className="h-16 w-16 text-blue-200 mx-auto" />
                       <p className="mt-2 text-sm text-gray-500">View detailed charts in Reports</p>
-                      <Link href="/reports">
-                        <a className="mt-2 inline-block text-blue-600 hover:underline text-sm">
-                          View Reports
-                        </a>
+                      <Link href="/reports" className="mt-2 inline-block text-blue-600 hover:underline text-sm">
+                        View Reports
                       </Link>
                     </div>
                   </div>
@@ -302,14 +299,15 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
+          {/* Calendar */}
+          <CalendarComponent className="shadow-sm" />
+
           {/* Upcoming Events */}
           <Card className="shadow-sm">
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-lg text-[#0A2463]">Upcoming Events</CardTitle>
-                <Link href="/events">
-                  <a className="text-blue-600 hover:underline text-sm font-medium">View All</a>
-                </Link>
+                <Link href="/events" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
               </div>
             </CardHeader>
             <CardContent className="p-0">
@@ -357,38 +355,32 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-gray-100">
-                <Link href="/instructors">
-                  <a className="flex items-center justify-between p-4 hover:bg-gray-50">
-                    <div className="flex items-center">
-                      <div className="bg-purple-100 p-2 rounded-lg mr-3">
-                        <User className="h-4 w-4 text-purple-600" />
-                      </div>
-                      <span className="text-sm font-medium">Instructor Directory</span>
+                <Link href="/instructors" className="flex items-center justify-between p-4 hover:bg-gray-50">
+                  <div className="flex items-center">
+                    <div className="bg-purple-100 p-2 rounded-lg mr-3">
+                      <User className="h-4 w-4 text-purple-600" />
                     </div>
-                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                  </a>
+                    <span className="text-sm font-medium">Instructor Directory</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-gray-400" />
                 </Link>
-                <Link href="/courses">
-                  <a className="flex items-center justify-between p-4 hover:bg-gray-50">
-                    <div className="flex items-center">
-                      <div className="bg-blue-100 p-2 rounded-lg mr-3">
-                        <BookOpen className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <span className="text-sm font-medium">Course Management</span>
+                <Link href="/courses" className="flex items-center justify-between p-4 hover:bg-gray-50">
+                  <div className="flex items-center">
+                    <div className="bg-blue-100 p-2 rounded-lg mr-3">
+                      <BookOpen className="h-4 w-4 text-blue-600" />
                     </div>
-                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                  </a>
+                    <span className="text-sm font-medium">Course Management</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-gray-400" />
                 </Link>
-                <Link href="/documents">
-                  <a className="flex items-center justify-between p-4 hover:bg-gray-50">
-                    <div className="flex items-center">
-                      <div className="bg-yellow-100 p-2 rounded-lg mr-3">
-                        <Building className="h-4 w-4 text-yellow-600" />
-                      </div>
-                      <span className="text-sm font-medium">Administrative Documents</span>
+                <Link href="/documents" className="flex items-center justify-between p-4 hover:bg-gray-50">
+                  <div className="flex items-center">
+                    <div className="bg-yellow-100 p-2 rounded-lg mr-3">
+                      <Building className="h-4 w-4 text-yellow-600" />
                     </div>
-                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                  </a>
+                    <span className="text-sm font-medium">Administrative Documents</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-gray-400" />
                 </Link>
               </div>
             </CardContent>

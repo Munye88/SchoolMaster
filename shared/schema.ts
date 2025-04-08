@@ -53,6 +53,7 @@ export const courses = pgTable("courses", {
   schoolId: integer("school_id").notNull().references(() => schools.id),
   status: text("status").notNull(),
   progress: integer("progress").notNull(),
+  benchmark: text("benchmark"),
 });
 
 export const insertCourseSchema = createInsertSchema(courses).pick({
@@ -64,6 +65,7 @@ export const insertCourseSchema = createInsertSchema(courses).pick({
   schoolId: true,
   status: true,
   progress: true,
+  benchmark: true,
 });
 
 export const students = pgTable("students", {
