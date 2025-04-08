@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSchool } from "@/hooks/useSchool";
 import { Instructor } from "@shared/schema";
@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { InstructorProfileCard } from "@/components/instructors/InstructorProfileCard";
 import { useState } from "react";
+import { useLocation } from "wouter";
 
 // Individual Instructor Profile Page
 const InstructorProfile = ({ instructor, schoolName, onBack }: { 
@@ -48,20 +49,30 @@ const InstructorProfile = ({ instructor, schoolName, onBack }: {
 };
 
 const SchoolInstructorProfiles = () => {
-  const { currentSchool } = useSchool();
+  const [location] = useLocation();
+  const schoolCode = location.split("/")[2]; // Get the school code from the URL
+  const { schools } = useSchool();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedView, setSelectedView] = useState("all");
   const [selectedTab, setSelectedTab] = useState("grid");
   const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);
   
-  // Fetch instructors
-  const { data: instructors = [], isLoading } = useQuery<Instructor[]>({
+  // Find the current school from the school code
+  const currentSchool = schools.find(school => school.code === schoolCode);
+  
+  // Fetch all instructors
+  const { data: allInstructors = [], isLoading: isLoadingAllInstructors } = useQuery<Instructor[]>({
     queryKey: ['/api/instructors'],
   });
   
-  const schoolInstructors = instructors.filter(instructor => 
+  // Filter instructors for the current school
+  const schoolInstructors = allInstructors.filter(instructor => 
     instructor.schoolId === currentSchool?.id
   );
+  
+  console.log("Current school:", currentSchool);
+  console.log("All instructors:", allInstructors.length);
+  console.log("School instructors:", schoolInstructors.length);
   
   // Filter instructors based on search and nationality
   const filteredInstructors = schoolInstructors.filter(instructor => {
@@ -82,7 +93,7 @@ const SchoolInstructorProfiles = () => {
     setSelectedInstructor(instructor);
   };
   
-  if (isLoading) {
+  if (isLoadingAllInstructors || !currentSchool) {
     return (
       <div className="flex-1 p-8 bg-gray-50">
         <div className="flex justify-between items-center mb-6">
@@ -240,132 +251,144 @@ const SchoolInstructorProfiles = () => {
         
         <TabsContent value="grid" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredInstructors.map((instructor) => (
-              <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="h-32 bg-[#0A2463] flex items-center justify-center">
-                  <img 
-                    src={instructor.imageUrl || "https://via.placeholder.com/150?text=Instructor"} 
-                    alt={instructor.name}
-                    className="h-24 w-24 rounded-full border-4 border-white object-cover"
-                  />
-                </div>
-                <CardContent className="pt-4">
-                  <h3 className="font-bold text-lg mb-1">{instructor.name}</h3>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Badge className={
-                      instructor.nationality === "American" ? "bg-blue-100 text-blue-800" :
-                      instructor.nationality === "British" ? "bg-red-100 text-red-800" :
-                      "bg-green-100 text-green-800"
-                    }>
-                      {instructor.nationality}
-                    </Badge>
-                    <p className="text-sm text-gray-500">{instructor.role || 'ELT Instructor'}</p>
+            {filteredInstructors.length === 0 ? (
+              <div className="col-span-3 text-center p-12">
+                <h3 className="text-lg font-medium text-gray-500">No instructors found</h3>
+                <p className="text-sm text-gray-400 mt-2">Try adjusting your filters</p>
+              </div>
+            ) : (
+              filteredInstructors.map((instructor) => (
+                <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="h-32 bg-[#0A2463] flex items-center justify-center">
+                    <div className="h-24 w-24 rounded-full border-4 border-white bg-blue-100 flex items-center justify-center text-[#0A2463] font-bold text-xl">
+                      {instructor.name.split(' ').map(n => n[0]).join('')}
+                    </div>
                   </div>
-                  
-                  <div className="grid grid-cols-1 gap-2 text-sm mt-4 border-t pt-3">
-                    <div className="flex justify-between items-center">
-                      <p className="text-gray-500 font-medium">Credentials:</p>
-                      <p className="text-right">{instructor.credentials}</p>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <p className="text-gray-500 font-medium">School:</p>
-                      <p className="text-right">{currentSchool?.name}</p>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <p className="text-gray-500 font-medium">Compound:</p>
-                      <p className="text-right">{instructor.compound}</p>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <p className="text-gray-500 font-medium">Phone:</p>
-                      <p className="text-right">{instructor.phone}</p>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <p className="text-gray-500 font-medium">Start Date:</p>
-                      <p className="text-right">{new Date(instructor.startDate).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}</p>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <p className="text-gray-500 font-medium">Status:</p>
-                      <Badge variant={instructor.accompaniedStatus === "Accompanied" ? "default" : "outline"}>
-                        {instructor.accompaniedStatus}
+                  <CardContent className="pt-4">
+                    <h3 className="font-bold text-lg mb-1">{instructor.name}</h3>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge className={
+                        instructor.nationality === "American" ? "bg-blue-100 text-blue-800" :
+                        instructor.nationality === "British" ? "bg-red-100 text-red-800" :
+                        "bg-green-100 text-green-800"
+                      }>
+                        {instructor.nationality}
                       </Badge>
+                      <p className="text-sm text-gray-500">{instructor.role || 'ELT Instructor'}</p>
                     </div>
-                  </div>
-                  
-                  <div className="mt-4 flex gap-2">
-                    <Button 
-                      size="sm" 
-                      className="w-full bg-[#0A2463] hover:bg-[#071A4A]"
-                      onClick={() => handleViewInstructor(instructor)}
-                    >
-                      View Full Profile
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    
+                    <div className="grid grid-cols-1 gap-2 text-sm mt-4 border-t pt-3">
+                      <div className="flex justify-between items-center">
+                        <p className="text-gray-500 font-medium">Credentials:</p>
+                        <p className="text-right">{instructor.credentials}</p>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <p className="text-gray-500 font-medium">School:</p>
+                        <p className="text-right">{currentSchool?.name}</p>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <p className="text-gray-500 font-medium">Compound:</p>
+                        <p className="text-right">{instructor.compound}</p>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <p className="text-gray-500 font-medium">Phone:</p>
+                        <p className="text-right">{instructor.phone}</p>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <p className="text-gray-500 font-medium">Start Date:</p>
+                        <p className="text-right">{new Date(instructor.startDate).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}</p>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <p className="text-gray-500 font-medium">Status:</p>
+                        <Badge variant={instructor.accompaniedStatus === "Accompanied" ? "default" : "outline"}>
+                          {instructor.accompaniedStatus}
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 flex gap-2">
+                      <Button 
+                        size="sm" 
+                        className="w-full bg-[#0A2463] hover:bg-[#071A4A]"
+                        onClick={() => handleViewInstructor(instructor)}
+                      >
+                        View Full Profile
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
         </TabsContent>
         
         <TabsContent value="list" className="space-y-6">
           <Card>
             <CardContent className="pt-6">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Nationality</TableHead>
-                    <TableHead>Credentials</TableHead>
-                    <TableHead>Compound</TableHead>
-                    <TableHead>Start Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredInstructors.map((instructor) => (
-                    <TableRow key={instructor.id}>
-                      <TableCell className="font-medium">{instructor.name}</TableCell>
-                      <TableCell>
-                        <Badge className={
-                          instructor.nationality === "American" ? "bg-blue-100 text-blue-800" :
-                          instructor.nationality === "British" ? "bg-red-100 text-red-800" :
-                          "bg-green-100 text-green-800"
-                        }>
-                          {instructor.nationality}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{instructor.credentials}</TableCell>
-                      <TableCell>{instructor.compound}</TableCell>
-                      <TableCell>{new Date(instructor.startDate).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })}</TableCell>
-                      <TableCell>
-                        <Badge variant={instructor.accompaniedStatus === "Accompanied" ? "default" : "outline"}>
-                          {instructor.accompaniedStatus}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{instructor.phone}</TableCell>
-                      <TableCell>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-[#0A2463]"
-                          onClick={() => handleViewInstructor(instructor)}
-                        >
-                          View
-                        </Button>
-                      </TableCell>
+              {filteredInstructors.length === 0 ? (
+                <div className="text-center p-12">
+                  <h3 className="text-lg font-medium text-gray-500">No instructors found</h3>
+                  <p className="text-sm text-gray-400 mt-2">Try adjusting your filters</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Nationality</TableHead>
+                      <TableHead>Credentials</TableHead>
+                      <TableHead>Compound</TableHead>
+                      <TableHead>Start Date</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredInstructors.map((instructor) => (
+                      <TableRow key={instructor.id}>
+                        <TableCell className="font-medium">{instructor.name}</TableCell>
+                        <TableCell>
+                          <Badge className={
+                            instructor.nationality === "American" ? "bg-blue-100 text-blue-800" :
+                            instructor.nationality === "British" ? "bg-red-100 text-red-800" :
+                            "bg-green-100 text-green-800"
+                          }>
+                            {instructor.nationality}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{instructor.credentials}</TableCell>
+                        <TableCell>{instructor.compound}</TableCell>
+                        <TableCell>{new Date(instructor.startDate).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}</TableCell>
+                        <TableCell>
+                          <Badge variant={instructor.accompaniedStatus === "Accompanied" ? "default" : "outline"}>
+                            {instructor.accompaniedStatus}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{instructor.phone}</TableCell>
+                        <TableCell>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-[#0A2463]"
+                            onClick={() => handleViewInstructor(instructor)}
+                          >
+                            View
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
