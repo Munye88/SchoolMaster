@@ -4,6 +4,7 @@ import { useSchool } from "@/hooks/useSchool";
 import { Instructor } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Download, FileText, Share2, Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -187,29 +188,52 @@ const SchoolInstructorProfiles = () => {
                 </div>
                 <CardContent className="pt-4">
                   <h3 className="font-bold text-lg mb-1">{instructor.name}</h3>
-                  <p className="text-sm text-gray-500 mb-2">{instructor.nationality} • {instructor.role || 'Instructor'}</p>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Badge className={
+                      instructor.nationality === "American" ? "bg-blue-100 text-blue-800" :
+                      instructor.nationality === "British" ? "bg-red-100 text-red-800" :
+                      "bg-green-100 text-green-800"
+                    }>
+                      {instructor.nationality}
+                    </Badge>
+                    <p className="text-sm text-gray-500">{instructor.role || 'ELT Instructor'}</p>
+                  </div>
                   
-                  <div className="grid grid-cols-2 gap-2 text-sm mt-4">
-                    <div>
-                      <p className="text-gray-500">Compound</p>
-                      <p className="font-medium">{instructor.compound}</p>
+                  <div className="grid grid-cols-1 gap-2 text-sm mt-4 border-t pt-3">
+                    <div className="flex justify-between items-center">
+                      <p className="text-gray-500 font-medium">Credentials:</p>
+                      <p className="text-right">{instructor.credentials}</p>
                     </div>
-                    <div>
-                      <p className="text-gray-500">Phone</p>
-                      <p className="font-medium">{instructor.phone}</p>
+                    <div className="flex justify-between items-center">
+                      <p className="text-gray-500 font-medium">School:</p>
+                      <p className="text-right">{currentSchool?.name}</p>
                     </div>
-                    <div>
-                      <p className="text-gray-500">Start Date</p>
-                      <p className="font-medium">{new Date(instructor.startDate).toLocaleDateString()}</p>
+                    <div className="flex justify-between items-center">
+                      <p className="text-gray-500 font-medium">Compound:</p>
+                      <p className="text-right">{instructor.compound}</p>
                     </div>
-                    <div>
-                      <p className="text-gray-500">Accompanied</p>
-                      <p className="font-medium">{instructor.accompaniedStatus}</p>
+                    <div className="flex justify-between items-center">
+                      <p className="text-gray-500 font-medium">Phone:</p>
+                      <p className="text-right">{instructor.phone}</p>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <p className="text-gray-500 font-medium">Start Date:</p>
+                      <p className="text-right">{new Date(instructor.startDate).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}</p>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <p className="text-gray-500 font-medium">Status:</p>
+                      <Badge variant={instructor.accompaniedStatus === "Accompanied" ? "default" : "outline"}>
+                        {instructor.accompaniedStatus}
+                      </Badge>
                     </div>
                   </div>
                   
                   <div className="mt-4 flex gap-2">
-                    <Button size="sm" variant="outline" className="w-full">View Profile</Button>
+                    <Button size="sm" className="w-full bg-[#0A2463] hover:bg-[#071A4A]">View Full Profile</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -225,9 +249,11 @@ const SchoolInstructorProfiles = () => {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Nationality</TableHead>
+                    <TableHead>Credentials</TableHead>
                     <TableHead>Compound</TableHead>
                     <TableHead>Start Date</TableHead>
-                    <TableHead>Accompanied</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Phone</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -235,12 +261,30 @@ const SchoolInstructorProfiles = () => {
                   {filteredInstructors.map((instructor) => (
                     <TableRow key={instructor.id}>
                       <TableCell className="font-medium">{instructor.name}</TableCell>
-                      <TableCell>{instructor.nationality}</TableCell>
-                      <TableCell>{instructor.compound}</TableCell>
-                      <TableCell>{new Date(instructor.startDate).toLocaleDateString()}</TableCell>
-                      <TableCell>{instructor.accompaniedStatus}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm">View</Button>
+                        <Badge className={
+                          instructor.nationality === "American" ? "bg-blue-100 text-blue-800" :
+                          instructor.nationality === "British" ? "bg-red-100 text-red-800" :
+                          "bg-green-100 text-green-800"
+                        }>
+                          {instructor.nationality}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{instructor.credentials}</TableCell>
+                      <TableCell>{instructor.compound}</TableCell>
+                      <TableCell>{new Date(instructor.startDate).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}</TableCell>
+                      <TableCell>
+                        <Badge variant={instructor.accompaniedStatus === "Accompanied" ? "default" : "outline"}>
+                          {instructor.accompaniedStatus}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{instructor.phone}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm" className="text-[#0A2463]">View</Button>
                       </TableCell>
                     </TableRow>
                   ))}
