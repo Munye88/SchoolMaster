@@ -109,18 +109,16 @@ const Sidebar = () => {
                         </Link>
                       </li>
                       
-                      {/* KNFA specific - Student Day Schedule */}
-                      {school.code === "KNFA" && (
-                        <li className="mb-1">
-                          <Link href="/schools/KNFA/student-day-schedule" className={cn(
-                            "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
-                            isActive("/schools/KNFA/student-day-schedule") && "text-blue-200"
-                          )}>
-                            <Calendar className="h-4 w-4 mr-2" />
-                            Student Day Schedule
-                          </Link>
-                        </li>
-                      )}
+                      {/* Student Day Schedule for all schools */}
+                      <li className="mb-1">
+                        <Link href={`/schools/${school.code}/student-day-schedule`} className={cn(
+                          "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                          isActive(`/schools/${school.code}/student-day-schedule`) && "text-blue-200"
+                        )}>
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Student Day Schedule
+                        </Link>
+                      </li>
                       
                       <li className="mb-1">
                         <Link href={`/schools/${school.code}/yearly-schedule`} className={cn(
