@@ -109,12 +109,12 @@ const Sidebar = () => {
                         </Link>
                       </li>
                       
-                      {/* NFS East specific - Student Day Schedule */}
-                      {school.code === "NFS_EAST" && (
+                      {/* KNFA specific - Student Day Schedule */}
+                      {school.code === "KNFA" && (
                         <li className="mb-1">
-                          <Link href="/schools/NFS_EAST/student-day-schedule" className={cn(
+                          <Link href="/schools/KNFA/student-day-schedule" className={cn(
                             "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
-                            isActive("/schools/NFS_EAST/student-day-schedule") && "text-blue-200"
+                            isActive("/schools/KNFA/student-day-schedule") && "text-blue-200"
                           )}>
                             <Calendar className="h-4 w-4 mr-2" />
                             Student Day Schedule

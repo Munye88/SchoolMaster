@@ -3,6 +3,7 @@ import { useSchool } from "@/hooks/useSchool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Share2, Printer } from "lucide-react";
+import studentDayScheduleImage from "@assets/download.jpg";
 
 const SchoolStudentDaySchedule = () => {
   const { currentSchool } = useSchool();
@@ -31,86 +32,13 @@ const SchoolStudentDaySchedule = () => {
       </div>
       
       <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-center text-xl font-bold">Naval Forces Schools</CardTitle>
-          <div className="text-center text-xl font-bold">English Language School</div>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-auto">
-            <table className="min-w-full border-collapse border border-gray-300">
-              <thead>
-                <tr>
-                  <th className="border border-gray-300 p-3 bg-gray-50 text-center font-semibold">Days</th>
-                  <th className="border border-gray-300 p-3 bg-gray-50 text-center font-semibold">Georgian Date</th>
-                  <th className="border border-gray-300 p-3 bg-gray-50 text-center font-semibold">Hijri Date</th>
-                  <th className="border border-gray-300 p-3 bg-gray-50 text-center font-semibold">Student Day</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border border-gray-300 p-3 text-center">Thursday</td>
-                  <td className="border border-gray-300 p-3 text-center">October 3, 2024</td>
-                  <td className="border border-gray-300 p-3 text-center">30/03/1446</td>
-                  <td className="border border-gray-300 p-3 text-center bg-blue-100" rowSpan={6}>Student Days</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-3 text-center">Thursday</td>
-                  <td className="border border-gray-300 p-3 text-center">October 31, 2024</td>
-                  <td className="border border-gray-300 p-3 text-center">28/04/1446</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-3 text-center">Thursday</td>
-                  <td className="border border-gray-300 p-3 text-center">November 28, 2024</td>
-                  <td className="border border-gray-300 p-3 text-center">26/05/1446</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-3 text-center">Thursday</td>
-                  <td className="border border-gray-300 p-3 text-center">December 26, 2024</td>
-                  <td className="border border-gray-300 p-3 text-center">25/06/1446</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-3 text-center">Thursday</td>
-                  <td className="border border-gray-300 p-3 text-center">January 30, 2025</td>
-                  <td className="border border-gray-300 p-3 text-center">30/07/1446</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-3 text-center">Sunday</td>
-                  <td className="border border-gray-300 p-3 text-center">February 23, 2025</td>
-                  <td className="border border-gray-300 p-3 text-center">24/08/1446</td>
-                  <td className="border border-gray-300 p-3 text-center bg-green-200">Founding Day</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-3 text-center">Thursday</td>
-                  <td className="border border-gray-300 p-3 text-center">May 1, 2025</td>
-                  <td className="border border-gray-300 p-3 text-center">03/11/1446</td>
-                  <td className="border border-gray-300 p-3 text-center">Student Day</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-3 text-center bg-gray-200" colSpan={4}>
-                    <div className="text-center font-bold py-2">RAMADAN BREAK</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-3 text-center" colSpan={2}>March 20, 2025 - April 5, 2025</td>
-                  <td className="border border-gray-300 p-3 text-center" colSpan={2}>20/09/1446 - 07/10/1446</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-3 text-center font-medium">Return to work:</td>
-                  <td className="border border-gray-300 p-3 text-center">April 6, 2025</td>
-                  <td className="border border-gray-300 p-3 text-center" colSpan={2}>08/10/1446</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-3 text-center font-medium">Eid Al Adha:</td>
-                  <td className="border border-gray-300 p-3 text-center">May 29, 2025- June 14, 2025</td>
-                  <td className="border border-gray-300 p-3 text-center" colSpan={2}>02/12/1446 - 18/12/1446</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-300 p-3 text-center font-medium">Return to work:</td>
-                  <td className="border border-gray-300 p-3 text-center">June 15, 2025</td>
-                  <td className="border border-gray-300 p-3 text-center" colSpan={2}>19/12/1446</td>
-                </tr>
-              </tbody>
-            </table>
+        <CardContent className="p-0">
+          <div className="w-full overflow-hidden">
+            <img 
+              src={studentDayScheduleImage} 
+              alt="Student Day Schedule" 
+              className="w-full object-contain" 
+            />
           </div>
         </CardContent>
       </Card>
@@ -180,22 +108,7 @@ const SchoolStudentDaySchedule = () => {
         </Card>
       </div>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Original Schedule Image</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-center">
-            <div className="max-w-4xl w-full overflow-hidden rounded-lg shadow-md">
-              <img 
-                src="/student-day-schedule.jpg" 
-                alt="Student Day Schedule" 
-                className="w-full object-contain" 
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+
     </div>
   );
 };
