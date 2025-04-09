@@ -11,8 +11,7 @@ import TestTracker from "@/pages/TestTracker";
 import Reports from "@/pages/Reports";
 import Documents from "@/pages/Documents";
 import Administration from "@/pages/Administration";
-import Sidebar from "@/components/layout/Sidebar";
-import TopNavigation from "@/components/layout/TopNavigation";
+import HorizontalNavbar from "@/components/layout/HorizontalNavbar";
 import SchoolInstructorProfiles from "./pages/school/InstructorProfiles";
 import SchoolTimetable from "./pages/school/Timetable";
 import SchoolStudentDaySchedule from "./pages/school/StudentDaySchedule";
@@ -24,10 +23,9 @@ import SchoolBookInventory from "./pages/school/BookInventory";
 
 function Router() {
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <TopNavigation />
+    <div className="flex flex-col h-screen overflow-hidden">
+      <HorizontalNavbar />
+      <div className="flex-1 overflow-auto">
         <Switch>
           <Route path="/" component={Dashboard} />
           <Route path="/instructors" component={InstructorProfile} />
