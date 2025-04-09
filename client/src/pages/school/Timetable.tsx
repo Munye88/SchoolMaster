@@ -9,8 +9,8 @@ const SchoolTimetable = () => {
   const { currentSchool } = useSchool();
   const [activeTab, setActiveTab] = useState("aviation");
   
-  // Only show Aviation and Enlisted timetables for KNFA school
-  const isKNFA = currentSchool?.code === "KNFA";
+  // Always show timetables for now
+  const isKNFA = true; // Force display for all schools until fixed
   
   return (
     <div className="flex-1 p-8 bg-gray-50 overflow-y-auto">
