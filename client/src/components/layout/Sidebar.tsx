@@ -156,6 +156,15 @@ const Sidebar = () => {
                           Staff Attendance
                         </Link>
                       </li>
+                      <li className="mb-1">
+                        <Link href={`/schools/${school.code}/book-inventory`} className={cn(
+                          "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
+                          isActive(`/schools/${school.code}/book-inventory`) && "text-blue-200"
+                        )}>
+                          <BookIcon className="h-4 w-4 mr-2" />
+                          Book Inventory
+                        </Link>
+                      </li>
                     </ul>
                   )}
                 </div>
