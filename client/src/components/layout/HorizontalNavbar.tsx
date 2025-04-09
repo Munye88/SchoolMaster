@@ -105,11 +105,10 @@ const HorizontalNavbar = () => {
                 <PopoverContent className="w-64 p-2 mt-1">
                   <div className="grid gap-1">
                     {schools.map(school => (
-                      <div key={school.id} className="flex flex-col">
+                      <div key={school.id} className="flex flex-col gap-1">
                         <button
                           onClick={() => {
                             setSelectedSchool(school.code);
-                            setSchoolDropdownOpen(false);
                           }}
                           className={cn(
                             "flex items-center justify-between px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors w-full text-left",
@@ -120,11 +119,17 @@ const HorizontalNavbar = () => {
                             <School className="h-4 w-4 mr-2" />
                             <span>{school.name}</span>
                           </div>
+                          {selectedSchool === school.code ? 
+                            <ChevronUp size={16} className="ml-1" /> : 
+                            <ChevronDown size={16} className="ml-1" />
+                          }
                         </button>
                         
                         {selectedSchool === school.code && (
-                          <div className="ml-8 mt-1 grid gap-1">
-                            <Link href={`/schools/${school.code}/instructor-profiles`} className={cn(
+                          <div className="ml-6 grid gap-1 mt-1 border-l-2 border-[#0A2463] pl-2">
+                            <Link href={`/schools/${school.code}/instructor-profiles`} 
+                              onClick={() => setSchoolDropdownOpen(false)}
+                              className={cn(
                               "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                               isActive(`/schools/${school.code}/instructor-profiles`) && "text-[#0A2463] bg-gray-100 font-medium"
                             )}>
@@ -132,7 +137,9 @@ const HorizontalNavbar = () => {
                               <span>Instructor Profiles</span>
                             </Link>
                             
-                            <Link href={`/schools/${school.code}/timetable`} className={cn(
+                            <Link href={`/schools/${school.code}/timetable`} 
+                              onClick={() => setSchoolDropdownOpen(false)}
+                              className={cn(
                               "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                               isActive(`/schools/${school.code}/timetable`) && "text-[#0A2463] bg-gray-100 font-medium"
                             )}>
@@ -140,7 +147,9 @@ const HorizontalNavbar = () => {
                               <span>Timetable</span>
                             </Link>
                             
-                            <Link href={`/schools/${school.code}/student-day-schedule`} className={cn(
+                            <Link href={`/schools/${school.code}/student-day-schedule`} 
+                              onClick={() => setSchoolDropdownOpen(false)}
+                              className={cn(
                               "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                               isActive(`/schools/${school.code}/student-day-schedule`) && "text-[#0A2463] bg-gray-100 font-medium"
                             )}>
@@ -148,7 +157,9 @@ const HorizontalNavbar = () => {
                               <span>Student Day Schedule</span>
                             </Link>
                             
-                            <Link href={`/schools/${school.code}/yearly-schedule`} className={cn(
+                            <Link href={`/schools/${school.code}/yearly-schedule`} 
+                              onClick={() => setSchoolDropdownOpen(false)}
+                              className={cn(
                               "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                               isActive(`/schools/${school.code}/yearly-schedule`) && "text-[#0A2463] bg-gray-100 font-medium"
                             )}>
@@ -156,7 +167,9 @@ const HorizontalNavbar = () => {
                               <span>Yearly Schedule</span>
                             </Link>
                             
-                            <Link href={`/schools/${school.code}/sop`} className={cn(
+                            <Link href={`/schools/${school.code}/sop`} 
+                              onClick={() => setSchoolDropdownOpen(false)}
+                              className={cn(
                               "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                               isActive(`/schools/${school.code}/sop`) && "text-[#0A2463] bg-gray-100 font-medium"
                             )}>
@@ -164,7 +177,9 @@ const HorizontalNavbar = () => {
                               <span>SOP</span>
                             </Link>
                             
-                            <Link href={`/schools/${school.code}/staff-evaluations`} className={cn(
+                            <Link href={`/schools/${school.code}/staff-evaluations`} 
+                              onClick={() => setSchoolDropdownOpen(false)}
+                              className={cn(
                               "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                               isActive(`/schools/${school.code}/staff-evaluations`) && "text-[#0A2463] bg-gray-100 font-medium"
                             )}>
@@ -172,7 +187,9 @@ const HorizontalNavbar = () => {
                               <span>Staff Evaluations</span>
                             </Link>
                             
-                            <Link href={`/schools/${school.code}/staff-attendance`} className={cn(
+                            <Link href={`/schools/${school.code}/staff-attendance`} 
+                              onClick={() => setSchoolDropdownOpen(false)}
+                              className={cn(
                               "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                               isActive(`/schools/${school.code}/staff-attendance`) && "text-[#0A2463] bg-gray-100 font-medium"
                             )}>
@@ -180,7 +197,9 @@ const HorizontalNavbar = () => {
                               <span>Staff Attendance</span>
                             </Link>
                             
-                            <Link href={`/schools/${school.code}/book-inventory`} className={cn(
+                            <Link href={`/schools/${school.code}/book-inventory`}
+                              onClick={() => setSchoolDropdownOpen(false)}
+                              className={cn(
                               "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                               isActive(`/schools/${school.code}/book-inventory`) && "text-[#0A2463] bg-gray-100 font-medium"
                             )}>
