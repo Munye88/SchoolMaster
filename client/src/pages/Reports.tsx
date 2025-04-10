@@ -33,6 +33,7 @@ import {
   LineChart as RechartsLineChart, Line, 
   PieChart as RechartsPieChart, Pie, Cell,
   AreaChart, Area,
+  ComposedChart,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 
@@ -368,19 +369,50 @@ const Reports = () => {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="h-80 flex items-center justify-center bg-gradient-to-b from-amber-50 to-white p-6">
-              <div className="text-center w-full">
-                <div className="rounded-lg bg-white shadow-inner p-10 border border-amber-100 h-64 flex items-center justify-center">
-                  <div>
-                    <LineChart className="h-16 w-16 text-amber-400 mx-auto mb-4 opacity-70" />
-                    <p className="text-base font-medium text-amber-900">
-                      PowerBI Dashboard
-                    </p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      Interactive timeline chart showing performance trends
-                    </p>
-                  </div>
-                </div>
+            <CardContent className="h-80 bg-gradient-to-b from-amber-50 to-white py-3 px-1">
+              <div className="w-full h-full rounded-lg bg-white shadow-inner border border-amber-100 p-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsLineChart
+                    data={monthlyPerformanceData}
+                    margin={{ top: 20, right: 30, left: 0, bottom: 25 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
+                    <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                    <YAxis domain={[70, 90]} tick={{ fontSize: 12 }} />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                      formatter={(value) => [`${value}%`, '']} 
+                    />
+                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                    <Line
+                      type="monotone"
+                      dataKey="alcpt"
+                      name="ALCPT"
+                      stroke="#0A2463"
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 6, strokeWidth: 2 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="bookTest"
+                      name="Book Test"
+                      stroke="#4CB944"
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 6, strokeWidth: 2 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="ecl"
+                      name="ECL"
+                      stroke="#FF8811"
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 6, strokeWidth: 2 }}
+                    />
+                  </RechartsLineChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
@@ -406,19 +438,50 @@ const Reports = () => {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="h-80 flex items-center justify-center bg-gradient-to-b from-blue-50 to-white p-6">
-              <div className="text-center w-full">
-                <div className="rounded-lg bg-white shadow-inner p-10 border border-blue-100 h-64 flex items-center justify-center">
-                  <div>
-                    <BarChart2 className="h-16 w-16 text-blue-400 mx-auto mb-4 opacity-70" />
-                    <p className="text-base font-medium text-blue-900">
-                      PowerBI Dashboard
-                    </p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      Interactive chart showing student attendance metrics by course
-                    </p>
-                  </div>
-                </div>
+            <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
+              <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={attendanceData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                    <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                    <YAxis domain={[85, 100]} tick={{ fontSize: 12 }} />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                      formatter={(value) => [`${value}%`, '']}
+                    />
+                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                    <Area 
+                      type="monotone" 
+                      dataKey="knfa" 
+                      name="KNFA" 
+                      stroke="#0A2463" 
+                      fill="#0A2463" 
+                      fillOpacity={0.3} 
+                      activeDot={{ r: 6 }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="nfsEast" 
+                      name="NFS East" 
+                      stroke="#4CB944" 
+                      fill="#4CB944" 
+                      fillOpacity={0.3} 
+                      activeDot={{ r: 6 }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="nfsWest" 
+                      name="NFS West" 
+                      stroke="#FF8811" 
+                      fill="#FF8811" 
+                      fillOpacity={0.3} 
+                      activeDot={{ r: 6 }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
@@ -455,19 +518,38 @@ const Reports = () => {
                   </DropdownMenu>
                 </div>
               </CardHeader>
-              <CardContent className="h-80 flex items-center justify-center bg-gradient-to-b from-purple-50 to-white p-6">
-                <div className="text-center w-full">
-                  <div className="rounded-lg bg-white shadow-inner p-10 border border-purple-100 h-64 flex items-center justify-center">
-                    <div>
-                      <BarChart2 className="h-16 w-16 text-purple-400 mx-auto mb-4 opacity-70" />
-                      <p className="text-base font-medium text-purple-900">
-                        PowerBI Dashboard
-                      </p>
-                      <p className="text-sm text-gray-500 mt-2">
-                        Interactive chart showing quarterly staff evaluation metrics
-                      </p>
-                    </div>
-                  </div>
+              <CardContent className="h-80 bg-gradient-to-b from-purple-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-purple-100 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={instructorEvaluationData}
+                      layout="vertical"
+                      margin={{ top: 20, right: 50, left: 80, bottom: 25 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.2} />
+                      <XAxis type="number" domain={[0, 25]} />
+                      <YAxis 
+                        type="category" 
+                        dataKey="score" 
+                        tick={{ fontSize: 12 }}
+                        width={80}
+                      />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                        formatter={(value) => [`${value} instructors`, '']}
+                      />
+                      <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                      <Bar 
+                        dataKey="count" 
+                        name="Instructor Count" 
+                        radius={[0, 4, 4, 0]} 
+                      >
+                        {instructorEvaluationData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
@@ -496,19 +578,32 @@ const Reports = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="h-80 flex items-center justify-center bg-gradient-to-b from-rose-50 to-white p-6">
-                <div className="text-center w-full">
-                  <div className="rounded-lg bg-white shadow-inner p-10 border border-rose-100 h-64 flex items-center justify-center">
-                    <div>
-                      <PieChart className="h-16 w-16 text-rose-400 mx-auto mb-4 opacity-70" />
-                      <p className="text-base font-medium text-rose-900">
-                        PowerBI Dashboard
-                      </p>
-                      <p className="text-sm text-gray-500 mt-2">
-                        Interactive chart showing evaluation score distribution
-                      </p>
-                    </div>
-                  </div>
+              <CardContent className="h-80 bg-gradient-to-b from-rose-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-rose-100 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart margin={{ top: 20, right: 30, left: 20, bottom: 25 }}>
+                      <Pie
+                        data={instructorEvaluationData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={true}
+                        label={({ score, count }) => `${score}: ${count}`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="count"
+                        nameKey="score"
+                      >
+                        {instructorEvaluationData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        formatter={(value, name) => [`${value} instructors`, name]}
+                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                      />
+                      <Legend />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
@@ -535,19 +630,47 @@ const Reports = () => {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="h-80 flex items-center justify-center bg-gradient-to-b from-indigo-50 to-white p-6">
-              <div className="text-center w-full">
-                <div className="rounded-lg bg-white shadow-inner p-10 border border-indigo-100 h-64 flex items-center justify-center">
-                  <div>
-                    <LineChart className="h-16 w-16 text-indigo-400 mx-auto mb-4 opacity-70" />
-                    <p className="text-base font-medium text-indigo-900">
-                      PowerBI Dashboard
-                    </p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      Interactive timeline showing long-term performance and enrollment trends
-                    </p>
-                  </div>
-                </div>
+            <CardContent className="h-80 bg-gradient-to-b from-indigo-50 to-white py-3 px-1">
+              <div className="w-full h-full rounded-lg bg-white shadow-inner border border-indigo-100 p-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart
+                    data={monthlyPerformanceData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                    <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                    <YAxis domain={[70, 90]} tick={{ fontSize: 12 }} />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                      formatter={(value) => [`${value}%`, '']}
+                    />
+                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                    <Area 
+                      type="monotone" 
+                      dataKey="alcpt" 
+                      name="ALCPT" 
+                      stroke="#0A2463" 
+                      fill="#0A2463" 
+                      fillOpacity={0.1}
+                    />
+                    <Bar 
+                      dataKey="bookTest" 
+                      name="Book Test" 
+                      barSize={20} 
+                      fill="#4CB944"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="ecl"
+                      name="ECL"
+                      stroke="#FF8811"
+                      strokeWidth={3}
+                      dot={{ r: 5 }}
+                      activeDot={{ r: 8 }}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
