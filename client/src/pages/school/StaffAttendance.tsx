@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Instructor } from "@shared/schema";
 import { useSchool } from "@/hooks/useSchool";
@@ -7,17 +7,20 @@ import { Progress } from "@/components/ui/progress";
 import { 
   Calendar as CalendarIcon, 
   Search, 
-  Download, 
   Filter, 
-  Share2, 
-  FileText, 
-  Edit, 
-  ExternalLink,
+  Edit,
   Plus,
   Check,
   X,
   Clock,
-  AlertTriangle
+  AlertTriangle,
+  CheckCircle2,
+  Save,
+  ChevronDown,
+  RefreshCw,
+  FileText,
+  User,
+  UserCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +51,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -425,6 +430,137 @@ const StaffAttendance = () => {
     );
   }
   
+  // State for bulk attendance tracking
+  const [bulkMode, setBulkMode] = useState(false);
+  const [selectedInstructors, setSelectedInstructors] = useState<{ [key: number]: { 
+    selected: boolean; 
+    status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement";
+    timeIn: string;
+  } }>({});
+  const [bulkDate, setBulkDate] = useState<Date>(new Date());
+  const { toast } = useToast();
+  const { user } = useAuth();
+  
+  // Setup selected instructors state when instructors change
+  useEffect(() => {
+    const newSelectedInstructors: { [key: number]: any } = {};
+    schoolInstructors.forEach(instructor => {
+      newSelectedInstructors[instructor.id] = {
+        selected: false,
+        status: "present",
+        timeIn: "08:30"
+      };
+    });
+    setSelectedInstructors(newSelectedInstructors);
+  }, [schoolInstructors]);
+  
+  // Handle bulk selection change
+  const handleSelectInstructor = (instructorId: number, checked: boolean) => {
+    setSelectedInstructors(prev => ({
+      ...prev,
+      [instructorId]: {
+        ...prev[instructorId],
+        selected: checked
+      }
+    }));
+  };
+  
+  // Handle status change for an instructor
+  const handleStatusChange = (instructorId: number, status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement") => {
+    setSelectedInstructors(prev => ({
+      ...prev,
+      [instructorId]: {
+        ...prev[instructorId],
+        status
+      }
+    }));
+  };
+  
+  // Handle time change for an instructor
+  const handleTimeChange = (instructorId: number, timeIn: string) => {
+    setSelectedInstructors(prev => ({
+      ...prev,
+      [instructorId]: {
+        ...prev[instructorId],
+        timeIn
+      }
+    }));
+  };
+  
+  // Submit bulk attendance records
+  const handleBulkSubmit = async () => {
+    const selectedIds = Object.entries(selectedInstructors)
+      .filter(([_, data]) => data.selected)
+      .map(([id]) => parseInt(id));
+    
+    if (selectedIds.length === 0) {
+      toast({
+        title: "No instructors selected",
+        description: "Please select at least one instructor to record attendance.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      const promises = selectedIds.map(instructorId => {
+        const instructorData = selectedInstructors[instructorId];
+        return fetch('/api/staff-attendance', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            instructorId,
+            date: format(bulkDate, 'yyyy-MM-dd'),
+            status: instructorData.status,
+            timeIn: instructorData.timeIn,
+            timeOut: null,
+            comments: "",
+            recordedBy: user?.id || 1
+          }),
+        });
+      });
+      
+      await Promise.all(promises);
+      
+      // Reset selections
+      const resetSelections = { ...selectedInstructors };
+      Object.keys(resetSelections).forEach(key => {
+        resetSelections[parseInt(key)].selected = false;
+      });
+      setSelectedInstructors(resetSelections);
+      
+      // Show success message
+      toast({
+        title: "Success!",
+        description: `Recorded attendance for ${selectedIds.length} instructors.`,
+        variant: "default"
+      });
+      
+      // Refresh data
+      queryClient.invalidateQueries({ queryKey: ['/api/staff-attendance'] });
+      
+      // Exit bulk mode
+      setBulkMode(false);
+    } catch (error) {
+      toast({
+        title: "Error!",
+        description: "Failed to save attendance records. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+  
+  // Toggle select all instructors
+  const toggleSelectAll = (checked: boolean) => {
+    const updatedSelections = { ...selectedInstructors };
+    Object.keys(updatedSelections).forEach(key => {
+      updatedSelections[parseInt(key)].selected = checked;
+    });
+    setSelectedInstructors(updatedSelections);
+  };
+
   return (
     <div className="flex-1 p-8 bg-gray-50 overflow-y-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -433,30 +569,23 @@ const StaffAttendance = () => {
             {selectedSchool ? `${selectedSchool.name} Staff Attendance` : 'Staff Attendance'}
           </h1>
           <p className="text-gray-500">Track and monitor instructor attendance records</p>
-          <div className="mt-2 text-sm">
-            <span className="flex items-center gap-1 text-emerald-600">
-              <FileText size={14} /> Live Excel attendance data is accessible below
-            </span>
-            <a 
-              href={excelFileUrl}
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1 mt-1"
-            >
-              <Download size={14} /> Download or edit in Excel Online
-            </a>
-          </div>
         </div>
         
         <div className="flex gap-2">
-          <Button variant="outline" className="gap-2">
-            <Download size={16} /> Export
+          <Button 
+            variant="outline" 
+            className="gap-2"
+            onClick={() => setBulkMode(!bulkMode)}
+          >
+            {bulkMode ? <X size={16} /> : <Check size={16} />}
+            {bulkMode ? "Cancel" : "Record Attendance"}
           </Button>
-          <Button variant="outline" className="gap-2">
-            <Share2 size={16} /> Share
-          </Button>
-          <Button className="bg-[#0A2463] hover:bg-[#071A4A] gap-2">
-            <FileText size={16} /> PowerBI Dashboard
+          
+          <Button 
+            className="bg-[#0A2463] hover:bg-[#071A4A] gap-2"
+            onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/staff-attendance'] })}
+          >
+            <RefreshCw size={16} /> Refresh Data
           </Button>
         </div>
       </div>
@@ -635,94 +764,244 @@ const StaffAttendance = () => {
         </div>
         
         <TabsContent value="overview" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Live Attendance Data (Excel)</CardTitle>
-              <p className="text-sm text-gray-500">
-                View and access the latest staff attendance data. The Excel file opens in a new tab for full access.
-              </p>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="flex flex-col items-center justify-center">
-                <div className="mb-4 w-full">
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-lg font-semibold text-blue-800">Staff Attendance Spreadsheet</h3>
-                    <div className="flex gap-2">
-                      <a 
-                        href={excelFileUrl}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
-                      >
-                        <ExternalLink size={16} /> Open in new tab
-                      </a>
-                      <a 
-                        href={`${excelFileUrl}&action=edit`}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
-                      >
-                        <Edit size={16} /> Edit
-                      </a>
-                      <a 
-                        href={`${excelFileUrl}&download=1`}
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
-                      >
-                        <Download size={16} /> Download
-                      </a>
-                    </div>
-                  </div>
-
-                  {/* Primary Excel Embed - Using Microsoft's Office Online Viewer */}
-                  <div className="w-full rounded-md overflow-hidden border border-gray-200 bg-white mb-4">
-                    <iframe 
-                      src="https://view.officeapps.live.com/op/embed.aspx?src=https%3A%2F%2Frsnfess-my.sharepoint.com%2F%3Ax%3A%2Fp%2Fsufimuny1294%2FEa1KOnzSOkpJmkqPxldi9ugBTekFDEDl9SocGCMl0Ajmkg%3Fe%3DteYFz0"
-                      width="100%" 
-                      height="700px" 
-                      frameBorder="0" 
-                      scrolling="yes"
-                      title="Staff Attendance Excel"
-                      className="bg-white"
-                      allowFullScreen={true}
-                      loading="lazy"
+          {bulkMode ? (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Record Daily Attendance</CardTitle>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Select instructors and mark their attendance for {format(bulkDate, 'MMMM dd, yyyy')}
+                  </p>
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "justify-start text-left font-normal",
+                        !bulkDate && "text-muted-foreground"
+                      )}
                     >
-                      This browser does not support embedding Office documents.
-                    </iframe>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {bulkDate ? format(bulkDate, "MMMM dd, yyyy") : <span>Select date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={bulkDate}
+                      onSelect={(date) => date && setBulkDate(date)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="select-all" 
+                      onCheckedChange={(checked) => toggleSelectAll(!!checked)}
+                    />
+                    <label
+                      htmlFor="select-all"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Select All Instructors
+                    </label>
                   </div>
                   
-                  {/* Backup Embed Options */}
-                  <div className="text-sm text-gray-500 mt-4">
-                    <p>If the Excel spreadsheet isn't displaying properly above, try these alternative viewing options:</p>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-2">
-                      <Button 
-                        variant="outline" 
-                        className="text-sm"
-                        onClick={() => window.open("https://view.officeapps.live.com/op/embed.aspx?src=" + encodeURIComponent(excelFileUrl), "_blank")}
-                      >
-                        <FileText className="mr-2 h-4 w-4" /> View in Office Online
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="text-sm"
-                        onClick={() => window.open(excelFileUrl, "_blank")}
-                      >
-                        <ExternalLink className="mr-2 h-4 w-4" /> Open in SharePoint
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="text-sm"
-                        onClick={() => window.open("https://rsnfess-my.sharepoint.com/personal/sufimuny1294_rsnf_edu_sa/_layouts/15/Doc.aspx?sourcedoc={f59b14a2-4cb9-4fc4-bfae-56a2e9a3ed44}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True", "_blank")}
-                      >
-                        <FileText className="mr-2 h-4 w-4" /> Web Embedded View
-                      </Button>
-                    </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setBulkMode(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      className="bg-green-600 hover:bg-green-700"
+                      onClick={handleBulkSubmit}
+                    >
+                      <Save className="mr-2 h-4 w-4" /> Save Attendance
+                    </Button>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+                
+                <div className="space-y-4">
+                  {schoolInstructors.length === 0 ? (
+                    <div className="text-center py-6 text-gray-500">
+                      No instructors found. Please select a school.
+                    </div>
+                  ) : (
+                    <div className="border rounded-md overflow-hidden">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[50px]">Select</TableHead>
+                            <TableHead>Instructor</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Time In</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {schoolInstructors.map((instructor) => (
+                            <TableRow key={instructor.id}>
+                              <TableCell>
+                                <Checkbox 
+                                  checked={selectedInstructors[instructor.id]?.selected}
+                                  onCheckedChange={(checked) => handleSelectInstructor(instructor.id, !!checked)}
+                                />
+                              </TableCell>
+                              <TableCell className="font-medium">
+                                <div className="flex items-center gap-2">
+                                  <User className="h-4 w-4 text-gray-400" />
+                                  {instructor.name}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Select 
+                                  value={selectedInstructors[instructor.id]?.status || "present"}
+                                  onValueChange={(value: any) => handleStatusChange(instructor.id, value)}
+                                  disabled={!selectedInstructors[instructor.id]?.selected}
+                                >
+                                  <SelectTrigger className="w-[130px]">
+                                    <SelectValue placeholder="Status" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="present">Present</SelectItem>
+                                    <SelectItem value="late">Late</SelectItem>
+                                    <SelectItem value="absent">Absent</SelectItem>
+                                    <SelectItem value="sick">Sick</SelectItem>
+                                    <SelectItem value="paternity">Paternity</SelectItem>
+                                    <SelectItem value="pto">PTO</SelectItem>
+                                    <SelectItem value="bereavement">Bereavement</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
+                              <TableCell>
+                                <Input
+                                  type="time"
+                                  value={selectedInstructors[instructor.id]?.timeIn || "08:30"}
+                                  onChange={(e) => handleTimeChange(instructor.id, e.target.value)}
+                                  disabled={!selectedInstructors[instructor.id]?.selected || selectedInstructors[instructor.id]?.status === 'absent'}
+                                  className="w-[130px]"
+                                />
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Instructor Attendance Overview</CardTitle>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Daily attendance tracking for {selectedSchool?.name || 'all schools'}
+                  </p>
+                </div>
+                <Button 
+                  className="bg-green-600 hover:bg-green-700 gap-2"
+                  onClick={() => setBulkMode(true)}
+                >
+                  <UserCheck size={16} /> Take Attendance
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-hidden border rounded-md">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[250px]">Instructor</TableHead>
+                        <TableHead>Status Today</TableHead>
+                        <TableHead>Time In</TableHead>
+                        <TableHead className="hidden md:table-cell">Monthly Rate</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredData.map((instructor: any) => {
+                        // Get today's record if any
+                        const today = format(new Date(), 'yyyy-MM-dd');
+                        const todayRecord = instructor.records.find((r: any) => r.date === today);
+                        
+                        return (
+                          <TableRow key={instructor.id}>
+                            <TableCell className="font-medium">
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2 h-2 rounded-full ${
+                                  instructor.attendanceRate >= 90 ? 'bg-green-500' : 
+                                  instructor.attendanceRate >= 75 ? 'bg-amber-500' : 
+                                  'bg-red-500'
+                                }`} />
+                                {instructor.name}
+                              </div>
+                              <div className="text-xs text-gray-500">{instructor.position}</div>
+                            </TableCell>
+                            <TableCell>
+                              {todayRecord ? (
+                                <Badge className={`
+                                  ${todayRecord.status === 'present' ? 'bg-green-100 text-green-800 hover:bg-green-100' : 
+                                    todayRecord.status === 'late' ? 'bg-amber-100 text-amber-800 hover:bg-amber-100' : 
+                                    todayRecord.status === 'absent' ? 'bg-red-100 text-red-800 hover:bg-red-100' : 
+                                    'bg-blue-100 text-blue-800 hover:bg-blue-100'}
+                                `}>
+                                  {todayRecord.status.charAt(0).toUpperCase() + todayRecord.status.slice(1)}
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline">Not recorded</Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {todayRecord && todayRecord.timeIn ? todayRecord.timeIn : '—'}
+                            </TableCell>
+                            <TableCell className="hidden md:table-cell">
+                              <div className="flex items-center gap-2">
+                                <Progress 
+                                  value={instructor.attendanceRate} 
+                                  className={`h-2 w-24 ${
+                                    instructor.attendanceRate >= 90 ? "bg-green-500" : 
+                                    instructor.attendanceRate >= 75 ? "bg-amber-500" : 
+                                    "bg-red-500"
+                                  }`}
+                                />
+                                <span className="text-sm">{instructor.attendanceRate}%</span>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="h-8"
+                                onClick={() => {
+                                  // Pre-select this instructor for attendance recording
+                                  setSelectedInstructors(prev => ({
+                                    ...prev,
+                                    [instructor.id]: {
+                                      ...prev[instructor.id],
+                                      selected: true
+                                    }
+                                  }));
+                                  setBulkMode(true);
+                                }}
+                              >
+                                <Check className="h-3.5 w-3.5 mr-1" /> Record
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
         
         <TabsContent value="detailed" className="space-y-6">
