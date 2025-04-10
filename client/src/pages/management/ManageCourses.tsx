@@ -35,12 +35,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+// Removing unused tab components
 import {
   Select,
   SelectContent,
