@@ -263,20 +263,47 @@ const Dashboard = () => {
               <CardTitle className="text-lg text-[#0A2463]">Student Distribution by School</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
-              <div className="space-y-4">
-                {schools.map(school => {
-                  const schoolStudents = students.filter(s => s.schoolId === school.id).length;
-                  const percentage = totalStudents > 0 ? (schoolStudents / totalStudents) * 100 : 0;
-                  return (
-                    <div key={school.id} className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span>{school.name}</span>
-                        <span>{schoolStudents} students ({percentage.toFixed(1)}%)</span>
-                      </div>
-                      <Progress value={percentage} className="h-2" />
-                    </div>
-                  )
-                })}
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    layout="vertical"
+                    data={schools.map(school => {
+                      const schoolStudents = students.filter(s => s.schoolId === school.id).length;
+                      const percentage = totalStudents > 0 ? (schoolStudents / totalStudents) * 100 : 0;
+                      return {
+                        name: school.name,
+                        students: schoolStudents,
+                        percentage: parseFloat(percentage.toFixed(1)),
+                        color: school.name === 'KNFA' ? '#4299E1' : school.name === 'NFS East' ? '#48BB78' : '#F6AD55'
+                      };
+                    })}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                    <XAxis type="number" tickFormatter={(value) => `${value} students`} />
+                    <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 12 }} />
+                    <Tooltip 
+                      formatter={(value, name, props) => {
+                        return name === 'students' 
+                          ? [`${value} students (${props.payload.percentage}%)`, 'Students'] 
+                          : [value, name];
+                      }}
+                    />
+                    <Legend />
+                    <Bar 
+                      dataKey="students" 
+                      name="Students" 
+                      radius={[0, 4, 4, 0]}
+                    >
+                      {schools.map((school, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={school.name === 'KNFA' ? '#4299E1' : school.name === 'NFS East' ? '#48BB78' : '#F6AD55'} 
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
