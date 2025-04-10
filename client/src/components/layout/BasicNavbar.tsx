@@ -14,6 +14,7 @@ const BasicNavbar = () => {
   const { schools, selectedSchool, setSelectedSchool, currentSchool } = useSchool();
   const { user, logoutMutation } = useAuth();
   const [showSchoolLinks, setShowSchoolLinks] = useState<string | null>(null);
+  const [showAdminLinks, setShowAdminLinks] = useState<boolean>(false);
   const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
   
   const isActive = (path: string) => {
@@ -269,52 +270,56 @@ const BasicNavbar = () => {
               
               <div className="relative">
                 <button
-                  onClick={() => setShowSchoolLinks(showSchoolLinks === 'admin' ? null : 'admin')}
+                  onClick={() => {
+                    setShowAdminLinks(!showAdminLinks); 
+                    // Close school links if open, to avoid having multiple dropdowns open
+                    if (showSchoolLinks) setShowSchoolLinks(null);
+                  }}
                   className={cn(
                     "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
-                    (isActive("/administration") || showSchoolLinks === 'admin') && "text-[#0A2463] bg-gray-100 font-medium"
+                    (isActive("/administration") || showAdminLinks) && "text-[#0A2463] bg-gray-100 font-medium"
                   )}
                 >
                   <Settings className="h-4 w-4 mr-2" />
                   <span>Administration</span>
                 </button>
                 
-                {showSchoolLinks === 'admin' && (
+                {showAdminLinks && (
                   <div className="absolute right-0 top-full mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                     <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 text-xs font-medium uppercase text-gray-500">
                       Documents
                     </div>
                     <Link 
                       href="/administration/company-policy"
-                      onClick={() => setShowSchoolLinks(null)}
+                      onClick={() => setShowAdminLinks(false)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Company Policy
                     </Link>
                     <Link 
                       href="/administration/evaluation-guideline"
-                      onClick={() => setShowSchoolLinks(null)}
+                      onClick={() => setShowAdminLinks(false)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Instructor Evaluation Guideline
                     </Link>
                     <Link 
                       href="/administration/employee-handbook"
-                      onClick={() => setShowSchoolLinks(null)}
+                      onClick={() => setShowAdminLinks(false)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Employee Handbook
                     </Link>
                     <Link 
                       href="/administration/performance-policy"
-                      onClick={() => setShowSchoolLinks(null)}
+                      onClick={() => setShowAdminLinks(false)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Performance Evaluation Policy
                     </Link>
                     <Link 
                       href="/administration/classroom-evaluation"
-                      onClick={() => setShowSchoolLinks(null)}
+                      onClick={() => setShowAdminLinks(false)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Training Guide Classroom Evaluation
@@ -325,28 +330,28 @@ const BasicNavbar = () => {
                     </div>
                     <Link 
                       href="/management/schools"
-                      onClick={() => setShowSchoolLinks(null)}
+                      onClick={() => setShowAdminLinks(false)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Manage Schools
                     </Link>
                     <Link 
                       href="/management/instructors"
-                      onClick={() => setShowSchoolLinks(null)}
+                      onClick={() => setShowAdminLinks(false)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Manage Instructors
                     </Link>
                     <Link 
                       href="/management/courses"
-                      onClick={() => setShowSchoolLinks(null)}
+                      onClick={() => setShowAdminLinks(false)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Manage Courses
                     </Link>
                     <Link 
                       href="/management/students"
-                      onClick={() => setShowSchoolLinks(null)}
+                      onClick={() => setShowAdminLinks(false)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Manage Students
@@ -360,12 +365,13 @@ const BasicNavbar = () => {
       </div>
       
       {/* Click outside handler to close dropdowns */}
-      {(showSchoolLinks || showUserMenu) && (
+      {(showSchoolLinks || showUserMenu || showAdminLinks) && (
         <div 
           className="fixed inset-0 bg-transparent z-40"
           onClick={() => {
             setShowSchoolLinks(null);
             setShowUserMenu(false);
+            setShowAdminLinks(false);
           }}
         />
       )}
