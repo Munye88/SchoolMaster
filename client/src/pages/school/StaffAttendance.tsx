@@ -345,17 +345,18 @@ const StaffAttendance = () => {
                     </div>
                   </div>
 
-                  {/* Primary Excel Embed - Using different iframe approaches for maximum compatibility */}
+                  {/* Primary Excel Embed - Using Microsoft's Office Online Viewer */}
                   <div className="w-full rounded-md overflow-hidden border border-gray-200 bg-white mb-4">
                     <iframe 
-                      src={`${excelFileUrl}&embed=true`}
+                      src="https://view.officeapps.live.com/op/embed.aspx?src=https%3A%2F%2Frsnfess-my.sharepoint.com%2F%3Ax%3A%2Fp%2Fsufimuny1294%2FEa1KOnzSOkpJmkqPxldi9ugBTekFDEDl9SocGCMl0Ajmkg%3Fe%3DteYFz0"
                       width="100%" 
-                      height="600px" 
+                      height="700px" 
                       frameBorder="0" 
                       scrolling="yes"
                       title="Staff Attendance Excel"
                       className="bg-white"
                       allowFullScreen={true}
+                      loading="lazy"
                     >
                       This browser does not support embedding Office documents.
                     </iframe>
@@ -364,7 +365,7 @@ const StaffAttendance = () => {
                   {/* Backup Embed Options */}
                   <div className="text-sm text-gray-500 mt-4">
                     <p>If the Excel spreadsheet isn't displaying properly above, try these alternative viewing options:</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-2">
                       <Button 
                         variant="outline" 
                         className="text-sm"
@@ -378,6 +379,13 @@ const StaffAttendance = () => {
                         onClick={() => window.open(excelFileUrl, "_blank")}
                       >
                         <ExternalLink className="mr-2 h-4 w-4" /> Open in SharePoint
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="text-sm"
+                        onClick={() => window.open("https://rsnfess-my.sharepoint.com/personal/sufimuny1294_rsnf_edu_sa/_layouts/15/Doc.aspx?sourcedoc={f59b14a2-4cb9-4fc4-bfae-56a2e9a3ed44}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True", "_blank")}
+                      >
+                        <FileText className="mr-2 h-4 w-4" /> Web Embedded View
                       </Button>
                     </div>
                   </div>
