@@ -88,11 +88,23 @@ function processAttendanceData(
     });
     
     // Calculate attendance metrics
-    const totalDays = daysInMonth; // Working days in month
+    // Only count days that have attendance records for any instructor
+    const recordedDays = new Set(
+      attendanceRecords.map(record => record.date.split('T')[0])
+    ).size;
+    
+    // Use recorded days instead of total days in month (for more realistic percentages)
+    const totalDays = recordedDays > 0 ? recordedDays : 1; // Avoid division by zero
+    
     const presentDays = instructorRecords.filter(r => r.status === "present").length;
     const lateDays = instructorRecords.filter(r => r.status === "late").length;
     const absentDays = instructorRecords.filter(r => ["absent", "sick", "paternity", "pto", "bereavement"].includes(r.status)).length;
-    const attendanceRate = Math.round((presentDays + (lateDays * 0.5)) / totalDays * 100);
+    
+    // Calculate rate based on days with records
+    const recordedDaysForInstructor = presentDays + lateDays + absentDays;
+    const attendanceRate = recordedDaysForInstructor > 0 
+      ? Math.round((presentDays + (lateDays * 0.5)) / recordedDaysForInstructor * 100)
+      : 0;
 
     return {
       name: instructor.name,
@@ -383,13 +395,19 @@ const StaffAttendance = () => {
   
   // Calculate statistics
   const totalInstructors = filteredData.length;
-  const averageAttendance = totalInstructors > 0
-    ? Math.round(filteredData.reduce((sum: number, item: any) => sum + item.attendanceRate, 0) / totalInstructors)
+  
+  // Count instructors with actual attendance records
+  const instructorsWithRecords = filteredData.filter(item => item.records.length > 0);
+  
+  // Calculate the average attendance rate only for instructors with records
+  const averageAttendance = instructorsWithRecords.length > 0
+    ? Math.round(instructorsWithRecords.reduce((sum: number, item: any) => sum + item.attendanceRate, 0) / instructorsWithRecords.length)
     : 0;
   
-  const presentCount = filteredData.filter((item: any) => item.attendanceRate >= 90).length;
-  const lateCount = filteredData.filter((item: any) => item.attendanceRate >= 75 && item.attendanceRate < 90).length;
-  const absentCount = filteredData.filter((item: any) => item.attendanceRate < 75).length;
+  // Count instructors by attendance category
+  const presentCount = instructorsWithRecords.filter((item: any) => item.attendanceRate >= 90).length;
+  const lateCount = instructorsWithRecords.filter((item: any) => item.attendanceRate >= 75 && item.attendanceRate < 90).length;
+  const absentCount = instructorsWithRecords.filter((item: any) => item.attendanceRate < 75).length;
   
   const statusData = [
     { name: "Present", value: presentCount, color: "#10B981" },
@@ -833,7 +851,7 @@ const StaffAttendance = () => {
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-4 text-center">
-              Based on {filteredData.reduce((sum, item) => sum + item.totalDays, 0)} total attendance days in {format(date || new Date(), "MMMM yyyy")}
+              Based on {instructorsWithRecords.length} instructors with {instructorsWithRecords.reduce((sum, item) => sum + item.records.length, 0)} recorded days in {format(date || new Date(), "MMMM yyyy")}
             </p>
           </CardContent>
         </Card>
