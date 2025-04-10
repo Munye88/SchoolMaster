@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { 
   Home, School, BookOpen, GraduationCap, ListChecks, BarChart2, Settings, Search, Bell
 } from "lucide-react";
+import govcioLogo from "../../assets/govcio-logo.png";
 
 const BasicNavbar = () => {
   const [location] = useLocation();
@@ -20,9 +21,7 @@ const BasicNavbar = () => {
       {/* Top bar with logo and brand */}
       <div className="bg-[#0A2463] text-white h-16 flex items-center justify-between px-6">
         <div className="flex items-center">
-          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#0A2463] font-bold mr-3">
-            ELT
-          </div>
+          <img src={govcioLogo} alt="GovCIO Logo" className="h-10 mr-3" />
           <span className="font-bold text-xl">Naval Forces Schools</span>
         </div>
         
