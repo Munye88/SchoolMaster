@@ -19,19 +19,19 @@ const BasicNavbar = () => {
   return (
     <div className="flex flex-col">
       {/* Top bar with logo and brand */}
-      <div className="bg-[#0A2463] text-white h-16 flex items-center px-6">
+      <div className="bg-white border-b border-gray-200 h-16 flex items-center px-6">
         {/* Left - Logo */}
         <div className="flex-shrink-0">
           <img 
             src="/images/govcio-logo-original.png" 
             alt="GovCIO Logo" 
-            className="h-10 brightness-0 invert"  /* This makes the logo white */
+            className="h-10"
           />
         </div>
         
         {/* Center - Title */}
         <div className="flex-grow flex justify-center">
-          <span className="font-bold text-xl tracking-wide">GOVCIO/SAMS ELT PROGRAM</span>
+          <span className="font-bold text-xl tracking-wide text-[#0A2463]">GOVCIO/SAMS ELT PROGRAM</span>
         </div>
         
         {/* Right - Controls */}
@@ -40,12 +40,12 @@ const BasicNavbar = () => {
             <input 
               type="text"
               placeholder="Search..." 
-              className="bg-[#1A3473] text-white border-none h-9 w-48 py-2 px-4 pr-10 rounded-lg text-sm"
+              className="bg-gray-100 text-gray-800 border border-gray-300 h-9 w-48 py-2 px-4 pr-10 rounded-lg text-sm"
             />
-            <Search className="h-5 w-5 absolute right-3 top-2 text-gray-300" />
+            <Search className="h-5 w-5 absolute right-3 top-2 text-gray-500" />
           </div>
           
-          <button className="relative p-1 text-white">
+          <button className="relative p-1 text-gray-700">
             <Bell className="h-6 w-6" />
             <span className="absolute top-1 right-1 flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -53,7 +53,7 @@ const BasicNavbar = () => {
             </span>
           </button>
           
-          <div className="w-8 h-8 rounded-full bg-[#3E92CC] text-white flex items-center justify-center font-bold">
+          <div className="w-8 h-8 rounded-full bg-[#0A2463] text-white flex items-center justify-center font-bold">
             AD
           </div>
         </div>
