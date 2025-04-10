@@ -375,86 +375,173 @@ const TestTracker = () => {
   };
 
   return (
-    <main className="flex-1 overflow-y-auto py-6 px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <main className="flex-1 overflow-y-auto py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+      {/* Header Section with Improved Styling */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#0A2463]">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#0A2463] to-[#3E92CC]">
             {selectedSchool && currentSchool 
               ? `${currentSchool.name} Test Tracker` 
               : 'Test Tracker'}
           </h1>
-          <p className="text-gray-500 mt-1">Monitor student performance and test results</p>
+          <p className="text-gray-600 mt-1 font-medium">Track and analyze student performance across all courses</p>
         </div>
         
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <Button 
             variant="outline" 
             onClick={handleImportExcel}
-            className="flex-1 sm:flex-none"
+            className="flex-1 sm:flex-none border-[#0A2463] text-[#0A2463] hover:bg-[#0A2463]/10 transition-all duration-200"
           >
             <Upload className="mr-2 h-4 w-4" /> Import Excel
           </Button>
           
-          <Button className="bg-[#0A2463] hover:bg-[#071A4A] flex-1 sm:flex-none">
+          <Button className="bg-[#0A2463] hover:bg-[#071A4A] flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all duration-200">
             <BarChart2 className="mr-2 h-4 w-4" /> View Analysis
           </Button>
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Total Tests</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{filteredTestResults.length}</div>
-            <p className="text-xs text-gray-500 mt-1">Last 30 days</p>
+      {/* Search and Filter Controls - Redesigned */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8 rounded-lg p-1">
+        <Card className="shadow-sm bg-gradient-to-r from-blue-50 to-indigo-50 border border-indigo-100 hover:shadow-md transition-all duration-200">
+          <CardContent className="p-4">
+            <div className="relative flex-grow">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-400" size={18} />
+              <Input 
+                className="pl-10 bg-white border-indigo-100" 
+                placeholder="Search by student or course name"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="shadow-sm bg-gradient-to-r from-purple-50 to-blue-50 border border-blue-100 hover:shadow-md transition-all duration-200">
+          <CardContent className="p-4">
+            <Select value={courseFilter} onValueChange={setCourseFilter}>
+              <SelectTrigger className="bg-white border-blue-100">
+                <BookOpen className="h-4 w-4 mr-2 text-blue-500" />
+                <SelectValue placeholder="Course Filter" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Courses</SelectItem>
+                {uniqueCourses.map(course => (
+                  <SelectItem key={course} value={course}>{course}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+        
+        <Card className="shadow-sm bg-gradient-to-r from-indigo-50 to-purple-50 border border-purple-100 hover:shadow-md transition-all duration-200">
+          <CardContent className="p-4">
+            <Select value={testTypeFilter} onValueChange={setTestTypeFilter}>
+              <SelectTrigger className="bg-white border-purple-100">
+                <FileText className="h-4 w-4 mr-2 text-purple-500" />
+                <SelectValue placeholder="Test Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Test Types</SelectItem>
+                {uniqueTestTypes.map(type => (
+                  <SelectItem key={type} value={type}>{type}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+      </div>
+      
+      {/* Summary Statistics - Redesigned with Icons and Better Styling */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <Card className="shadow-md border-t-4 border-t-blue-500 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Pass Rate</CardTitle>
+            <CardTitle className="flex items-center text-sm font-medium text-gray-700">
+              <FileText className="h-5 w-5 mr-2 text-blue-500" />
+              <span>Total Tests</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{passingRate}%</div>
+            <div className="text-3xl font-bold text-blue-600">{filteredTestResults.length}</div>
+            <p className="text-xs text-gray-500 mt-1">Across all courses</p>
+          </CardContent>
+          <CardFooter className="pt-0 text-xs text-gray-500 border-t">
+            <span>Last 30 days</span>
+          </CardFooter>
+        </Card>
+        
+        <Card className="shadow-md border-t-4 border-t-green-500 hover:shadow-lg transition-shadow">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center text-sm font-medium text-gray-700">
+              <CheckCircle2 className="h-5 w-5 mr-2 text-green-500" />
+              <span>Pass Rate</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-green-600">{passingRate}%</div>
             <Progress 
               value={passingRate} 
               className={`h-2 mt-2 ${passingRate >= 75 ? "bg-green-500" : passingRate >= 60 ? "bg-yellow-500" : "bg-red-500"}`}
             />
           </CardContent>
+          <CardFooter className="pt-0 text-xs text-gray-500 border-t">
+            <span className="flex items-center">
+              <ArrowUpRight className="h-3 w-3 mr-1 text-green-500" />
+              {Math.round((filteredTestResults.filter(r => r.status === "Pass").length / (filteredTestResults.length || 1)) * 100)}% success rate
+            </span>
+          </CardFooter>
         </Card>
         
-        <Card>
+        <Card className="shadow-md border-t-4 border-t-purple-500 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Average Score</CardTitle>
+            <CardTitle className="flex items-center text-sm font-medium text-gray-700">
+              <Award className="h-5 w-5 mr-2 text-purple-500" />
+              <span>Average Score</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-3xl font-bold text-purple-600">
               {filteredTestResults.length > 0
                 ? Math.round(filteredTestResults.reduce((sum, result) => sum + result.score, 0) / filteredTestResults.length)
                 : 0}
             </div>
-            <p className="text-xs text-gray-500 mt-1">Out of 100</p>
+            <p className="text-xs text-gray-500 mt-1">Out of 100 possible points</p>
           </CardContent>
+          <CardFooter className="pt-0 text-xs text-gray-500 border-t">
+            <span>Performance indicator</span>
+          </CardFooter>
         </Card>
         
-        <Card>
+        <Card className="shadow-md border-t-4 border-t-indigo-500 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Tests by Type</CardTitle>
+            <CardTitle className="flex items-center text-sm font-medium text-gray-700">
+              <PieChart className="h-5 w-5 mr-2 text-indigo-500" />
+              <span>Tests by Type</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex gap-2 flex-wrap">
               {uniqueTestTypes.map(type => {
                 const count = filteredTestResults.filter(r => r.type === type).length;
+                const colors = {
+                  "ALCPT": "bg-blue-100 text-blue-800",
+                  "ECL": "bg-green-100 text-green-800",
+                  "Book Test": "bg-purple-100 text-purple-800"
+                };
+                const colorClass = colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800";
+                
                 return (
-                  <Badge key={type} variant="outline" className="bg-gray-100">
+                  <Badge key={type} variant="outline" className={colorClass}>
                     {type}: {count}
                   </Badge>
                 );
               })}
             </div>
           </CardContent>
+          <CardFooter className="pt-0 text-xs text-gray-500 border-t">
+            <span>Distribution by test category</span>
+          </CardFooter>
         </Card>
       </div>
       
