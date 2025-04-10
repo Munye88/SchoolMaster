@@ -2,7 +2,14 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
-import { insertInstructorSchema, insertCourseSchema, insertActivitySchema, insertEventSchema } from "@shared/schema";
+import { 
+  insertInstructorSchema, 
+  insertCourseSchema, 
+  insertActivitySchema, 
+  insertEventSchema,
+  insertSchoolSchema,
+  insertStudentSchema
+} from "@shared/schema";
 import { setupAuth } from "./auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -354,6 +361,184 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ message: "Failed to delete course" });
+    }
+  });
+  
+  // Students
+  app.get("/api/students", async (req, res) => {
+    const students = await storage.getStudents();
+    res.json(students);
+  });
+  
+  app.get("/api/students/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid student ID" });
+    }
+    
+    const student = await storage.getStudent(id);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    
+    res.json(student);
+  });
+  
+  app.get("/api/schools/:schoolId/students", async (req, res) => {
+    const schoolId = parseInt(req.params.schoolId);
+    if (isNaN(schoolId)) {
+      return res.status(400).json({ message: "Invalid school ID" });
+    }
+    
+    const students = await storage.getStudentsBySchool(schoolId);
+    res.json(students);
+  });
+  
+  app.post("/api/students", async (req, res) => {
+    try {
+      const studentData = insertStudentSchema.parse(req.body);
+      const student = await storage.createStudent(studentData);
+      
+      // Log activity
+      await storage.createActivity({
+        type: "student_added",
+        description: `New student "${student.name}" added`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(201).json(student);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid student data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create student" });
+    }
+  });
+  
+  app.patch("/api/students/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid student ID" });
+    }
+    
+    try {
+      const updateData = insertStudentSchema.partial().parse(req.body);
+      const updatedStudent = await storage.updateStudent(id, updateData);
+      
+      if (!updatedStudent) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+      
+      // Log activity
+      await storage.createActivity({
+        type: "student_updated",
+        description: `Student "${updatedStudent.name}" updated`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(updatedStudent);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid student data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update student" });
+    }
+  });
+  
+  app.delete("/api/students/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid student ID" });
+    }
+    
+    try {
+      // Get the student before deleting for the activity log
+      const student = await storage.getStudent(id);
+      if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+      
+      await storage.deleteStudent(id);
+      
+      // Log activity
+      await storage.createActivity({
+        type: "student_deleted",
+        description: `Student "${student.name}" deleted`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete student" });
+    }
+  });
+  
+  // Test Results
+  app.get("/api/test-results", async (req, res) => {
+    const testResults = await storage.getTestResults();
+    res.json(testResults);
+  });
+  
+  app.get("/api/test-results/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid test result ID" });
+    }
+    
+    const testResult = await storage.getTestResult(id);
+    if (!testResult) {
+      return res.status(404).json({ message: "Test result not found" });
+    }
+    
+    res.json(testResult);
+  });
+  
+  app.get("/api/students/:studentId/test-results", async (req, res) => {
+    const studentId = parseInt(req.params.studentId);
+    if (isNaN(studentId)) {
+      return res.status(400).json({ message: "Invalid student ID" });
+    }
+    
+    const testResults = await storage.getTestResultsByStudent(studentId);
+    res.json(testResults);
+  });
+  
+  app.get("/api/courses/:courseId/test-results", async (req, res) => {
+    const courseId = parseInt(req.params.courseId);
+    if (isNaN(courseId)) {
+      return res.status(400).json({ message: "Invalid course ID" });
+    }
+    
+    const testResults = await storage.getTestResultsByCourse(courseId);
+    res.json(testResults);
+  });
+  
+  app.post("/api/test-results", async (req, res) => {
+    try {
+      const testResultData = insertTestResultSchema.parse(req.body);
+      const testResult = await storage.createTestResult(testResultData);
+      
+      // Get student name for activity log
+      const student = await storage.getStudent(testResult.studentId);
+      const studentName = student ? student.name : `Student ID ${testResult.studentId}`;
+      
+      // Log activity
+      await storage.createActivity({
+        type: "test_result_added",
+        description: `New test result added for student "${studentName}"`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(201).json(testResult);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid test result data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create test result" });
     }
   });
   
