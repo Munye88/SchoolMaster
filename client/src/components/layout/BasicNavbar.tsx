@@ -281,6 +281,9 @@ const BasicNavbar = () => {
                 
                 {showSchoolLinks === 'admin' && (
                   <div className="absolute right-0 top-full mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 text-xs font-medium uppercase text-gray-500">
+                      Documents
+                    </div>
                     <Link 
                       href="/administration/company-policy"
                       onClick={() => setShowSchoolLinks(null)}
@@ -315,6 +318,38 @@ const BasicNavbar = () => {
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Training Guide Classroom Evaluation
+                    </Link>
+                    
+                    <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 text-xs font-medium uppercase text-gray-500 mt-2">
+                      Management
+                    </div>
+                    <Link 
+                      href="/management/schools"
+                      onClick={() => setShowSchoolLinks(null)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                    >
+                      Manage Schools
+                    </Link>
+                    <Link 
+                      href="/management/instructors"
+                      onClick={() => setShowSchoolLinks(null)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                    >
+                      Manage Instructors
+                    </Link>
+                    <Link 
+                      href="/management/courses"
+                      onClick={() => setShowSchoolLinks(null)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                    >
+                      Manage Courses
+                    </Link>
+                    <Link 
+                      href="/management/students"
+                      onClick={() => setShowSchoolLinks(null)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                    >
+                      Manage Students
                     </Link>
                   </div>
                 )}

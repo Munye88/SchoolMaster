@@ -1,0 +1,695 @@
+import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Instructor, insertInstructorSchema, School } from "@shared/schema";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { format } from "date-fns";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+// Extended schema with validation
+const instructorSchema = insertInstructorSchema.extend({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  position: z.string().min(2, "Position must be at least 2 characters"),
+  nationality: z.string().min(2, "Nationality must be at least 2 characters"),
+  startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: "Invalid date format",
+  }),
+  credentials: z.string().min(2, "Credentials must be at least 2 characters"),
+  schoolId: z.number().positive("Please select a school"),
+  compound: z.string().min(2, "Compound must be at least 2 characters"),
+  phone: z.string().min(6, "Phone must be at least 6 characters"),
+  status: z.string().min(2, "Status must be at least 2 characters"),
+});
+
+type InstructorFormValues = z.infer<typeof instructorSchema>;
+
+export default function ManageInstructors() {
+  const { toast } = useToast();
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);
+
+  // Fetch instructors
+  const { data: instructors, isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
+    queryKey: ['/api/instructors'],
+  });
+
+  // Fetch schools for the dropdown
+  const { data: schools } = useQuery<School[]>({
+    queryKey: ['/api/schools'],
+  });
+
+  // Create instructor mutation
+  const createInstructorMutation = useMutation({
+    mutationFn: async (instructorData: InstructorFormValues) => {
+      const response = await apiRequest('POST', '/api/instructors', instructorData);
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
+      setIsCreateDialogOpen(false);
+      toast({
+        title: "Instructor created",
+        description: "The instructor has been created successfully."
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error creating instructor",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Update instructor mutation
+  const updateInstructorMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number, data: InstructorFormValues }) => {
+      const response = await apiRequest('PATCH', `/api/instructors/${id}`, data);
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
+      setIsEditDialogOpen(false);
+      setSelectedInstructor(null);
+      toast({
+        title: "Instructor updated",
+        description: "The instructor has been updated successfully."
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error updating instructor",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Delete instructor mutation
+  const deleteInstructorMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest('DELETE', `/api/instructors/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
+      toast({
+        title: "Instructor deleted",
+        description: "The instructor has been deleted successfully."
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error deleting instructor",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Create form
+  const createForm = useForm<InstructorFormValues>({
+    resolver: zodResolver(instructorSchema),
+    defaultValues: {
+      name: "",
+      position: "ELT Instructor",
+      nationality: "",
+      startDate: format(new Date(), 'yyyy-MM-dd'),
+      credentials: "",
+      schoolId: 0,
+      compound: "",
+      phone: "",
+      status: "Unaccompanied",
+    }
+  });
+
+  // Edit form
+  const editForm = useForm<InstructorFormValues>({
+    resolver: zodResolver(instructorSchema),
+    defaultValues: {
+      name: "",
+      position: "",
+      nationality: "",
+      startDate: "",
+      credentials: "",
+      schoolId: 0,
+      compound: "",
+      phone: "",
+      status: "",
+    }
+  });
+
+  // Reset and set edit form values when an instructor is selected
+  useEffect(() => {
+    if (selectedInstructor) {
+      editForm.reset({
+        name: selectedInstructor.name,
+        position: selectedInstructor.role || "ELT Instructor", // Use role or default value
+        nationality: selectedInstructor.nationality,
+        startDate: format(new Date(selectedInstructor.startDate), 'yyyy-MM-dd'),
+        credentials: selectedInstructor.credentials,
+        schoolId: selectedInstructor.schoolId,
+        compound: selectedInstructor.compound,
+        phone: selectedInstructor.phone,
+        status: selectedInstructor.accompaniedStatus, // Use accompaniedStatus
+      });
+    }
+  }, [selectedInstructor, editForm]);
+
+  // Get school name from ID
+  const getSchoolName = (schoolId: number) => {
+    return schools?.find(school => school.id === schoolId)?.name || "Unknown School";
+  };
+
+  // Handle create form submission
+  const onCreateSubmit = (values: InstructorFormValues) => {
+    createInstructorMutation.mutate(values);
+  };
+
+  // Handle edit form submission
+  const onEditSubmit = (values: InstructorFormValues) => {
+    if (selectedInstructor) {
+      updateInstructorMutation.mutate({ id: selectedInstructor.id, data: values });
+    }
+  };
+
+  // Handle instructor deletion
+  const handleDeleteInstructor = (id: number) => {
+    if (confirm("Are you sure you want to delete this instructor? This action cannot be undone.")) {
+      deleteInstructorMutation.mutate(id);
+    }
+  };
+
+  // Handle edit button click
+  const handleEditInstructor = (instructor: Instructor) => {
+    setSelectedInstructor(instructor);
+    setIsEditDialogOpen(true);
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Manage Instructors</h1>
+
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-[#0A2463] hover:bg-[#071A4A]">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Instructor
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Add New Instructor</DialogTitle>
+              <DialogDescription>
+                Create a new instructor in the system.
+              </DialogDescription>
+            </DialogHeader>
+
+            <Form {...createForm}>
+              <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={createForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter instructor name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={createForm.control}
+                    name="position"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Position</FormLabel>
+                        <FormControl>
+                          <Input placeholder="E.g., ELT Instructor" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={createForm.control}
+                    name="nationality"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nationality</FormLabel>
+                        <FormControl>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select nationality" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="American">American</SelectItem>
+                              <SelectItem value="British">British</SelectItem>
+                              <SelectItem value="Canadian">Canadian</SelectItem>
+                              <SelectItem value="Australian">Australian</SelectItem>
+                              <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={createForm.control}
+                    name="startDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Start Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={createForm.control}
+                    name="credentials"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Credentials</FormLabel>
+                        <FormControl>
+                          <Input placeholder="E.g., CELTA, DELTA, M.Ed." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={createForm.control}
+                    name="schoolId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>School</FormLabel>
+                        <FormControl>
+                          <Select 
+                            onValueChange={(value) => field.onChange(parseInt(value))} 
+                            defaultValue={field.value > 0 ? field.value.toString() : undefined}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select school" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {schools?.map((school) => (
+                                <SelectItem key={school.id} value={school.id.toString()}>
+                                  {school.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={createForm.control}
+                    name="compound"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Compound</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Housing compound" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={createForm.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Contact number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={createForm.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <FormControl>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Accompanied">Accompanied</SelectItem>
+                              <SelectItem value="Unaccompanied">Unaccompanied</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsCreateDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-[#0A2463] hover:bg-[#071A4A]"
+                    disabled={createInstructorMutation.isPending}
+                  >
+                    {createInstructorMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      "Create Instructor"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {isLoadingInstructors ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-[#0A2463]" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {instructors?.map((instructor) => (
+            <Card key={instructor.id}>
+              <CardHeader>
+                <CardTitle>{instructor.name}</CardTitle>
+                <CardDescription>{instructor.role || "ELT Instructor"}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Nationality:</span> {instructor.nationality}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">School:</span> {getSchoolName(instructor.schoolId)}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Start Date:</span> {format(new Date(instructor.startDate), 'MMM d, yyyy')}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Credentials:</span> {instructor.credentials}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Status:</span> {instructor.status}
+                </p>
+              </CardContent>
+              <CardFooter className="flex justify-end space-x-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handleEditInstructor(instructor)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                  onClick={() => handleDeleteInstructor(instructor.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Instructor</DialogTitle>
+            <DialogDescription>
+              Update instructor information.
+            </DialogDescription>
+          </DialogHeader>
+
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter instructor name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={editForm.control}
+                  name="position"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Position</FormLabel>
+                      <FormControl>
+                        <Input placeholder="E.g., ELT Instructor" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={editForm.control}
+                  name="nationality"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nationality</FormLabel>
+                      <FormControl>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select nationality" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="American">American</SelectItem>
+                            <SelectItem value="British">British</SelectItem>
+                            <SelectItem value="Canadian">Canadian</SelectItem>
+                            <SelectItem value="Australian">Australian</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={editForm.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={editForm.control}
+                  name="credentials"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Credentials</FormLabel>
+                      <FormControl>
+                        <Input placeholder="E.g., CELTA, DELTA, M.Ed." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={editForm.control}
+                  name="schoolId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>School</FormLabel>
+                      <FormControl>
+                        <Select 
+                          onValueChange={(value) => field.onChange(parseInt(value))} 
+                          defaultValue={field.value.toString()}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select school" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {schools?.map((school) => (
+                              <SelectItem key={school.id} value={school.id.toString()}>
+                                {school.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={editForm.control}
+                  name="compound"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Compound</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Housing compound" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={editForm.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Contact number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={editForm.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <FormControl>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Accompanied">Accompanied</SelectItem>
+                            <SelectItem value="Unaccompanied">Unaccompanied</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditDialogOpen(false);
+                    setSelectedInstructor(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-[#0A2463] hover:bg-[#071A4A]"
+                  disabled={updateInstructorMutation.isPending}
+                >
+                  {updateInstructorMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    "Update Instructor"
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
