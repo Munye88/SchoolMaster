@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Calendar } from '@/components/ui/calendar';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PlusCircle, Calendar as CalendarIcon, FileText } from 'lucide-react';
 import { useSchool } from '@/hooks/useSchool';
 import { format } from 'date-fns';
@@ -34,11 +34,12 @@ export default function StaffLeaveTracker() {
   const { setSelectedSchool, schools } = useSchool();
   
   // Set the selected school based on the schoolCode from the URL
-  useState(() => {
+  useEffect(() => {
     if (schoolCode) {
       setSelectedSchool(schoolCode);
     }
-  }, [schoolCode, setSelectedSchool]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schoolCode]);
   
   // Find the current school from all schools
   const currentSchool = schools.find(school => school.code === schoolCode);
