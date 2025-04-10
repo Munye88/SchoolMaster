@@ -217,57 +217,75 @@ const Dashboard = () => {
                 </div>
                 
                 {/* Course Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {courses.filter(c => c.status === "In Progress").slice(0, 4).map(course => {
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {courses.filter(c => c.status === "In Progress").slice(0, 3).map(course => {
                     const school = schools.find(s => s.id === course.schoolId);
-                    let bgColor = 'from-blue-600 to-blue-700';
-                    let labelColor = 'text-blue-700';
-                    let indicatorColor = 'bg-blue-500/30';
-                    let progressColor = 'bg-white';
+                    let fromColor = 'from-blue-50';
+                    let toColor = 'to-blue-100';
+                    let borderColor = 'border-blue-200';
+                    let bgColor = 'bg-blue-600/10';
+                    let textColor = 'text-blue-900';
+                    let valueColor = 'text-blue-700';
+                    let labelColor = 'text-blue-600';
+                    let progressBgColor = 'bg-blue-200';
+                    let progressFillColor = 'bg-blue-600';
+                    let progressTextColor = 'text-blue-700';
                     
                     // Determine color based on school
                     if (school?.name.includes('East')) {
-                      bgColor = 'from-emerald-600 to-emerald-700';
-                      labelColor = 'text-emerald-700';
-                      indicatorColor = 'bg-emerald-500/30';
+                      fromColor = 'from-emerald-50';
+                      toColor = 'to-emerald-100';
+                      borderColor = 'border-emerald-200';
+                      bgColor = 'bg-emerald-600/10';
+                      textColor = 'text-emerald-900';
+                      valueColor = 'text-emerald-700';
+                      labelColor = 'text-emerald-600';
+                      progressBgColor = 'bg-emerald-200';
+                      progressFillColor = 'bg-emerald-600';
+                      progressTextColor = 'text-emerald-700';
                     } else if (school?.name.includes('West')) {
-                      bgColor = 'from-amber-500 to-amber-600';
+                      fromColor = 'from-amber-50';
+                      toColor = 'to-amber-100';
+                      borderColor = 'border-amber-200';
+                      bgColor = 'bg-amber-600/10';
+                      textColor = 'text-amber-900';
+                      valueColor = 'text-amber-700';
                       labelColor = 'text-amber-600';
-                      indicatorColor = 'bg-amber-500/30';
+                      progressBgColor = 'bg-amber-200';
+                      progressFillColor = 'bg-amber-600';
+                      progressTextColor = 'text-amber-700';
                     }
                     
                     return (
-                      <div key={course.id} className="relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all">
-                        <div className={`absolute inset-0 bg-gradient-to-r ${bgColor}`}></div>
-                        <div className="absolute -right-6 -top-6 w-24 h-24 opacity-20">
-                          <BookOpen className="w-full h-full text-white" />
-                        </div>
-                        <div className="relative p-4 text-white z-10">
+                      <div key={course.id} className={`relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all bg-gradient-to-br ${fromColor} ${toColor} border ${borderColor}`}>
+                        <div className={`absolute -right-6 -top-6 w-24 h-24 ${bgColor} rounded-full`}></div>
+                        <div className="p-4">
                           <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-2">
-                              <div className="w-3 h-3 rounded-full bg-white"></div>
-                              <h3 className="font-semibold">{course.name}</h3>
+                            <div className="z-10">
+                              <div className="flex items-center gap-2">
+                                <div className={`w-3 h-3 rounded-full ${progressFillColor}`}></div>
+                                <h3 className={`font-semibold ${textColor}`}>{course.name}</h3>
+                              </div>
+                              <div className="mt-3 flex items-baseline gap-1">
+                                <span className={`text-3xl font-bold ${valueColor}`}>{course.studentCount}</span>
+                                <span className={`text-sm font-medium ${labelColor}`}>Students</span>
+                              </div>
+                              <div className="mt-3">
+                                <div className={`flex items-center justify-between text-xs ${progressTextColor} mb-1`}>
+                                  <span>Progress</span>
+                                  <span>{course.progress}%</span>
+                                </div>
+                                <div className={`w-full ${progressBgColor} rounded-full h-2 overflow-hidden`}>
+                                  <div 
+                                    className={`h-full ${progressFillColor} rounded-full`} 
+                                    style={{ width: `${course.progress}%` }}
+                                  ></div>
+                                </div>
+                                <div className={`mt-2 text-xs ${labelColor}`}>
+                                  {school?.name || "N/A"} | Started: {formatDate(course.startDate)}
+                                </div>
+                              </div>
                             </div>
-                            <div className={`bg-white ${labelColor} text-xs font-bold uppercase rounded-full px-2 py-0.5`}>
-                              {school?.name || "N/A"}
-                            </div>
-                          </div>
-                          <div className="mt-3 flex items-baseline gap-1">
-                            <span className="text-3xl font-bold">{course.studentCount}</span>
-                            <span className="text-sm font-medium">Students</span>
-                          </div>
-                          <div className="mt-3">
-                            <div className="flex items-center justify-between text-xs mb-1">
-                              <span>Progress</span>
-                              <span>{course.progress}%</span>
-                            </div>
-                            <div className={`w-full ${indicatorColor} rounded-full h-2 overflow-hidden`}>
-                              <div 
-                                className={`h-full ${progressColor} rounded-full`} 
-                                style={{ width: `${course.progress}%` }}
-                              ></div>
-                            </div>
-                            <div className="mt-2 text-xs opacity-90">Started: {formatDate(course.startDate)}</div>
                           </div>
                         </div>
                       </div>
