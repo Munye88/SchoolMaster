@@ -510,8 +510,8 @@ const StaffAttendance = () => {
         [instructorId]: {
           ...prev[instructorId],
           timeIn,
-          // If the time is changed and not previously selected, auto-select
-          selected: prev[instructorId].selected || true
+          // When time is changed, always select the checkbox
+          selected: true
         }
       };
     });
@@ -585,12 +585,21 @@ const StaffAttendance = () => {
     // Create a new object to avoid state mutation issues
     const updatedSelections = { ...selectedInstructors };
     
-    // Only apply to instructors from the current school
+    // Apply to instructors from the current school
     schoolInstructors.forEach(instructor => {
+      // If the instructor exists in our state, update it
       if (updatedSelections[instructor.id]) {
         updatedSelections[instructor.id] = {
           ...updatedSelections[instructor.id],
           selected: checked
+        };
+      } 
+      // Otherwise, create a new entry for this instructor
+      else {
+        updatedSelections[instructor.id] = {
+          selected: checked,
+          status: "present",
+          timeIn: "08:30"
         };
       }
     });
