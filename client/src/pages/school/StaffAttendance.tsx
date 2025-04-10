@@ -111,14 +111,19 @@ const StaffAttendance = () => {
             {currentSchool ? `${currentSchool.name} Staff Attendance` : 'Staff Attendance'}
           </h1>
           <p className="text-gray-500">Track and monitor instructor attendance records</p>
-          <a 
-            href="https://rsnfess.sharepoint.com/:x:/s/ELT/EQRTd3YnVABCteiKgSl98_oB6PV3pmGHrlh4O39GVXlsjQ?email=Munye.Sufi%40rsnfess.com&e=Pm0m3M" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1 mt-2"
-          >
-            <FileText size={14} /> Access Excel Attendance Sheet
-          </a>
+          <div className="mt-2 text-sm">
+            <span className="flex items-center gap-1 text-emerald-600">
+              <FileText size={14} /> Live Excel attendance data is embedded below
+            </span>
+            <a 
+              href="https://rsnfess.sharepoint.com/:x:/s/ELT/EQRTd3YnVABCteiKgSl98_oB6PV3pmGHrlh4O39GVXlsjQ?email=Munye.Sufi%40rsnfess.com&e=Pm0m3M" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1 mt-1"
+            >
+              <Download size={14} /> Download or edit in Excel Online
+            </a>
+          </div>
         </div>
         
         <div className="flex gap-2">
@@ -290,55 +295,26 @@ const StaffAttendance = () => {
         <TabsContent value="overview" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Monthly Attendance Summary</CardTitle>
+              <CardTitle>Live Attendance Data (Excel)</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Instructor</TableHead>
-                    <TableHead className="text-center">Present</TableHead>
-                    <TableHead className="text-center">Late</TableHead>
-                    <TableHead className="text-center">Absent</TableHead>
-                    <TableHead className="text-center">Attendance Rate</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredData.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell className="font-medium">{item.name}</TableCell>
-                      <TableCell className="text-center">{item.present}</TableCell>
-                      <TableCell className="text-center">{item.late}</TableCell>
-                      <TableCell className="text-center">{item.absent}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Progress 
-                            value={item.attendanceRate} 
-                            className={`h-2 ${
-                              item.attendanceRate >= 90 ? "bg-green-500" : 
-                              item.attendanceRate >= 75 ? "bg-amber-500" : 
-                              "bg-red-500"
-                            }`}
-                          />
-                          <span className="text-sm font-medium">{item.attendanceRate}%</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          item.attendanceRate >= 90 ? 'bg-green-100 text-green-800' : 
-                          item.attendanceRate >= 75 ? 'bg-amber-100 text-amber-800' : 
-                          'bg-red-100 text-red-800'
-                        }`}>
-                          {item.attendanceRate >= 90 ? 'Excellent' : 
-                           item.attendanceRate >= 75 ? 'Satisfactory' : 
-                           'Needs Improvement'}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="w-full rounded-md overflow-hidden border border-gray-200">
+                <iframe 
+                  src="https://rsnfess.sharepoint.com/:x:/s/ELT/EQRTd3YnVABCteiKgSl98_oB6PV3pmGHrlh4O39GVXlsjQ?email=Munye.Sufi%40rsnfess.com&e=Pm0m3M&embed=true" 
+                  width="100%" 
+                  height="700px" 
+                  frameBorder="0" 
+                  scrolling="yes"
+                  title="Staff Attendance Excel"
+                  className="bg-white"
+                  allowFullScreen
+                >
+                  This browser does not support embedding Office documents. Please download the document to view it: 
+                  <a href="https://rsnfess.sharepoint.com/:x:/s/ELT/EQRTd3YnVABCteiKgSl98_oB6PV3pmGHrlh4O39GVXlsjQ?email=Munye.Sufi%40rsnfess.com&e=Pm0m3M">
+                    Download Staff Attendance Excel
+                  </a>
+                </iframe>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
