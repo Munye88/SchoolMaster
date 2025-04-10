@@ -546,25 +546,33 @@ const TestTracker = () => {
       </div>
       
       {/* PowerBI Analytics Section */}
-      <Card className="mb-6">
-        <CardHeader className="border-b flex flex-col md:flex-row md:items-center justify-between">
-          <div>
-            <CardTitle>PowerBI Analytics Dashboard</CardTitle>
-            <CardDescription>
-              Comprehensive test performance analysis and trends from Excel test tracker data
-            </CardDescription>
+      <Card className="mb-8 shadow-lg border-none overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-[#0A2463] to-[#3E92CC] text-white">
+          <div className="flex flex-col md:flex-row md:items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl">PowerBI Analytics Dashboard</CardTitle>
+              <CardDescription className="text-blue-100 mt-1">
+                Comprehensive test performance analysis from Excel test tracker data
+              </CardDescription>
+            </div>
+            <Button className="mt-4 md:mt-0 gap-2 bg-white text-[#0A2463] hover:bg-blue-100 transition-all duration-300">
+              <FileText size={16} /> Open in PowerBI
+            </Button>
           </div>
-          <Button className="bg-[#0A2463] hover:bg-[#071A4A] mt-4 md:mt-0 gap-2">
-            <FileText size={16} /> Open in PowerBI
-          </Button>
         </CardHeader>
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 bg-gradient-to-b from-blue-50 to-white">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Test Score Distribution by Course */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Test Score Distribution by Course</h3>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
+            <Card className="shadow-md border border-blue-100 hover:shadow-lg transition-all duration-300">
+              <CardHeader className="pb-2 bg-blue-50 border-b border-blue-100">
+                <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
+                  <BarChart2 className="mr-2 h-5 w-5 text-blue-600" />
+                  Test Score Distribution by Course
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={(() => {
                       const courseData = Array.from(
@@ -614,64 +622,78 @@ const TestTracker = () => {
                     />
                   </BarChart>
                 </ResponsiveContainer>
-              </div>
-            </div>
+                </div>
+              </CardContent>
+            </Card>
             
             {/* Test Type Performance */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Test Type Performance</h3>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={(() => {
-                      return Array.from(new Set(filteredTestResults.map(r => r.type)))
-                        .map(type => {
-                          const results = filteredTestResults.filter(r => r.type === type);
-                          const avgScore = results.length 
-                            ? Math.round(results.reduce((sum, r) => sum + r.score, 0) / results.length) 
-                            : 0;
-                          return {
-                            name: type,
-                            avgScore,
-                            passRate: results.length 
-                              ? Math.round((results.filter(r => r.status === "Pass").length / results.length) * 100)
-                              : 0,
-                            count: results.length
-                          };
-                        });
-                    })()}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" />
-                    <YAxis yAxisId="left" orientation="left" domain={[0, 100]} />
-                    <YAxis yAxisId="right" orientation="right" domain={[0, 100]} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar 
-                      yAxisId="left"
-                      dataKey="avgScore" 
-                      name="Average Score" 
-                      fill="#0A2463" 
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Bar 
-                      yAxisId="right"
-                      dataKey="passRate" 
-                      name="Pass Rate (%)" 
-                      fill="#10B981" 
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
+            <Card className="shadow-md border border-green-100 hover:shadow-lg transition-all duration-300">
+              <CardHeader className="pb-2 bg-green-50 border-b border-green-100">
+                <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
+                  <CheckCircle2 className="mr-2 h-5 w-5 text-green-600" />
+                  Test Type Performance
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={(() => {
+                        return Array.from(new Set(filteredTestResults.map(r => r.type)))
+                          .map(type => {
+                            const results = filteredTestResults.filter(r => r.type === type);
+                            const avgScore = results.length 
+                              ? Math.round(results.reduce((sum, r) => sum + r.score, 0) / results.length) 
+                              : 0;
+                            return {
+                              name: type,
+                              avgScore,
+                              passRate: results.length 
+                                ? Math.round((results.filter(r => r.status === "Pass").length / results.length) * 100)
+                                : 0,
+                              count: results.length
+                            };
+                          });
+                      })()}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="name" />
+                      <YAxis yAxisId="left" orientation="left" domain={[0, 100]} />
+                      <YAxis yAxisId="right" orientation="right" domain={[0, 100]} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar 
+                        yAxisId="left"
+                        dataKey="avgScore" 
+                        name="Average Score" 
+                        fill="#0A2463" 
+                        radius={[4, 4, 0, 0]}
+                      />
+                      <Bar 
+                        yAxisId="right"
+                        dataKey="passRate" 
+                        name="Pass Rate (%)" 
+                        fill="#10B981" 
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
             
             {/* Score Distribution */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Score Distribution</h3>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
+            <Card className="shadow-md border border-purple-100 hover:shadow-lg transition-all duration-300">
+              <CardHeader className="pb-2 bg-purple-50 border-b border-purple-100">
+                <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
+                  <PieChart className="mr-2 h-5 w-5 text-purple-600" />
+                  Score Distribution
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
                   <RechartPieChart>
                     <Pie
                       data={[
@@ -704,7 +726,8 @@ const TestTracker = () => {
                   </RechartPieChart>
                 </ResponsiveContainer>
               </div>
-            </div>
+            </CardContent>
+          </Card>
             
             {/* Performance Trends */}
             <div>
