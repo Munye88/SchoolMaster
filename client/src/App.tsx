@@ -20,6 +20,7 @@ import SchoolSOP from "./pages/school/SOP";
 import StaffEvaluations from "./pages/school/StaffEvaluations";
 import StaffAttendance from "./pages/school/StaffAttendance";
 import SchoolBookInventory from "./pages/school/BookInventory";
+import StaffLeaveTracker from "./pages/school/StaffLeaveTracker";
 
 function Router() {
   return (
@@ -52,6 +53,7 @@ function Router() {
           <Route path="/schools/:schoolCode/staff-evaluations" component={StaffEvaluations} />
           <Route path="/schools/:schoolCode/staff-attendance" component={StaffAttendance} />
           <Route path="/schools/:schoolCode/book-inventory" component={SchoolBookInventory} />
+          <Route path="/schools/:schoolCode/staff-leave-tracker" component={StaffLeaveTracker} />
           
           {/* Fallback to 404 */}
           <Route component={NotFound} />
