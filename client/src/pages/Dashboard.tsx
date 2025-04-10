@@ -242,52 +242,114 @@ const Dashboard = () => {
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-lg text-[#0A2463]">Staff Nationality</CardTitle>
             </CardHeader>
-            <CardContent className="p-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex-1">
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span>American</span>
-                        <span>20 ({(20/45*100).toFixed(1)}%)</span>
-                      </div>
-                      <Progress value={20/45*100} className="h-2" />
+            <CardContent className="p-4 pb-6">
+              <div className="grid grid-cols-1 gap-4">
+                {/* Overview and Total */}
+                <div className="bg-gradient-to-r from-indigo-500 to-indigo-700 rounded-lg shadow-md p-4 text-white">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-sm font-semibold opacity-90 uppercase tracking-wider">Total Instructors</h3>
+                      <p className="text-3xl font-bold mt-1">45</p>
                     </div>
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span>British</span>
-                        <span>15 ({(15/45*100).toFixed(1)}%)</span>
-                      </div>
-                      <Progress value={15/45*100} className="h-2" />
-                    </div>
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span>Canadian</span>
-                        <span>10 ({(10/45*100).toFixed(1)}%)</span>
-                      </div>
-                      <Progress value={10/45*100} className="h-2" />
+                    <div className="bg-white/20 p-3 rounded-lg">
+                      <UserCheck className="w-8 h-8 text-white" />
                     </div>
                   </div>
                 </div>
-                <div className="flex-1">
-                  <div style={{ minWidth: 100, height: 200, width: '100%' }}>
-                    <ResponsiveContainer aspect={2}>
-                      <BarChart data={nationalityData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                        <YAxis tick={{ fontSize: 12 }} />
-                        <Tooltip 
-                          formatter={(value) => [`${value} instructors`, 'Count']}
-                          labelStyle={{ color: '#333' }}
-                        />
-                        <Legend wrapperStyle={{ fontSize: 12 }} />
-                        <Bar dataKey="value" name="Instructors" radius={[4, 4, 0, 0]}>
-                          {nationalityData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
+                
+                {/* Nationality Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* American */}
+                  <div className="relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200">
+                    <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-600/10 rounded-full"></div>
+                    <div className="p-4">
+                      <div className="flex justify-between items-center">
+                        <div className="z-10">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-blue-600"></div>
+                            <h3 className="font-semibold text-blue-900">American</h3>
+                          </div>
+                          <div className="mt-3 flex items-baseline gap-1">
+                            <span className="text-3xl font-bold text-blue-700">20</span>
+                            <span className="text-sm font-medium text-blue-600">Instructors</span>
+                          </div>
+                          <div className="mt-3">
+                            <div className="flex items-center justify-between text-xs text-blue-700 mb-1">
+                              <span>Distribution</span>
+                              <span>{(20/45*100).toFixed(1)}%</span>
+                            </div>
+                            <div className="w-full bg-blue-200 rounded-full h-2 overflow-hidden">
+                              <div 
+                                className="h-full bg-blue-600 rounded-full" 
+                                style={{ width: `${(20/45*100).toFixed(1)}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* British */}
+                  <div className="relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all bg-gradient-to-br from-red-50 to-red-100 border border-red-200">
+                    <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-600/10 rounded-full"></div>
+                    <div className="p-4">
+                      <div className="flex justify-between items-center">
+                        <div className="z-10">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-red-600"></div>
+                            <h3 className="font-semibold text-red-900">British</h3>
+                          </div>
+                          <div className="mt-3 flex items-baseline gap-1">
+                            <span className="text-3xl font-bold text-red-700">15</span>
+                            <span className="text-sm font-medium text-red-600">Instructors</span>
+                          </div>
+                          <div className="mt-3">
+                            <div className="flex items-center justify-between text-xs text-red-700 mb-1">
+                              <span>Distribution</span>
+                              <span>{(15/45*100).toFixed(1)}%</span>
+                            </div>
+                            <div className="w-full bg-red-200 rounded-full h-2 overflow-hidden">
+                              <div 
+                                className="h-full bg-red-600 rounded-full" 
+                                style={{ width: `${(15/45*100).toFixed(1)}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Canadian */}
+                  <div className="relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200">
+                    <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-600/10 rounded-full"></div>
+                    <div className="p-4">
+                      <div className="flex justify-between items-center">
+                        <div className="z-10">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-emerald-600"></div>
+                            <h3 className="font-semibold text-emerald-900">Canadian</h3>
+                          </div>
+                          <div className="mt-3 flex items-baseline gap-1">
+                            <span className="text-3xl font-bold text-emerald-700">10</span>
+                            <span className="text-sm font-medium text-emerald-600">Instructors</span>
+                          </div>
+                          <div className="mt-3">
+                            <div className="flex items-center justify-between text-xs text-emerald-700 mb-1">
+                              <span>Distribution</span>
+                              <span>{(10/45*100).toFixed(1)}%</span>
+                            </div>
+                            <div className="w-full bg-emerald-200 rounded-full h-2 overflow-hidden">
+                              <div 
+                                className="h-full bg-emerald-600 rounded-full" 
+                                style={{ width: `${(10/45*100).toFixed(1)}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
