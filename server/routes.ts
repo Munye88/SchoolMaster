@@ -755,6 +755,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(nationalityStats);
   });
 
+  // AI Chatbot
+  app.post("/api/ai/chat", async (req, res) => {
+    try {
+      const chatRequest: AIChatRequest = req.body;
+      
+      // Gather context data 
+      let dataContext = "";
+      
+      // Add school-specific context if schoolId is provided
+      if (chatRequest.schoolId) {
+        const school = await storage.getSchool(chatRequest.schoolId);
+        if (school) {
+          dataContext += `Current school context: ${school.name} (${school.code})\n`;
+          
+          // Add additional school data
+          const instructors = await storage.getInstructorsBySchool(school.id);
+          dataContext += `${school.name} has ${instructors.length} instructors.\n`;
+          
+          const courses = await storage.getCoursesBySchool(school.id);
+          dataContext += `${school.name} has ${courses.length} active courses.\n`;
+          
+          // Add test results summary if available
+          const testResults = await storage.getTestResults();
+          if (testResults.length > 0) {
+            const schoolTestResults = testResults.filter(tr => {
+              // Find the course for this test result
+              const course = courses.find(c => c.id === tr.courseId);
+              // If course exists and belongs to the school, include this test result
+              return course && course.schoolId === school.id;
+            });
+            
+            if (schoolTestResults.length > 0) {
+              // Calculate averages by test type
+              const testTypes = Array.from(new Set(schoolTestResults.map(tr => tr.type)));
+              testTypes.forEach(testType => {
+                const typeResults = schoolTestResults.filter(tr => tr.type === testType);
+                const avgScore = typeResults.reduce((sum, tr) => sum + tr.score, 0) / typeResults.length;
+                dataContext += `Average ${testType} score at ${school.name}: ${avgScore.toFixed(1)}%.\n`;
+              });
+            }
+          }
+        }
+      } else {
+        // General context about all schools
+        const schools = await storage.getSchools();
+        dataContext += `System manages ${schools.length} schools: ${schools.map(s => s.name).join(", ")}.\n`;
+        
+        // Add test results summary
+        const testResults = await storage.getTestResults();
+        if (testResults.length > 0) {
+          // Calculate averages by test type
+          const testTypes = Array.from(new Set(testResults.map(tr => tr.type)));
+          testTypes.forEach(testType => {
+            const typeResults = testResults.filter(tr => tr.type === testType);
+            const avgScore = typeResults.reduce((sum, tr) => sum + tr.score, 0) / typeResults.length;
+            dataContext += `Average ${testType} score across all schools: ${avgScore.toFixed(1)}%.\n`;
+          });
+        }
+        
+        // Add instructor evaluation summary
+        const evaluations = await storage.getEvaluations();
+        if (evaluations.length > 0) {
+          const avgScore = evaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / evaluations.length;
+          dataContext += `Average instructor evaluation score: ${avgScore.toFixed(1)}%. Passing score is 85%.\n`;
+          
+          const passingCount = evaluations.filter(evaluation => evaluation.score >= 85).length;
+          const passRate = (passingCount / evaluations.length) * 100;
+          dataContext += `${passingCount} out of ${evaluations.length} evaluations meet or exceed the passing score (${passRate.toFixed(1)}%).\n`;
+        }
+      }
+      
+      // Add the context to the request
+      chatRequest.dataContext = dataContext;
+      
+      // Generate AI response
+      const response = await generateAIResponse(chatRequest);
+      
+      // Log activity
+      await storage.createActivity({
+        type: "ai_chat",
+        description: `AI chat query: "${chatRequest.messages[chatRequest.messages.length - 1].content.substring(0, 50)}${chatRequest.messages[chatRequest.messages.length - 1].content.length > 50 ? '...' : ''}"`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(response);
+    } catch (error) {
+      console.error("Error in AI chat endpoint:", error);
+      res.status(500).json({ 
+        message: {
+          role: "assistant",
+          content: "I'm sorry, I encountered an error while processing your request. Please try again."
+        }
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

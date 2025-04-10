@@ -25,6 +25,8 @@ import AuthPage from "./pages/auth-page";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AuthProvider } from "./hooks/use-auth";
 import { useAuth } from "@/hooks/use-auth";
+import { AIChatbot } from "@/components/ai/AIChatbot";
+import { SchoolProvider } from "@/hooks/useSchool";
 
 // Management pages
 import ManageSchools from "./pages/management/ManageSchools";
@@ -86,6 +88,7 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </div>
+      <AIChatbot />
       <Toaster />
     </div>
   );
@@ -95,7 +98,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Router />
+        <SchoolProvider>
+          <Router />
+        </SchoolProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
