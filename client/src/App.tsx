@@ -21,39 +21,54 @@ import StaffEvaluations from "./pages/school/StaffEvaluations";
 import StaffAttendance from "./pages/school/StaffAttendance";
 import SchoolBookInventory from "./pages/school/BookInventory";
 import StaffLeaveTracker from "./pages/school/StaffLeaveTracker";
+import AuthPage from "./pages/auth-page";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { AuthProvider } from "./hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
+
+function NavbarWithAuth() {
+  const { user } = useAuth();
+  
+  // Don't show navbar on the auth page
+  return user ? <BasicNavbar /> : null;
+}
 
 function Router() {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <BasicNavbar />
+      <NavbarWithAuth />
       <div className="flex-1 overflow-auto">
         <Switch>
-          <Route path="/" component={Dashboard} />
-          <Route path="/instructors" component={InstructorProfile} />
-          <Route path="/instructors/:id" component={InstructorProfile} />
-          <Route path="/courses" component={Courses} />
-          <Route path="/students" component={Students} />
-          <Route path="/test-tracker" component={TestTracker} />
-          <Route path="/reports" component={Reports} />
-          <Route path="/documents" component={Documents} />
+          {/* Auth route - public */}
+          <Route path="/auth" component={AuthPage} />
+          
+          {/* Protected routes */}
+          <ProtectedRoute path="/" component={Dashboard} />
+          <ProtectedRoute path="/instructors" component={InstructorProfile} />
+          <ProtectedRoute path="/instructors/:id" component={InstructorProfile} />
+          <ProtectedRoute path="/courses" component={Courses} />
+          <ProtectedRoute path="/students" component={Students} />
+          <ProtectedRoute path="/test-tracker" component={TestTracker} />
+          <ProtectedRoute path="/reports" component={Reports} />
+          <ProtectedRoute path="/documents" component={Documents} />
           
           {/* Administration routes */}
-          <Route path="/administration/company-policy" component={Administration} />
-          <Route path="/administration/evaluation-guideline" component={Administration} />
-          <Route path="/administration/employee-handbook" component={Administration} />
-          <Route path="/administration/performance-policy" component={Administration} />
-          <Route path="/administration/classroom-evaluation" component={Administration} />
+          <ProtectedRoute path="/administration/company-policy" component={Administration} />
+          <ProtectedRoute path="/administration/evaluation-guideline" component={Administration} />
+          <ProtectedRoute path="/administration/employee-handbook" component={Administration} />
+          <ProtectedRoute path="/administration/performance-policy" component={Administration} />
+          <ProtectedRoute path="/administration/classroom-evaluation" component={Administration} />
           
           {/* School-specific document routes */}
-          <Route path="/schools/:schoolCode/instructor-profiles" component={SchoolInstructorProfiles} />
-          <Route path="/schools/:schoolCode/timetable" component={SchoolTimetable} />
-          <Route path="/schools/:schoolCode/student-day-schedule" component={SchoolStudentDaySchedule} />
-          <Route path="/schools/:schoolCode/yearly-schedule" component={SchoolYearlySchedule} />
-          <Route path="/schools/:schoolCode/sop" component={SchoolSOP} />
-          <Route path="/schools/:schoolCode/staff-evaluations" component={StaffEvaluations} />
-          <Route path="/schools/:schoolCode/staff-attendance" component={StaffAttendance} />
-          <Route path="/schools/:schoolCode/book-inventory" component={SchoolBookInventory} />
-          <Route path="/schools/:schoolCode/staff-leave-tracker" component={StaffLeaveTracker} />
+          <ProtectedRoute path="/schools/:schoolCode/instructor-profiles" component={SchoolInstructorProfiles} />
+          <ProtectedRoute path="/schools/:schoolCode/timetable" component={SchoolTimetable} />
+          <ProtectedRoute path="/schools/:schoolCode/student-day-schedule" component={SchoolStudentDaySchedule} />
+          <ProtectedRoute path="/schools/:schoolCode/yearly-schedule" component={SchoolYearlySchedule} />
+          <ProtectedRoute path="/schools/:schoolCode/sop" component={SchoolSOP} />
+          <ProtectedRoute path="/schools/:schoolCode/staff-evaluations" component={StaffEvaluations} />
+          <ProtectedRoute path="/schools/:schoolCode/staff-attendance" component={StaffAttendance} />
+          <ProtectedRoute path="/schools/:schoolCode/book-inventory" component={SchoolBookInventory} />
+          <ProtectedRoute path="/schools/:schoolCode/staff-leave-tracker" component={StaffLeaveTracker} />
           
           {/* Fallback to 404 */}
           <Route component={NotFound} />
@@ -67,7 +82,9 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router />
+      <AuthProvider>
+        <Router />
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
