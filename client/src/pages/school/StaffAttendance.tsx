@@ -111,6 +111,14 @@ const StaffAttendance = () => {
             {currentSchool ? `${currentSchool.name} Staff Attendance` : 'Staff Attendance'}
           </h1>
           <p className="text-gray-500">Track and monitor instructor attendance records</p>
+          <a 
+            href="https://rsnfess.sharepoint.com/:x:/s/ELT/EQRTd3YnVABCteiKgSl98_oB6PV3pmGHrlh4O39GVXlsjQ?email=Munye.Sufi%40rsnfess.com&e=Pm0m3M" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1 mt-2"
+          >
+            <FileText size={14} /> Access Excel Attendance Sheet
+          </a>
         </div>
         
         <div className="flex gap-2">
