@@ -116,7 +116,7 @@ const StaffAttendance = () => {
               <FileText size={14} /> Live Excel attendance data is embedded below
             </span>
             <a 
-              href="https://rsnfess.sharepoint.com/:x:/s/ELT/EQRTd3YnVABCteiKgSl98_oB6PV3pmGHrlh4O39GVXlsjQ?email=Munye.Sufi%40rsnfess.com&e=Pm0m3M" 
+              href="https://rsnfess-my.sharepoint.com/:x:/p/sufimuny1294/Ea1KOnzSOkpJmkqPxldi9ugBTekFDEDl9SocGCMl0Ajmkg?e=teYFz0" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1 mt-1"
@@ -300,7 +300,7 @@ const StaffAttendance = () => {
             <CardContent className="p-4">
               <div className="flex justify-center items-center pb-4">
                 <a 
-                  href="https://rsnfess.sharepoint.com/:x:/s/ELT/EQRTd3YnVABCteiKgSl98_oB6PV3pmGHrlh4O39GVXlsjQ?email=Munye.Sufi%40rsnfess.com&e=Pm0m3M&action=embedview&wdbipreview=true" 
+                  href="https://rsnfess-my.sharepoint.com/:x:/p/sufimuny1294/Ea1KOnzSOkpJmkqPxldi9ugBTekFDEDl9SocGCMl0Ajmkg?e=teYFz0&action=embedview&wdbipreview=true" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2 transition"
@@ -312,7 +312,7 @@ const StaffAttendance = () => {
               {/* Primary Excel Embed */}
               <div className="w-full rounded-md overflow-hidden border border-gray-200 bg-white mb-4">
                 <iframe 
-                  src="https://view.officeapps.live.com/op/embed.aspx?src=https://rsnfess.sharepoint.com/:x:/s/ELT/EQRTd3YnVABCteiKgSl98_oB6PV3pmGHrlh4O39GVXlsjQ?email=Munye.Sufi%40rsnfess.com&e=Pm0m3M&action=download" 
+                  src="https://view.officeapps.live.com/op/embed.aspx?src=https://rsnfess-my.sharepoint.com/:x:/p/sufimuny1294/Ea1KOnzSOkpJmkqPxldi9ugBTekFDEDl9SocGCMl0Ajmkg?e=teYFz0&action=download" 
                   width="100%" 
                   height="700px" 
                   frameBorder="0" 
@@ -331,7 +331,7 @@ const StaffAttendance = () => {
                 <p className="text-sm text-gray-500 mb-2">If the Excel file is not displaying properly above, please use this alternate view:</p>
                 <div className="w-full rounded-md overflow-hidden border border-gray-200 bg-white">
                   <iframe 
-                    src="https://rsnfess.sharepoint.com/:x:/s/ELT/EQRTd3YnVABCteiKgSl98_oB6PV3pmGHrlh4O39GVXlsjQ?email=Munye.Sufi%40rsnfess.com&e=Pm0m3M&embed=true&wdbipreview=true" 
+                    src="https://rsnfess-my.sharepoint.com/:x:/p/sufimuny1294/Ea1KOnzSOkpJmkqPxldi9ugBTekFDEDl9SocGCMl0Ajmkg?e=teYFz0&embed=true&wdbipreview=true" 
                     width="100%" 
                     height="500px" 
                     frameBorder="0" 
