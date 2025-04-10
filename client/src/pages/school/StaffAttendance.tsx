@@ -400,17 +400,23 @@ const StaffAttendance = () => {
   // Effects
   useEffect(() => {
     if (schoolInstructors.length > 0) {
-      const newSelectedInstructors: { [key: number]: any } = {};
+      // Initialize only for new instructors or when school changes
+      const newSelectedInstructors: { [key: number]: any } = {...selectedInstructors};
+      
       schoolInstructors.forEach(instructor => {
-        newSelectedInstructors[instructor.id] = {
-          selected: false,
-          status: "present",
-          timeIn: "08:30"
-        };
+        // Only create a new entry if one doesn't exist
+        if (!newSelectedInstructors[instructor.id]) {
+          newSelectedInstructors[instructor.id] = {
+            selected: false,
+            status: "present",
+            timeIn: "08:30"
+          };
+        }
       });
+      
       setSelectedInstructors(newSelectedInstructors);
     }
-  }, [schoolInstructors]);
+  }, [schoolInstructors, selectedSchool]);
   
   // Loading state
   const isLoading = instructorsLoading || attendanceLoading;
@@ -433,33 +439,82 @@ const StaffAttendance = () => {
   
   // Event handlers
   const handleSelectInstructor = (instructorId: number, checked: boolean) => {
-    setSelectedInstructors(prev => ({
-      ...prev,
-      [instructorId]: {
-        ...prev[instructorId],
-        selected: checked
+    setSelectedInstructors(prev => {
+      // Make sure we have this instructor in our state
+      if (!prev[instructorId]) {
+        return {
+          ...prev,
+          [instructorId]: {
+            selected: checked,
+            status: "present",
+            timeIn: "08:30"
+          }
+        };
       }
-    }));
+      
+      // Otherwise, just update the selected status
+      return {
+        ...prev,
+        [instructorId]: {
+          ...prev[instructorId],
+          selected: checked
+        }
+      };
+    });
   };
   
   const handleStatusChange = (instructorId: number, status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement") => {
-    setSelectedInstructors(prev => ({
-      ...prev,
-      [instructorId]: {
-        ...prev[instructorId],
-        status
+    setSelectedInstructors(prev => {
+      // Make sure we have this instructor in our state
+      if (!prev[instructorId]) {
+        return {
+          ...prev,
+          [instructorId]: {
+            selected: true, // Auto-select if changing status
+            status: status,
+            timeIn: "08:30"
+          }
+        };
       }
-    }));
+      
+      // Otherwise, just update the status
+      return {
+        ...prev,
+        [instructorId]: {
+          ...prev[instructorId],
+          status,
+          // When status is changed, always select the checkbox
+          selected: true
+        }
+      };
+    });
   };
   
   const handleTimeChange = (instructorId: number, timeIn: string) => {
-    setSelectedInstructors(prev => ({
-      ...prev,
-      [instructorId]: {
-        ...prev[instructorId],
-        timeIn
+    setSelectedInstructors(prev => {
+      // Make sure we have this instructor in our state
+      if (!prev[instructorId]) {
+        return {
+          ...prev,
+          [instructorId]: {
+            selected: true, // Auto-select if changing time
+            status: "present",
+            timeIn: timeIn
+          }
+        };
       }
-    }));
+      
+      // Otherwise, just update the time
+      return {
+        ...prev,
+        [instructorId]: {
+          ...prev[instructorId],
+          timeIn,
+          // If the time is changed and not previously selected, auto-select
+          selected: prev[instructorId].selected || true
+        }
+      };
+    });
   };
   
   const handleBulkSubmit = async () => {
@@ -527,10 +582,19 @@ const StaffAttendance = () => {
   };
   
   const toggleSelectAll = (checked: boolean) => {
+    // Create a new object to avoid state mutation issues
     const updatedSelections = { ...selectedInstructors };
-    Object.keys(updatedSelections).forEach(key => {
-      updatedSelections[parseInt(key)].selected = checked;
+    
+    // Only apply to instructors from the current school
+    schoolInstructors.forEach(instructor => {
+      if (updatedSelections[instructor.id]) {
+        updatedSelections[instructor.id] = {
+          ...updatedSelections[instructor.id],
+          selected: checked
+        };
+      }
     });
+    
     setSelectedInstructors(updatedSelections);
   };
 
