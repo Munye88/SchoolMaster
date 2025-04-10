@@ -33,61 +33,131 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// Generate random attendance data for demonstration
-function generateAttendanceData(instructors: Instructor[]) {
-  return instructors.map((instructor) => {
-    const present = Math.floor(Math.random() * 15) + 5;
-    const late = Math.floor(Math.random() * 5);
-    const absent = Math.floor(Math.random() * 3);
-    const totalDays = present + late + absent;
-    const attendanceRate = Math.round((present + late * 0.5) / totalDays * 100);
+// Staff attendance interface
+interface StaffAttendance {
+  id: number;
+  date: string;
+  instructorId: number;
+  status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement";
+  timeIn: string | null;
+  timeOut: string | null;
+  comments: string | null;
+  recordedBy: number | null;
+}
+
+// Process attendance data to calculate statistics
+function processAttendanceData(
+  instructors: Instructor[], 
+  attendanceRecords: StaffAttendance[],
+  selectedDate: Date
+) {
+  const month = format(selectedDate, 'yyyy-MM');
+  
+  // Filter attendance records for the selected month
+  const monthlyAttendance = attendanceRecords.filter(record => 
+    record.date.startsWith(month)
+  );
+  
+  // Create a map of instructor IDs to their attendance records
+  const instructorAttendance = new Map<number, StaffAttendance[]>();
+  monthlyAttendance.forEach(record => {
+    const records = instructorAttendance.get(record.instructorId) || [];
+    records.push(record);
+    instructorAttendance.set(record.instructorId, records);
+  });
+  
+  // Calculate attendance statistics for each instructor
+  return instructors.map(instructor => {
+    const records = instructorAttendance.get(instructor.id) || [];
+    const present = records.filter(r => r.status === 'present').length;
+    const late = records.filter(r => r.status === 'late').length;
+    const sick = records.filter(r => r.status === 'sick').length;
+    const paternity = records.filter(r => r.status === 'paternity').length;
+    const pto = records.filter(r => r.status === 'pto').length;
+    const bereavement = records.filter(r => r.status === 'bereavement').length;
+    const absent = records.filter(r => r.status === 'absent').length;
+    
+    const totalDays = records.length;
+    // Calculate attendance rate: present days + (late days * 0.5) / total days
+    const attendanceRate = totalDays === 0 ? 0 : 
+      Math.round((present + (late * 0.5)) / totalDays * 100);
     
     return {
       id: instructor.id,
       name: instructor.name,
-      position: instructor.role || "ELT Instructor", // Use role or default to "ELT Instructor"
+      position: instructor.role || "ELT Instructor",
       present,
       late,
       absent,
+      sick,
+      paternity,
+      pto,
+      bereavement,
       totalDays,
-      attendanceRate
+      attendanceRate,
+      records
     };
   });
 }
 
 const StaffAttendance = () => {
-  const { selectedSchool, currentSchool } = useSchool();
+  const { selectedSchool } = useSchool();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedView, setSelectedView] = useState("month");
   const [selectedTab, setSelectedTab] = useState("overview");
   
-  // Fetch instructors
-  const { data: instructors = [], isLoading } = useQuery<Instructor[]>({
+  // Fetch instructors for the selected school
+  const { data: instructors = [], isLoading: instructorsLoading } = useQuery<Instructor[]>({
     queryKey: ['/api/instructors'],
   });
   
+  // Filter instructors by the selected school
   const schoolInstructors = instructors.filter(instructor => 
-    !selectedSchool || instructor.schoolId === currentSchool?.id
+    !selectedSchool || instructor.schoolId === selectedSchool?.id
   );
   
-  // Generate attendance data
-  const attendanceData = generateAttendanceData(schoolInstructors);
+  // Format selected date for API request
+  const formattedMonth = date ? format(date, "yyyy-MM") : format(new Date(), "yyyy-MM");
+  
+  // Fetch attendance data from API
+  const { data: attendanceRecords = [], isLoading: attendanceLoading } = useQuery<StaffAttendance[]>({
+    queryKey: ['/api/staff-attendance', formattedMonth, selectedSchool?.id],
+    queryFn: async () => {
+      // If no school is selected, don't fetch
+      if (!selectedSchool) return [];
+      
+      try {
+        const res = await fetch(`/api/staff-attendance?date=${formattedMonth}&schoolId=${selectedSchool.id}`);
+        if (!res.ok) {
+          throw new Error('Failed to fetch attendance data');
+        }
+        return await res.json();
+      } catch (error) {
+        console.error('Error fetching attendance:', error);
+        return [];
+      }
+    },
+    enabled: !!selectedSchool && !!date,
+  });
+  
+  // Process real attendance data
+  const attendanceData = processAttendanceData(schoolInstructors, attendanceRecords, date || new Date());
   
   // Filter data based on search query
-  const filteredData = attendanceData.filter(item => 
+  const filteredData = attendanceData.filter((item: any) => 
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
   // Calculate overall statistics
   const totalInstructors = filteredData.length;
   const averageAttendance = totalInstructors > 0
-    ? Math.round(filteredData.reduce((sum, item) => sum + item.attendanceRate, 0) / totalInstructors)
+    ? Math.round(filteredData.reduce((sum: number, item: any) => sum + item.attendanceRate, 0) / totalInstructors)
     : 0;
   
-  const presentCount = filteredData.filter(item => item.attendanceRate >= 90).length;
-  const lateCount = filteredData.filter(item => item.attendanceRate >= 75 && item.attendanceRate < 90).length;
-  const absentCount = filteredData.filter(item => item.attendanceRate < 75).length;
+  const presentCount = filteredData.filter((item: any) => item.attendanceRate >= 90).length;
+  const lateCount = filteredData.filter((item: any) => item.attendanceRate >= 75 && item.attendanceRate < 90).length;
+  const absentCount = filteredData.filter((item: any) => item.attendanceRate < 75).length;
   
   const statusData = [
     { name: "Present", value: presentCount, color: "#10B981" },
@@ -97,6 +167,9 @@ const StaffAttendance = () => {
   
   // Excel file URL
   const excelFileUrl = "https://rsnfess-my.sharepoint.com/:x:/p/sufimuny1294/Ea1KOnzSOkpJmkqPxldi9ugBTekFDEDl9SocGCMl0Ajmkg?e=teYFz0";
+  
+  // Check if data is still loading
+  const isLoading = instructorsLoading || attendanceLoading;
   
   if (isLoading) {
     return (
@@ -120,7 +193,7 @@ const StaffAttendance = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#0A2463]">
-            {currentSchool ? `${currentSchool.name} Staff Attendance` : 'Staff Attendance'}
+            {selectedSchool ? `${selectedSchool.name} Staff Attendance` : 'Staff Attendance'}
           </h1>
           <p className="text-gray-500">Track and monitor instructor attendance records</p>
           <div className="mt-2 text-sm">
