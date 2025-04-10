@@ -22,7 +22,7 @@ const BasicNavbar = () => {
       <div className="bg-[#0A2463] text-white h-16 flex items-center px-6">
         {/* Left - Logo */}
         <div className="flex-shrink-0">
-          <img src={govcioLogo} alt="GovCIO Logo" className="h-10" />
+          <img src="/images/govcio-logo-white.svg" alt="GovCIO Logo" className="h-10" />
         </div>
         
         {/* Center - Title */}
