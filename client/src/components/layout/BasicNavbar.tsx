@@ -5,7 +5,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { 
   Home, School, BookOpen, GraduationCap, ListChecks, BarChart2, Settings, Search, Bell,
-  LogOut, LogIn, UserCircle, Lightbulb, BookmarkIcon, BookText
+  LogOut, LogIn, UserCircle, BookText, BriefcaseBusiness, MessageSquare, AlertTriangle, 
+  BrainCircuit, Users, Lightbulb
 } from "lucide-react";
 import govcioLogo from "../../assets/govcio-logo.png";
 
@@ -18,6 +19,7 @@ const BasicNavbar = () => {
   const { user, logoutMutation } = useAuth();
   const [showSchoolLinks, setShowSchoolLinks] = useState<string | null>(null);
   const [showAdminLinks, setShowAdminLinks] = useState<boolean>(false);
+  const [showTrainingLinks, setShowTrainingLinks] = useState<boolean>(false);
   const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
   
   const isActive = (path: string) => {
@@ -275,9 +277,77 @@ const BasicNavbar = () => {
               <div className="relative">
                 <button
                   onClick={() => {
+                    setShowTrainingLinks(!showTrainingLinks);
+                    // Close other links if open
+                    if (showSchoolLinks) setShowSchoolLinks(null);
+                    if (showAdminLinks) setShowAdminLinks(false);
+                  }}
+                  className={cn(
+                    "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                    (isActive("/training-development") || showTrainingLinks) && "text-[#0A2463] bg-gray-100 font-medium"
+                  )}
+                >
+                  <Lightbulb className="h-4 w-4 mr-2" />
+                  <span>Training & Development</span>
+                </button>
+                
+                {showTrainingLinks && (
+                  <div className="absolute right-0 top-full mt-1 w-60 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <div className="px-4 py-2 bg-gradient-to-r from-purple-50 to-blue-50 border-b border-gray-200 text-xs font-medium uppercase text-gray-500">
+                      Leadership Resources
+                    </div>
+                    
+                    <Link 
+                      href="/training-development/leadership-skills"
+                      onClick={() => setShowTrainingLinks(false)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      <BriefcaseBusiness className="h-4 w-4 mr-2 text-blue-600" />
+                      Leadership Skills
+                    </Link>
+                    <Link 
+                      href="/training-development/communication-techniques"
+                      onClick={() => setShowTrainingLinks(false)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      <MessageSquare className="h-4 w-4 mr-2 text-blue-600" />
+                      Communication Techniques
+                    </Link>
+                    <Link 
+                      href="/training-development/conflict-resolution"
+                      onClick={() => setShowTrainingLinks(false)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      <AlertTriangle className="h-4 w-4 mr-2 text-blue-600" />
+                      Conflict Resolution
+                    </Link>
+                    <Link 
+                      href="/training-development/decision-making"
+                      onClick={() => setShowTrainingLinks(false)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      <BrainCircuit className="h-4 w-4 mr-2 text-blue-600" />
+                      Decision Making
+                    </Link>
+                    <Link 
+                      href="/training-development/team-building"
+                      onClick={() => setShowTrainingLinks(false)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      <Users className="h-4 w-4 mr-2 text-blue-600" />
+                      Team Building
+                    </Link>
+                  </div>
+                )}
+              </div>
+              
+              <div className="relative">
+                <button
+                  onClick={() => {
                     setShowAdminLinks(!showAdminLinks); 
                     // Close school links if open, to avoid having multiple dropdowns open
                     if (showSchoolLinks) setShowSchoolLinks(null);
+                    if (showTrainingLinks) setShowTrainingLinks(false);
                   }}
                   className={cn(
                     "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
@@ -369,13 +439,14 @@ const BasicNavbar = () => {
       </div>
       
       {/* Click outside handler to close dropdowns */}
-      {(showSchoolLinks || showUserMenu || showAdminLinks) && (
+      {(showSchoolLinks || showUserMenu || showAdminLinks || showTrainingLinks) && (
         <div 
           className="fixed inset-0 bg-transparent z-40"
           onClick={() => {
             setShowSchoolLinks(null);
             setShowUserMenu(false);
             setShowAdminLinks(false);
+            setShowTrainingLinks(false);
           }}
         />
       )}
