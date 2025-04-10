@@ -12,7 +12,7 @@ import { useSchool } from "@/hooks/useSchool";
 import { Link } from "wouter";
 import { format } from "date-fns";
 import { Calendar as CalendarComponent } from "@/components/dashboard/Calendar";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip, Cell } from 'recharts';
 
 const Dashboard = () => {
   const { selectedSchool, currentSchool } = useSchool();
@@ -59,25 +59,12 @@ const Dashboard = () => {
   const activeCourses = courses.filter(c => c.status === "In Progress").length;
   const completedCourses = courses.filter(c => c.status === "Completed").length;
   
-  // Staff nationality data for pie chart
+  // Staff nationality data for bar chart
   const nationalityData = [
     { name: 'American', value: 20, color: '#4299E1' },  // blue
     { name: 'British', value: 15, color: '#48BB78' },   // green
     { name: 'Canadian', value: 10, color: '#F6AD55' }   // orange
   ];
-  
-  const RADIAN = Math.PI / 180;
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, name }: any) => {
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-    
-    return (
-      <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-        {`${name} ${(percent * 100).toFixed(0)}%`}
-      </text>
-    );
-  };
   
   const formatDate = (date: Date | string) => {
     return format(new Date(date), "MMM dd, yyyy");
@@ -248,24 +235,21 @@ const Dashboard = () => {
                 <div className="flex-1">
                   <div className="h-full flex items-center justify-center">
                     <ResponsiveContainer width="100%" height={200}>
-                      <PieChart>
-                        <Pie
-                          data={nationalityData}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={renderCustomizedLabel}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
+                      <BarChart data={nationalityData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                        <YAxis tick={{ fontSize: 12 }} />
+                        <Tooltip 
+                          formatter={(value) => [`${value} instructors`, 'Count']}
+                          labelStyle={{ color: '#333' }}
+                        />
+                        <Legend wrapperStyle={{ fontSize: 12 }} />
+                        <Bar dataKey="value" name="Instructors" radius={[4, 4, 0, 0]}>
                           {nationalityData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
-                        </Pie>
-                        <Tooltip formatter={(value) => `${value} instructors`} />
-                        <Legend />
-                      </PieChart>
+                        </Bar>
+                      </BarChart>
                     </ResponsiveContainer>
                   </div>
                 </div>
