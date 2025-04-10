@@ -367,7 +367,16 @@ const StaffAttendance = () => {
   });
   
   // Process and filter data
-  const attendanceData = processAttendanceData(schoolInstructors, attendanceRecords, date || new Date());
+  // First filter the attendance records by month
+  const currentMonth = date || new Date();
+  const currentMonthStr = format(currentMonth, 'yyyy-MM');
+  
+  const monthlyRecords = attendanceRecords.filter(record => {
+    return record.date.startsWith(currentMonthStr);
+  });
+  
+  // Then process the filtered records
+  const attendanceData = processAttendanceData(schoolInstructors, monthlyRecords, currentMonth);
   const filteredData = attendanceData.filter((item: any) => 
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -392,22 +401,20 @@ const StaffAttendance = () => {
   useEffect(() => {
     if (schoolInstructors.length > 0) {
       // Initialize only for new instructors or when school changes
-      const newSelectedInstructors: { [key: number]: any } = {...selectedInstructors};
+      const newSelectedInstructors: { [key: number]: any } = {};
       
+      // Start fresh with all instructors from the current school
       schoolInstructors.forEach(instructor => {
-        // Only create a new entry if one doesn't exist
-        if (!newSelectedInstructors[instructor.id]) {
-          newSelectedInstructors[instructor.id] = {
-            selected: false,
-            status: "present",
-            timeIn: "08:30"
-          };
-        }
+        newSelectedInstructors[instructor.id] = {
+          selected: false,
+          status: "present",
+          timeIn: "08:30"
+        };
       });
       
       setSelectedInstructors(newSelectedInstructors);
     }
-  }, [schoolInstructors, selectedSchool]);
+  }, [schoolInstructors.length, selectedSchool?.id]);
   
   // Loading state
   const isLoading = instructorsLoading || attendanceLoading;
@@ -561,8 +568,11 @@ const StaffAttendance = () => {
       // Refresh data
       queryClient.invalidateQueries({ queryKey: ['/api/staff-attendance'] });
       
-      // Exit bulk mode
-      setBulkMode(false);
+      // Small delay before exiting bulk mode to ensure data is refreshed
+      setTimeout(() => {
+        // Exit bulk mode
+        setBulkMode(false);
+      }, 300);
     } catch (error) {
       toast({
         title: "Error!",
