@@ -163,12 +163,18 @@ const AttendanceForm: React.FC<{
       return await response.json();
     },
     onSuccess: () => {
+      // Force a full refresh of attendance data
       queryClient.invalidateQueries({ queryKey: ['/api/staff-attendance'] });
+      
       toast({
         title: "Success",
         description: "Attendance record saved successfully.",
       });
-      onClose();
+      
+      // Close the form and apply a small delay to ensure data is refreshed
+      setTimeout(() => {
+        onClose();
+      }, 300);
     },
     onError: (error) => {
       toast({
@@ -356,23 +362,8 @@ const StaffAttendance = () => {
   
   // Fetch attendance data from API
   const { data: attendanceRecords = [], isLoading: attendanceLoading } = useQuery<StaffAttendance[]>({
-    queryKey: ['/api/staff-attendance', formattedMonth, selectedSchool?.id],
-    queryFn: async () => {
-      // If no school is selected, don't fetch
-      if (!selectedSchool) return [];
-      
-      try {
-        const res = await fetch(`/api/staff-attendance?date=${formattedMonth}&schoolId=${selectedSchool.id}`);
-        if (!res.ok) {
-          throw new Error('Failed to fetch attendance data');
-        }
-        return await res.json();
-      } catch (error) {
-        console.error('Error fetching attendance:', error);
-        return [];
-      }
-    },
-    enabled: !!selectedSchool && !!date,
+    queryKey: ['/api/staff-attendance'],
+    enabled: !!selectedSchool,
   });
   
   // Process and filter data
