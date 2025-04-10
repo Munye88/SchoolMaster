@@ -296,3 +296,41 @@ export type InsertEvent = z.infer<typeof insertEventSchema>;
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+
+// Staff Attendance System
+export const staffAttendance = pgTable("staff_attendance", {
+  id: serial("id").primaryKey(),
+  date: date("date").notNull(),
+  instructorId: integer("instructor_id").notNull().references(() => instructors.id),
+  status: text("status", { 
+    enum: ["present", "absent", "late", "sick", "paternity", "pto", "bereavement"] 
+  }).notNull(),
+  timeIn: text("time_in"),
+  timeOut: text("time_out"),
+  comments: text("comments"),
+  recordedBy: integer("recorded_by").references(() => users.id)
+});
+
+export const insertStaffAttendanceSchema = createInsertSchema(staffAttendance).pick({
+  date: true,
+  instructorId: true,
+  status: true,
+  timeIn: true,
+  timeOut: true,
+  comments: true,
+  recordedBy: true
+});
+
+export const staffAttendanceRelations = relations(staffAttendance, ({ one }) => ({
+  instructor: one(instructors, {
+    fields: [staffAttendance.instructorId],
+    references: [instructors.id]
+  }),
+  recordedByUser: one(users, {
+    fields: [staffAttendance.recordedBy],
+    references: [users.id]
+  })
+}));
+
+export type StaffAttendance = typeof staffAttendance.$inferSelect;
+export type InsertStaffAttendance = z.infer<typeof insertStaffAttendanceSchema>;

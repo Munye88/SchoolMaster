@@ -11,7 +11,8 @@ import {
   insertStudentSchema,
   insertTestResultSchema,
   insertEvaluationSchema,
-  insertDocumentSchema
+  insertDocumentSchema,
+  insertStaffAttendanceSchema
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
