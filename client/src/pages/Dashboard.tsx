@@ -1,7 +1,8 @@
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { 
   GraduationCap, BookOpen, Users, Clock, Calendar, Check, X, ChevronRight,
-  User, UserCheck, Building, Activity, BarChart2
+  User, UserCheck, Building, Activity, BarChart2, Trash2, Plus, UserPlus
 } from "lucide-react";
 import { School as SchoolIcon } from "lucide-react";
 import { Course, Instructor, Student, TestResult, School } from "@shared/schema";
@@ -13,9 +14,22 @@ import { Link } from "wouter";
 import { format } from "date-fns";
 import { Calendar as CalendarComponent } from "@/components/dashboard/Calendar";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip, Cell } from 'recharts';
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const Dashboard = () => {
   const { selectedSchool, currentSchool } = useSchool();
+  
+  // State for to-do list
+  const [tasks, setTasks] = useState<{id: number; text: string; done: boolean}[]>(() => {
+    const savedTasks = localStorage.getItem('dashboard_tasks');
+    return savedTasks ? JSON.parse(savedTasks) : [
+      { id: 1, text: 'Submit staff evaluations', done: false },
+      { id: 2, text: 'Review test scores', done: true },
+      { id: 3, text: 'Order new books for KNFA', done: false },
+    ];
+  });
+  const [newTask, setNewTask] = useState('');
   
   // Fetch courses
   const { data: courses = [], isLoading: coursesLoading } = useQuery<Course[]>({
@@ -68,6 +82,29 @@ const Dashboard = () => {
   
   const formatDate = (date: Date | string) => {
     return format(new Date(date), "MMM dd, yyyy");
+  };
+  
+  // Functions for to-do list
+  useEffect(() => {
+    localStorage.setItem('dashboard_tasks', JSON.stringify(tasks));
+  }, [tasks]);
+  
+  const addTask = () => {
+    if (newTask.trim() !== '') {
+      const newId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
+      setTasks([...tasks, { id: newId, text: newTask.trim(), done: false }]);
+      setNewTask('');
+    }
+  };
+  
+  const toggleTaskDone = (id: number) => {
+    setTasks(tasks.map(task => 
+      task.id === id ? { ...task, done: !task.done } : task
+    ));
+  };
+  
+  const deleteTask = (id: number) => {
+    setTasks(tasks.filter(task => task.id !== id));
   };
 
   return (
@@ -263,47 +300,63 @@ const Dashboard = () => {
               <CardTitle className="text-lg text-[#0A2463]">Student Distribution by School</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
-              <div style={{ minWidth: 100, height: 250, width: '100%' }}>
-                <ResponsiveContainer aspect={2.5}>
-                  <BarChart
-                    layout="vertical"
-                    data={schools.map(school => {
-                      const schoolStudents = students.filter(s => s.schoolId === school.id).length;
-                      const percentage = totalStudents > 0 ? (schoolStudents / totalStudents) * 100 : 0;
-                      return {
-                        name: school.name,
-                        students: schoolStudents,
-                        percentage: parseFloat(percentage.toFixed(1)),
-                        color: school.name === 'KNFA' ? '#4299E1' : school.name === 'NFS East' ? '#48BB78' : '#F6AD55'
-                      };
-                    })}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                    <XAxis type="number" tickFormatter={(value) => `${value} students`} />
-                    <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 12 }} />
-                    <Tooltip 
-                      formatter={(value, name, props) => {
-                        return name === 'students' 
-                          ? [`${value} students (${props.payload.percentage}%)`, 'Students'] 
-                          : [value, name];
-                      }}
-                    />
-                    <Legend />
-                    <Bar 
-                      dataKey="students" 
-                      name="Students" 
-                      radius={[0, 4, 4, 0]}
-                    >
-                      {schools.map((school, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={school.name === 'KNFA' ? '#4299E1' : school.name === 'NFS East' ? '#48BB78' : '#F6AD55'} 
-                        />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+              <div className="space-y-5">
+                {/* KNFA Students */}
+                <div>
+                  <h3 className="text-md font-semibold mb-2 text-blue-600">KNFA</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                      <div className="flex items-center">
+                        <GraduationCap className="h-6 w-6 text-blue-500 mr-2" />
+                        <div>
+                          <p className="text-base font-medium">37 Cadets</p>
+                          <p className="text-xs text-gray-500">Aviation Program</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* NFS East Students */}
+                <div>
+                  <h3 className="text-md font-semibold mb-2 text-green-600">NFS East</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="bg-green-50 p-3 rounded-lg border border-green-100">
+                      <div className="flex items-center">
+                        <Users className="h-6 w-6 text-green-500 mr-2" />
+                        <div>
+                          <p className="text-base font-medium">27 Officers</p>
+                          <p className="text-xs text-gray-500">Technical English</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-green-50 p-3 rounded-lg border border-green-100">
+                      <div className="flex items-center">
+                        <UserPlus className="h-6 w-6 text-green-500 mr-2" />
+                        <div>
+                          <p className="text-base font-medium">21 Refreshers</p>
+                          <p className="text-xs text-gray-500">Refresher Course</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* NFS West Students */}
+                <div>
+                  <h3 className="text-md font-semibold mb-2 text-orange-600">NFS West</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
+                      <div className="flex items-center">
+                        <UserPlus className="h-6 w-6 text-orange-500 mr-2" />
+                        <div>
+                          <p className="text-base font-medium">37 Refreshers</p>
+                          <p className="text-xs text-gray-500">MMSC-223/224</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -396,6 +449,67 @@ const Dashboard = () => {
                       <span>11:00 - 13:00</span>
                     </div>
                   </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* To-Do List */}
+          <Card className="shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-lg text-[#0A2463]">My Tasks</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <Input 
+                    value={newTask} 
+                    onChange={(e) => setNewTask(e.target.value)}
+                    placeholder="Add a new task..."
+                    className="flex-1"
+                    onKeyDown={(e) => e.key === 'Enter' && addTask()}
+                  />
+                  <Button 
+                    onClick={addTask}
+                    size="icon"
+                    variant="outline"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {tasks.map(task => (
+                    <div key={task.id} className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-100 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <Checkbox 
+                          id={`task-${task.id}`} 
+                          checked={task.done} 
+                          onCheckedChange={() => toggleTaskDone(task.id)}
+                        />
+                        <label 
+                          htmlFor={`task-${task.id}`} 
+                          className={`text-sm cursor-pointer ${task.done ? 'line-through text-gray-400' : 'text-gray-700'}`}
+                        >
+                          {task.text}
+                        </label>
+                      </div>
+                      <button 
+                        onClick={() => deleteTask(task.id)} 
+                        className="text-gray-400 hover:text-red-500"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                  
+                  {tasks.length === 0 && (
+                    <div className="text-center py-4 text-gray-500 text-sm">
+                      No tasks yet. Add one above!
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>
