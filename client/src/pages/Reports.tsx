@@ -28,9 +28,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import { 
+  BarChart, Bar, 
+  LineChart as RechartsLineChart, Line, 
+  PieChart as RechartsPieChart, Pie, Cell,
+  AreaChart, Area,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
+} from 'recharts';
 
 const Reports = () => {
-  const { selectedSchool, currentSchool } = useSchool();
+  const { selectedSchool } = useSchool();
   const [timeRange, setTimeRange] = useState("month");
   const [reportType, setReportType] = useState("performance");
   
@@ -39,14 +46,65 @@ const Reports = () => {
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const currentMonth = months[currentDate.getMonth()];
   const currentYear = currentDate.getFullYear();
+  
+  // Sample data for charts
+  const schoolPerformanceData = [
+    { name: 'KNFA', alcpt: 85, bookTest: 83, ecl: 82, fill: '#0A2463' },
+    { name: 'NFS East', alcpt: 87, bookTest: 84, ecl: 84, fill: '#4CB944' },
+    { name: 'NFS West', alcpt: 83, bookTest: 80, ecl: 81, fill: '#FF8811' }
+  ];
+  
+  const courseCompletionData = [
+    { name: 'Completed', value: 78.6, fill: '#4CB944' },
+    { name: 'In Progress', value: 15.4, fill: '#FF8811' },
+    { name: 'Not Started', value: 6.0, fill: '#E63946' }
+  ];
+  
+  const monthlyPerformanceData = [
+    { month: 'Jan', alcpt: 79, bookTest: 78, ecl: 77 },
+    { month: 'Feb', alcpt: 80, bookTest: 79, ecl: 78 },
+    { month: 'Mar', alcpt: 82, bookTest: 80, ecl: 79 },
+    { month: 'Apr', alcpt: 83, bookTest: 81, ecl: 80 },
+    { month: 'May', alcpt: 84, bookTest: 82, ecl: 80 },
+    { month: 'Jun', alcpt: 84, bookTest: 82, ecl: 81 },
+    { month: 'Jul', alcpt: 85, bookTest: 83, ecl: 81 },
+    { month: 'Aug', alcpt: 86, bookTest: 83, ecl: 82 },
+    { month: 'Sep', alcpt: 85, bookTest: 83, ecl: 82 },
+    { month: 'Oct', alcpt: 84, bookTest: 82, ecl: 81 },
+    { month: 'Nov', alcpt: 85, bookTest: 83, ecl: 82 },
+    { month: 'Dec', alcpt: 86, bookTest: 84, ecl: 83 }
+  ];
+  
+  const instructorEvaluationData = [
+    { score: '95%+', count: 12, fill: '#4CB944' },
+    { score: '90-94%', count: 22, fill: '#85C88A' },
+    { score: '85-89%', count: 16, fill: '#FFB84C' },
+    { score: '80-84%', count: 8, fill: '#F16767' },
+    { score: '<80%', count: 2, fill: '#E63946' }
+  ];
+  
+  const attendanceData = [
+    { month: 'Jan', knfa: 95, nfsEast: 93, nfsWest: 91 },
+    { month: 'Feb', knfa: 94, nfsEast: 92, nfsWest: 90 },
+    { month: 'Mar', knfa: 96, nfsEast: 94, nfsWest: 93 },
+    { month: 'Apr', knfa: 95, nfsEast: 95, nfsWest: 92 },
+    { month: 'May', knfa: 93, nfsEast: 96, nfsWest: 90 },
+    { month: 'Jun', knfa: 94, nfsEast: 93, nfsWest: 91 },
+    { month: 'Jul', knfa: 96, nfsEast: 95, nfsWest: 92 },
+    { month: 'Aug', knfa: 97, nfsEast: 94, nfsWest: 93 },
+    { month: 'Sep', knfa: 96, nfsEast: 93, nfsWest: 94 },
+    { month: 'Oct', knfa: 95, nfsEast: 92, nfsWest: 92 },
+    { month: 'Nov', knfa: 94, nfsEast: 94, nfsWest: 93 },
+    { month: 'Dec', knfa: 95, nfsEast: 96, nfsWest: 94 }
+  ];
 
   return (
     <main className="flex-1 overflow-y-auto py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-[#0A2463] to-blue-600 bg-clip-text text-transparent">
-            {selectedSchool && currentSchool 
-              ? `${currentSchool.name} Reports` 
+            {selectedSchool 
+              ? `${selectedSchool.name} Reports` 
               : 'Analytics & Reports'}
           </h1>
           <p className="text-gray-600 mt-1 font-medium">Track performance and view detailed analytics</p>
@@ -213,19 +271,26 @@ const Reports = () => {
                   </DropdownMenu>
                 </div>
               </CardHeader>
-              <CardContent className="h-80 flex items-center justify-center bg-gradient-to-b from-blue-50 to-white p-6">
-                <div className="text-center w-full">
-                  <div className="rounded-lg bg-white shadow-inner p-10 border border-blue-100 h-64 flex items-center justify-center">
-                    <div>
-                      <BarChart2 className="h-16 w-16 text-blue-400 mx-auto mb-4 opacity-70" />
-                      <p className="text-base font-medium text-blue-900">
-                        PowerBI Dashboard
-                      </p>
-                      <p className="text-sm text-gray-500 mt-2">
-                        Interactive chart showing student performance metrics by school
-                      </p>
-                    </div>
-                  </div>
+              <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={schoolPerformanceData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                      <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                      <YAxis domain={[70, 90]} tick={{ fontSize: 12 }} />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                        formatter={(value) => [`${value}%`, '']}
+                      />
+                      <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                      <Bar dataKey="alcpt" name="ALCPT" fill="#0A2463" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="bookTest" name="Book Test" fill="#4CB944" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="ecl" name="ECL" fill="#FF8811" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
@@ -254,19 +319,31 @@ const Reports = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="h-80 flex items-center justify-center bg-gradient-to-b from-green-50 to-white p-6">
-                <div className="text-center w-full">
-                  <div className="rounded-lg bg-white shadow-inner p-10 border border-green-100 h-64 flex items-center justify-center">
-                    <div>
-                      <PieChart className="h-16 w-16 text-green-400 mx-auto mb-4 opacity-70" />
-                      <p className="text-base font-medium text-green-900">
-                        PowerBI Dashboard
-                      </p>
-                      <p className="text-sm text-gray-500 mt-2">
-                        Interactive chart showing course completion rates
-                      </p>
-                    </div>
-                  </div>
+              <CardContent className="h-80 bg-gradient-to-b from-green-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-green-100 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart margin={{ top: 20, right: 30, left: 20, bottom: 25 }}>
+                      <Pie
+                        data={courseCompletionData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {courseCompletionData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        formatter={(value) => [`${value}%`, 'Percentage']}
+                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                      />
+                      <Legend />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
