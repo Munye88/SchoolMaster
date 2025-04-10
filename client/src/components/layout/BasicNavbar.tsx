@@ -19,13 +19,19 @@ const BasicNavbar = () => {
   return (
     <div className="flex flex-col">
       {/* Top bar with logo and brand */}
-      <div className="bg-[#0A2463] text-white h-16 flex items-center justify-between px-6">
-        <div className="flex items-center">
-          <img src={govcioLogo} alt="GovCIO Logo" className="h-10 mr-3" />
-          <span className="font-bold text-xl">Naval Forces Schools</span>
+      <div className="bg-[#0A2463] text-white h-16 flex items-center px-6">
+        {/* Left - Logo */}
+        <div className="flex-shrink-0">
+          <img src={govcioLogo} alt="GovCIO Logo" className="h-10" />
         </div>
         
-        <div className="flex items-center space-x-4">
+        {/* Center - Title */}
+        <div className="flex-grow flex justify-center">
+          <span className="font-bold text-xl tracking-wide">GOVCIO/SAMS ELT PROGRAM</span>
+        </div>
+        
+        {/* Right - Controls */}
+        <div className="flex-shrink-0 flex items-center space-x-4">
           <div className="relative hidden md:block">
             <input 
               type="text"
