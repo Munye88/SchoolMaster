@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, Upload, Download, Filter, BarChart2, PieChart, FileText, User, Flag, UserCheck } from "lucide-react";
+import { Search, Upload, Download, Filter, BarChart2, PieChart, FileText, User, Flag, UserCheck, ArrowUpRight, Award, BookOpen, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { useSchool } from "@/hooks/useSchool";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -34,7 +34,9 @@ import {
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
-  PolarRadiusAxis
+  PolarRadiusAxis,
+  Area,
+  AreaChart
 } from "recharts";
 
 // Mock data for test results
