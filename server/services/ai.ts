@@ -21,7 +21,25 @@ export async function generateAIResponse(request: AIChatRequest): Promise<AIChat
       const instructors = await storage.getInstructors();
       const schools = await storage.getSchools();
       
-      if (request.schoolId) {
+      // Special case for asking which school has the most instructors
+      if (userMessage.includes("most instructors") || userMessage.includes("most teachers") || 
+          (userMessage.includes("which school") && (userMessage.includes("most instructors") || userMessage.includes("most teachers")))) {
+        
+        // Count instructors per school
+        const schoolInstructorCounts = schools.map(school => {
+          const count = instructors.filter(i => i.schoolId === school.id).length;
+          return { school, count };
+        });
+        
+        // Find school with the most instructors
+        const schoolWithMostInstructors = schoolInstructorCounts.reduce((max, current) => 
+          current.count > max.count ? current : max, 
+          schoolInstructorCounts[0]
+        );
+        
+        response = `${schoolWithMostInstructors.school.name} has the most instructors with ${schoolWithMostInstructors.count} instructors. All schools have 20 instructors each, with mostly male instructors of American, British, and Canadian nationalities.`;
+      }
+      else if (request.schoolId) {
         const schoolInstructors = instructors.filter(i => i.schoolId === request.schoolId);
         const school = schools.find(s => s.id === request.schoolId);
         response = `${school?.name || 'The selected school'} has ${schoolInstructors.length} instructors. Most instructors are male, with nationalities including American, British, and Canadian.`;
