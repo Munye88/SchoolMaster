@@ -11,7 +11,7 @@ import govcioLogo from "../../assets/govcio-logo.png";
 
 const BasicNavbar = () => {
   const [location] = useLocation();
-  const { schools, selectedSchool, setSelectedSchool, currentSchool } = useSchool();
+  const { schools, selectedSchool, selectSchool } = useSchool();
   const { user, logoutMutation } = useAuth();
   const [showSchoolLinks, setShowSchoolLinks] = useState<string | null>(null);
   const [showAdminLinks, setShowAdminLinks] = useState<boolean>(false);
@@ -136,12 +136,12 @@ const BasicNavbar = () => {
                       <button
                         key={school.id}
                         onClick={() => {
-                          setSelectedSchool(school.code);
+                          selectSchool(school);
                           setShowSchoolLinks(school.code);
                         }}
                         className={cn(
                           "w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
-                          selectedSchool === school.code && "text-[#0A2463] bg-gray-100 font-medium"
+                          selectedSchool?.code === school.code && "text-[#0A2463] bg-gray-100 font-medium"
                         )}
                       >
                         {school.name}
