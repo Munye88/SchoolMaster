@@ -299,61 +299,91 @@ const Dashboard = () => {
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-lg text-[#0A2463]">Student Distribution by School</CardTitle>
             </CardHeader>
-            <CardContent className="p-4">
-              <div className="space-y-5">
-                {/* KNFA Students */}
-                <div>
-                  <h3 className="text-md font-semibold mb-2 text-blue-600">KNFA</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                      <div className="flex items-center">
-                        <GraduationCap className="h-6 w-6 text-blue-500 mr-2" />
-                        <div>
-                          <p className="text-base font-medium">37 Cadets</p>
-                          <p className="text-xs text-gray-500">Aviation Program</p>
+            <CardContent className="p-4 pb-6">
+              <div className="grid grid-cols-1 gap-6">
+                {/* KNFA */}
+                <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg shadow-lg text-white">
+                  <div className="absolute right-0 top-0 w-24 h-24 opacity-20">
+                    <GraduationCap className="w-full h-full" />
+                  </div>
+                  <div className="p-5">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-xl font-bold tracking-wide">KNFA</h3>
+                      <div className="bg-white text-blue-700 text-xs font-bold uppercase rounded-full px-3 py-1">
+                        Aviation
+                      </div>
+                    </div>
+                    <div className="mt-6 flex items-baseline">
+                      <span className="text-4xl font-extrabold">37</span>
+                      <span className="ml-2 text-xl opacity-80">Cadets</span>
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-white"></div>
+                        <span className="text-sm opacity-90">Aviation Program</span>
+                      </div>
+                      <span className="text-sm font-medium opacity-90">100%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* NFS East */}
+                <div className="relative overflow-hidden bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-lg shadow-lg text-white">
+                  <div className="absolute right-0 top-0 w-24 h-24 opacity-20">
+                    <Users className="w-full h-full" />
+                  </div>
+                  <div className="p-5">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-xl font-bold tracking-wide">NFS East</h3>
+                      <div className="bg-white text-emerald-700 text-xs font-bold uppercase rounded-full px-3 py-1">
+                        Mixed
+                      </div>
+                    </div>
+                    <div className="mt-6 flex items-baseline">
+                      <span className="text-4xl font-extrabold">48</span>
+                      <span className="ml-2 text-xl opacity-80">Students</span>
+                    </div>
+                    <div className="mt-4 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-emerald-300"></div>
+                          <span className="text-sm opacity-90">Officers (Technical English)</span>
                         </div>
+                        <span className="text-sm font-medium opacity-90">27</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-white"></div>
+                          <span className="text-sm opacity-90">Refreshers</span>
+                        </div>
+                        <span className="text-sm font-medium opacity-90">21</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* NFS East Students */}
-                <div>
-                  <h3 className="text-md font-semibold mb-2 text-green-600">NFS East</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="bg-green-50 p-3 rounded-lg border border-green-100">
-                      <div className="flex items-center">
-                        <Users className="h-6 w-6 text-green-500 mr-2" />
-                        <div>
-                          <p className="text-base font-medium">27 Officers</p>
-                          <p className="text-xs text-gray-500">Technical English</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bg-green-50 p-3 rounded-lg border border-green-100">
-                      <div className="flex items-center">
-                        <UserPlus className="h-6 w-6 text-green-500 mr-2" />
-                        <div>
-                          <p className="text-base font-medium">21 Refreshers</p>
-                          <p className="text-xs text-gray-500">Refresher Course</p>
-                        </div>
-                      </div>
-                    </div>
+                {/* NFS West */}
+                <div className="relative overflow-hidden bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg shadow-lg text-white">
+                  <div className="absolute right-0 top-0 w-24 h-24 opacity-20">
+                    <UserPlus className="w-full h-full" />
                   </div>
-                </div>
-
-                {/* NFS West Students */}
-                <div>
-                  <h3 className="text-md font-semibold mb-2 text-orange-600">NFS West</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
-                      <div className="flex items-center">
-                        <UserPlus className="h-6 w-6 text-orange-500 mr-2" />
-                        <div>
-                          <p className="text-base font-medium">37 Refreshers</p>
-                          <p className="text-xs text-gray-500">MMSC-223/224</p>
-                        </div>
+                  <div className="p-5">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-xl font-bold tracking-wide">NFS West</h3>
+                      <div className="bg-white text-amber-600 text-xs font-bold uppercase rounded-full px-3 py-1">
+                        Refresher
                       </div>
+                    </div>
+                    <div className="mt-6 flex items-baseline">
+                      <span className="text-4xl font-extrabold">37</span>
+                      <span className="ml-2 text-xl opacity-80">Students</span>
+                    </div>
+                    <div className="mt-4 flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-white"></div>
+                        <span className="text-sm opacity-90">MMSC-223/224</span>
+                      </div>
+                      <span className="text-sm font-medium opacity-90">100%</span>
                     </div>
                   </div>
                 </div>
