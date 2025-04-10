@@ -45,7 +45,7 @@ function generateAttendanceData(instructors: Instructor[]) {
     return {
       id: instructor.id,
       name: instructor.name,
-      position: instructor.position,
+      position: instructor.role || "ELT Instructor", // Use role or default to "ELT Instructor"
       present,
       late,
       absent,
@@ -314,70 +314,73 @@ const StaffAttendance = () => {
             </CardHeader>
             <CardContent className="p-6">
               <div className="flex flex-col items-center justify-center">
-                <div className="text-center mb-6">
-                  <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 max-w-xl mx-auto">
-                    <FileText size={60} className="text-blue-600 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-blue-800 mb-2">Staff Attendance Spreadsheet</h3>
-                    <p className="text-sm text-gray-600 mb-6">
-                      The live attendance data is maintained in an Excel spreadsheet. Click the button below to access the most up-to-date attendance information.
-                    </p>
-                    <a 
-                      href={excelFileUrl}
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md flex items-center gap-2 transition mx-auto w-fit"
-                    >
-                      <ExternalLink size={20} /> Open Staff Attendance Excel
-                    </a>
+                <div className="mb-4 w-full">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-lg font-semibold text-blue-800">Staff Attendance Spreadsheet</h3>
+                    <div className="flex gap-2">
+                      <a 
+                        href={excelFileUrl}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
+                      >
+                        <ExternalLink size={16} /> Open in new tab
+                      </a>
+                      <a 
+                        href={`${excelFileUrl}&action=edit`}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
+                      >
+                        <Edit size={16} /> Edit
+                      </a>
+                      <a 
+                        href={`${excelFileUrl}&download=1`}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center gap-1"
+                      >
+                        <Download size={16} /> Download
+                      </a>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="w-full max-w-xl">
-                  <h4 className="font-medium text-gray-700 mb-3">Alternative Access Options:</h4>
-                  <ul className="space-y-3">
-                    <li className="flex items-start gap-3 p-3 rounded-md bg-gray-50 hover:bg-gray-100 transition">
-                      <Download size={20} className="text-gray-600 mt-0.5" />
-                      <div>
-                        <a 
-                          href={`${excelFileUrl}&download=1`}
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 font-medium"
-                        >
-                          Download a copy of the spreadsheet
-                        </a>
-                        <p className="text-sm text-gray-500 mt-1">Save a local copy to your device for offline access</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3 p-3 rounded-md bg-gray-50 hover:bg-gray-100 transition">
-                      <Edit size={20} className="text-gray-600 mt-0.5" />
-                      <div>
-                        <a 
-                          href={`${excelFileUrl}&action=edit`}
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 font-medium"
-                        >
-                          Edit in Excel Online
-                        </a>
-                        <p className="text-sm text-gray-500 mt-1">Make changes directly in Excel Online (requires permission)</p>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3 p-3 rounded-md bg-gray-50 hover:bg-gray-100 transition">
-                      <Share2 size={20} className="text-gray-600 mt-0.5" />
-                      <div>
-                        <a 
-                          href={`${excelFileUrl}&share=1`}
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 font-medium"
-                        >
-                          Share spreadsheet
-                        </a>
-                        <p className="text-sm text-gray-500 mt-1">Share access with other staff members</p>
-                      </div>
-                    </li>
-                  </ul>
+
+                  {/* Primary Excel Embed - Using different iframe approaches for maximum compatibility */}
+                  <div className="w-full rounded-md overflow-hidden border border-gray-200 bg-white mb-4">
+                    <iframe 
+                      src={`${excelFileUrl}&embed=true`}
+                      width="100%" 
+                      height="600px" 
+                      frameBorder="0" 
+                      scrolling="yes"
+                      title="Staff Attendance Excel"
+                      className="bg-white"
+                      allowFullScreen={true}
+                    >
+                      This browser does not support embedding Office documents.
+                    </iframe>
+                  </div>
+                  
+                  {/* Backup Embed Options */}
+                  <div className="text-sm text-gray-500 mt-4">
+                    <p>If the Excel spreadsheet isn't displaying properly above, try these alternative viewing options:</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                      <Button 
+                        variant="outline" 
+                        className="text-sm"
+                        onClick={() => window.open("https://view.officeapps.live.com/op/embed.aspx?src=" + encodeURIComponent(excelFileUrl), "_blank")}
+                      >
+                        <FileText className="mr-2 h-4 w-4" /> View in Office Online
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="text-sm"
+                        onClick={() => window.open(excelFileUrl, "_blank")}
+                      >
+                        <ExternalLink className="mr-2 h-4 w-4" /> Open in SharePoint
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
