@@ -854,6 +854,158 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Staff Attendance
+  app.get("/api/staff-attendance", async (req, res) => {
+    try {
+      // Check for query parameters
+      const { date, schoolId, instructorId } = req.query;
+      
+      if (instructorId) {
+        // Get attendance for a specific instructor
+        const instructorIdNum = parseInt(instructorId as string);
+        if (isNaN(instructorIdNum)) {
+          return res.status(400).json({ message: "Invalid instructor ID" });
+        }
+        const attendance = await storage.getStaffAttendanceByInstructor(instructorIdNum);
+        return res.json(attendance);
+      } 
+      
+      if (date && schoolId) {
+        // Filter by date and school
+        const schoolIdNum = parseInt(schoolId as string);
+        if (isNaN(schoolIdNum)) {
+          return res.status(400).json({ message: "Invalid school ID" });
+        }
+        
+        // Get all attendance records
+        const allAttendance = await storage.getAllStaffAttendance();
+        
+        // Filter by date (prefix match) and by instructors from the specified school
+        const schoolInstructors = await storage.getInstructorsBySchool(schoolIdNum);
+        const instructorIds = schoolInstructors.map(instructor => instructor.id);
+        
+        const filteredAttendance = allAttendance.filter(record => {
+          return record.date.startsWith(date as string) && 
+                 instructorIds.includes(record.instructorId);
+        });
+        
+        return res.json(filteredAttendance);
+      }
+      
+      if (date) {
+        // Filter by date only
+        const attendance = await storage.getStaffAttendanceByDate(date as string);
+        return res.json(attendance);
+      }
+      
+      // Get all records if no specific filters
+      const attendance = await storage.getAllStaffAttendance();
+      res.json(attendance);
+    } catch (error) {
+      console.error("Error fetching staff attendance:", error);
+      res.status(500).json({ message: "Failed to fetch staff attendance" });
+    }
+  });
+  
+  app.get("/api/staff-attendance/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid attendance record ID" });
+    }
+    
+    const attendance = await storage.getStaffAttendance(id);
+    if (!attendance) {
+      return res.status(404).json({ message: "Attendance record not found" });
+    }
+    
+    res.json(attendance);
+  });
+  
+  app.post("/api/staff-attendance", async (req, res) => {
+    try {
+      const attendanceData = insertStaffAttendanceSchema.parse(req.body);
+      const attendance = await storage.createStaffAttendance(attendanceData);
+      
+      // Log activity
+      const instructor = await storage.getInstructor(attendance.instructorId);
+      await storage.createActivity({
+        type: "attendance_recorded",
+        description: `Attendance for "${instructor?.name || 'Instructor'}" recorded as ${attendance.status}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(201).json(attendance);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid attendance data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create attendance record" });
+    }
+  });
+  
+  app.patch("/api/staff-attendance/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid attendance record ID" });
+    }
+    
+    try {
+      const updateData = insertStaffAttendanceSchema.partial().parse(req.body);
+      const updatedAttendance = await storage.updateStaffAttendance(id, updateData);
+      
+      if (!updatedAttendance) {
+        return res.status(404).json({ message: "Attendance record not found" });
+      }
+      
+      // Log activity
+      const instructor = await storage.getInstructor(updatedAttendance.instructorId);
+      await storage.createActivity({
+        type: "attendance_updated",
+        description: `Attendance for "${instructor?.name || 'Instructor'}" updated to ${updatedAttendance.status}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(updatedAttendance);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid attendance data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update attendance record" });
+    }
+  });
+  
+  app.delete("/api/staff-attendance/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid attendance record ID" });
+    }
+    
+    try {
+      // Get the attendance record before deleting for the activity log
+      const attendance = await storage.getStaffAttendance(id);
+      if (!attendance) {
+        return res.status(404).json({ message: "Attendance record not found" });
+      }
+      
+      const instructor = await storage.getInstructor(attendance.instructorId);
+      await storage.deleteStaffAttendance(id);
+      
+      // Log activity
+      await storage.createActivity({
+        type: "attendance_deleted",
+        description: `Attendance record for "${instructor?.name || 'Instructor'}" deleted`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete attendance record" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

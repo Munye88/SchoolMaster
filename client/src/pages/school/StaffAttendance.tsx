@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Instructor } from "@shared/schema";
 import { useSchool } from "@/hooks/useSchool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +12,12 @@ import {
   Share2, 
   FileText, 
   Edit, 
-  ExternalLink
+  ExternalLink,
+  Plus,
+  Check,
+  X,
+  Clock,
+  AlertTriangle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +37,19 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 // Staff attendance interface
 interface StaffAttendance {
@@ -100,12 +118,231 @@ function processAttendanceData(
   });
 }
 
+// Attendance form states and functions
+interface AttendanceFormData {
+  instructorId: number;
+  date: string;
+  status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement";
+  timeIn: string;
+  timeOut: string;
+  comments: string;
+}
+
+// Component for recording new attendance
+const AttendanceForm: React.FC<{
+  instructors: Instructor[];
+  onClose: () => void;
+}> = ({ instructors, onClose }) => {
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [formData, setFormData] = useState<AttendanceFormData>({
+    instructorId: 0,
+    date: format(new Date(), 'yyyy-MM-dd'),
+    status: "present",
+    timeIn: "09:00",
+    timeOut: "17:00",
+    comments: ""
+  });
+  
+  // Mutation for creating attendance record
+  const createAttendanceMutation = useMutation({
+    mutationFn: async (data: AttendanceFormData) => {
+      const response = await fetch('/api/staff-attendance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...data,
+          recordedBy: user?.id || 1
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save attendance record');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      // Refresh attendance data
+      queryClient.invalidateQueries({ queryKey: ['/api/staff-attendance'] });
+      toast({
+        title: "Success!",
+        description: "Attendance record has been saved.",
+        variant: "default",
+      });
+      onClose();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error!",
+        description: `Failed to save attendance record: ${error.message}`,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+      setFormData(prev => ({ ...prev, date: format(date, 'yyyy-MM-dd') }));
+    }
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formData.instructorId === 0) {
+      toast({
+        title: "Error!",
+        description: "Please select an instructor.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    createAttendanceMutation.mutate(formData);
+  };
+  
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="instructorId">Instructor</Label>
+        <Select 
+          name="instructorId" 
+          value={formData.instructorId.toString()} 
+          onValueChange={(value) => setFormData(prev => ({ ...prev, instructorId: parseInt(value) }))}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select instructor" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0">Select instructor</SelectItem>
+            {instructors.map((instructor) => (
+              <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                {instructor.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="date">Date</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !selectedDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {selectedDate ? format(selectedDate, "MMMM dd, yyyy") : <span>Select date</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={handleDateChange}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="status">Status</Label>
+        <Select 
+          name="status" 
+          value={formData.status} 
+          onValueChange={(value: any) => setFormData(prev => ({ ...prev, status: value }))}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="present">Present</SelectItem>
+            <SelectItem value="late">Late</SelectItem>
+            <SelectItem value="absent">Absent</SelectItem>
+            <SelectItem value="sick">Sick</SelectItem>
+            <SelectItem value="paternity">Paternity</SelectItem>
+            <SelectItem value="pto">PTO</SelectItem>
+            <SelectItem value="bereavement">Bereavement</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="timeIn">Time In</Label>
+          <Input
+            id="timeIn"
+            name="timeIn"
+            type="time"
+            value={formData.timeIn}
+            onChange={handleInputChange}
+            disabled={formData.status === "absent"}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="timeOut">Time Out</Label>
+          <Input
+            id="timeOut"
+            name="timeOut"
+            type="time"
+            value={formData.timeOut}
+            onChange={handleInputChange}
+            disabled={formData.status === "absent"}
+          />
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="comments">Comments</Label>
+        <Textarea
+          id="comments"
+          name="comments"
+          value={formData.comments}
+          onChange={handleInputChange}
+          placeholder="Add any notes or comments about the attendance record"
+          rows={3}
+        />
+      </div>
+      
+      <DialogFooter>
+        <Button type="button" variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button 
+          type="submit" 
+          className="bg-blue-600 hover:bg-blue-700"
+          disabled={createAttendanceMutation.isPending}
+        >
+          {createAttendanceMutation.isPending ? "Saving..." : "Save Record"}
+        </Button>
+      </DialogFooter>
+    </form>
+  );
+};
+
 const StaffAttendance = () => {
   const { selectedSchool } = useSchool();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedView, setSelectedView] = useState("month");
   const [selectedTab, setSelectedTab] = useState("overview");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
   
   // Fetch instructors for the selected school
   const { data: instructors = [], isLoading: instructorsLoading } = useQuery<Instructor[]>({
@@ -273,6 +510,26 @@ const StaffAttendance = () => {
         <Button variant="outline" className="gap-2">
           <Filter size={16} /> More Filters
         </Button>
+        
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-green-600 hover:bg-green-700 gap-2">
+              <Plus size={16} /> Record Attendance
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[525px]">
+            <DialogHeader>
+              <DialogTitle>Record Staff Attendance</DialogTitle>
+              <DialogDescription>
+                Enter attendance details for an instructor. Click save when you're done.
+              </DialogDescription>
+            </DialogHeader>
+            <AttendanceForm 
+              instructors={schoolInstructors} 
+              onClose={() => setIsDialogOpen(false)} 
+            />
+          </DialogContent>
+        </Dialog>
       </div>
       
       {/* Summary Cards */}
@@ -470,16 +727,123 @@ const StaffAttendance = () => {
         
         <TabsContent value="detailed" className="space-y-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Daily Attendance Records</CardTitle>
+              <Button 
+                onClick={() => setIsDialogOpen(true)} 
+                className="gap-2 bg-green-600 hover:bg-green-700"
+              >
+                <Plus size={16} /> Add Record
+              </Button>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <h3 className="text-lg font-medium text-gray-500 mb-4">Daily attendance records will be populated from PowerBI</h3>
-                <p className="text-sm text-gray-400 max-w-md mx-auto">
-                  Connect your Excel sheet with detailed attendance data to populate this section with actual daily attendance logs.
-                </p>
-                <Button className="mt-4 bg-[#0A2463] hover:bg-[#071A4A]">Connect PowerBI</Button>
+              {filteredData.length === 0 ? (
+                <div className="text-center py-8">
+                  <h3 className="text-lg font-medium text-gray-500 mb-4">No attendance records found</h3>
+                  <p className="text-sm text-gray-400 max-w-md mx-auto">
+                    {selectedSchool ? 
+                      `No attendance records found for ${selectedSchool.name} in ${format(date || new Date(), "MMMM yyyy")}` : 
+                      'Please select a school to view attendance records'}
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Instructor</TableHead>
+                        <TableHead>Attendance Rate</TableHead>
+                        <TableHead className="hidden sm:table-cell">Present</TableHead>
+                        <TableHead className="hidden sm:table-cell">Late</TableHead>
+                        <TableHead className="hidden sm:table-cell">Absent</TableHead>
+                        <TableHead className="hidden md:table-cell">Other</TableHead>
+                        <TableHead className="text-right">Details</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredData.map((instructor: any) => (
+                        <TableRow key={instructor.id}>
+                          <TableCell className="font-medium">{instructor.name}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <div 
+                                className={`w-3 h-3 rounded-full ${
+                                  instructor.attendanceRate >= 90 ? 'bg-green-500' : 
+                                  instructor.attendanceRate >= 75 ? 'bg-amber-500' : 
+                                  'bg-red-500'
+                                }`}
+                              />
+                              <span>{instructor.attendanceRate}%</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell">{instructor.present}</TableCell>
+                          <TableCell className="hidden sm:table-cell">{instructor.late}</TableCell>
+                          <TableCell className="hidden sm:table-cell">{instructor.absent}</TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {instructor.sick + instructor.paternity + instructor.pto + instructor.bereavement}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="h-8 text-xs"
+                              onClick={() => {
+                                // Open a dialog to show detailed records (in a future implementation)
+                                console.log('View details for', instructor.name);
+                              }}
+                            >
+                              View Details
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+              
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-4">Recent Attendance Activities</h3>
+                {attendanceRecords.length > 0 ? (
+                  <div className="space-y-4">
+                    {attendanceRecords.slice(0, 5).map((record) => {
+                      // Find the instructor for this record
+                      const instructor = instructors.find(i => i.id === record.instructorId);
+                      if (!instructor) return null;
+                      
+                      const statusIcon = 
+                        record.status === 'present' ? <Check className="text-green-500" /> :
+                        record.status === 'late' ? <Clock className="text-amber-500" /> :
+                        record.status === 'absent' ? <X className="text-red-500" /> :
+                        <AlertTriangle className="text-blue-500" />;
+                        
+                      return (
+                        <div 
+                          key={record.id} 
+                          className="flex items-center gap-4 p-3 border rounded-md bg-white"
+                        >
+                          <div className="p-2 bg-gray-100 rounded-full">
+                            {statusIcon}
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium">{instructor.name}</div>
+                            <div className="text-sm text-gray-500">
+                              {format(new Date(record.date), "MMMM d, yyyy")} - {record.status}
+                              {record.timeIn && record.status !== 'absent' && ` (${record.timeIn} - ${record.timeOut || 'N/A'})`}
+                            </div>
+                          </div>
+                          <Button variant="ghost" size="sm">
+                            <Edit size={16} />
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-gray-500">
+                    No recent attendance activities
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
