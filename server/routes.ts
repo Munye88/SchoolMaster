@@ -17,8 +17,12 @@ import {
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
 import { AIChatRequest } from "../client/src/lib/ai-types";
+import { initDatabase } from "./initDb";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize the database
+  await initDatabase();
+  
   // Set up authentication
   setupAuth(app);
   
