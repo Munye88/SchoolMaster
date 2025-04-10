@@ -233,8 +233,8 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="h-full flex items-center justify-center">
-                    <ResponsiveContainer width="100%" height={200}>
+                  <div style={{ width: '100%', height: 200 }}>
+                    <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={nationalityData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                         <XAxis dataKey="name" tick={{ fontSize: 12 }} />
@@ -263,7 +263,7 @@ const Dashboard = () => {
               <CardTitle className="text-lg text-[#0A2463]">Student Distribution by School</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
-              <div className="h-64">
+              <div style={{ width: '100%', height: 250 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     layout="vertical"
