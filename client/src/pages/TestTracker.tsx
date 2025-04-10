@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, Upload, Download, Filter, BarChart2, PieChart, FileText, User, Flag, UserCheck, ArrowUpRight, Award, BookOpen, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { Search, Upload, Download, Filter, BarChart2, PieChart, FileText, User, Flag, UserCheck, ArrowUpRight, Award, BookOpen, CheckCircle2, XCircle, Clock, TrendingUp } from "lucide-react";
 import { useSchool } from "@/hooks/useSchool";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -331,7 +331,7 @@ const TestTracker = () => {
   };
 
   // Reference to hidden file input
-  const fileInputRef = useState<HTMLInputElement | null>(null);
+  const [fileInputRef, setFileInputRef] = useState<HTMLInputElement | null>(null);
   
   // Handle Excel file selection
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -360,18 +360,20 @@ const TestTracker = () => {
   // Trigger file input click
   const handleImportExcel = () => {
     // Create a file input if it doesn't exist
-    if (!fileInputRef.current) {
+    if (!fileInputRef) {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = '.xlsx,.xls';
       input.style.display = 'none';
       input.onchange = handleFileChange as any;
       document.body.appendChild(input);
-      fileInputRef.current = input;
+      setFileInputRef(input);
     }
     
     // Trigger the file input click
-    fileInputRef.current.click();
+    if (fileInputRef) {
+      fileInputRef.click();
+    }
   };
 
   return (
@@ -730,10 +732,16 @@ const TestTracker = () => {
           </Card>
             
             {/* Performance Trends */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Performance Trends (3 Months)</h3>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
+            <Card className="shadow-md border border-amber-100 hover:shadow-lg transition-all duration-300">
+              <CardHeader className="pb-2 bg-amber-50 border-b border-amber-100">
+                <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
+                  <TrendingUp className="mr-2 h-5 w-5 text-amber-600" />
+                  Performance Trends (3 Months)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={(() => {
                       // Get current date and previous 3 months
@@ -811,7 +819,8 @@ const TestTracker = () => {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-            </div>
+            </CardContent>
+          </Card>
           </div>
           
           <div className="mt-8 text-center">
