@@ -1,19 +1,27 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useSchool } from "@/hooks/useSchool";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { 
-  Home, School, BookOpen, GraduationCap, ListChecks, BarChart2, Settings, Search, Bell
+  Home, School, BookOpen, GraduationCap, ListChecks, BarChart2, Settings, Search, Bell,
+  LogOut, LogIn, UserCircle
 } from "lucide-react";
 import govcioLogo from "../../assets/govcio-logo.png";
 
 const BasicNavbar = () => {
   const [location] = useLocation();
   const { schools, selectedSchool, setSelectedSchool, currentSchool } = useSchool();
+  const { user, logoutMutation } = useAuth();
   const [showSchoolLinks, setShowSchoolLinks] = useState<string | null>(null);
+  const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
   
   const isActive = (path: string) => {
     return location === path || location.startsWith(path + "/");
+  };
+  
+  const handleLogout = () => {
+    logoutMutation.mutate();
   };
 
   return (
@@ -49,8 +57,45 @@ const BasicNavbar = () => {
             </span>
           </button>
           
-          <div className="w-8 h-8 rounded-full bg-[#3E92CC] text-white flex items-center justify-center font-bold">
-            AD
+          {/* User menu */}
+          <div className="relative">
+            <button 
+              onClick={() => setShowUserMenu(!showUserMenu)} 
+              className="flex items-center space-x-2 focus:outline-none"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#3E92CC] text-white flex items-center justify-center font-bold">
+                {user?.name ? user.name.substring(0, 2).toUpperCase() : user?.username.substring(0, 2).toUpperCase()}
+              </div>
+            </button>
+            
+            {showUserMenu && (
+              <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <div className="font-medium text-sm">{user?.name || user?.username}</div>
+                  <div className="text-xs text-gray-500">{user?.email}</div>
+                </div>
+                <div className="py-1">
+                  <Link
+                    href="/profile"
+                    onClick={() => setShowUserMenu(false)}
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                  >
+                    <UserCircle className="h-4 w-4 mr-2" />
+                    <span>Profile</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setShowUserMenu(false);
+                    }}
+                    className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    <span>Sign out</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -279,11 +324,14 @@ const BasicNavbar = () => {
         </div>
       </div>
       
-      {/* Click outside handler to close dropdown */}
-      {showSchoolLinks && (
+      {/* Click outside handler to close dropdowns */}
+      {(showSchoolLinks || showUserMenu) && (
         <div 
           className="fixed inset-0 bg-transparent z-40"
-          onClick={() => setShowSchoolLinks(null)}
+          onClick={() => {
+            setShowSchoolLinks(null);
+            setShowUserMenu(false);
+          }}
         />
       )}
     </div>
