@@ -1,0 +1,103 @@
+Project Purpose:
+To create an integrated “Training & Development” section on the existing school management website used by the Functional Manager overseeing three schools. The goal is to provide senior ELTs with structured professional development resources to strengthen their leadership, management, and instructional coaching abilities.
+
+This platform will promote:
+
+Leadership consistency across all campuses
+
+Increased confidence in decision-making
+
+Improved team performance
+
+A culture of continuous learning
+
+📁 Platform Features:
+Modular learning organized by leadership topics
+
+Embedded articles and video resources
+
+Simple, clean user interface with clickable categories
+
+Future-ready: allows for expansion with quizzes, reflections, or certifications
+
+📚 Core Training Categories & Modules:
+🔹 1. Leadership Skills
+Module: Building Trust and Credibility
+
+📝 Article: Harvard Business - It All Starts with Trust
+
+🎥 Video: How Great Leaders Build Trust – YouTube
+
+Module: Leading by Example
+
+📝 Article: Leadership and Integrity – MindTools
+
+🎥 Video: Lead by Example – Simon Sinek
+
+🔹 2. Communication Techniques
+Module: Effective Communication for Managers
+
+📝 Article: Effective Communication for Managers – PMA
+
+🎥 Video: How Leaders Communicate Effectively
+
+Module: Giving & Receiving Feedback
+
+📝 Article: Feedback That Works – Harvard Business Review
+
+🎥 Video: How to Give Feedback – YouTube
+
+🔹 3. Conflict Resolution
+Module: Managing Difficult Conversations
+
+📝 Article: Conflict Resolution Training – CCL
+
+🎥 Video: Conflict Resolution at Work – YouTube
+
+Module: De-escalation Techniques
+
+📝 Article: Dealing with Conflict in the Workplace – Forbes
+
+🎥 Video: De-escalation Skills – YouTube
+
+🔹 4. Decision Making
+Module: Strategic Decision-Making
+
+📝 Course: Decision Making for Leaders – Kepner-Tregoe
+
+🎥 Video: Making Better Decisions – YouTube
+
+Module: Ethical Leadership
+
+📝 Article: Ethical Decision-Making in Leadership – University of Notre Dame
+
+🎥 Video: Ethical Leadership Explained – YouTube
+
+🔹 5. Team Building
+Module: Motivating Your Team
+
+📝 Article: 14 Ways to Boost Teamwork – Forbes
+
+🎥 Video: How to Build a Motivated Team – YouTube
+
+Module: Delegation & Trust
+
+📝 Article: Why Delegation Is Essential – Harvard Business Review
+
+🎥 Video: Delegation Strategies for Leaders – YouTube
+
+🖥️ Suggested Layout for Replit Integration
+Each module page should include:
+
+Module Title
+
+Brief Introduction (2–3 sentences)
+
+Embedded or linked article(s)
+
+Embedded or linked video(s)
+
+“Mark as Complete” or reflection section (optional future enhancement)
+
+Use a collapsible section or tabs to organize modules under each category for clean user experience.
+

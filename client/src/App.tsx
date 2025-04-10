@@ -11,6 +11,7 @@ import TestTracker from "@/pages/TestTracker";
 import Reports from "@/pages/Reports";
 import Documents from "@/pages/Documents";
 import Administration from "@/pages/Administration";
+import TrainingDevelopment from "@/pages/TrainingDevelopment";
 import BasicNavbar from "@/components/layout/BasicNavbar";
 import SchoolInstructorProfiles from "./pages/school/InstructorProfiles";
 import SchoolTimetable from "./pages/school/Timetable";
@@ -68,6 +69,14 @@ function Router() {
           <ProtectedRoute path="/administration/employee-handbook" component={Administration} />
           <ProtectedRoute path="/administration/performance-policy" component={Administration} />
           <ProtectedRoute path="/administration/classroom-evaluation" component={Administration} />
+          
+          {/* Training & Development routes */}
+          <ProtectedRoute path="/training-development" component={TrainingDevelopment} />
+          <ProtectedRoute path="/training-development/leadership-skills" component={TrainingDevelopment} />
+          <ProtectedRoute path="/training-development/communication-techniques" component={TrainingDevelopment} />
+          <ProtectedRoute path="/training-development/conflict-resolution" component={TrainingDevelopment} />
+          <ProtectedRoute path="/training-development/decision-making" component={TrainingDevelopment} />
+          <ProtectedRoute path="/training-development/team-building" component={TrainingDevelopment} />
           
           {/* Management routes */}
           <ProtectedRoute path="/management/schools" component={ManageSchools} />

@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { 
   Home, School, BookOpen, GraduationCap, ListChecks, BarChart2, Settings, Search, Bell,
-  LogOut, LogIn, UserCircle
+  LogOut, LogIn, UserCircle, Lightbulb, BookmarkIcon, BookText
 } from "lucide-react";
 import govcioLogo from "../../assets/govcio-logo.png";
 
