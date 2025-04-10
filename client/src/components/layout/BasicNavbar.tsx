@@ -12,6 +12,9 @@ import govcioLogo from "../../assets/govcio-logo.png";
 const BasicNavbar = () => {
   const [location] = useLocation();
   const { schools, selectedSchool, selectSchool } = useSchool();
+  
+  console.log("BasicNavbar: schools", schools);
+  console.log("BasicNavbar: selectedSchool", selectedSchool);
   const { user, logoutMutation } = useAuth();
   const [showSchoolLinks, setShowSchoolLinks] = useState<string | null>(null);
   const [showAdminLinks, setShowAdminLinks] = useState<boolean>(false);
@@ -136,6 +139,7 @@ const BasicNavbar = () => {
                       <button
                         key={school.id}
                         onClick={() => {
+                          console.log("Selecting school:", school);
                           selectSchool(school);
                           setShowSchoolLinks(school.code);
                         }}
