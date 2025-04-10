@@ -462,7 +462,7 @@ export default function ManageInstructors() {
                   <span className="font-medium">Credentials:</span> {instructor.credentials}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <span className="font-medium">Status:</span> {instructor.status}
+                  <span className="font-medium">Status:</span> {instructor.accompaniedStatus}
                 </p>
               </CardContent>
               <CardFooter className="flex justify-end space-x-2">

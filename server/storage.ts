@@ -24,6 +24,8 @@ export interface IStorage {
   getSchool(id: number): Promise<School | undefined>;
   getSchoolByCode(code: string): Promise<School | undefined>;
   createSchool(school: InsertSchool): Promise<School>;
+  updateSchool(id: number, school: Partial<InsertSchool>): Promise<School | undefined>;
+  deleteSchool(id: number): Promise<void>;
   
   // Instructor methods
   getInstructors(): Promise<Instructor[]>;
@@ -31,6 +33,7 @@ export interface IStorage {
   getInstructorsBySchool(schoolId: number): Promise<Instructor[]>;
   createInstructor(instructor: InsertInstructor): Promise<Instructor>;
   updateInstructor(id: number, instructor: Partial<InsertInstructor>): Promise<Instructor | undefined>;
+  deleteInstructor(id: number): Promise<void>;
   
   // Course methods
   getCourses(): Promise<Course[]>;
@@ -39,12 +42,15 @@ export interface IStorage {
   getCoursesByInstructor(instructorId: number): Promise<Course[]>;
   createCourse(course: InsertCourse): Promise<Course>;
   updateCourse(id: number, course: Partial<InsertCourse>): Promise<Course | undefined>;
+  deleteCourse(id: number): Promise<void>;
   
   // Student methods
   getStudents(): Promise<Student[]>;
   getStudent(id: number): Promise<Student | undefined>;
   getStudentsBySchool(schoolId: number): Promise<Student[]>;
   createStudent(student: InsertStudent): Promise<Student>;
+  updateStudent(id: number, student: Partial<InsertStudent>): Promise<Student | undefined>;
+  deleteStudent(id: number): Promise<void>;
   
   // Test Result methods
   getTestResults(): Promise<TestResult[]>;
@@ -251,6 +257,19 @@ export class MemStorage implements IStorage {
     return school;
   }
   
+  async updateSchool(id: number, school: Partial<InsertSchool>): Promise<School | undefined> {
+    const existing = await this.getSchool(id);
+    if (!existing) return undefined;
+    
+    const updated = { ...existing, ...school };
+    this.schools.set(id, updated);
+    return updated;
+  }
+  
+  async deleteSchool(id: number): Promise<void> {
+    this.schools.delete(id);
+  }
+  
   // Instructor methods
   async getInstructors(): Promise<Instructor[]> {
     return Array.from(this.instructors.values());
@@ -280,6 +299,10 @@ export class MemStorage implements IStorage {
     const updated = { ...existing, ...instructor };
     this.instructors.set(id, updated);
     return updated;
+  }
+  
+  async deleteInstructor(id: number): Promise<void> {
+    this.instructors.delete(id);
   }
   
   // Course methods
@@ -319,6 +342,10 @@ export class MemStorage implements IStorage {
     return updated;
   }
   
+  async deleteCourse(id: number): Promise<void> {
+    this.courses.delete(id);
+  }
+  
   // Student methods
   async getStudents(): Promise<Student[]> {
     return Array.from(this.students.values());
@@ -339,6 +366,19 @@ export class MemStorage implements IStorage {
     const student: Student = { ...insertStudent, id };
     this.students.set(id, student);
     return student;
+  }
+  
+  async updateStudent(id: number, student: Partial<InsertStudent>): Promise<Student | undefined> {
+    const existing = await this.getStudent(id);
+    if (!existing) return undefined;
+    
+    const updated = { ...existing, ...student };
+    this.students.set(id, updated);
+    return updated;
+  }
+  
+  async deleteStudent(id: number): Promise<void> {
+    this.students.delete(id);
   }
   
   // Test Result methods
@@ -491,6 +531,19 @@ export class DatabaseStorage implements IStorage {
   async createSchool(insertSchool: InsertSchool): Promise<School> {
     const [school] = await db.insert(schools).values(insertSchool).returning();
     return school;
+  }
+  
+  async updateSchool(id: number, school: Partial<InsertSchool>): Promise<School | undefined> {
+    const [updated] = await db
+      .update(schools)
+      .set(school)
+      .where(eq(schools.id, id))
+      .returning();
+    return updated;
+  }
+  
+  async deleteSchool(id: number): Promise<void> {
+    await db.delete(schools).where(eq(schools.id, id));
   }
   
   // Instructor methods
