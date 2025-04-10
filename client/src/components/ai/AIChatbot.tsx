@@ -1,28 +1,45 @@
-import { useState, useRef, useEffect } from "react";
-import { Send, Loader2, X, Minimize2, Maximize2, Trash } from "lucide-react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Send, X, Minimize2, Maximize2, MessageSquare, Trash } from "lucide-react";
 import { useAIChat } from "@/hooks/use-ai-chat";
 import { useSchool } from "@/hooks/useSchool";
 
 export function AIChatbot() {
-  const { messages, isTyping, sendMessage, clearChat } = useAIChat();
-  const { selectedSchool } = useSchool();
-  const [input, setInput] = useState("");
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [minimized, setMinimized] = useState(true);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  
+  const { selectedSchool } = useSchool();
+  const { messages, isTyping, sendMessage, clearChat } = useAIChat();
 
   // Scroll to bottom when messages change
   useEffect(() => {
     if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
     }
-  }, [messages]);
+  }, [messages, isTyping]);
+
+  // Focus input field when chat is opened
+  useEffect(() => {
+    if (!minimized && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [minimized]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,36 +50,33 @@ export function AIChatbot() {
   };
 
   const toggleMinimize = () => {
-    setIsMinimized(!isMinimized);
-    if (isMinimized) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
+    setMinimized(prev => !prev);
+    if (isExpanded && !minimized) {
+      setIsExpanded(false);
     }
   };
 
   const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
+    setIsExpanded(prev => !prev);
   };
 
-  if (isMinimized) {
+  if (minimized) {
     return (
       <Button
-        className="fixed bottom-4 right-4 flex gap-2 items-center shadow-lg"
         onClick={toggleMinimize}
+        className="fixed bottom-4 right-4 rounded-full w-12 h-12 flex items-center justify-center shadow-lg"
       >
-        <span>AI Assistant</span>
-        <Maximize2 className="w-4 h-4" />
+        <MessageSquare className="h-6 w-6" />
       </Button>
     );
   }
 
   return (
-    <Card 
-      className={`fixed bottom-4 right-4 shadow-lg z-50 transition-all duration-300 ${
-        isExpanded 
-          ? "w-full md:w-3/4 h-[80vh] bottom-0 right-0" 
-          : "w-full sm:w-96 h-[500px]"
+    <Card
+      className={`fixed transition-all duration-300 shadow-lg ${
+        isExpanded
+          ? "inset-4 z-50"
+          : "bottom-4 right-4 w-80 h-96 z-40"
       }`}
     >
       <CardHeader className="p-4 border-b flex flex-row items-center justify-between">
