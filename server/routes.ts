@@ -14,6 +14,7 @@ import {
   insertDocumentSchema
 } from "@shared/schema";
 import { setupAuth } from "./auth";
+import { generateAIResponse, AIChatRequest } from "./services/ai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication
