@@ -15,7 +15,7 @@ import { useAIChat } from "@/hooks/use-ai-chat";
 import { useSchool } from "@/hooks/useSchool";
 
 export function AIChatbot() {
-  const [minimized, setMinimized] = useState(true);
+  const [minimized, setMinimized] = useState(false);  // Start with the chat window open
   const [isExpanded, setIsExpanded] = useState(false);
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);

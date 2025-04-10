@@ -90,7 +90,6 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </div>
-      {user && <AIChatbot />}
       <Toaster />
     </div>
   );
@@ -102,6 +101,12 @@ function App() {
       <AuthProvider>
         <SchoolProvider>
           <Router />
+          <div id="ai-chatbot-container" className="fixed bottom-6 right-6 z-[1000]">
+            <div className="animate-bounce mb-2 text-center text-xs bg-black bg-opacity-70 text-white p-1 rounded-md shadow-lg">
+              AI Assistant Available!
+            </div>
+            <AIChatbot />
+          </div>
         </SchoolProvider>
       </AuthProvider>
     </QueryClientProvider>
