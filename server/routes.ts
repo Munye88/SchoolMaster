@@ -8,7 +8,10 @@ import {
   insertActivitySchema, 
   insertEventSchema,
   insertSchoolSchema,
-  insertStudentSchema
+  insertStudentSchema,
+  insertTestResultSchema,
+  insertEvaluationSchema,
+  insertDocumentSchema
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 
@@ -539,6 +542,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid test result data", errors: error.errors });
       }
       res.status(500).json({ message: "Failed to create test result" });
+    }
+  });
+  
+  // Evaluations
+  app.get("/api/evaluations", async (req, res) => {
+    const evaluations = await storage.getEvaluations();
+    res.json(evaluations);
+  });
+  
+  app.get("/api/evaluations/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid evaluation ID" });
+    }
+    
+    const evaluation = await storage.getEvaluation(id);
+    if (!evaluation) {
+      return res.status(404).json({ message: "Evaluation not found" });
+    }
+    
+    res.json(evaluation);
+  });
+  
+  app.get("/api/instructors/:instructorId/evaluations", async (req, res) => {
+    const instructorId = parseInt(req.params.instructorId);
+    if (isNaN(instructorId)) {
+      return res.status(400).json({ message: "Invalid instructor ID" });
+    }
+    
+    const evaluations = await storage.getEvaluationsByInstructor(instructorId);
+    res.json(evaluations);
+  });
+  
+  app.post("/api/evaluations", async (req, res) => {
+    try {
+      const evaluationData = insertEvaluationSchema.parse(req.body);
+      const evaluation = await storage.createEvaluation(evaluationData);
+      
+      // Get instructor name for activity log
+      const instructor = await storage.getInstructor(evaluation.instructorId);
+      const instructorName = instructor ? instructor.name : `Instructor ID ${evaluation.instructorId}`;
+      
+      // Log activity
+      await storage.createActivity({
+        type: "evaluation_added",
+        description: `New evaluation added for instructor "${instructorName}"`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(201).json(evaluation);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid evaluation data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create evaluation" });
+    }
+  });
+  
+  // Documents
+  app.get("/api/documents", async (req, res) => {
+    const documents = await storage.getDocuments();
+    res.json(documents);
+  });
+  
+  app.get("/api/documents/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid document ID" });
+    }
+    
+    const document = await storage.getDocument(id);
+    if (!document) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+    
+    res.json(document);
+  });
+  
+  app.get("/api/schools/:schoolId/documents", async (req, res) => {
+    const schoolId = parseInt(req.params.schoolId);
+    if (isNaN(schoolId)) {
+      return res.status(400).json({ message: "Invalid school ID" });
+    }
+    
+    const documents = await storage.getDocumentsBySchool(schoolId);
+    res.json(documents);
+  });
+  
+  app.post("/api/documents", async (req, res) => {
+    try {
+      const documentData = insertDocumentSchema.parse(req.body);
+      const document = await storage.createDocument(documentData);
+      
+      // Log activity
+      await storage.createActivity({
+        type: "document_added",
+        description: `New document "${document.title}" added`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(201).json(document);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid document data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create document" });
     }
   });
   

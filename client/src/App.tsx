@@ -29,6 +29,7 @@ import { useAuth } from "@/hooks/use-auth";
 // Management pages
 import ManageSchools from "./pages/management/ManageSchools";
 import ManageInstructors from "./pages/management/ManageInstructors";
+import ManageStudents from "./pages/management/ManageStudents";
 
 function NavbarWithAuth() {
   const { user } = useAuth();
@@ -66,6 +67,7 @@ function Router() {
           {/* Management routes */}
           <ProtectedRoute path="/management/schools" component={ManageSchools} />
           <ProtectedRoute path="/management/instructors" component={ManageInstructors} />
+          <ProtectedRoute path="/management/students" component={ManageStudents} />
           
           {/* School-specific document routes */}
           <ProtectedRoute path="/schools/:schoolCode/instructor-profiles" component={SchoolInstructorProfiles} />
