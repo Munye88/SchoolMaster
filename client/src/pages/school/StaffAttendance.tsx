@@ -538,7 +538,7 @@ const StaffAttendance = () => {
     <div className="flex-1 p-8 bg-gray-50 overflow-y-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#0A2463]">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-500 text-transparent bg-clip-text">
             {selectedSchool ? `${selectedSchool.name} Staff Attendance` : 'Staff Attendance'}
           </h1>
           <p className="text-gray-500">Track and monitor instructor attendance records</p>
@@ -551,14 +551,34 @@ const StaffAttendance = () => {
             onClick={() => setBulkMode(!bulkMode)}
           >
             {bulkMode ? <X size={16} /> : <Check size={16} />}
-            {bulkMode ? "Cancel" : "Record Attendance"}
+            {bulkMode ? "Cancel" : "Take Attendance"}
           </Button>
+          
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="gap-2 bg-green-600 hover:bg-green-700">
+                <Plus size={16} /> Record Individual
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[525px]">
+              <DialogHeader>
+                <DialogTitle>Record Staff Attendance</DialogTitle>
+                <DialogDescription>
+                  Enter attendance details for an instructor. Click save when you're done.
+                </DialogDescription>
+              </DialogHeader>
+              <AttendanceForm 
+                instructors={schoolInstructors} 
+                onClose={() => setIsDialogOpen(false)} 
+              />
+            </DialogContent>
+          </Dialog>
           
           <Button 
             className="bg-[#0A2463] hover:bg-[#071A4A] gap-2"
             onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/staff-attendance'] })}
           >
-            <RefreshCw size={16} /> Refresh Data
+            <RefreshCw size={16} /> Refresh
           </Button>
         </div>
       </div>
@@ -612,43 +632,46 @@ const StaffAttendance = () => {
         <Button variant="outline" className="gap-2">
           <Filter size={16} /> More Filters
         </Button>
-        
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-green-600 hover:bg-green-700 gap-2">
-              <Plus size={16} /> Record Attendance
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[525px]">
-            <DialogHeader>
-              <DialogTitle>Record Staff Attendance</DialogTitle>
-              <DialogDescription>
-                Enter attendance details for an instructor. Click save when you're done.
-              </DialogDescription>
-            </DialogHeader>
-            <AttendanceForm 
-              instructors={schoolInstructors} 
-              onClose={() => setIsDialogOpen(false)} 
-            />
-          </DialogContent>
-        </Dialog>
       </div>
       
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card>
+        <Card className="overflow-hidden border-0 shadow-md">
+          <div className={`h-2 w-full ${
+            averageAttendance >= 90 ? "bg-gradient-to-r from-green-600 to-green-400" : 
+            averageAttendance >= 75 ? "bg-gradient-to-r from-amber-600 to-amber-400" : 
+            "bg-gradient-to-r from-red-600 to-red-400"
+          }`} />
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Average Attendance Rate</CardTitle>
+            <div className="flex items-center gap-2">
+              <CalendarIcon className={`${
+                averageAttendance >= 90 ? "text-green-600" : 
+                averageAttendance >= 75 ? "text-amber-600" : 
+                "text-red-600"
+              }`} size={18} />
+              <CardTitle className="text-sm font-medium">Average Attendance Rate</CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="text-3xl font-bold">{averageAttendance}%</div>
-              <div className={`p-2 rounded-full ${
-                averageAttendance >= 90 ? 'bg-green-100 text-green-800' : 
-                averageAttendance >= 75 ? 'bg-amber-100 text-amber-800' : 
-                'bg-red-100 text-red-800'
-              }`}>
-                <CalendarIcon size={20} />
+            <div className="flex items-center gap-4">
+              <div className={`text-5xl font-bold ${
+                averageAttendance >= 90 ? "text-green-600" : 
+                averageAttendance >= 75 ? "text-amber-600" : 
+                "text-red-600"
+              }`}>{averageAttendance}%</div>
+              <div>
+                <Badge className={`${
+                  averageAttendance >= 90 ? "bg-green-100 text-green-800 hover:bg-green-100" : 
+                  averageAttendance >= 75 ? "bg-amber-100 text-amber-800 hover:bg-amber-100" : 
+                  "bg-red-100 text-red-800 hover:bg-red-100"
+                }`}>
+                  {averageAttendance >= 90 ? "Excellent" : 
+                   averageAttendance >= 75 ? "Average" : 
+                   "Needs Improvement"}
+                </Badge>
+                <p className="text-xs text-gray-500 mt-2">
+                  For {totalInstructors} instructors in {format(date || new Date(), "MMMM yyyy")}
+                </p>
               </div>
             </div>
             <Progress 
@@ -659,63 +682,79 @@ const StaffAttendance = () => {
                 "bg-red-500"
               }`}
             />
-            <p className="text-xs text-gray-500 mt-2">
-              Average attendance rate for {totalInstructors} instructors in {format(date || new Date(), "MMMM yyyy")}
-            </p>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="overflow-hidden border-0 shadow-md">
+          <div className="h-2 w-full bg-gradient-to-r from-blue-600 to-blue-400" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Attendance Breakdown</CardTitle>
+            <div className="flex items-center gap-2">
+              <UserCheck className="text-blue-600" size={18} />
+              <CardTitle className="text-sm font-medium">Attendance Breakdown</CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="h-36">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={statusData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={60}
-                    paddingAngle={2}
-                    dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    labelLine={false}
-                  >
-                    {statusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex justify-between mt-2 text-xs text-gray-500">
-              <div>Present: {presentCount}</div>
-              <div>Late: {lateCount}</div>
-              <div>Absent: {absentCount}</div>
+            <div className="flex items-center gap-4">
+              <div className="h-36 flex-1">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={statusData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={40}
+                      outerRadius={60}
+                      paddingAngle={2}
+                      dataKey="value"
+                      label={false}
+                      labelLine={false}
+                    >
+                      {statusData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => [`${value} instructors`, '']} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#10B981]"></div>
+                  <div className="text-sm">Present: <span className="font-semibold">{presentCount}</span></div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#F59E0B]"></div>
+                  <div className="text-sm">Late: <span className="font-semibold">{lateCount}</span></div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#EF4444]"></div>
+                  <div className="text-sm">Absent: <span className="font-semibold">{absentCount}</span></div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="overflow-hidden border-0 shadow-md">
+          <div className="h-2 w-full bg-gradient-to-r from-purple-600 to-purple-400" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Monthly Statistics</CardTitle>
+            <div className="flex items-center gap-2">
+              <Clock className="text-purple-600" size={18} />
+              <CardTitle className="text-sm font-medium">Monthly Statistics</CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-center">
-                <div className="text-2xl font-bold text-green-600">{Math.round(presentCount / totalInstructors * 100) || 0}%</div>
+            <div className="grid grid-cols-3 gap-6">
+              <div className="flex flex-col items-center p-3 rounded-lg bg-green-50">
+                <div className="text-2xl font-bold text-green-600">{Math.round(presentCount / (totalInstructors || 1) * 100) || 0}%</div>
                 <div className="text-xs text-gray-500">On Time</div>
               </div>
-              <div className="flex flex-col items-center">
-                <div className="text-2xl font-bold text-amber-600">{Math.round(lateCount / totalInstructors * 100) || 0}%</div>
+              <div className="flex flex-col items-center p-3 rounded-lg bg-amber-50">
+                <div className="text-2xl font-bold text-amber-600">{Math.round(lateCount / (totalInstructors || 1) * 100) || 0}%</div>
                 <div className="text-xs text-gray-500">Late</div>
               </div>
-              <div className="flex flex-col items-center">
-                <div className="text-2xl font-bold text-red-600">{Math.round(absentCount / totalInstructors * 100) || 0}%</div>
+              <div className="flex flex-col items-center p-3 rounded-lg bg-red-50">
+                <div className="text-2xl font-bold text-red-600">{Math.round(absentCount / (totalInstructors || 1) * 100) || 0}%</div>
                 <div className="text-xs text-gray-500">Absent</div>
               </div>
             </div>
