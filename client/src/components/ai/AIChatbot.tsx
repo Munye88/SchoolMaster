@@ -64,9 +64,10 @@ export function AIChatbot() {
     return (
       <Button
         onClick={toggleMinimize}
-        className="fixed bottom-4 right-4 rounded-full w-12 h-12 flex items-center justify-center shadow-lg"
+        className="fixed bottom-4 right-4 rounded-full w-16 h-16 flex flex-col items-center justify-center shadow-lg z-50 border-2 border-primary/50 bg-gradient-to-r from-primary to-primary/80"
       >
-        <MessageSquare className="h-6 w-6" />
+        <MessageSquare className="h-6 w-6 mb-1" />
+        <span className="text-xs">AI Chat</span>
       </Button>
     );
   }

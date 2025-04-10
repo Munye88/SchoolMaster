@@ -3,9 +3,11 @@ import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { AIChatMessage, AIChatRequest, AIChatResponse } from "@/lib/ai-types";
 import { apiRequest } from "@/lib/queryClient";
+import { useSchool } from "./useSchool";
 
 export function useAIChat() {
   const { toast } = useToast();
+  const { selectedSchool } = useSchool();
   const [messages, setMessages] = useState<AIChatMessage[]>([]);
 
   const mutation = useMutation({
@@ -36,6 +38,7 @@ export function useAIChat() {
     // Prepare request
     const request: AIChatRequest = {
       messages: updatedMessages,
+      schoolId: selectedSchool?.id,
     };
     
     // Send request to API

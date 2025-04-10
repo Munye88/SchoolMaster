@@ -42,6 +42,8 @@ function NavbarWithAuth() {
 }
 
 function Router() {
+  const { user } = useAuth();
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <NavbarWithAuth />
@@ -88,7 +90,7 @@ function Router() {
           <Route component={NotFound} />
         </Switch>
       </div>
-      <AIChatbot />
+      {user && <AIChatbot />}
       <Toaster />
     </div>
   );
