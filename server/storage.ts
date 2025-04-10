@@ -8,7 +8,8 @@ import {
   type Evaluation, type InsertEvaluation, evaluations,
   type Document, type InsertDocument, documents,
   type Activity, type InsertActivity, activities,
-  type Event, type InsertEvent, events
+  type Event, type InsertEvent, events,
+  type StaffAttendance, type InsertStaffAttendance, staffAttendance
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, lt, gt, and, isNull, or } from "drizzle-orm";
@@ -81,6 +82,16 @@ export interface IStorage {
   getEvent(id: number): Promise<Event | undefined>;
   getUpcomingEvents(limit: number): Promise<Event[]>;
   createEvent(event: InsertEvent): Promise<Event>;
+  
+  // Staff Attendance methods
+  getAllStaffAttendance(): Promise<StaffAttendance[]>;
+  getStaffAttendance(id: number): Promise<StaffAttendance | undefined>;
+  getStaffAttendanceByDate(date: string): Promise<StaffAttendance[]>;
+  getStaffAttendanceBySchool(schoolId: number): Promise<StaffAttendance[]>;
+  getStaffAttendanceByInstructor(instructorId: number): Promise<StaffAttendance[]>;
+  createStaffAttendance(attendance: InsertStaffAttendance): Promise<StaffAttendance>;
+  updateStaffAttendance(id: number, attendance: Partial<InsertStaffAttendance>): Promise<StaffAttendance | undefined>;
+  deleteStaffAttendance(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -94,6 +105,7 @@ export class MemStorage implements IStorage {
   private documents: Map<number, Document>;
   private activities: Map<number, Activity>;
   private events: Map<number, Event>;
+  private staffAttendances: Map<number, StaffAttendance>;
   
   private currentIds: {
     user: number;
@@ -106,6 +118,7 @@ export class MemStorage implements IStorage {
     document: number;
     activity: number;
     event: number;
+    staffAttendance: number;
   };
 
   constructor() {
@@ -119,6 +132,7 @@ export class MemStorage implements IStorage {
     this.documents = new Map();
     this.activities = new Map();
     this.events = new Map();
+    this.staffAttendances = new Map();
     
     this.currentIds = {
       user: 1,
@@ -130,7 +144,8 @@ export class MemStorage implements IStorage {
       evaluation: 1,
       document: 1,
       activity: 1,
-      event: 1
+      event: 1,
+      staffAttendance: 1
     };
     
     // Initialize with sample data
@@ -494,6 +509,53 @@ export class MemStorage implements IStorage {
     this.events.set(id, event);
     return event;
   }
+  
+  // Staff Attendance methods
+  async getAllStaffAttendance(): Promise<StaffAttendance[]> {
+    return Array.from(this.staffAttendances.values());
+  }
+  
+  async getStaffAttendance(id: number): Promise<StaffAttendance | undefined> {
+    return this.staffAttendances.get(id);
+  }
+  
+  async getStaffAttendanceByDate(date: string): Promise<StaffAttendance[]> {
+    return Array.from(this.staffAttendances.values()).filter(
+      (attendance) => attendance.date === date
+    );
+  }
+  
+  async getStaffAttendanceBySchool(schoolId: number): Promise<StaffAttendance[]> {
+    return Array.from(this.staffAttendances.values()).filter(
+      (attendance) => attendance.schoolId === schoolId
+    );
+  }
+  
+  async getStaffAttendanceByInstructor(instructorId: number): Promise<StaffAttendance[]> {
+    return Array.from(this.staffAttendances.values()).filter(
+      (attendance) => attendance.instructorId === instructorId
+    );
+  }
+  
+  async createStaffAttendance(insertAttendance: InsertStaffAttendance): Promise<StaffAttendance> {
+    const id = this.currentIds.staffAttendance++;
+    const attendance: StaffAttendance = { ...insertAttendance, id };
+    this.staffAttendances.set(id, attendance);
+    return attendance;
+  }
+  
+  async updateStaffAttendance(id: number, attendance: Partial<InsertStaffAttendance>): Promise<StaffAttendance | undefined> {
+    const existing = await this.getStaffAttendance(id);
+    if (!existing) return undefined;
+    
+    const updated = { ...existing, ...attendance };
+    this.staffAttendances.set(id, updated);
+    return updated;
+  }
+  
+  async deleteStaffAttendance(id: number): Promise<void> {
+    this.staffAttendances.delete(id);
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -748,6 +810,46 @@ export class DatabaseStorage implements IStorage {
   async createEvent(insertEvent: InsertEvent): Promise<Event> {
     const [event] = await db.insert(events).values(insertEvent).returning();
     return event;
+  }
+  
+  // Staff Attendance methods
+  async getAllStaffAttendance(): Promise<StaffAttendance[]> {
+    return db.select().from(staffAttendance);
+  }
+  
+  async getStaffAttendance(id: number): Promise<StaffAttendance | undefined> {
+    const [attendance] = await db.select().from(staffAttendance).where(eq(staffAttendance.id, id));
+    return attendance;
+  }
+  
+  async getStaffAttendanceByDate(date: string): Promise<StaffAttendance[]> {
+    return db.select().from(staffAttendance).where(eq(staffAttendance.date, date));
+  }
+  
+  async getStaffAttendanceBySchool(schoolId: number): Promise<StaffAttendance[]> {
+    return db.select().from(staffAttendance).where(eq(staffAttendance.schoolId, schoolId));
+  }
+  
+  async getStaffAttendanceByInstructor(instructorId: number): Promise<StaffAttendance[]> {
+    return db.select().from(staffAttendance).where(eq(staffAttendance.instructorId, instructorId));
+  }
+  
+  async createStaffAttendance(insertAttendance: InsertStaffAttendance): Promise<StaffAttendance> {
+    const [attendance] = await db.insert(staffAttendance).values(insertAttendance).returning();
+    return attendance;
+  }
+  
+  async updateStaffAttendance(id: number, attendance: Partial<InsertStaffAttendance>): Promise<StaffAttendance | undefined> {
+    const [updated] = await db
+      .update(staffAttendance)
+      .set(attendance)
+      .where(eq(staffAttendance.id, id))
+      .returning();
+    return updated;
+  }
+  
+  async deleteStaffAttendance(id: number): Promise<void> {
+    await db.delete(staffAttendance).where(eq(staffAttendance.id, id));
   }
 }
 
