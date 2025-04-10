@@ -574,6 +574,10 @@ export class DatabaseStorage implements IStorage {
     return updated;
   }
   
+  async deleteInstructor(id: number): Promise<void> {
+    await db.delete(instructors).where(eq(instructors.id, id));
+  }
+  
   // Course methods
   async getCourses(): Promise<Course[]> {
     return db.select().from(courses);
@@ -606,6 +610,10 @@ export class DatabaseStorage implements IStorage {
     return updated;
   }
   
+  async deleteCourse(id: number): Promise<void> {
+    await db.delete(courses).where(eq(courses.id, id));
+  }
+  
   // Student methods
   async getStudents(): Promise<Student[]> {
     return db.select().from(students);
@@ -623,6 +631,19 @@ export class DatabaseStorage implements IStorage {
   async createStudent(insertStudent: InsertStudent): Promise<Student> {
     const [student] = await db.insert(students).values(insertStudent).returning();
     return student;
+  }
+  
+  async updateStudent(id: number, student: Partial<InsertStudent>): Promise<Student | undefined> {
+    const [updated] = await db
+      .update(students)
+      .set(student)
+      .where(eq(students.id, id))
+      .returning();
+    return updated;
+  }
+  
+  async deleteStudent(id: number): Promise<void> {
+    await db.delete(students).where(eq(students.id, id));
   }
   
   // Test Result methods

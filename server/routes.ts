@@ -41,6 +41,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(school);
   });
   
+  app.post("/api/schools", async (req, res) => {
+    try {
+      const schoolData = insertSchoolSchema.parse(req.body);
+      const school = await storage.createSchool(schoolData);
+      
+      // Log activity
+      await storage.createActivity({
+        type: "school_added",
+        description: `New school "${school.name}" added`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(201).json(school);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid school data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create school" });
+    }
+  });
+  
+  app.patch("/api/schools/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid school ID" });
+    }
+    
+    try {
+      const updateData = insertSchoolSchema.partial().parse(req.body);
+      const updatedSchool = await storage.updateSchool(id, updateData);
+      
+      if (!updatedSchool) {
+        return res.status(404).json({ message: "School not found" });
+      }
+      
+      // Log activity
+      await storage.createActivity({
+        type: "school_updated",
+        description: `School "${updatedSchool.name}" updated`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(updatedSchool);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid school data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update school" });
+    }
+  });
+  
+  app.delete("/api/schools/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid school ID" });
+    }
+    
+    try {
+      // Get the school before deleting it for the activity log
+      const school = await storage.getSchool(id);
+      if (!school) {
+        return res.status(404).json({ message: "School not found" });
+      }
+      
+      await storage.deleteSchool(id);
+      
+      // Log activity
+      await storage.createActivity({
+        type: "school_deleted",
+        description: `School "${school.name}" deleted`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete school" });
+    }
+  });
+  
   // Instructors
   app.get("/api/instructors", async (req, res) => {
     const instructors = await storage.getInstructors();
@@ -107,12 +189,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Instructor not found" });
       }
       
+      // Log activity
+      await storage.createActivity({
+        type: "instructor_updated",
+        description: `Instructor "${updatedInstructor.name}" updated`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
       res.json(updatedInstructor);
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid instructor data", errors: error.errors });
       }
       res.status(500).json({ message: "Failed to update instructor" });
+    }
+  });
+  
+  app.delete("/api/instructors/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid instructor ID" });
+    }
+    
+    try {
+      // Get the instructor before deleting for the activity log
+      const instructor = await storage.getInstructor(id);
+      if (!instructor) {
+        return res.status(404).json({ message: "Instructor not found" });
+      }
+      
+      await storage.deleteInstructor(id);
+      
+      // Log activity
+      await storage.createActivity({
+        type: "instructor_deleted",
+        description: `Instructor "${instructor.name}" deleted`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete instructor" });
     }
   });
   
@@ -192,12 +311,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Course not found" });
       }
       
+      // Log activity
+      await storage.createActivity({
+        type: "course_updated",
+        description: `Course "${updatedCourse.name}" updated`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
       res.json(updatedCourse);
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid course data", errors: error.errors });
       }
       res.status(500).json({ message: "Failed to update course" });
+    }
+  });
+  
+  app.delete("/api/courses/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid course ID" });
+    }
+    
+    try {
+      // Get the course before deleting for the activity log
+      const course = await storage.getCourse(id);
+      if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+      
+      await storage.deleteCourse(id);
+      
+      // Log activity
+      await storage.createActivity({
+        type: "course_deleted",
+        description: `Course "${course.name}" deleted`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete course" });
     }
   });
   
