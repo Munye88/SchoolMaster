@@ -48,13 +48,13 @@ export default function StaffLeaveTracker() {
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   
-  // Sample leave data
+  // Sample leave data with requested format
   const leaveData = [
-    { id: 1, instructor: "John Doe", startDate: "2024-04-05", endDate: "2024-04-10", type: "Annual Leave", status: "Approved" },
-    { id: 2, instructor: "Michael Wilson", startDate: "2024-04-12", endDate: "2024-04-15", type: "Sick Leave", status: "Approved" },
-    { id: 3, instructor: "Robert Johnson", startDate: "2024-04-20", endDate: "2024-04-25", type: "Annual Leave", status: "Pending" },
-    { id: 4, instructor: "William Brown", startDate: "2024-05-01", endDate: "2024-05-03", type: "Emergency Leave", status: "Approved" },
-    { id: 5, instructor: "James Smith", startDate: "2024-05-10", endDate: "2024-05-15", type: "Annual Leave", status: "Pending" },
+    { id: 1, name: "John Doe", employeeId: "EMP001", pto: "10 days", rr: "15 days", destination: "London, UK", return: "2024-04-10" },
+    { id: 2, name: "Michael Wilson", employeeId: "EMP002", pto: "5 days", rr: "10 days", destination: "Dubai, UAE", return: "2024-04-15" },
+    { id: 3, name: "Robert Johnson", employeeId: "EMP003", pto: "7 days", rr: "12 days", destination: "Paris, France", return: "2024-04-25" },
+    { id: 4, name: "William Brown", employeeId: "EMP004", pto: "3 days", rr: "8 days", destination: "Tokyo, Japan", return: "2024-05-03" },
+    { id: 5, name: "James Smith", employeeId: "EMP005", pto: "12 days", rr: "18 days", destination: "Sydney, Australia", return: "2024-05-15" },
   ];
   
   const months = [
@@ -132,32 +132,24 @@ export default function StaffLeaveTracker() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Instructor</TableHead>
-                <TableHead>Start Date</TableHead>
-                <TableHead>End Date</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>NAME</TableHead>
+                <TableHead>EMPLOYEE ID</TableHead>
+                <TableHead>PTO</TableHead>
+                <TableHead>R&R</TableHead>
+                <TableHead>DESTINATION</TableHead>
+                <TableHead>RETURN</TableHead>
+                <TableHead>ACTIONS</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {leaveData.map((leave) => (
                 <TableRow key={leave.id}>
-                  <TableCell className="font-medium">{leave.instructor}</TableCell>
-                  <TableCell>{leave.startDate}</TableCell>
-                  <TableCell>{leave.endDate}</TableCell>
-                  <TableCell>{leave.type}</TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      leave.status === 'Approved' 
-                        ? 'bg-green-100 text-green-800' 
-                        : leave.status === 'Pending' 
-                          ? 'bg-yellow-100 text-yellow-800' 
-                          : 'bg-red-100 text-red-800'
-                    }`}>
-                      {leave.status}
-                    </span>
-                  </TableCell>
+                  <TableCell className="font-medium">{leave.name}</TableCell>
+                  <TableCell>{leave.employeeId}</TableCell>
+                  <TableCell>{leave.pto}</TableCell>
+                  <TableCell>{leave.rr}</TableCell>
+                  <TableCell>{leave.destination}</TableCell>
+                  <TableCell>{leave.return}</TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
                       <Button variant="outline" size="sm">View</Button>
