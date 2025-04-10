@@ -56,7 +56,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 
-// Staff attendance interface
+// Define interface for attendance records
 interface StaffAttendance {
   id: number;
   date: string;
@@ -68,57 +68,43 @@ interface StaffAttendance {
   recordedBy: number | null;
 }
 
-// Process attendance data to calculate statistics
+// Function to process attendance data
 function processAttendanceData(
-  instructors: Instructor[], 
+  instructors: Instructor[],
   attendanceRecords: StaffAttendance[],
   selectedDate: Date
 ) {
-  const month = format(selectedDate, 'yyyy-MM');
+  const year = selectedDate.getFullYear();
+  const month = selectedDate.getMonth() + 1;
+  const daysInMonth = new Date(year, month, 0).getDate();
   
-  // Filter attendance records for the selected month
-  const monthlyAttendance = attendanceRecords.filter(record => 
-    record.date.startsWith(month)
-  );
-  
-  // Create a map of instructor IDs to their attendance records
-  const instructorAttendance = new Map<number, StaffAttendance[]>();
-  monthlyAttendance.forEach(record => {
-    const records = instructorAttendance.get(record.instructorId) || [];
-    records.push(record);
-    instructorAttendance.set(record.instructorId, records);
-  });
-  
-  // Calculate attendance statistics for each instructor
   return instructors.map(instructor => {
-    const records = instructorAttendance.get(instructor.id) || [];
-    const present = records.filter(r => r.status === 'present').length;
-    const late = records.filter(r => r.status === 'late').length;
-    const sick = records.filter(r => r.status === 'sick').length;
-    const paternity = records.filter(r => r.status === 'paternity').length;
-    const pto = records.filter(r => r.status === 'pto').length;
-    const bereavement = records.filter(r => r.status === 'bereavement').length;
-    const absent = records.filter(r => r.status === 'absent').length;
+    // Get records for this instructor in selected month
+    const instructorRecords = attendanceRecords.filter(record => {
+      const recordDate = new Date(record.date);
+      return record.instructorId === instructor.id && 
+             recordDate.getMonth() + 1 === month &&
+             recordDate.getFullYear() === year;
+    });
     
-    const totalDays = records.length;
-    // Calculate attendance rate: present days + (late days * 0.5) / total days
-    const attendanceRate = totalDays === 0 ? 0 : 
-      Math.round((present + (late * 0.5)) / totalDays * 100);
-    
+    // Calculate attendance metrics
+    const totalDays = daysInMonth; // Working days in month
+    const presentDays = instructorRecords.filter(r => r.status === "present").length;
+    const lateDays = instructorRecords.filter(r => r.status === "late").length;
+    const absentDays = instructorRecords.filter(r => ["absent", "sick", "paternity", "pto", "bereavement"].includes(r.status)).length;
+    const attendanceRate = Math.round((presentDays + (lateDays * 0.5)) / totalDays * 100);
+
     return {
-      id: instructor.id,
       name: instructor.name,
-      position: instructor.role || "ELT Instructor",
-      present,
-      late,
-      absent,
-      sick,
-      paternity,
-      pto,
-      bereavement,
+      id: instructor.id,
+      nationality: instructor.nationality,
+      credentials: instructor.credentials,
+      presentDays,
+      lateDays,
+      absentDays,
       totalDays,
       attendanceRate,
-      records
+      records: instructorRecords
     };
   });
 }
@@ -160,7 +146,12 @@ const AttendanceForm: React.FC<{
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...data,
+          instructorId: data.instructorId,
+          date: data.date,
+          status: data.status,
+          timeIn: data.timeIn || null,
+          timeOut: data.timeOut || null,
+          comments: data.comments || null,
           recordedBy: user?.id || 1
         }),
       });
@@ -169,44 +160,31 @@ const AttendanceForm: React.FC<{
         throw new Error('Failed to save attendance record');
       }
       
-      return response.json();
+      return await response.json();
     },
     onSuccess: () => {
-      // Refresh attendance data
       queryClient.invalidateQueries({ queryKey: ['/api/staff-attendance'] });
       toast({
-        title: "Success!",
-        description: "Attendance record has been saved.",
-        variant: "default",
+        title: "Success",
+        description: "Attendance record saved successfully.",
       });
       onClose();
     },
     onError: (error) => {
       toast({
-        title: "Error!",
-        description: `Failed to save attendance record: ${error.message}`,
+        title: "Error",
+        description: error.message,
         variant: "destructive",
       });
     },
   });
   
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-  
-  const handleDateChange = (date: Date | undefined) => {
-    if (date) {
-      setSelectedDate(date);
-      setFormData(prev => ({ ...prev, date: format(date, 'yyyy-MM-dd') }));
-    }
-  };
-  
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.instructorId === 0) {
       toast({
-        title: "Error!",
+        title: "Error",
         description: "Please select an instructor.",
         variant: "destructive",
       });
@@ -216,116 +194,116 @@ const AttendanceForm: React.FC<{
     createAttendanceMutation.mutate(formData);
   };
   
+  // Update form when date changes
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      date: format(selectedDate, 'yyyy-MM-dd')
+    }));
+  }, [selectedDate]);
+  
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="instructorId">Instructor</Label>
-        <Select 
-          name="instructorId" 
-          value={formData.instructorId.toString()} 
-          onValueChange={(value) => setFormData(prev => ({ ...prev, instructorId: parseInt(value) }))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select instructor" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="0">Select instructor</SelectItem>
-            {instructors.map((instructor) => (
-              <SelectItem key={instructor.id} value={instructor.id.toString()}>
-                {instructor.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="date">Date</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !selectedDate && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {selectedDate ? format(selectedDate, "MMMM dd, yyyy") : <span>Select date</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={handleDateChange}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="status">Status</Label>
-        <Select 
-          name="status" 
-          value={formData.status} 
-          onValueChange={(value: any) => setFormData(prev => ({ ...prev, status: value }))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="present">Present</SelectItem>
-            <SelectItem value="late">Late</SelectItem>
-            <SelectItem value="absent">Absent</SelectItem>
-            <SelectItem value="sick">Sick</SelectItem>
-            <SelectItem value="paternity">Paternity</SelectItem>
-            <SelectItem value="pto">PTO</SelectItem>
-            <SelectItem value="bereavement">Bereavement</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
+    <form onSubmit={handleSubmit}>
+      <div className="grid gap-4 py-4">
+        <div className="grid gap-2">
+          <Label htmlFor="instructor">Instructor</Label>
+          <Select
+            value={formData.instructorId.toString()}
+            onValueChange={(value) => 
+              setFormData({...formData, instructorId: parseInt(value)})
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select instructor" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0">Select an instructor</SelectItem>
+              {instructors.map((instructor) => (
+                <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                  {instructor.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label>Date</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "justify-start text-left font-normal",
+                  !selectedDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? format(selectedDate, "MMMM dd, yyyy") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => date && setSelectedDate(date)}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="status">Status</Label>
+          <Select
+            value={formData.status}
+            onValueChange={(value: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement") => 
+              setFormData({...formData, status: value})
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="present">Present</SelectItem>
+              <SelectItem value="absent">Absent</SelectItem>
+              <SelectItem value="late">Late</SelectItem>
+              <SelectItem value="sick">Sick Leave</SelectItem>
+              <SelectItem value="paternity">Paternity Leave</SelectItem>
+              <SelectItem value="pto">PTO</SelectItem>
+              <SelectItem value="bereavement">Bereavement</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="grid gap-2">
           <Label htmlFor="timeIn">Time In</Label>
           <Input
+            type="time"
             id="timeIn"
-            name="timeIn"
-            type="time"
             value={formData.timeIn}
-            onChange={handleInputChange}
-            disabled={formData.status === "absent"}
+            onChange={(e) => setFormData({...formData, timeIn: e.target.value})}
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="timeOut">Time Out</Label>
-          <Input
-            id="timeOut"
-            name="timeOut"
-            type="time"
-            value={formData.timeOut}
-            onChange={handleInputChange}
-            disabled={formData.status === "absent"}
+        
+        <div className="grid gap-2">
+          <Label htmlFor="comments">Comments</Label>
+          <Textarea
+            id="comments"
+            placeholder="Add any additional notes here..."
+            value={formData.comments}
+            onChange={(e) => setFormData({...formData, comments: e.target.value})}
+            className="resize-none"
           />
         </div>
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="comments">Comments</Label>
-        <Textarea
-          id="comments"
-          name="comments"
-          value={formData.comments}
-          onChange={handleInputChange}
-          placeholder="Add any notes or comments about the attendance record"
-          rows={3}
-        />
       </div>
       
       <DialogFooter>
-        <Button type="button" variant="outline" onClick={onClose}>
+        <Button 
+          variant="outline" 
+          onClick={onClose} 
+          type="button"
+        >
           Cancel
         </Button>
         <Button 
@@ -341,12 +319,13 @@ const AttendanceForm: React.FC<{
 };
 
 const StaffAttendance = () => {
+  // Context hooks
   const { selectedSchool } = useSchool();
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   
-  // State hooks - define all of them at the top
+  // State hooks
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedView, setSelectedView] = useState("month");
@@ -362,7 +341,7 @@ const StaffAttendance = () => {
   }>({});
   const [bulkDate, setBulkDate] = useState<Date>(new Date());
   
-  // Fetch instructors for the selected school
+  // Queries
   const { data: instructors = [], isLoading: instructorsLoading } = useQuery<Instructor[]>({
     queryKey: ['/api/instructors'],
   });
@@ -396,15 +375,13 @@ const StaffAttendance = () => {
     enabled: !!selectedSchool && !!date,
   });
   
-  // Process real attendance data
+  // Process and filter data
   const attendanceData = processAttendanceData(schoolInstructors, attendanceRecords, date || new Date());
-  
-  // Filter data based on search query
   const filteredData = attendanceData.filter((item: any) => 
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
-  // Calculate overall statistics
+  // Calculate statistics
   const totalInstructors = filteredData.length;
   const averageAttendance = totalInstructors > 0
     ? Math.round(filteredData.reduce((sum: number, item: any) => sum + item.attendanceRate, 0) / totalInstructors)
@@ -420,10 +397,7 @@ const StaffAttendance = () => {
     { name: "Absent", value: absentCount, color: "#EF4444" }
   ];
   
-  // Check if data is still loading
-  const isLoading = instructorsLoading || attendanceLoading;
-  
-  // Setup selected instructors state when instructors change
+  // Effects
   useEffect(() => {
     if (schoolInstructors.length > 0) {
       const newSelectedInstructors: { [key: number]: any } = {};
@@ -438,6 +412,8 @@ const StaffAttendance = () => {
     }
   }, [schoolInstructors]);
   
+  // Loading state
+  const isLoading = instructorsLoading || attendanceLoading;
   if (isLoading) {
     return (
       <div className="flex-1 p-8 bg-gray-50">
@@ -455,7 +431,7 @@ const StaffAttendance = () => {
     );
   }
   
-  // Handle bulk selection change
+  // Event handlers
   const handleSelectInstructor = (instructorId: number, checked: boolean) => {
     setSelectedInstructors(prev => ({
       ...prev,
@@ -466,7 +442,6 @@ const StaffAttendance = () => {
     }));
   };
   
-  // Handle status change for an instructor
   const handleStatusChange = (instructorId: number, status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement") => {
     setSelectedInstructors(prev => ({
       ...prev,
@@ -477,7 +452,6 @@ const StaffAttendance = () => {
     }));
   };
   
-  // Handle time change for an instructor
   const handleTimeChange = (instructorId: number, timeIn: string) => {
     setSelectedInstructors(prev => ({
       ...prev,
@@ -488,7 +462,6 @@ const StaffAttendance = () => {
     }));
   };
   
-  // Submit bulk attendance records
   const handleBulkSubmit = async () => {
     const selectedIds = Object.entries(selectedInstructors)
       .filter(([_, data]) => data.selected)
@@ -553,7 +526,6 @@ const StaffAttendance = () => {
     }
   };
   
-  // Toggle select all instructors
   const toggleSelectAll = (checked: boolean) => {
     const updatedSelections = { ...selectedInstructors };
     Object.keys(updatedSelections).forEach(key => {
@@ -735,15 +707,15 @@ const StaffAttendance = () => {
           <CardContent>
             <div className="grid grid-cols-3 gap-4">
               <div className="flex flex-col items-center">
-                <div className="text-2xl font-bold text-green-600">{Math.round(presentCount / totalInstructors * 100)}%</div>
+                <div className="text-2xl font-bold text-green-600">{Math.round(presentCount / totalInstructors * 100) || 0}%</div>
                 <div className="text-xs text-gray-500">On Time</div>
               </div>
               <div className="flex flex-col items-center">
-                <div className="text-2xl font-bold text-amber-600">{Math.round(lateCount / totalInstructors * 100)}%</div>
+                <div className="text-2xl font-bold text-amber-600">{Math.round(lateCount / totalInstructors * 100) || 0}%</div>
                 <div className="text-xs text-gray-500">Late</div>
               </div>
               <div className="flex flex-col items-center">
-                <div className="text-2xl font-bold text-red-600">{Math.round(absentCount / totalInstructors * 100)}%</div>
+                <div className="text-2xl font-bold text-red-600">{Math.round(absentCount / totalInstructors * 100) || 0}%</div>
                 <div className="text-xs text-gray-500">Absent</div>
               </div>
             </div>
@@ -849,31 +821,31 @@ const StaffAttendance = () => {
                             <TableRow key={instructor.id}>
                               <TableCell>
                                 <Checkbox 
-                                  checked={selectedInstructors[instructor.id]?.selected}
+                                  checked={selectedInstructors[instructor.id]?.selected} 
                                   onCheckedChange={(checked) => handleSelectInstructor(instructor.id, !!checked)}
                                 />
                               </TableCell>
-                              <TableCell className="font-medium">
-                                <div className="flex items-center gap-2">
-                                  <User className="h-4 w-4 text-gray-400" />
-                                  {instructor.name}
-                                </div>
+                              <TableCell>
+                                <div className="font-medium">{instructor.name}</div>
+                                <div className="text-xs text-gray-500">{instructor.nationality}</div>
                               </TableCell>
                               <TableCell>
-                                <Select 
-                                  value={selectedInstructors[instructor.id]?.status || "present"}
-                                  onValueChange={(value: any) => handleStatusChange(instructor.id, value)}
+                                <Select
+                                  value={selectedInstructors[instructor.id]?.status}
+                                  onValueChange={(value: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement") => 
+                                    handleStatusChange(instructor.id, value)
+                                  }
                                   disabled={!selectedInstructors[instructor.id]?.selected}
                                 >
-                                  <SelectTrigger className="w-[130px]">
+                                  <SelectTrigger className="w-[140px]">
                                     <SelectValue placeholder="Status" />
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="present">Present</SelectItem>
-                                    <SelectItem value="late">Late</SelectItem>
                                     <SelectItem value="absent">Absent</SelectItem>
-                                    <SelectItem value="sick">Sick</SelectItem>
-                                    <SelectItem value="paternity">Paternity</SelectItem>
+                                    <SelectItem value="late">Late</SelectItem>
+                                    <SelectItem value="sick">Sick Leave</SelectItem>
+                                    <SelectItem value="paternity">Paternity Leave</SelectItem>
                                     <SelectItem value="pto">PTO</SelectItem>
                                     <SelectItem value="bereavement">Bereavement</SelectItem>
                                   </SelectContent>
@@ -882,10 +854,10 @@ const StaffAttendance = () => {
                               <TableCell>
                                 <Input
                                   type="time"
-                                  value={selectedInstructors[instructor.id]?.timeIn || "08:30"}
+                                  value={selectedInstructors[instructor.id]?.timeIn}
                                   onChange={(e) => handleTimeChange(instructor.id, e.target.value)}
-                                  disabled={!selectedInstructors[instructor.id]?.selected || selectedInstructors[instructor.id]?.status === 'absent'}
-                                  className="w-[130px]"
+                                  disabled={!selectedInstructors[instructor.id]?.selected || selectedInstructors[instructor.id]?.status !== "present"}
+                                  className="w-[120px]"
                                 />
                               </TableCell>
                             </TableRow>
@@ -899,104 +871,155 @@ const StaffAttendance = () => {
             </Card>
           ) : (
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle>Instructor Attendance Overview</CardTitle>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Daily attendance tracking for {selectedSchool?.name || 'all schools'}
-                  </p>
-                </div>
-                <Button 
-                  className="bg-green-600 hover:bg-green-700 gap-2"
-                  onClick={() => setBulkMode(true)}
-                >
-                  <UserCheck size={16} /> Take Attendance
-                </Button>
+              <CardHeader className="pb-2">
+                <CardTitle>Instructor Attendance Overview</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="overflow-hidden border rounded-md">
+                <div className="border rounded-md overflow-hidden">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[250px]">Instructor</TableHead>
-                        <TableHead>Status Today</TableHead>
-                        <TableHead>Time In</TableHead>
-                        <TableHead className="hidden md:table-cell">Monthly Rate</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead>Instructor</TableHead>
+                        <TableHead>Attendance Rate</TableHead>
+                        <TableHead>Present</TableHead>
+                        <TableHead>Late</TableHead>
+                        <TableHead>Absent</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredData.map((instructor: any) => {
-                        // Get today's record if any
-                        const today = format(new Date(), 'yyyy-MM-dd');
-                        const todayRecord = instructor.records.find((r: any) => r.date === today);
-                        
-                        return (
-                          <TableRow key={instructor.id}>
-                            <TableCell className="font-medium">
-                              <div className="flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${
-                                  instructor.attendanceRate >= 90 ? 'bg-green-500' : 
-                                  instructor.attendanceRate >= 75 ? 'bg-amber-500' : 
-                                  'bg-red-500'
-                                }`} />
-                                {instructor.name}
-                              </div>
-                              <div className="text-xs text-gray-500">{instructor.position}</div>
-                            </TableCell>
-                            <TableCell>
-                              {todayRecord ? (
-                                <Badge className={`
-                                  ${todayRecord.status === 'present' ? 'bg-green-100 text-green-800 hover:bg-green-100' : 
-                                    todayRecord.status === 'late' ? 'bg-amber-100 text-amber-800 hover:bg-amber-100' : 
-                                    todayRecord.status === 'absent' ? 'bg-red-100 text-red-800 hover:bg-red-100' : 
-                                    'bg-blue-100 text-blue-800 hover:bg-blue-100'}
-                                `}>
-                                  {todayRecord.status.charAt(0).toUpperCase() + todayRecord.status.slice(1)}
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline">Not recorded</Badge>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              {todayRecord && todayRecord.timeIn ? todayRecord.timeIn : '—'}
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              <div className="flex items-center gap-2">
-                                <Progress 
-                                  value={instructor.attendanceRate} 
-                                  className={`h-2 w-24 ${
-                                    instructor.attendanceRate >= 90 ? "bg-green-500" : 
-                                    instructor.attendanceRate >= 75 ? "bg-amber-500" : 
-                                    "bg-red-500"
-                                  }`}
-                                />
-                                <span className="text-sm">{instructor.attendanceRate}%</span>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="h-8"
-                                onClick={() => {
-                                  // Pre-select this instructor for attendance recording
-                                  setSelectedInstructors(prev => ({
-                                    ...prev,
-                                    [instructor.id]: {
-                                      ...prev[instructor.id],
-                                      selected: true
-                                    }
-                                  }));
-                                  setBulkMode(true);
-                                }}
-                              >
-                                <Check className="h-3.5 w-3.5 mr-1" /> Record
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
+                      {filteredData.map((item) => (
+                        <TableRow key={item.id}>
+                          <TableCell>
+                            <div className="font-medium">{item.name}</div>
+                            <div className="text-xs text-gray-500">{item.nationality}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Progress 
+                                value={item.attendanceRate} 
+                                className={`h-2 w-[60px] ${
+                                  item.attendanceRate >= 90 ? "bg-green-500" : 
+                                  item.attendanceRate >= 75 ? "bg-amber-500" : 
+                                  "bg-red-500"
+                                }`}
+                              />
+                              <span>{item.attendanceRate}%</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>{item.presentDays}</TableCell>
+                          <TableCell>{item.lateDays}</TableCell>
+                          <TableCell>{item.absentDays}</TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                  <FileText className="h-4 w-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>{item.name} - Attendance Details</DialogTitle>
+                                  <DialogDescription>
+                                    Detailed attendance record for {format(date || new Date(), "MMMM yyyy")}
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <div className="space-y-4">
+                                  <div className="flex justify-between items-center">
+                                    <div>
+                                      <h4 className="font-medium">Attendance Rate</h4>
+                                      <div className="text-2xl font-bold">{item.attendanceRate}%</div>
+                                    </div>
+                                    <div>
+                                      <Badge 
+                                        className={
+                                          item.attendanceRate >= 90 ? "bg-green-500" : 
+                                          item.attendanceRate >= 75 ? "bg-amber-500" : 
+                                          "bg-red-500"
+                                        }
+                                      >
+                                        {item.attendanceRate >= 90 ? "Excellent" : 
+                                         item.attendanceRate >= 75 ? "Average" : 
+                                         "Poor"}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-3 gap-4 text-center">
+                                    <div className="bg-green-50 p-3 rounded-md">
+                                      <div className="text-sm text-gray-500">Present Days</div>
+                                      <div className="text-xl font-bold text-green-600">{item.presentDays}</div>
+                                    </div>
+                                    <div className="bg-amber-50 p-3 rounded-md">
+                                      <div className="text-sm text-gray-500">Late Days</div>
+                                      <div className="text-xl font-bold text-amber-600">{item.lateDays}</div>
+                                    </div>
+                                    <div className="bg-red-50 p-3 rounded-md">
+                                      <div className="text-sm text-gray-500">Absent Days</div>
+                                      <div className="text-xl font-bold text-red-600">{item.absentDays}</div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="border-t pt-4">
+                                    <h4 className="font-medium mb-2">Attendance Records</h4>
+                                    <div className="max-h-[300px] overflow-y-auto">
+                                      <Table>
+                                        <TableHeader>
+                                          <TableRow>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Time In</TableHead>
+                                            <TableHead>Comments</TableHead>
+                                          </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                          {item.records.length > 0 ? (
+                                            item.records.map((record: StaffAttendance) => (
+                                              <TableRow key={record.id}>
+                                                <TableCell>{format(new Date(record.date), "MMM dd, yyyy")}</TableCell>
+                                                <TableCell>
+                                                  <Badge 
+                                                    className={
+                                                      record.status === "present" ? "bg-green-500" : 
+                                                      record.status === "late" ? "bg-amber-500" : 
+                                                      "bg-red-500"
+                                                    }
+                                                  >
+                                                    {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                                                  </Badge>
+                                                </TableCell>
+                                                <TableCell>{record.timeIn || "N/A"}</TableCell>
+                                                <TableCell>{record.comments || "-"}</TableCell>
+                                              </TableRow>
+                                            ))
+                                          ) : (
+                                            <TableRow>
+                                              <TableCell colSpan={4} className="text-center py-4 text-gray-500">
+                                                No attendance records found for this month.
+                                              </TableCell>
+                                            </TableRow>
+                                          )}
+                                        </TableBody>
+                                      </Table>
+                                    </div>
+                                  </div>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      
+                      {filteredData.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center py-6 text-gray-500">
+                            No attendance data found. Please select a school and check your filters.
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
                   </Table>
                 </div>
@@ -1007,123 +1030,12 @@ const StaffAttendance = () => {
         
         <TabsContent value="detailed" className="space-y-6">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Daily Attendance Records</CardTitle>
-              <Button 
-                onClick={() => setIsDialogOpen(true)} 
-                className="gap-2 bg-green-600 hover:bg-green-700"
-              >
-                <Plus size={16} /> Add Record
-              </Button>
+            <CardHeader>
+              <CardTitle>Detailed Attendance Records</CardTitle>
             </CardHeader>
             <CardContent>
-              {filteredData.length === 0 ? (
-                <div className="text-center py-8">
-                  <h3 className="text-lg font-medium text-gray-500 mb-4">No attendance records found</h3>
-                  <p className="text-sm text-gray-400 max-w-md mx-auto">
-                    {selectedSchool ? 
-                      `No attendance records found for ${selectedSchool.name} in ${format(date || new Date(), "MMMM yyyy")}` : 
-                      'Please select a school to view attendance records'}
-                  </p>
-                </div>
-              ) : (
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Instructor</TableHead>
-                        <TableHead>Attendance Rate</TableHead>
-                        <TableHead className="hidden sm:table-cell">Present</TableHead>
-                        <TableHead className="hidden sm:table-cell">Late</TableHead>
-                        <TableHead className="hidden sm:table-cell">Absent</TableHead>
-                        <TableHead className="hidden md:table-cell">Other</TableHead>
-                        <TableHead className="text-right">Details</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredData.map((instructor: any) => (
-                        <TableRow key={instructor.id}>
-                          <TableCell className="font-medium">{instructor.name}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <div 
-                                className={`w-3 h-3 rounded-full ${
-                                  instructor.attendanceRate >= 90 ? 'bg-green-500' : 
-                                  instructor.attendanceRate >= 75 ? 'bg-amber-500' : 
-                                  'bg-red-500'
-                                }`}
-                              />
-                              <span>{instructor.attendanceRate}%</span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">{instructor.present}</TableCell>
-                          <TableCell className="hidden sm:table-cell">{instructor.late}</TableCell>
-                          <TableCell className="hidden sm:table-cell">{instructor.absent}</TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            {instructor.sick + instructor.paternity + instructor.pto + instructor.bereavement}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="h-8 text-xs"
-                              onClick={() => {
-                                // Open a dialog to show detailed records (in a future implementation)
-                                console.log('View details for', instructor.name);
-                              }}
-                            >
-                              View Details
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-              
-              <div className="mt-6">
-                <h3 className="text-lg font-semibold mb-4">Recent Attendance Activities</h3>
-                {attendanceRecords.length > 0 ? (
-                  <div className="space-y-4">
-                    {attendanceRecords.slice(0, 5).map((record) => {
-                      // Find the instructor for this record
-                      const instructor = instructors.find(i => i.id === record.instructorId);
-                      if (!instructor) return null;
-                      
-                      const statusIcon = 
-                        record.status === 'present' ? <Check className="text-green-500" /> :
-                        record.status === 'late' ? <Clock className="text-amber-500" /> :
-                        record.status === 'absent' ? <X className="text-red-500" /> :
-                        <AlertTriangle className="text-blue-500" />;
-                        
-                      return (
-                        <div 
-                          key={record.id} 
-                          className="flex items-center gap-4 p-3 border rounded-md bg-white"
-                        >
-                          <div className="p-2 bg-gray-100 rounded-full">
-                            {statusIcon}
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium">{instructor.name}</div>
-                            <div className="text-sm text-gray-500">
-                              {format(new Date(record.date), "MMMM d, yyyy")} - {record.status}
-                              {record.timeIn && record.status !== 'absent' && ` (${record.timeIn} - ${record.timeOut || 'N/A'})`}
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm">
-                            <Edit size={16} />
-                          </Button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-6 text-gray-500">
-                    No recent attendance activities
-                  </div>
-                )}
+              <div className="text-center py-12 text-gray-500">
+                Detailed view with daily records is coming soon.
               </div>
             </CardContent>
           </Card>
@@ -1135,12 +1047,8 @@ const StaffAttendance = () => {
               <CardTitle>Attendance Trends</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <h3 className="text-lg font-medium text-gray-500 mb-4">Attendance trends will be displayed from PowerBI</h3>
-                <p className="text-sm text-gray-400 max-w-md mx-auto">
-                  Connect your Excel sheet with historical attendance data to visualize attendance trends over time.
-                </p>
-                <Button className="mt-4 bg-[#0A2463] hover:bg-[#071A4A]">Connect PowerBI</Button>
+              <div className="text-center py-12 text-gray-500">
+                Historical trends and analysis features are coming soon.
               </div>
             </CardContent>
           </Card>
