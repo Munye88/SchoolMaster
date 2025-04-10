@@ -201,38 +201,79 @@ const Dashboard = () => {
                 <Link href="/courses" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
               </div>
             </CardHeader>
-            <CardContent className="p-0">
-              <div className="p-4">
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left text-sm text-gray-500">
-                      <th className="py-2 font-medium">Course Name</th>
-                      <th className="py-2 font-medium">School</th>
-                      <th className="py-2 font-medium">Students</th>
-                      <th className="py-2 font-medium">Start Date</th>
-                      <th className="py-2 font-medium">Progress</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {courses.filter(c => c.status === "In Progress").slice(0, 5).map(course => {
-                      const school = schools.find(s => s.id === course.schoolId);
-                      return (
-                        <tr key={course.id} className="text-sm">
-                          <td className="py-3 font-medium">{course.name}</td>
-                          <td className="py-3">{school?.name || "-"}</td>
-                          <td className="py-3">{course.studentCount}</td>
-                          <td className="py-3">{formatDate(course.startDate)}</td>
-                          <td className="py-3">
+            <CardContent className="p-4 pb-6">
+              <div className="grid grid-cols-1 gap-4">
+                {/* Overview and Total */}
+                <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg shadow-md p-4 text-white">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-sm font-semibold opacity-90 uppercase tracking-wider">Active Courses</h3>
+                      <p className="text-3xl font-bold mt-1">{activeCourses}</p>
+                    </div>
+                    <div className="bg-white/20 p-3 rounded-lg">
+                      <BookOpen className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Course Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {courses.filter(c => c.status === "In Progress").slice(0, 4).map(course => {
+                    const school = schools.find(s => s.id === course.schoolId);
+                    let bgColor = 'from-blue-600 to-blue-700';
+                    let labelColor = 'text-blue-700';
+                    let indicatorColor = 'bg-blue-500/30';
+                    let progressColor = 'bg-white';
+                    
+                    // Determine color based on school
+                    if (school?.name.includes('East')) {
+                      bgColor = 'from-emerald-600 to-emerald-700';
+                      labelColor = 'text-emerald-700';
+                      indicatorColor = 'bg-emerald-500/30';
+                    } else if (school?.name.includes('West')) {
+                      bgColor = 'from-amber-500 to-amber-600';
+                      labelColor = 'text-amber-600';
+                      indicatorColor = 'bg-amber-500/30';
+                    }
+                    
+                    return (
+                      <div key={course.id} className="relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all">
+                        <div className={`absolute inset-0 bg-gradient-to-r ${bgColor}`}></div>
+                        <div className="absolute -right-6 -top-6 w-24 h-24 opacity-20">
+                          <BookOpen className="w-full h-full text-white" />
+                        </div>
+                        <div className="relative p-4 text-white z-10">
+                          <div className="flex justify-between items-center">
                             <div className="flex items-center gap-2">
-                              <Progress value={course.progress} className="h-2 w-24" />
-                              <span className="text-xs text-gray-500">{course.progress}%</span>
+                              <div className="w-3 h-3 rounded-full bg-white"></div>
+                              <h3 className="font-semibold">{course.name}</h3>
                             </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
+                            <div className={`bg-white ${labelColor} text-xs font-bold uppercase rounded-full px-2 py-0.5`}>
+                              {school?.name || "N/A"}
+                            </div>
+                          </div>
+                          <div className="mt-3 flex items-baseline gap-1">
+                            <span className="text-3xl font-bold">{course.studentCount}</span>
+                            <span className="text-sm font-medium">Students</span>
+                          </div>
+                          <div className="mt-3">
+                            <div className="flex items-center justify-between text-xs mb-1">
+                              <span>Progress</span>
+                              <span>{course.progress}%</span>
+                            </div>
+                            <div className={`w-full ${indicatorColor} rounded-full h-2 overflow-hidden`}>
+                              <div 
+                                className={`h-full ${progressColor} rounded-full`} 
+                                style={{ width: `${course.progress}%` }}
+                              ></div>
+                            </div>
+                            <div className="mt-2 text-xs opacity-90">Started: {formatDate(course.startDate)}</div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </CardContent>
           </Card>
