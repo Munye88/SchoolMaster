@@ -84,7 +84,7 @@ const StaffEvaluations = () => {
   });
 
   const schoolInstructors = selectedSchool 
-    ? instructors.filter(instructor => instructor.schoolId === selectedSchool) 
+    ? instructors.filter(instructor => instructor.schoolId === parseInt(selectedSchool.toString(), 10)) 
     : instructors;
   
   // Create mock evaluation data for instructors if none exist
