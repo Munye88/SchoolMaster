@@ -314,7 +314,7 @@ const StaffEvaluations = () => {
                     <TableHead className="text-center">Quarter 2 Score</TableHead>
                     <TableHead className="text-center">Quarter 3 Score</TableHead>
                     <TableHead className="text-center">Average</TableHead>
-                    <TableHead className="text-center">Status</TableHead>
+                    <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -327,7 +327,7 @@ const StaffEvaluations = () => {
                           instructor.q1Score >= PASSING_SCORE 
                             ? 'bg-green-100 text-green-800' 
                             : instructor.q1Score > 0 
-                              ? 'bg-amber-100 text-amber-800' 
+                              ? 'bg-red-100 text-red-800' 
                               : 'bg-gray-100 text-gray-800'
                         }`}>
                           {instructor.q1Score > 0 ? `${instructor.q1Score}%` : 'N/A'}
@@ -338,7 +338,7 @@ const StaffEvaluations = () => {
                           instructor.q2Score >= PASSING_SCORE 
                             ? 'bg-green-100 text-green-800' 
                             : instructor.q2Score > 0 
-                              ? 'bg-amber-100 text-amber-800' 
+                              ? 'bg-red-100 text-red-800' 
                               : 'bg-gray-100 text-gray-800'
                         }`}>
                           {instructor.q2Score > 0 ? `${instructor.q2Score}%` : 'N/A'}
@@ -349,7 +349,7 @@ const StaffEvaluations = () => {
                           instructor.q3Score >= PASSING_SCORE 
                             ? 'bg-green-100 text-green-800' 
                             : instructor.q3Score > 0 
-                              ? 'bg-amber-100 text-amber-800' 
+                              ? 'bg-red-100 text-red-800' 
                               : 'bg-gray-100 text-gray-800'
                         }`}>
                           {instructor.q3Score > 0 ? `${instructor.q3Score}%` : 'N/A'}
@@ -359,18 +359,16 @@ const StaffEvaluations = () => {
                         {instructor.evaluationsCount > 0 ? `${instructor.avgScore}%` : 'N/A'}
                       </TableCell>
                       <TableCell className="text-center">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          instructor.passing && instructor.evaluationsCount > 0
-                            ? 'bg-green-100 text-green-800' 
-                            : instructor.evaluationsCount > 0 
-                              ? 'bg-amber-100 text-amber-800' 
-                              : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {instructor.evaluationsCount > 0 
-                            ? (instructor.passing ? 'Passing' : 'Needs Improvement')
-                            : 'No Evaluations'
-                          }
-                        </span>
+                        <div className="flex justify-center gap-2">
+                          <Button size="sm" variant="outline">
+                            <PencilIcon className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                          <Button size="sm" variant="outline" className="bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 border-green-200">
+                            <PlusIcon className="h-4 w-4 mr-1" />
+                            Add Score
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -407,7 +405,7 @@ const StaffEvaluations = () => {
                       {instructorQuarterlyData.filter(i => i.evaluationsCount > 0).map((entry, index) => (
                         <Cell 
                           key={`cell-${index}`} 
-                          fill={entry.avgScore >= PASSING_SCORE ? "#10B981" : "#F59E0B"}
+                          fill={entry.avgScore >= PASSING_SCORE ? "#10B981" : "#EF4444"}
                         />
                       ))}
                     </Bar>
@@ -458,7 +456,7 @@ const StaffEvaluations = () => {
                       <Pie
                         data={[
                           { name: 'Passing', value: passCount, color: '#10B981' },
-                          { name: 'Needs Improvement', value: schoolInstructors.length - passCount, color: '#F59E0B' }
+                          { name: 'Needs Improvement', value: schoolInstructors.length - passCount, color: '#EF4444' }
                         ]}
                         cx="50%"
                         cy="50%"
@@ -469,7 +467,7 @@ const StaffEvaluations = () => {
                         label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
                       >
                         <Cell fill="#10B981" />
-                        <Cell fill="#F59E0B" />
+                        <Cell fill="#EF4444" />
                       </Pie>
                       <Tooltip />
                       <Legend />
