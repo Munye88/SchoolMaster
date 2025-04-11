@@ -413,30 +413,59 @@ export default function ManageInstructors() {
                     name="imageUrl"
                     render={({ field }) => (
                       <FormItem className="col-span-2">
-                        <FormLabel>Profile Image URL</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Enter image URL (e.g., https://example.com/image.jpg)" 
-                            {...field} 
-                            value={field.value || ""}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                        {field.value && (
-                          <div className="mt-2">
-                            <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
-                            <div className="w-16 h-16 rounded-full overflow-hidden border border-gray-200">
-                              <img 
-                                src={field.value} 
-                                alt="Instructor preview" 
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Invalid+URL";
+                        <FormLabel>Profile Image</FormLabel>
+                        <div className="space-y-4">
+                          <div className="flex flex-col space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Input
+                                id="create-image-upload"
+                                type="file"
+                                accept="image/*"
+                                className="max-w-sm"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (event) => {
+                                      field.onChange(event.target?.result as string);
+                                    };
+                                    reader.readAsDataURL(file);
+                                  }
                                 }}
                               />
+                              {field.value && (
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => field.onChange("")}
+                                >
+                                  Clear
+                                </Button>
+                              )}
                             </div>
+                            <p className="text-xs text-gray-500">
+                              Upload a photo of the instructor (JPEG, PNG, or GIF up to 5MB)
+                            </p>
                           </div>
-                        )}
+                          
+                          {field.value && (
+                            <div className="mt-2">
+                              <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
+                              <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-200">
+                                <img 
+                                  src={field.value} 
+                                  alt="Instructor preview" 
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Invalid+Image";
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -446,30 +475,59 @@ export default function ManageInstructors() {
                     name="imageUrl"
                     render={({ field }) => (
                       <FormItem className="col-span-2">
-                        <FormLabel>Profile Image URL</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="Enter image URL (e.g., https://example.com/image.jpg)" 
-                            {...field} 
-                            value={field.value || ""}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                        {field.value && (
-                          <div className="mt-2">
-                            <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
-                            <div className="w-16 h-16 rounded-full overflow-hidden border border-gray-200">
-                              <img 
-                                src={field.value} 
-                                alt="Instructor preview" 
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Invalid+URL";
+                        <FormLabel>Profile Image</FormLabel>
+                        <div className="space-y-4">
+                          <div className="flex flex-col space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Input
+                                id="edit-image-upload"
+                                type="file"
+                                accept="image/*"
+                                className="max-w-sm"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (event) => {
+                                      field.onChange(event.target?.result as string);
+                                    };
+                                    reader.readAsDataURL(file);
+                                  }
                                 }}
                               />
+                              {field.value && (
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => field.onChange("")}
+                                >
+                                  Clear
+                                </Button>
+                              )}
                             </div>
+                            <p className="text-xs text-gray-500">
+                              Upload a photo of the instructor (JPEG, PNG, or GIF up to 5MB)
+                            </p>
                           </div>
-                        )}
+                          
+                          {field.value && (
+                            <div className="mt-2">
+                              <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
+                              <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-200">
+                                <img 
+                                  src={field.value} 
+                                  alt="Instructor preview" 
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Invalid+Image";
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />

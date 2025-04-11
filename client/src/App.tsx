@@ -17,7 +17,7 @@ import SchoolTimetable from "./pages/school/Timetable";
 import SchoolStudentDaySchedule from "./pages/school/StudentDaySchedule";
 import SchoolYearlySchedule from "./pages/school/YearlySchedule";
 import SchoolSOP from "./pages/school/SOP";
-import StaffEvaluations from "./pages/school/StaffEvaluations";
+import StaffEvaluations from "./pages/school/StaffEvaluationsNew";
 import StaffAttendance from "./pages/school/StaffAttendance";
 import SchoolBookInventory from "./pages/school/BookInventory";
 import StaffLeaveTracker from "./pages/school/StaffLeaveTracker";
