@@ -203,7 +203,9 @@ export default function ManageInstructors() {
 
   // Handle create form submission
   const onCreateSubmit = (values: InstructorFormValues) => {
+    console.log("Creating instructor with data:", values);
     createInstructorMutation.mutate(values);
+    setIsCreateDialogOpen(false); // Close the dialog after submission
   };
 
   // Handle edit form submission
@@ -214,6 +216,8 @@ export default function ManageInstructors() {
         id: selectedInstructor.id, 
         data: values 
       });
+      setIsEditDialogOpen(false); // Close the dialog after submission
+      setSelectedInstructor(null);
     }
   };
 
@@ -369,7 +373,15 @@ export default function ManageInstructors() {
                       <FormItem>
                         <FormLabel>Compound</FormLabel>
                         <FormControl>
-                          <Input placeholder="Housing compound" {...field} />
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select compound" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Al Reem">Al Reem</SelectItem>
+                              <SelectItem value="Saken">Saken</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -706,7 +718,15 @@ export default function ManageInstructors() {
                     <FormItem>
                       <FormLabel>Compound</FormLabel>
                       <FormControl>
-                        <Input placeholder="Housing compound" {...field} />
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select compound" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Al Reem">Al Reem</SelectItem>
+                            <SelectItem value="Saken">Saken</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
