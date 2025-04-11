@@ -73,6 +73,8 @@ const StaffEvaluations = () => {
   const [evalScore, setEvalScore] = useState<number>(85);
   const [evalQuarter, setEvalQuarter] = useState<string>("Q1");
   const [evalFeedback, setEvalFeedback] = useState<string>("");
+  const [evalDate, setEvalDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
+  const [evalAttachment, setEvalAttachment] = useState<string | null>(null);
   
   // Fetch instructors and evaluations
   const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
