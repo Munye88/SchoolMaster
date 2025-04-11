@@ -431,7 +431,8 @@ export default function ManageInstructors() {
                                   if (file) {
                                     const reader = new FileReader();
                                     reader.onload = (event) => {
-                                      field.onChange(event.target?.result as string);
+                                      const base64Image = event.target?.result as string;
+                                      field.onChange(base64Image);
                                     };
                                     reader.readAsDataURL(file);
                                   }

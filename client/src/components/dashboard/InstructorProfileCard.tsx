@@ -46,9 +46,27 @@ const InstructorProfileCard = ({ instructor, isLoading = false }: InstructorProf
     <Card>
       <CardContent className="p-6 md:flex">
         <div className="md:w-1/4 flex flex-col items-center mb-6 md:mb-0">
-          <div className="w-24 h-24 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-2xl font-bold">
-            {getInitials(instructor.name)}
-          </div>
+          {instructor.imageUrl ? (
+            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[#3E92CC]">
+              <img 
+                src={instructor.imageUrl} 
+                alt={instructor.name} 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback to initials if image fails to load
+                  const target = e.currentTarget;
+                  const parent = target.parentElement;
+                  if (parent) {
+                    parent.innerHTML = `<div class="w-24 h-24 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-2xl font-bold">${getInitials(instructor.name)}</div>`;
+                  }
+                }}
+              />
+            </div>
+          ) : (
+            <div className="w-24 h-24 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-2xl font-bold">
+              {getInitials(instructor.name)}
+            </div>
+          )}
           <h3 className="mt-4 font-bold text-lg text-[#0A2463] text-center">{instructor.name}</h3>
           <p className="text-gray-500 text-sm text-center">{instructor.role || 'Instructor'}</p>
         </div>

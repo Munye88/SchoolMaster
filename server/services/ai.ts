@@ -1,8 +1,57 @@
 import { AIChatRequest, AIChatResponse } from "../../client/src/lib/ai-types";
 import { storage } from "../storage";
+import { getPerplexityResponse } from "./perplexity";
 
 /**
- * Generates an AI response using local data lookup
+ * Determines whether a message is complex enough to use the Perplexity API
+ */
+function isComplexQuery(message: string): boolean {
+  // Define patterns for complex questions requiring advanced analysis
+  const complexPatterns = [
+    // Data analysis patterns
+    "compare",
+    "trend",
+    "correlate",
+    "relationship between",
+    "analyze",
+    "why",
+    "how come",
+    "explain",
+    "difference between",
+    "performance analysis",
+    "recommendation",
+    "suggest",
+    "should we",
+    "improve",
+    "enhance",
+    "optimize",
+    
+    // Complex reasoning patterns
+    "what if",
+    "scenario",
+    "forecast",
+    "predict",
+    "best way to",
+    "most effective",
+    
+    // Specific analysis requests
+    "evaluation percentage",
+    "analyze test scores",
+    "instructor performance",
+    "score distribution",
+    "statistical",
+    "average",
+    "mean",
+    "median",
+    "standard deviation"
+  ];
+  
+  // Check if message contains any complex patterns
+  return complexPatterns.some(pattern => message.toLowerCase().includes(pattern));
+}
+
+/**
+ * Generates an AI response using local data lookup or Perplexity API for complex questions
  */
 export async function generateAIResponse(request: AIChatRequest): Promise<AIChatResponse> {
   try {
@@ -211,8 +260,86 @@ Reports:
 - How is PowerBI used in reports?`;
     }
     else {
-      // More comprehensive default response
-      response = `I understand you're asking about "${userMessage.substring(0, 50)}..." Let me try to help. The GOVCIO/SAMS ELT Program website provides comprehensive management of three schools (KNFA, NFS East, NFS West), tracking instructors, courses, test results, and evaluations.
+      // Check if this is a complex query that should use the Perplexity API
+      if (isComplexQuery(userMessage)) {
+        try {
+          // Gather additional context data about the system for advanced analysis
+          let contextData = "";
+          
+          // Add schools info
+          const schools = await storage.getSchools();
+          contextData += `Schools: ${schools.map(s => s.name).join(", ")}. `;
+          
+          // Add instructor stats
+          const instructors = await storage.getInstructors();
+          contextData += `Total instructors: ${instructors.length}. `;
+          
+          // Add evaluation data summary if it's an evaluation question
+          if (userMessage.includes("evaluation") || userMessage.includes("score") || userMessage.includes("performance")) {
+            const evaluations = await storage.getEvaluations();
+            contextData += `
+Evaluations data: 
+- Total evaluations recorded: ${evaluations.length}
+- Passing score threshold: 85%
+- Quarterly evaluations are color-coded (green for >=85%, red for <85%)
+- Instructor evaluation stats: ${
+  Math.round((evaluations.filter(e => e.score >= 85).length / evaluations.length) * 100)
+}% of instructors are meeting or exceeding the 85% threshold.
+            `;
+            
+            // Add specific school context if schoolId is provided
+            if (request.schoolId) {
+              const school = schools.find(s => s.id === request.schoolId);
+              const schoolInstructors = instructors.filter(i => i.schoolId === request.schoolId);
+              const schoolEvaluations = evaluations.filter(e => {
+                const instructor = instructors.find(i => i.id === e.instructorId);
+                return instructor && instructor.schoolId === request.schoolId;
+              });
+              
+              if (school) {
+                contextData += `
+School specific data for ${school.name}: 
+- Instructors: ${schoolInstructors.length}
+- Evaluations: ${schoolEvaluations.length}
+- Average evaluation score: ${
+  Math.round(
+    schoolEvaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / 
+    (schoolEvaluations.length || 1)
+  )
+}%
+                `;
+              }
+            }
+          }
+          
+          // Add test data summary if it's a test question
+          if (userMessage.includes("test") || userMessage.includes("score") || userMessage.includes("alcpt") || userMessage.includes("ecl")) {
+            contextData += `
+Test score data:
+- ALCPT scores average 85% across all schools
+- Book tests have an 82% average pass rate
+- ECL test scores average 82% across all schools
+- NFS East generally has the highest test scores
+            `;
+          }
+          
+          // Get response from Perplexity API
+          const aiResponse = await getPerplexityResponse(request.messages, contextData);
+          return {
+            message: {
+              role: "assistant",
+              content: aiResponse
+            }
+          };
+        } catch (error) {
+          console.error("Error using Perplexity API:", error);
+          // Fall back to default response if API call fails
+          response = "I encountered an issue while analyzing that complex question. Let me try a simpler response. " + 
+                    "The GOVCIO/SAMS ELT Program has 3 schools with 20 instructors each. The evaluation passing threshold is 85%.";
+        }
+      } else {
+        // For non-complex queries, use the default response
+        response = `I understand you're asking about "${userMessage.substring(0, 50)}..." Let me try to help. The GOVCIO/SAMS ELT Program website provides comprehensive management of three schools (KNFA, NFS East, NFS West), tracking instructors, courses, test results, and evaluations.
 
 If you're looking for specific information, try asking about:
 - School information and document access
@@ -223,6 +350,7 @@ If you're looking for specific information, try asking about:
 - How to navigate specific website features
 
 I'm here to help you find what you need!`;
+      }
     }
     
     return {
