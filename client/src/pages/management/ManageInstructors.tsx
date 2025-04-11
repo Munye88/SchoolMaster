@@ -237,14 +237,14 @@ export default function ManageInstructors() {
 
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-[#0A2463] hover:bg-[#071A4A]">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Instructor
+            <Button size="lg" className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md transition-all hover:shadow-lg">
+              <Plus className="mr-2 h-5 w-5" />
+              <span className="font-semibold">Add Instructor</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Add New Instructor</DialogTitle>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader className="sticky top-0 bg-white z-10 pb-2">
+              <DialogTitle className="text-xl">Add New Instructor</DialogTitle>
               <DialogDescription>
                 Create a new instructor in the system.
               </DialogDescription>
@@ -480,18 +480,21 @@ export default function ManageInstructors() {
                   <Button
                     type="button"
                     variant="outline"
+                    size="lg"
+                    className="hover:bg-gray-100 border-gray-300"
                     onClick={() => setIsCreateDialogOpen(false)}
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
-                    className="bg-[#0A2463] hover:bg-[#071A4A]"
+                    size="lg"
+                    className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md hover:shadow-lg font-semibold"
                     disabled={createInstructorMutation.isPending}
                   >
                     {createInstructorMutation.isPending ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                         Creating...
                       </>
                     ) : (
@@ -576,9 +579,9 @@ export default function ManageInstructors() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Edit Instructor</DialogTitle>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="sticky top-0 bg-white z-10 pb-2">
+            <DialogTitle className="text-xl">Edit Instructor</DialogTitle>
             <DialogDescription>
               Update instructor information.
             </DialogDescription>
@@ -810,6 +813,8 @@ export default function ManageInstructors() {
                 <Button
                   type="button"
                   variant="outline"
+                  size="lg"
+                  className="hover:bg-gray-100 border-gray-300"
                   onClick={() => {
                     setIsEditDialogOpen(false);
                     setSelectedInstructor(null);
@@ -819,12 +824,13 @@ export default function ManageInstructors() {
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-[#0A2463] hover:bg-[#071A4A]"
+                  size="lg"
+                  className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md hover:shadow-lg font-semibold"
                   disabled={updateInstructorMutation.isPending}
                 >
                   {updateInstructorMutation.isPending ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       Updating...
                     </>
                   ) : (
