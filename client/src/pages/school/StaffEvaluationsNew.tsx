@@ -15,8 +15,36 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Share2, Download, FileText, PieChart as PieChartIcon, CalendarDays, BarChart as BarChartIcon } from "lucide-react";
+import { 
+  Dialog,
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from "@/components/ui/dialog";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue 
+} from "@/components/ui/select";
+import { 
+  Share2, 
+  Download, 
+  FileText, 
+  PieChart as PieChartIcon, 
+  CalendarDays, 
+  BarChart as BarChartIcon, 
+  PencilIcon, 
+  PlusIcon,
+  SaveIcon,
+  XIcon
+} from "lucide-react";
 import { 
   BarChart, 
   Bar, 
@@ -39,6 +67,12 @@ const StaffEvaluations = () => {
   const { selectedSchool } = useSchool();
   const [selectedTab, setSelectedTab] = useState("quarterly");
   const [selectedYear, setSelectedYear] = useState("2025");
+  const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
+  const [evalScore, setEvalScore] = useState<number>(85);
+  const [evalQuarter, setEvalQuarter] = useState<string>("Q1");
+  const [evalFeedback, setEvalFeedback] = useState<string>("");
   
   // Fetch instructors and evaluations
   const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
@@ -360,11 +394,37 @@ const StaffEvaluations = () => {
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex justify-center gap-2">
-                          <Button size="sm" variant="outline">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => {
+                              const instr = schoolInstructors.find(i => i.id === instructor.id);
+                              if (instr) {
+                                setSelectedInstructor(instr);
+                                setDialogMode("edit");
+                                setDialogOpen(true);
+                              }
+                            }}
+                          >
                             <PencilIcon className="h-4 w-4 mr-1" />
                             Edit
                           </Button>
-                          <Button size="sm" variant="outline" className="bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 border-green-200">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 border-green-200"
+                            onClick={() => {
+                              const instr = schoolInstructors.find(i => i.id === instructor.id);
+                              if (instr) {
+                                setSelectedInstructor(instr);
+                                setDialogMode("add");
+                                setEvalScore(85);
+                                setEvalQuarter("Q1");
+                                setEvalFeedback("");
+                                setDialogOpen(true);
+                              }
+                            }}
+                          >
                             <PlusIcon className="h-4 w-4 mr-1" />
                             Add Score
                           </Button>
@@ -479,6 +539,99 @@ const StaffEvaluations = () => {
           </div>
         </TabsContent>
       </Tabs>
+      
+      {/* Evaluation Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>
+              {dialogMode === "add" ? "Add Evaluation Score" : "Edit Evaluation Score"} for {selectedInstructor?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Enter the evaluation details below. Click save when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="quarter" className="text-right">
+                Quarter
+              </Label>
+              <Select 
+                value={evalQuarter} 
+                onValueChange={setEvalQuarter}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select Quarter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Q1">Quarter 1</SelectItem>
+                  <SelectItem value="Q2">Quarter 2</SelectItem>
+                  <SelectItem value="Q3">Quarter 3</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="score" className="text-right">
+                Score (%)
+              </Label>
+              <Input
+                id="score"
+                type="number"
+                min={0}
+                max={100}
+                value={evalScore}
+                onChange={(e) => setEvalScore(Number(e.target.value))}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="feedback" className="text-right">
+                Feedback
+              </Label>
+              <Input
+                id="feedback"
+                placeholder="Optional feedback comments"
+                value={evalFeedback}
+                onChange={(e) => setEvalFeedback(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setDialogOpen(false)}
+              className="gap-2"
+            >
+              <XIcon size={16} />
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                if (selectedInstructor) {
+                  createEvaluationMutation.mutate({
+                    instructorId: selectedInstructor.id,
+                    score: evalScore,
+                    quarter: evalQuarter,
+                    year: selectedYear,
+                    feedback: evalFeedback || null,
+                    evaluatorId: null
+                  });
+                  setDialogOpen(false);
+                }
+              }} 
+              className="gap-2 bg-[#0A2463] hover:bg-[#071A4A]"
+            >
+              <SaveIcon size={16} />
+              Save Evaluation
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
