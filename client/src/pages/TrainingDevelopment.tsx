@@ -80,28 +80,37 @@ export default function TrainingDevelopment() {
           description: "Learn how to establish trust as a leader and build lasting credibility with your team.",
           icon: <BookText className="h-4 w-4" />,
           keyPoints: [
-            "Understand the 3 elements of trust in leadership",
+            "Understand the elements of trust in leadership",
             "Develop transparency in communication",
             "Build credibility through consistent actions"
           ],
           resources: [
             {
               type: "article",
-              title: "The 3 Elements of Trust",
+              title: "The Neuroscience of Trust",
               source: "Harvard Business Review",
-              url: "https://hbr.org/2019/05/the-3-elements-of-trust",
+              url: "https://hbr.org/2017/01/the-neuroscience-of-trust",
               icon: <File className="h-4 w-4" />,
               duration: "15 min read",
-              description: "Learn about the three elements of trust that leaders must demonstrate: positive relationships, good judgment, and consistency."
+              description: "Discover the science behind trust in organizations and how to create a high-trust culture that improves performance."
             },
             {
               type: "video",
               title: "How Great Leaders Build Trust",
-              source: "YouTube",
+              source: "TED",
               url: "https://www.youtube.com/watch?v=pVeq-0dIqpk",
               icon: <Play className="h-4 w-4" />,
               duration: "8 min watch",
               description: "Simon Sinek explains how consistency in actions builds trust among team members."
+            },
+            {
+              type: "article",
+              title: "Trust and Leadership",
+              source: "Center for Creative Leadership",
+              url: "https://www.ccl.org/articles/leading-effectively-articles/trust-in-leadership/",
+              icon: <File className="h-4 w-4" />,
+              duration: "12 min read",
+              description: "Learn how trust impacts leadership effectiveness and strategies to build it with your team."
             }
           ]
         },
@@ -117,12 +126,12 @@ export default function TrainingDevelopment() {
           resources: [
             {
               type: "article",
-              title: "Leadership and Integrity",
-              source: "MindTools",
-              url: "https://www.mindtools.com/pages/article/integrity.htm",
+              title: "Leaders: The Importance of Leading by Example",
+              source: "Forbes",
+              url: "https://www.forbes.com/sites/scottedinger/2014/11/12/leaders-the-importance-of-leading-by-example/",
               icon: <File className="h-4 w-4" />,
               duration: "12 min read",
-              description: "Explore how integrity in leadership creates a foundation of trust and respect."
+              description: "Understand why your actions as a leader speak louder than words and how to effectively model desired behaviors."
             },
             {
               type: "video",
@@ -132,6 +141,54 @@ export default function TrainingDevelopment() {
               icon: <Play className="h-4 w-4" />,
               duration: "10 min watch",
               description: "Learn practical ways to demonstrate leadership through your daily actions."
+            },
+            {
+              type: "article",
+              title: "Leading by Example: How the Best Leaders Do It",
+              source: "BetterUp",
+              url: "https://www.betterup.com/blog/leading-by-example",
+              icon: <File className="h-4 w-4" />,
+              duration: "14 min read",
+              description: "Explore how successful leaders embody values and create a culture of accountability through their actions."
+            }
+          ]
+        },
+        {
+          title: "Visionary Leadership",
+          description: "Learn to create and communicate a compelling vision that inspires your team.",
+          icon: <Lightbulb className="h-4 w-4" />,
+          keyPoints: [
+            "Craft a clear and inspiring vision",
+            "Connect organizational goals with personal meaning",
+            "Communicate vision effectively across different audiences"
+          ],
+          resources: [
+            {
+              type: "article",
+              title: "To Be a Great Leader, You Need to Start by Leading Yourself",
+              source: "Harvard Business Review",
+              url: "https://hbr.org/2022/09/to-be-a-great-leader-you-need-to-start-by-leading-yourself",
+              icon: <File className="h-4 w-4" />,
+              duration: "16 min read",
+              description: "Learn why self-leadership is the foundation of effectively leading others."
+            },
+            {
+              type: "video",
+              title: "How to Be a Leader - The 7 Great Leadership Traits",
+              source: "YouTube",
+              url: "https://www.youtube.com/watch?v=aPwXeg8ThWI",
+              icon: <Play className="h-4 w-4" />,
+              duration: "17 min watch",
+              description: "Brian Tracy explains the seven essential qualities that make a great leader."
+            },
+            {
+              type: "article",
+              title: "Leadership Vision: The Secret to Leadership Success",
+              source: "Inc.com",
+              url: "https://www.inc.com/peter-economy/7-secrets-of-visionary-leaders.html",
+              icon: <File className="h-4 w-4" />,
+              duration: "10 min read",
+              description: "Discover how to develop and articulate a vision that drives organizational success."
             }
           ]
         }
@@ -157,9 +214,9 @@ export default function TrainingDevelopment() {
           resources: [
             {
               type: "article",
-              title: "Communication Skills for Managers",
-              source: "Project Management Academy",
-              url: "https://projectmanagementacademy.net/resources/blog/communication-skills-for-managers/",
+              title: "8 Must-Have Communication Skills for Managers",
+              source: "Management Study Guide",
+              url: "https://www.managementstudyguide.com/communication-skills-for-managers.htm",
               icon: <File className="h-4 w-4" />,
               duration: "18 min read",
               description: "Detailed guide on developing effective communication skills as a manager."
@@ -172,6 +229,15 @@ export default function TrainingDevelopment() {
               icon: <Play className="h-4 w-4" />,
               duration: "14 min watch",
               description: "Practical communication techniques from experienced leaders."
+            },
+            {
+              type: "article",
+              title: "Leadership Communication: How to Build Trust Through Communication",
+              source: "CCL",
+              url: "https://www.ccl.org/articles/leading-effectively-articles/the-power-of-positive-leadership-communication/",
+              icon: <File className="h-4 w-4" />,
+              duration: "13 min read",
+              description: "Learn how communication builds trust and drives effective leadership."
             }
           ]
         },
@@ -187,21 +253,69 @@ export default function TrainingDevelopment() {
           resources: [
             {
               type: "article",
-              title: "The Feedback Fallacy",
-              source: "Harvard Business Review",
-              url: "https://hbr.org/2019/03/the-feedback-fallacy",
+              title: "The Art of Giving and Receiving Feedback",
+              source: "Mind Tools",
+              url: "https://www.mindtools.com/ajdw3co/giving-and-receiving-feedback",
               icon: <File className="h-4 w-4" />,
               duration: "20 min read",
-              description: "Research-based insights on effective feedback mechanisms in organizations."
+              description: "A comprehensive guide to effective feedback mechanisms in professional environments."
             },
             {
               type: "video",
               title: "The Secret to Giving Great Feedback",
-              source: "YouTube",
+              source: "TED",
               url: "https://www.youtube.com/watch?v=wtl5UrrgU8c",
               icon: <Play className="h-4 w-4" />,
               duration: "11 min watch",
-              description: "Learn the structure of effective feedback conversations."
+              description: "Learn the structure of effective feedback conversations that drive growth and improvement."
+            },
+            {
+              type: "article",
+              title: "How to Give and Receive Feedback Effectively",
+              source: "Harvard Business Review",
+              url: "https://hbr.org/2021/06/the-right-way-to-process-feedback",
+              icon: <File className="h-4 w-4" />,
+              duration: "15 min read",
+              description: "Strategies for processing feedback constructively and using it for professional development."
+            }
+          ]
+        },
+        {
+          title: "Persuasive Communication",
+          description: "Develop skills to influence others and effectively communicate ideas.",
+          icon: <BrainCircuit className="h-4 w-4" />,
+          keyPoints: [
+            "Structure arguments for maximum impact",
+            "Use storytelling to connect emotionally",
+            "Adapt persuasion techniques to different contexts"
+          ],
+          resources: [
+            {
+              type: "article",
+              title: "The Science of Persuasion",
+              source: "Harvard Business Review",
+              url: "https://hbr.org/2001/10/harnessing-the-science-of-persuasion",
+              icon: <File className="h-4 w-4" />,
+              duration: "16 min read",
+              description: "Learn the six universal principles of persuasion that drive human behavior."
+            },
+            {
+              type: "video",
+              title: "How to Speak So That People Want to Listen",
+              source: "TED",
+              url: "https://www.youtube.com/watch?v=eIho2S0ZahI",
+              icon: <Play className="h-4 w-4" />,
+              duration: "10 min watch",
+              description: "Julian Treasure demonstrates the how-to's of powerful speaking that captivates listeners."
+            },
+            {
+              type: "article",
+              title: "The Power of Strategic Storytelling",
+              source: "Stanford Business",
+              url: "https://www.gsb.stanford.edu/insights/power-strategic-storytelling",
+              icon: <File className="h-4 w-4" />,
+              duration: "12 min read",
+              description: "Discover how strategic storytelling can transform your leadership communication."
             }
           ]
         }
@@ -227,9 +341,9 @@ export default function TrainingDevelopment() {
           resources: [
             {
               type: "article",
-              title: "How to Have Difficult Conversations",
-              source: "Center for Creative Leadership",
-              url: "https://www.ccl.org/articles/leading-effectively-articles/how-to-have-difficult-conversations/",
+              title: "How to Have Difficult Conversations at Work",
+              source: "Harvard Business Review",
+              url: "https://hbr.org/2016/07/how-to-have-difficult-conversations-when-you-dont-like-conflict",
               icon: <File className="h-4 w-4" />,
               duration: "15 min read",
               description: "A comprehensive guide to preparing for and executing difficult workplace conversations."
@@ -241,7 +355,16 @@ export default function TrainingDevelopment() {
               url: "https://www.youtube.com/watch?v=KY5TWVz5ZDU",
               icon: <Play className="h-4 w-4" />,
               duration: "12 min watch",
-              description: "Learn practical techniques for resolving workplace conflicts."
+              description: "Learn practical techniques for resolving workplace conflicts effectively."
+            },
+            {
+              type: "article",
+              title: "Difficult Conversations: 9 Common Mistakes",
+              source: "MindTools",
+              url: "https://www.mindtools.com/anu3h8g/difficult-conversations",
+              icon: <File className="h-4 w-4" />,
+              duration: "13 min read",
+              description: "Identify common mistakes in difficult conversations and strategies to avoid them."
             }
           ]
         },
@@ -257,21 +380,69 @@ export default function TrainingDevelopment() {
           resources: [
             {
               type: "article",
-              title: "13 Ways to Manage Conflict in the Workplace",
-              source: "Forbes",
-              url: "https://www.forbes.com/sites/forbescoachescouncil/2018/06/27/13-ways-to-effectively-manage-conflict-in-the-workplace/",
+              title: "How to Manage Workplace Conflict",
+              source: "SHRM",
+              url: "https://www.shrm.org/resourcesandtools/tools-and-samples/how-to-guides/pages/how-to-manage-workplace-conflict.aspx",
               icon: <File className="h-4 w-4" />,
               duration: "14 min read",
-              description: "Practical strategies from executive coaches on managing workplace conflicts."
+              description: "Practical strategies from HR professionals on managing workplace conflicts."
             },
             {
               type: "video",
-              title: "De-escalation Skills",
+              title: "How to De-escalate Conflict",
               source: "YouTube",
-              url: "https://www.youtube.com/watch?v=G7QJ_g77Xzo",
+              url: "https://www.youtube.com/watch?v=C3NGvJiVfE8",
               icon: <Play className="h-4 w-4" />,
               duration: "9 min watch",
               description: "Expert techniques for calming tense situations and finding resolution."
+            },
+            {
+              type: "article",
+              title: "The Art of De-escalation in Leadership",
+              source: "Forbes",
+              url: "https://www.forbes.com/sites/davidtao/2021/02/01/the-art-of-de-escalation-how-to-manage-workplace-conflict-in-a-crisis/",
+              icon: <File className="h-4 w-4" />,
+              duration: "11 min read",
+              description: "Learn strategies for de-escalating workplace conflicts during high-pressure situations."
+            }
+          ]
+        },
+        {
+          title: "Mediation Skills",
+          description: "Develop skills to help others resolve conflicts and reach mutually beneficial solutions.",
+          icon: <Users className="h-4 w-4" />,
+          keyPoints: [
+            "Create a neutral environment for conflict resolution",
+            "Facilitate productive dialogue between parties",
+            "Guide conflicting parties toward collaborative solutions"
+          ],
+          resources: [
+            {
+              type: "article",
+              title: "Workplace Mediation Techniques",
+              source: "ACAS",
+              url: "https://www.acas.org.uk/mediation",
+              icon: <File className="h-4 w-4" />,
+              duration: "18 min read",
+              description: "Professional mediation techniques for resolving workplace disputes."
+            },
+            {
+              type: "video",
+              title: "Workplace Mediation Skills",
+              source: "YouTube",
+              url: "https://www.youtube.com/watch?v=MFJDzALSJQs",
+              icon: <Play className="h-4 w-4" />,
+              duration: "15 min watch",
+              description: "Learn mediation techniques to help resolve conflicts between team members."
+            },
+            {
+              type: "article",
+              title: "7 Steps for Effective Problem Solving in the Workplace",
+              source: "Indeed",
+              url: "https://www.indeed.com/career-advice/career-development/problem-solving-in-workplace",
+              icon: <File className="h-4 w-4" />,
+              duration: "12 min read",
+              description: "A structured approach to problem-solving that can be applied to conflict resolution."
             }
           ]
         }
@@ -297,21 +468,30 @@ export default function TrainingDevelopment() {
           resources: [
             {
               type: "article",
-              title: "4 Steps to Improving Your Decision Making",
-              source: "Kepner-Tregoe",
-              url: "https://www.kepner-tregoe.com/blog/4-steps-to-improving-your-decision-making/",
+              title: "Decision-Making: How to Make Better Decisions",
+              source: "Mind Tools",
+              url: "https://www.mindtools.com/ahbo0dw/how-to-make-decisions",
               icon: <File className="h-4 w-4" />,
               duration: "16 min read",
-              description: "Learn the proven Kepner-Tregoe approach to structured decision making."
+              description: "Learn structured approaches to better decision-making in leadership roles."
             },
             {
               type: "video",
               title: "How to Make Better Decisions",
-              source: "YouTube",
-              url: "https://www.youtube.com/watch?v=cIQHtVOqQfA",
+              source: "TED",
+              url: "https://www.youtube.com/watch?v=8V2sX9BhAW8",
               icon: <Play className="h-4 w-4" />,
               duration: "13 min watch",
               description: "Discover cognitive biases that affect decisions and how to overcome them."
+            },
+            {
+              type: "article",
+              title: "The WRAP Method for Better Decision Making",
+              source: "Psychology Today",
+              url: "https://www.psychologytoday.com/us/blog/decisions-and-the-teen-brain/201506/the-wrap-method-better-decision-making",
+              icon: <File className="h-4 w-4" />,
+              duration: "12 min read",
+              description: "A practical framework for making better decisions in complex situations."
             }
           ]
         },
@@ -327,21 +507,69 @@ export default function TrainingDevelopment() {
           resources: [
             {
               type: "article",
-              title: "Ethical Leadership in Business",
-              source: "University of Notre Dame",
-              url: "https://www.notredameonline.com/resources/business-administration/ethical-leadership-and-decision-making-in-business/",
+              title: "Why Ethical Leadership Matters",
+              source: "Harvard Business Review",
+              url: "https://hbr.org/2018/01/how-to-strengthen-your-reputation-as-an-employer",
               icon: <File className="h-4 w-4" />,
               duration: "18 min read",
-              description: "Academic perspective on ethical leadership principles and practices."
+              description: "Understand the business case for ethical leadership and how to implement it."
             },
             {
               type: "video",
               title: "Ethical Leadership Explained",
               source: "YouTube",
-              url: "https://www.youtube.com/watch?v=NXhm0GQnxZM",
+              url: "https://www.youtube.com/watch?v=Ei0cROcUOBU",
               icon: <Play className="h-4 w-4" />,
               duration: "15 min watch",
               description: "Thorough explanation of ethical leadership principles with real-world examples."
+            },
+            {
+              type: "article",
+              title: "Building an Ethical Culture",
+              source: "SHRM",
+              url: "https://www.shrm.org/resourcesandtools/tools-and-samples/toolkits/pages/sustainingaethicalculture.aspx",
+              icon: <File className="h-4 w-4" />,
+              duration: "17 min read",
+              description: "Practical steps for developing an ethical organizational culture."
+            }
+          ]
+        },
+        {
+          title: "Decision-Making Under Pressure",
+          description: "Master techniques for making sound decisions in high-stakes situations.",
+          icon: <AlertTriangle className="h-4 w-4" />,
+          keyPoints: [
+            "Maintain clarity during stressful situations",
+            "Use structured decision frameworks for high-pressure scenarios",
+            "Balance speed and quality in urgent decisions"
+          ],
+          resources: [
+            {
+              type: "article",
+              title: "Making Decisions Under Pressure",
+              source: "McKinsey",
+              url: "https://www.mckinsey.com/capabilities/people-and-organizational-performance/our-insights/decision-making-in-uncertain-times",
+              icon: <File className="h-4 w-4" />,
+              duration: "19 min read",
+              description: "Strategic frameworks for decision-making during uncertain times."
+            },
+            {
+              type: "video",
+              title: "How to Make Hard Choices",
+              source: "TED",
+              url: "https://www.youtube.com/watch?v=8GQZuzIdeQQ",
+              icon: <Play className="h-4 w-4" />,
+              duration: "15 min watch",
+              description: "A philosophical approach to making difficult decisions with clarity."
+            },
+            {
+              type: "article",
+              title: "Decision Making in a Crisis",
+              source: "Center for Creative Leadership",
+              url: "https://www.ccl.org/articles/leading-effectively-articles/decision-making-crisis-challenges-solutions/",
+              icon: <File className="h-4 w-4" />,
+              duration: "14 min read",
+              description: "Strategies for effective decision-making during crisis situations."
             }
           ]
         }
@@ -367,12 +595,12 @@ export default function TrainingDevelopment() {
           resources: [
             {
               type: "article",
-              title: "14 Ways to Boost Team Motivation",
-              source: "Forbes",
-              url: "https://www.forbes.com/sites/forbescoachescouncil/2018/10/22/14-ways-to-boost-team-motivation/",
+              title: "What Motivates Employees to Go Above and Beyond",
+              source: "Harvard Business Review",
+              url: "https://hbr.org/2017/09/what-motivates-employees-to-go-above-and-beyond",
               icon: <File className="h-4 w-4" />,
               duration: "13 min read",
-              description: "A collection of proven motivation techniques from executive coaches."
+              description: "Research-backed insights on what truly motivates employees to excel."
             },
             {
               type: "video",
@@ -382,6 +610,15 @@ export default function TrainingDevelopment() {
               icon: <Play className="h-4 w-4" />,
               duration: "10 min watch",
               description: "Practical motivational techniques that create lasting engagement."
+            },
+            {
+              type: "article",
+              title: "The Power of Recognition in the Workplace",
+              source: "Forbes",
+              url: "https://www.forbes.com/sites/forbescoachescouncil/2021/03/03/the-power-of-recognition-in-the-workplace/",
+              icon: <File className="h-4 w-4" />,
+              duration: "11 min read",
+              description: "Strategies for implementing effective recognition programs that boost team morale."
             }
           ]
         },
@@ -406,12 +643,60 @@ export default function TrainingDevelopment() {
             },
             {
               type: "video",
-              title: "Delegation Strategies for Leaders",
+              title: "The Art of Effective Delegation",
               source: "YouTube",
-              url: "https://www.youtube.com/watch?v=TfswNRIjmqo",
+              url: "https://www.youtube.com/watch?v=IuzjIBRZjto",
               icon: <Play className="h-4 w-4" />,
-              duration: "11 min watch",
-              description: "Step-by-step guide to effective delegation that empowers team members."
+              duration: "9 min watch",
+              description: "Effective delegation strategies that empower your team and free up your time."
+            },
+            {
+              type: "article",
+              title: "Delegation: The Art of Letting Go",
+              source: "Mind Tools",
+              url: "https://www.mindtools.com/a78l6yo/delegation",
+              icon: <File className="h-4 w-4" />,
+              duration: "15 min read",
+              description: "A comprehensive guide to mastering the art of delegation for leaders."
+            }
+          ]
+        },
+        {
+          title: "Building High-Performance Teams",
+          description: "Learn strategies to develop cohesive, innovative, and results-oriented teams.",
+          icon: <CheckCircle2 className="h-4 w-4" />,
+          keyPoints: [
+            "Define clear team goals and success metrics",
+            "Foster psychological safety and open communication",
+            "Develop team norms that drive high performance"
+          ],
+          resources: [
+            {
+              type: "article",
+              title: "What Google Learned From Its Quest to Build the Perfect Team",
+              source: "New York Times",
+              url: "https://www.nytimes.com/2016/02/28/magazine/what-google-learned-from-its-quest-to-build-the-perfect-team.html",
+              icon: <File className="h-4 w-4" />,
+              duration: "20 min read",
+              description: "Google's groundbreaking research on what makes teams effective."
+            },
+            {
+              type: "video",
+              title: "How to Turn a Group of Strangers into a Team",
+              source: "TED",
+              url: "https://www.youtube.com/watch?v=3boKz0Exros",
+              icon: <Play className="h-4 w-4" />,
+              duration: "13 min watch",
+              description: "Amy Edmondson explains how to build teams that work together effectively."
+            },
+            {
+              type: "article",
+              title: "The Secrets of Great Teamwork",
+              source: "Harvard Business Review",
+              url: "https://hbr.org/2016/06/the-secrets-of-great-teamwork",
+              icon: <File className="h-4 w-4" />,
+              duration: "16 min read",
+              description: "Research-based approach to creating high-performing teams in any context."
             }
           ]
         }
