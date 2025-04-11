@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -66,98 +66,71 @@ import {
   ChevronDown 
 } from 'lucide-react';
 
-// Mock data for ALCPT forms inventory
-const alcptFormsInventory = [
-  // KNFA Forms
-  { id: 1, name: 'ALCPT Form 126', quantity: 25, status: 'In Stock', schoolId: 349 },
-  { id: 2, name: 'ALCPT Form 127', quantity: 30, status: 'In Stock', schoolId: 349 },
-  { id: 3, name: 'ALCPT Form 128', quantity: 15, status: 'Low Stock', schoolId: 349 },
-  { id: 9, name: 'ALCPT Form 134', quantity: 10, status: 'Low Stock', schoolId: 349 },
-  { id: 11, name: 'ALCPT Form 138', quantity: 8, status: 'In Stock', schoolId: 349 },
-  { id: 13, name: 'ALCPT Form 142', quantity: 5, status: 'Low Stock', schoolId: 349 },
-  { id: 16, name: 'ALCPT Form 146', quantity: 2, status: 'Out of Stock', schoolId: 349 },
+// Mock data for answer sheets inventory
+const answerSheetsInventory = [
+  // KNFA Sheets
+  { id: 1, name: 'Answer Sheet Type A', quantity: 250, status: 'In Stock', schoolId: 349 },
+  { id: 2, name: 'Answer Sheet Type B', quantity: 180, status: 'In Stock', schoolId: 349 },
+  { id: 3, name: 'Answer Sheet Type C', quantity: 120, status: 'Low Stock', schoolId: 349 },
+  { id: 4, name: 'ALCPT Listening Sheet', quantity: 90, status: 'Low Stock', schoolId: 349 },
+  { id: 5, name: 'ALCPT Reading Sheet', quantity: 140, status: 'In Stock', schoolId: 349 },
   
-  // NFS East Forms
-  { id: 4, name: 'ALCPT Form 129', quantity: 8, status: 'Low Stock', schoolId: 350 },
-  { id: 5, name: 'ALCPT Form 130', quantity: 20, status: 'In Stock', schoolId: 350 },
-  { id: 10, name: 'ALCPT Form 135', quantity: 3, status: 'Low Stock', schoolId: 350 },
-  { id: 14, name: 'ALCPT Form 143', quantity: 6, status: 'In Stock', schoolId: 350 },
-  { id: 17, name: 'ALCPT Form 147', quantity: 4, status: 'Low Stock', schoolId: 350 },
-  { id: 19, name: 'ALCPT Form 150', quantity: 2, status: 'Low Stock', schoolId: 350 },
-  { id: 21, name: 'ALCPT Form 153', quantity: 1, status: 'Low Stock', schoolId: 350 },
+  // NFS East Sheets
+  { id: 6, name: 'Answer Sheet Type A', quantity: 200, status: 'In Stock', schoolId: 350 },
+  { id: 7, name: 'Answer Sheet Type B', quantity: 90, status: 'Low Stock', schoolId: 350 },
+  { id: 8, name: 'Answer Sheet Type C', quantity: 40, status: 'Low Stock', schoolId: 350 },
+  { id: 9, name: 'ALCPT Listening Sheet', quantity: 60, status: 'Low Stock', schoolId: 350 },
+  { id: 10, name: 'ALCPT Reading Sheet', quantity: 85, status: 'Low Stock', schoolId: 350 },
   
-  // NFS West Forms
-  { id: 6, name: 'ALCPT Form 131', quantity: 18, status: 'In Stock', schoolId: 351 },
-  { id: 7, name: 'ALCPT Form 132', quantity: 12, status: 'Low Stock', schoolId: 351 },
-  { id: 8, name: 'ALCPT Form 133', quantity: 5, status: 'Low Stock', schoolId: 351 },
-  { id: 12, name: 'ALCPT Form 139', quantity: 7, status: 'In Stock', schoolId: 351 },
-  { id: 15, name: 'ALCPT Form 144', quantity: 9, status: 'In Stock', schoolId: 351 },
-  { id: 18, name: 'ALCPT Form 148', quantity: 3, status: 'Low Stock', schoolId: 351 },
-  { id: 20, name: 'ALCPT Form 151', quantity: 0, status: 'Out of Stock', schoolId: 351 },
-  { id: 22, name: 'ALCPT Form 154', quantity: 0, status: 'Out of Stock', schoolId: 351 },
+  // NFS West Sheets
+  { id: 11, name: 'Answer Sheet Type A', quantity: 220, status: 'In Stock', schoolId: 351 },
+  { id: 12, name: 'Answer Sheet Type B', quantity: 150, status: 'In Stock', schoolId: 351 },
+  { id: 13, name: 'Answer Sheet Type C', quantity: 70, status: 'Low Stock', schoolId: 351 },
+  { id: 14, name: 'ALCPT Listening Sheet', quantity: 30, status: 'Low Stock', schoolId: 351 },
+  { id: 15, name: 'ALCPT Reading Sheet', quantity: 10, status: 'Out of Stock', schoolId: 351 },
 ];
 
 // Mock data for inventory update history
 const inventoryUpdateHistory = [
-  { id: 101, date: '2025-03-15', forms: 'ALCPT Forms 126-130', quantity: 50, status: 'Received', schoolId: 349, notes: 'Annual inventory refresh' },
-  { id: 102, date: '2025-02-28', forms: 'ALCPT Forms 131-135', quantity: 40, status: 'Distributed', schoolId: 350, notes: 'New course materials' },
-  { id: 103, date: '2025-01-20', forms: 'ALCPT Forms 126-128', quantity: 30, status: 'Received', schoolId: 351, notes: 'Replacement for damaged items' },
-  { id: 104, date: '2024-12-10', forms: 'ALCPT Forms 129-132', quantity: 45, status: 'Distributed', schoolId: 349, notes: 'Start of new term' },
-  { id: 105, date: '2024-11-05', forms: 'ALCPT Forms 133-135', quantity: 25, status: 'Received', schoolId: 350, notes: 'Inventory replenishment' },
+  { id: 101, date: '2025-03-10', sheets: 'Answer Sheet Type A, B, C', quantity: 500, status: 'Received', schoolId: 349, notes: 'Annual inventory refresh' },
+  { id: 102, date: '2025-02-20', sheets: 'ALCPT Listening Sheets', quantity: 200, status: 'Distributed', schoolId: 350, notes: 'New course materials' },
+  { id: 103, date: '2025-01-15', sheets: 'Answer Sheet Type A', quantity: 300, status: 'Received', schoolId: 351, notes: 'Replacement for damaged items' },
+  { id: 104, date: '2024-12-05', sheets: 'ALCPT Reading Sheets', quantity: 150, status: 'Distributed', schoolId: 349, notes: 'Start of new term' },
+  { id: 105, date: '2024-11-01', sheets: 'Answer Sheet Type B, C', quantity: 400, status: 'Received', schoolId: 350, notes: 'Inventory replenishment' },
 ];
 
-// Mock data for form catalog
-const formCatalog = [
-  { id: 1, name: 'ALCPT Form 126' },
-  { id: 2, name: 'ALCPT Form 127' },
-  { id: 3, name: 'ALCPT Form 128' },
-  { id: 4, name: 'ALCPT Form 129' },
-  { id: 5, name: 'ALCPT Form 130' },
-  { id: 6, name: 'ALCPT Form 131' },
-  { id: 7, name: 'ALCPT Form 132' },
-  { id: 8, name: 'ALCPT Form 133' },
-  { id: 9, name: 'ALCPT Form 134' },
-  { id: 10, name: 'ALCPT Form 135' },
-  { id: 11, name: 'ALCPT Form 136' },
-  { id: 12, name: 'ALCPT Form 137' },
-  { id: 13, name: 'ALCPT Form 138' },
-  { id: 14, name: 'ALCPT Form 139' },
-  { id: 15, name: 'ALCPT Form 140' },
-  { id: 16, name: 'ALCPT Form 141' },
-  { id: 17, name: 'ALCPT Form 142' },
-  { id: 18, name: 'ALCPT Form 143' },
-  { id: 19, name: 'ALCPT Form 144' },
-  { id: 20, name: 'ALCPT Form 145' },
-  { id: 21, name: 'ALCPT Form 146' },
-  { id: 22, name: 'ALCPT Form 147' },
-  { id: 23, name: 'ALCPT Form 148' },
-  { id: 24, name: 'ALCPT Form 149' },
-  { id: 25, name: 'ALCPT Form 150' },
-  { id: 26, name: 'ALCPT Form 151' },
-  { id: 27, name: 'ALCPT Form 152' },
-  { id: 28, name: 'ALCPT Form 153' },
-  { id: 29, name: 'ALCPT Form 154' },
-  { id: 30, name: 'ALCPT Form 155' },
+// Mock data for sheet catalog
+const sheetCatalog = [
+  { id: 1, name: 'Answer Sheet Type A' },
+  { id: 2, name: 'Answer Sheet Type B' },
+  { id: 3, name: 'Answer Sheet Type C' },
+  { id: 4, name: 'ALCPT Listening Sheet' },
+  { id: 5, name: 'ALCPT Reading Sheet' },
+  { id: 6, name: 'General Test Sheet' },
+  { id: 7, name: 'Placement Test Sheet' },
+  { id: 8, name: 'Progress Test Sheet' },
+  { id: 9, name: 'Final Exam Sheet' },
+  { id: 10, name: 'Scantron Sheet' },
 ];
 
-const AlcptOrder = () => {
+const AnswerSheets = () => {
   const { toast } = useToast();
   const { selectedSchool } = useSchool();
   const [activeTab, setActiveTab] = useState('inventory');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
-  const [localFormsInventory, setLocalFormsInventory] = useState(alcptFormsInventory);
+  const [localSheetsInventory, setLocalSheetsInventory] = useState(answerSheetsInventory);
   const [showSchoolInventory, setShowSchoolInventory] = useState(true);
   
   // State for dialogs
-  const [showAddFormDialog, setShowAddFormDialog] = useState(false);
-  const [showEditFormDialog, setShowEditFormDialog] = useState(false);
+  const [showAddSheetDialog, setShowAddSheetDialog] = useState(false);
+  const [showEditSheetDialog, setShowEditSheetDialog] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [showInventoryUpdateDialog, setShowInventoryUpdateDialog] = useState(false);
   
-  // State for form being edited or deleted
-  const [currentForm, setCurrentForm] = useState<{
+  // State for sheet being edited or deleted
+  const [currentSheet, setCurrentSheet] = useState<{
     id?: number;
     name: string;
     quantity: number;
@@ -172,7 +145,7 @@ const AlcptOrder = () => {
   
   // State for inventory update
   const [inventoryUpdateItems, setInventoryUpdateItems] = useState<{
-    formId: number;
+    sheetId: number;
     name: string;
     quantity: number;
   }[]>([]);
@@ -197,45 +170,45 @@ const AlcptOrder = () => {
     { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'orange' },
   ];
   
-  // Filter forms by school, search query, and status
-  const filteredForms = localFormsInventory.filter(form => {
-    const matchesSchool = selectedSchool ? form.schoolId === selectedSchool.id : 
-                         viewingSchoolId ? form.schoolId === viewingSchoolId : true;
-    const matchesSearch = form.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = selectedStatus === 'all' || form.status === selectedStatus;
+  // Filter sheets by school, search query, and status
+  const filteredSheets = localSheetsInventory.filter(sheet => {
+    const matchesSchool = selectedSchool ? sheet.schoolId === selectedSchool.id : 
+                         viewingSchoolId ? sheet.schoolId === viewingSchoolId : true;
+    const matchesSearch = sheet.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = selectedStatus === 'all' || sheet.status === selectedStatus;
     
     return matchesSchool && matchesSearch && matchesStatus;
   });
   
-  // Get forms for a specific school
-  const getSchoolForms = (schoolId: number) => {
-    return localFormsInventory.filter(form => form.schoolId === schoolId);
+  // Get sheets for a specific school
+  const getSchoolSheets = (schoolId: number) => {
+    return localSheetsInventory.filter(sheet => sheet.schoolId === schoolId);
   };
   
-  // Add a new form to inventory
-  const handleAddForm = () => {
+  // Add a new sheet to inventory
+  const handleAddSheet = () => {
     // Generate new ID by finding max ID and adding 1
-    const newId = Math.max(...localFormsInventory.map(form => form.id)) + 1;
+    const newId = Math.max(...localSheetsInventory.map(sheet => sheet.id)) + 1;
     
     // Determine status based on quantity
     let status = 'Out of Stock';
-    if (currentForm.quantity > 20) {
+    if (currentSheet.quantity > 100) {
       status = 'In Stock';
-    } else if (currentForm.quantity > 0) {
+    } else if (currentSheet.quantity > 0) {
       status = 'Low Stock';
     }
     
-    const newForm = {
+    const newSheet = {
       id: newId,
-      name: currentForm.name,
-      quantity: currentForm.quantity,
+      name: currentSheet.name,
+      quantity: currentSheet.quantity,
       status: status,
-      schoolId: currentForm.schoolId,
+      schoolId: currentSheet.schoolId,
     };
     
-    setLocalFormsInventory([...localFormsInventory, newForm]);
-    setShowAddFormDialog(false);
-    setCurrentForm({
+    setLocalSheetsInventory([...localSheetsInventory, newSheet]);
+    setShowAddSheetDialog(false);
+    setCurrentSheet({
       name: '',
       quantity: 0,
       status: 'Out of Stock',
@@ -243,79 +216,79 @@ const AlcptOrder = () => {
     });
     
     toast({
-      title: "Form added",
-      description: `${newForm.name} has been added to the inventory.`,
+      title: "Answer sheets added",
+      description: `${newSheet.name} has been added to the inventory.`,
     });
   };
   
-  // Edit an existing form
-  const handleEditForm = () => {
-    if (!currentForm.id) return;
+  // Edit an existing sheet
+  const handleEditSheet = () => {
+    if (!currentSheet.id) return;
     
     // Determine status based on quantity
     let status = 'Out of Stock';
-    if (currentForm.quantity > 20) {
+    if (currentSheet.quantity > 100) {
       status = 'In Stock';
-    } else if (currentForm.quantity > 0) {
+    } else if (currentSheet.quantity > 0) {
       status = 'Low Stock';
     }
     
-    const updatedForms = localFormsInventory.map(form => {
-      if (form.id === currentForm.id) {
+    const updatedSheets = localSheetsInventory.map(sheet => {
+      if (sheet.id === currentSheet.id) {
         return {
-          ...form,
-          name: currentForm.name,
-          quantity: currentForm.quantity,
+          ...sheet,
+          name: currentSheet.name,
+          quantity: currentSheet.quantity,
           status: status,
-          schoolId: currentForm.schoolId,
+          schoolId: currentSheet.schoolId,
         };
       }
-      return form;
+      return sheet;
     });
     
-    setLocalFormsInventory(updatedForms);
-    setShowEditFormDialog(false);
+    setLocalSheetsInventory(updatedSheets);
+    setShowEditSheetDialog(false);
     
     toast({
-      title: "Form updated",
-      description: `${currentForm.name} has been updated.`,
+      title: "Answer sheets updated",
+      description: `${currentSheet.name} has been updated.`,
     });
   };
   
-  // Delete a form
-  const handleDeleteForm = () => {
-    if (!currentForm.id) return;
+  // Delete a sheet
+  const handleDeleteSheet = () => {
+    if (!currentSheet.id) return;
     
-    const updatedForms = localFormsInventory.filter(form => form.id !== currentForm.id);
-    setLocalFormsInventory(updatedForms);
+    const updatedSheets = localSheetsInventory.filter(sheet => sheet.id !== currentSheet.id);
+    setLocalSheetsInventory(updatedSheets);
     setShowDeleteConfirmation(false);
     
     toast({
-      title: "Form removed",
-      description: `${currentForm.name} has been removed from the inventory.`,
+      title: "Answer sheets removed",
+      description: `${currentSheet.name} has been removed from the inventory.`,
     });
   };
   
-  // Edit form setup
-  const openEditDialog = (form: typeof localFormsInventory[0]) => {
-    setCurrentForm({
-      id: form.id,
-      name: form.name,
-      quantity: form.quantity,
-      status: form.status,
-      schoolId: form.schoolId,
+  // Edit sheet setup
+  const openEditDialog = (sheet: typeof localSheetsInventory[0]) => {
+    setCurrentSheet({
+      id: sheet.id,
+      name: sheet.name,
+      quantity: sheet.quantity,
+      status: sheet.status,
+      schoolId: sheet.schoolId,
     });
-    setShowEditFormDialog(true);
+    setShowEditSheetDialog(true);
   };
   
-  // Delete form setup
-  const openDeleteDialog = (form: typeof localFormsInventory[0]) => {
-    setCurrentForm({
-      id: form.id,
-      name: form.name,
-      quantity: form.quantity,
-      status: form.status,
-      schoolId: form.schoolId,
+  // Delete sheet setup
+  const openDeleteDialog = (sheet: typeof localSheetsInventory[0]) => {
+    setCurrentSheet({
+      id: sheet.id,
+      name: sheet.name,
+      quantity: sheet.quantity,
+      status: sheet.status,
+      schoolId: sheet.schoolId,
     });
     setShowDeleteConfirmation(true);
   };
@@ -326,39 +299,39 @@ const AlcptOrder = () => {
           viewingSchoolId ? update.schoolId === viewingSchoolId : true;
   });
   
-  // Add form to inventory update
-  const addFormToInventoryUpdate = (formId: number) => {
-    const formToAdd = formCatalog.find(form => form.id === formId);
-    if (!formToAdd) return;
+  // Add sheet to inventory update
+  const addSheetToInventoryUpdate = (sheetId: number) => {
+    const sheetToAdd = sheetCatalog.find(sheet => sheet.id === sheetId);
+    if (!sheetToAdd) return;
     
-    const existingItem = inventoryUpdateItems.find(item => item.formId === formId);
+    const existingItem = inventoryUpdateItems.find(item => item.sheetId === sheetId);
     if (existingItem) {
       setInventoryUpdateItems(
         inventoryUpdateItems.map(item => 
-          item.formId === formId 
-            ? { ...item, quantity: item.quantity + 1 } 
+          item.sheetId === sheetId 
+            ? { ...item, quantity: item.quantity + 10 } 
             : item
         )
       );
     } else {
       setInventoryUpdateItems([...inventoryUpdateItems, {
-        formId: formToAdd.id,
-        name: formToAdd.name,
-        quantity: 1
+        sheetId: sheetToAdd.id,
+        name: sheetToAdd.name,
+        quantity: 10
       }]);
     }
   };
   
-  // Update quantity of form in inventory update
-  const updateInventoryQuantity = (formId: number, quantity: number) => {
+  // Update quantity of sheet in inventory update
+  const updateInventoryQuantity = (sheetId: number, quantity: number) => {
     if (quantity < 1) {
-      setInventoryUpdateItems(inventoryUpdateItems.filter(item => item.formId !== formId));
+      setInventoryUpdateItems(inventoryUpdateItems.filter(item => item.sheetId !== sheetId));
       return;
     }
     
     setInventoryUpdateItems(
       inventoryUpdateItems.map(item => 
-        item.formId === formId 
+        item.sheetId === sheetId 
           ? { ...item, quantity } 
           : item
       )
@@ -369,46 +342,46 @@ const AlcptOrder = () => {
   const submitInventoryUpdate = () => {
     if (inventoryUpdateItems.length === 0) {
       toast({
-        title: "No forms selected",
-        description: "Please add at least one form to your inventory update.",
+        title: "No answer sheets selected",
+        description: "Please add at least one set of answer sheets to your inventory update.",
         variant: "destructive",
       });
       return;
     }
     
     // Update inventory quantities
-    const updatedInventory = [...localFormsInventory];
+    const updatedInventory = [...localSheetsInventory];
     
     inventoryUpdateItems.forEach(item => {
-      const existingFormIndex = updatedInventory.findIndex(
-        form => form.name === item.name && form.schoolId === (viewingSchoolId || selectedSchool?.id || 349)
+      const existingSheetIndex = updatedInventory.findIndex(
+        sheet => sheet.name === item.name && sheet.schoolId === (viewingSchoolId || selectedSchool?.id || 349)
       );
       
-      if (existingFormIndex >= 0) {
-        // Update existing form
-        const newQuantity = updatedInventory[existingFormIndex].quantity + item.quantity;
+      if (existingSheetIndex >= 0) {
+        // Update existing sheet
+        const newQuantity = updatedInventory[existingSheetIndex].quantity + item.quantity;
         let newStatus = 'Out of Stock';
-        if (newQuantity > 20) {
+        if (newQuantity > 100) {
           newStatus = 'In Stock';
         } else if (newQuantity > 0) {
           newStatus = 'Low Stock';
         }
         
-        updatedInventory[existingFormIndex] = {
-          ...updatedInventory[existingFormIndex],
+        updatedInventory[existingSheetIndex] = {
+          ...updatedInventory[existingSheetIndex],
           quantity: newQuantity,
           status: newStatus
         };
       } else {
-        // Add new form to inventory
+        // Add new sheet to inventory
         let status = 'Out of Stock';
-        if (item.quantity > 20) {
+        if (item.quantity > 100) {
           status = 'In Stock';
         } else if (item.quantity > 0) {
           status = 'Low Stock';
         }
         
-        const newId = Math.max(...updatedInventory.map(form => form.id)) + 1;
+        const newId = Math.max(...updatedInventory.map(sheet => sheet.id)) + 1;
         updatedInventory.push({
           id: newId,
           name: item.name,
@@ -419,13 +392,13 @@ const AlcptOrder = () => {
       }
     });
     
-    setLocalFormsInventory(updatedInventory);
+    setLocalSheetsInventory(updatedInventory);
     setInventoryUpdateItems([]);
     setShowInventoryUpdateDialog(false);
     
     toast({
       title: "Inventory updated",
-      description: `${inventoryUpdateItems.length} form types have been updated in the inventory.`,
+      description: `${inventoryUpdateItems.length} answer sheet types have been updated in the inventory.`,
     });
   };
   
@@ -471,11 +444,11 @@ const AlcptOrder = () => {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-transparent bg-clip-text">
-          ALCPT Forms Inventory Management
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-transparent bg-clip-text">
+          Answer Sheets Inventory Management
         </h1>
         <p className="text-gray-500 mt-2">
-          Track and manage ALCPT form inventory across all schools
+          Track and manage test answer sheets across all schools
         </p>
       </div>
       
@@ -515,20 +488,20 @@ const AlcptOrder = () => {
                   <div className={`h-2 w-full ${getSchoolColor(viewingSchoolId)}`} />
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
-                      <ClipboardCheck className="text-emerald-600" size={18} />
-                      <CardTitle className="text-sm font-medium">Total ALCPT Forms</CardTitle>
+                      <ClipboardCheck className="text-purple-600" size={18} />
+                      <CardTitle className="text-sm font-medium">Total Answer Sheets</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-4xl font-bold text-emerald-600">
-                      {getSchoolForms(viewingSchoolId).reduce((total, form) => total + form.quantity, 0)}
+                    <div className="text-4xl font-bold text-purple-600">
+                      {getSchoolSheets(viewingSchoolId).reduce((total, sheet) => total + sheet.quantity, 0)}
                     </div>
                     <p className="text-sm text-gray-500 mt-2">
-                      Across {getSchoolForms(viewingSchoolId).length} form types
+                      Across {getSchoolSheets(viewingSchoolId).length} sheet types
                     </p>
                     <Progress 
                       value={75} 
-                      className="h-2 mt-4 bg-emerald-100"
+                      className="h-2 mt-4 bg-purple-100"
                     />
                   </CardContent>
                 </Card>
@@ -537,7 +510,7 @@ const AlcptOrder = () => {
                   <div className={`h-2 w-full ${getSchoolColor(viewingSchoolId)}`} />
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
-                      <FileText className="text-emerald-600" size={18} />
+                      <FileText className="text-purple-600" size={18} />
                       <CardTitle className="text-sm font-medium">Stock Status</CardTitle>
                     </div>
                   </CardHeader>
@@ -545,19 +518,19 @@ const AlcptOrder = () => {
                     <div className="grid grid-cols-3 gap-4 mt-2">
                       <div className="text-center">
                         <div className="text-2xl font-bold text-green-600">
-                          {getSchoolForms(viewingSchoolId).filter(form => form.status === 'In Stock').length}
+                          {getSchoolSheets(viewingSchoolId).filter(sheet => sheet.status === 'In Stock').length}
                         </div>
                         <div className="text-xs text-gray-500">In Stock</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-amber-600">
-                          {getSchoolForms(viewingSchoolId).filter(form => form.status === 'Low Stock').length}
+                          {getSchoolSheets(viewingSchoolId).filter(sheet => sheet.status === 'Low Stock').length}
                         </div>
                         <div className="text-xs text-gray-500">Low Stock</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-red-600">
-                          {getSchoolForms(viewingSchoolId).filter(form => form.status === 'Out of Stock').length}
+                          {getSchoolSheets(viewingSchoolId).filter(sheet => sheet.status === 'Out of Stock').length}
                         </div>
                         <div className="text-xs text-gray-500">Out of Stock</div>
                       </div>
@@ -569,12 +542,12 @@ const AlcptOrder = () => {
                   <div className={`h-2 w-full ${getSchoolColor(viewingSchoolId)}`} />
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
-                      <FileCheck className="text-emerald-600" size={18} />
+                      <FileCheck className="text-purple-600" size={18} />
                       <CardTitle className="text-sm font-medium">Recent Updates</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-4xl font-bold text-emerald-600">
+                    <div className="text-4xl font-bold text-purple-600">
                       {inventoryUpdateHistory.filter(update => update.schoolId === viewingSchoolId).length}
                     </div>
                     <p className="text-sm text-gray-500 mt-2">
@@ -620,24 +593,24 @@ const AlcptOrder = () => {
                   <Card className="border-0 shadow-md">
                     <CardHeader>
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <CardTitle>ALCPT Forms Inventory</CardTitle>
+                        <CardTitle>Answer Sheets Inventory</CardTitle>
                         <div className="flex flex-wrap gap-2">
                           <Button 
                             variant="outline" 
                             size="sm" 
                             className="h-9 gap-1"
                             onClick={() => {
-                              setCurrentForm({
+                              setCurrentSheet({
                                 name: '',
                                 quantity: 0,
                                 status: 'Out of Stock',
                                 schoolId: viewingSchoolId,
                               });
-                              setShowAddFormDialog(true);
+                              setShowAddSheetDialog(true);
                             }}
                           >
                             <Plus className="h-4 w-4" />
-                            Add Form
+                            Add Sheets
                           </Button>
                           <Button 
                             variant="outline" 
@@ -659,7 +632,7 @@ const AlcptOrder = () => {
                         </div>
                       </div>
                       <CardDescription>
-                        View and manage {getSchoolById(viewingSchoolId)?.name} ALCPT forms inventory
+                        View and manage {getSchoolById(viewingSchoolId)?.name} answer sheets inventory
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -667,7 +640,7 @@ const AlcptOrder = () => {
                         <div className="relative flex-1">
                           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                           <Input
-                            placeholder="Search forms..."
+                            placeholder="Search sheets..."
                             className="pl-10"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -691,21 +664,21 @@ const AlcptOrder = () => {
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead className="w-[300px]">Form Name</TableHead>
+                              <TableHead className="w-[300px]">Sheet Name</TableHead>
                               <TableHead>Quantity</TableHead>
                               <TableHead>Status</TableHead>
                               <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {getSchoolForms(viewingSchoolId).length > 0 ? (
-                              getSchoolForms(viewingSchoolId).map((form) => (
-                                <TableRow key={form.id}>
-                                  <TableCell className="font-medium">{form.name}</TableCell>
-                                  <TableCell>{form.quantity}</TableCell>
+                            {getSchoolSheets(viewingSchoolId).length > 0 ? (
+                              getSchoolSheets(viewingSchoolId).map((sheet) => (
+                                <TableRow key={sheet.id}>
+                                  <TableCell className="font-medium">{sheet.name}</TableCell>
+                                  <TableCell>{sheet.quantity}</TableCell>
                                   <TableCell>
-                                    <Badge className={getStatusColor(form.status)}>
-                                      {form.status}
+                                    <Badge className={getStatusColor(sheet.status)}>
+                                      {sheet.status}
                                     </Badge>
                                   </TableCell>
                                   <TableCell className="text-right space-x-2">
@@ -713,7 +686,7 @@ const AlcptOrder = () => {
                                       variant="outline" 
                                       size="sm"
                                       className="h-8 w-8 p-0"
-                                      onClick={() => openEditDialog(form)}
+                                      onClick={() => openEditDialog(sheet)}
                                     >
                                       <Edit className="h-4 w-4" />
                                     </Button>
@@ -721,7 +694,7 @@ const AlcptOrder = () => {
                                       variant="outline" 
                                       size="sm"
                                       className="h-8 w-8 p-0"
-                                      onClick={() => openDeleteDialog(form)}
+                                      onClick={() => openDeleteDialog(sheet)}
                                     >
                                       <Trash2 className="h-4 w-4" />
                                     </Button>
@@ -731,7 +704,7 @@ const AlcptOrder = () => {
                             ) : (
                               <TableRow>
                                 <TableCell colSpan={4} className="text-center py-8 text-gray-500">
-                                  No forms found matching your filters
+                                  No answer sheets found matching your filters
                                 </TableCell>
                               </TableRow>
                             )}
@@ -769,7 +742,7 @@ const AlcptOrder = () => {
                             <TableRow>
                               <TableHead>Update ID</TableHead>
                               <TableHead>Date</TableHead>
-                              <TableHead>Forms</TableHead>
+                              <TableHead>Sheets</TableHead>
                               <TableHead>Quantity</TableHead>
                               <TableHead>Status</TableHead>
                               <TableHead>Notes</TableHead>
@@ -783,7 +756,7 @@ const AlcptOrder = () => {
                                 <TableRow key={update.id}>
                                   <TableCell className="font-medium">#{update.id}</TableCell>
                                   <TableCell>{new Date(update.date).toLocaleDateString()}</TableCell>
-                                  <TableCell>{update.forms}</TableCell>
+                                  <TableCell>{update.sheets}</TableCell>
                                   <TableCell>{update.quantity}</TableCell>
                                   <TableCell>
                                     <Badge className={getStatusColor(update.status)}>
@@ -820,32 +793,32 @@ const AlcptOrder = () => {
                   <div className={`h-2 w-full ${getSchoolColor(school.id)}`} />
                   <CardHeader className="pb-2">
                     <CardTitle>{school.name}</CardTitle>
-                    <CardDescription>ALCPT Forms Inventory</CardDescription>
+                    <CardDescription>Answer Sheets Inventory</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="mb-4">
                       <div className="text-3xl font-bold">
-                        {getSchoolForms(school.id).reduce((total, form) => total + form.quantity, 0)}
+                        {getSchoolSheets(school.id).reduce((total, sheet) => total + sheet.quantity, 0)}
                       </div>
-                      <p className="text-sm text-gray-500">Total Forms</p>
+                      <p className="text-sm text-gray-500">Total Sheets</p>
                     </div>
                     
                     <div className="grid grid-cols-3 gap-2 mb-4">
                       <div>
                         <div className="text-lg font-semibold text-green-600">
-                          {getSchoolForms(school.id).filter(form => form.status === 'In Stock').length}
+                          {getSchoolSheets(school.id).filter(sheet => sheet.status === 'In Stock').length}
                         </div>
                         <p className="text-xs text-gray-500">In Stock</p>
                       </div>
                       <div>
                         <div className="text-lg font-semibold text-amber-600">
-                          {getSchoolForms(school.id).filter(form => form.status === 'Low Stock').length}
+                          {getSchoolSheets(school.id).filter(sheet => sheet.status === 'Low Stock').length}
                         </div>
                         <p className="text-xs text-gray-500">Low Stock</p>
                       </div>
                       <div>
                         <div className="text-lg font-semibold text-red-600">
-                          {getSchoolForms(school.id).filter(form => form.status === 'Out of Stock').length}
+                          {getSchoolSheets(school.id).filter(sheet => sheet.status === 'Out of Stock').length}
                         </div>
                         <p className="text-xs text-gray-500">Out of Stock</p>
                       </div>
@@ -865,32 +838,32 @@ const AlcptOrder = () => {
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card className="overflow-hidden border-0 shadow-md">
-              <div className="h-2 w-full bg-gradient-to-r from-emerald-600 to-teal-600" />
+              <div className="h-2 w-full bg-gradient-to-r from-purple-600 to-indigo-600" />
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
-                  <ClipboardCheck className="text-emerald-600" size={18} />
-                  <CardTitle className="text-sm font-medium">Total ALCPT Forms</CardTitle>
+                  <ClipboardCheck className="text-purple-600" size={18} />
+                  <CardTitle className="text-sm font-medium">Total Answer Sheets</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold text-emerald-600">
-                  {localFormsInventory.reduce((total, form) => total + form.quantity, 0)}
+                <div className="text-4xl font-bold text-purple-600">
+                  {localSheetsInventory.reduce((total, sheet) => total + sheet.quantity, 0)}
                 </div>
                 <p className="text-sm text-gray-500 mt-2">
-                  Across 3 schools and {localFormsInventory.length} form types
+                  Across 3 schools and {localSheetsInventory.length} sheet types
                 </p>
                 <Progress 
                   value={75} 
-                  className="h-2 mt-4 bg-emerald-100"
+                  className="h-2 mt-4 bg-purple-100"
                 />
               </CardContent>
             </Card>
             
             <Card className="overflow-hidden border-0 shadow-md">
-              <div className="h-2 w-full bg-gradient-to-r from-teal-600 to-cyan-600" />
+              <div className="h-2 w-full bg-gradient-to-r from-indigo-600 to-blue-600" />
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
-                  <FileText className="text-teal-600" size={18} />
+                  <FileText className="text-indigo-600" size={18} />
                   <CardTitle className="text-sm font-medium">Stock Status</CardTitle>
                 </div>
               </CardHeader>
@@ -898,19 +871,19 @@ const AlcptOrder = () => {
                 <div className="grid grid-cols-3 gap-4 mt-2">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-green-600">
-                      {localFormsInventory.filter(form => form.status === 'In Stock').length}
+                      {localSheetsInventory.filter(sheet => sheet.status === 'In Stock').length}
                     </div>
                     <div className="text-xs text-gray-500">In Stock</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-amber-600">
-                      {localFormsInventory.filter(form => form.status === 'Low Stock').length}
+                      {localSheetsInventory.filter(sheet => sheet.status === 'Low Stock').length}
                     </div>
                     <div className="text-xs text-gray-500">Low Stock</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-red-600">
-                      {localFormsInventory.filter(form => form.status === 'Out of Stock').length}
+                      {localSheetsInventory.filter(sheet => sheet.status === 'Out of Stock').length}
                     </div>
                     <div className="text-xs text-gray-500">Out of Stock</div>
                   </div>
@@ -919,10 +892,10 @@ const AlcptOrder = () => {
             </Card>
             
             <Card className="overflow-hidden border-0 shadow-md">
-              <div className="h-2 w-full bg-gradient-to-r from-cyan-600 to-blue-600" />
+              <div className="h-2 w-full bg-gradient-to-r from-blue-600 to-sky-600" />
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
-                  <School className="text-cyan-600" size={18} />
+                  <School className="text-blue-600" size={18} />
                   <CardTitle className="text-sm font-medium">School Distribution</CardTitle>
                 </div>
               </CardHeader>
@@ -931,26 +904,26 @@ const AlcptOrder = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">KNFA</span>
                     <span className="text-sm text-gray-500">
-                      {getSchoolForms(349).reduce((total, form) => total + form.quantity, 0)} forms
+                      {getSchoolSheets(349).reduce((total, sheet) => total + sheet.quantity, 0)} sheets
                     </span>
                   </div>
-                  <Progress value={33} className="h-2 bg-blue-100" indicatorClassName="bg-blue-600" />
+                  <Progress value={33} className="h-2 bg-blue-100" />
                   
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">NFS East</span>
                     <span className="text-sm text-gray-500">
-                      {getSchoolForms(350).reduce((total, form) => total + form.quantity, 0)} forms
+                      {getSchoolSheets(350).reduce((total, sheet) => total + sheet.quantity, 0)} sheets
                     </span>
                   </div>
-                  <Progress value={33} className="h-2 bg-green-100" indicatorClassName="bg-green-600" />
+                  <Progress value={33} className="h-2 bg-green-100" />
                   
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">NFS West</span>
                     <span className="text-sm text-gray-500">
-                      {getSchoolForms(351).reduce((total, form) => total + form.quantity, 0)} forms
+                      {getSchoolSheets(351).reduce((total, sheet) => total + sheet.quantity, 0)} sheets
                     </span>
                   </div>
-                  <Progress value={33} className="h-2 bg-orange-100" indicatorClassName="bg-orange-600" />
+                  <Progress value={33} className="h-2 bg-orange-100" />
                 </div>
               </CardContent>
             </Card>
@@ -959,24 +932,24 @@ const AlcptOrder = () => {
           <Card className="border-0 shadow-md mb-8">
             <CardHeader>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <CardTitle>ALCPT Forms Inventory Across All Schools</CardTitle>
+                <CardTitle>Answer Sheets Inventory Across All Schools</CardTitle>
                 <div className="flex flex-wrap gap-2">
                   <Button 
                     variant="outline" 
                     size="sm" 
                     className="h-9 gap-1"
                     onClick={() => {
-                      setCurrentForm({
+                      setCurrentSheet({
                         name: '',
                         quantity: 0,
                         status: 'Out of Stock',
                         schoolId: selectedSchool?.id || 349,
                       });
-                      setShowAddFormDialog(true);
+                      setShowAddSheetDialog(true);
                     }}
                   >
                     <Plus className="h-4 w-4" />
-                    Add Form
+                    Add Sheets
                   </Button>
                   <Button 
                     variant="outline" 
@@ -998,7 +971,7 @@ const AlcptOrder = () => {
                 </div>
               </div>
               <CardDescription>
-                View and manage ALCPT forms inventory across all schools
+                View and manage answer sheets inventory across all schools
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1006,7 +979,7 @@ const AlcptOrder = () => {
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                   <Input
-                    placeholder="Search forms..."
+                    placeholder="Search sheets..."
                     className="pl-10"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -1030,7 +1003,7 @@ const AlcptOrder = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[250px]">Form Name</TableHead>
+                      <TableHead className="w-[250px]">Sheet Name</TableHead>
                       <TableHead>School</TableHead>
                       <TableHead>Quantity</TableHead>
                       <TableHead>Status</TableHead>
@@ -1038,17 +1011,17 @@ const AlcptOrder = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredForms.length > 0 ? (
-                      filteredForms.map((form) => (
-                        <TableRow key={form.id}>
-                          <TableCell className="font-medium">{form.name}</TableCell>
+                    {filteredSheets.length > 0 ? (
+                      filteredSheets.map((sheet) => (
+                        <TableRow key={sheet.id}>
+                          <TableCell className="font-medium">{sheet.name}</TableCell>
                           <TableCell>
-                            {getSchoolById(form.schoolId)?.name}
+                            {getSchoolById(sheet.schoolId)?.name}
                           </TableCell>
-                          <TableCell>{form.quantity}</TableCell>
+                          <TableCell>{sheet.quantity}</TableCell>
                           <TableCell>
-                            <Badge className={getStatusColor(form.status)}>
-                              {form.status}
+                            <Badge className={getStatusColor(sheet.status)}>
+                              {sheet.status}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right space-x-2">
@@ -1056,7 +1029,7 @@ const AlcptOrder = () => {
                               variant="outline" 
                               size="sm"
                               className="h-8 w-8 p-0"
-                              onClick={() => openEditDialog(form)}
+                              onClick={() => openEditDialog(sheet)}
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -1064,7 +1037,7 @@ const AlcptOrder = () => {
                               variant="outline" 
                               size="sm"
                               className="h-8 w-8 p-0"
-                              onClick={() => openDeleteDialog(form)}
+                              onClick={() => openDeleteDialog(sheet)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -1074,7 +1047,7 @@ const AlcptOrder = () => {
                     ) : (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                          No forms found matching your filters
+                          No answer sheets found matching your filters
                         </TableCell>
                       </TableRow>
                     )}
@@ -1111,7 +1084,7 @@ const AlcptOrder = () => {
                       <TableHead>Update ID</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>School</TableHead>
-                      <TableHead>Forms</TableHead>
+                      <TableHead>Sheets</TableHead>
                       <TableHead>Quantity</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Notes</TableHead>
@@ -1124,7 +1097,7 @@ const AlcptOrder = () => {
                           <TableCell className="font-medium">#{update.id}</TableCell>
                           <TableCell>{new Date(update.date).toLocaleDateString()}</TableCell>
                           <TableCell>{getSchoolById(update.schoolId)?.name}</TableCell>
-                          <TableCell>{update.forms}</TableCell>
+                          <TableCell>{update.sheets}</TableCell>
                           <TableCell>{update.quantity}</TableCell>
                           <TableCell>
                             <Badge className={getStatusColor(update.status)}>
@@ -1149,26 +1122,26 @@ const AlcptOrder = () => {
         </>
       )}
 
-      {/* Add Form Dialog */}
-      <Dialog open={showAddFormDialog} onOpenChange={setShowAddFormDialog}>
+      {/* Add Sheet Dialog */}
+      <Dialog open={showAddSheetDialog} onOpenChange={setShowAddSheetDialog}>
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
-            <DialogTitle>Add New ALCPT Form</DialogTitle>
+            <DialogTitle>Add New Answer Sheets</DialogTitle>
             <DialogDescription>
-              Enter the details of the new ALCPT form to add to the inventory.
+              Enter the details of the new answer sheets to add to the inventory.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="formName" className="text-right">
-                Form Name
+              <Label htmlFor="sheetName" className="text-right">
+                Sheet Name
               </Label>
               <Input
-                id="formName"
+                id="sheetName"
                 className="col-span-3"
-                value={currentForm.name}
-                onChange={(e) => setCurrentForm({ ...currentForm, name: e.target.value })}
-                placeholder="ALCPT Form XXX"
+                value={currentSheet.name}
+                onChange={(e) => setCurrentSheet({ ...currentSheet, name: e.target.value })}
+                placeholder="Answer Sheet Type X"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -1180,8 +1153,8 @@ const AlcptOrder = () => {
                 className="col-span-3"
                 type="number"
                 min="0"
-                value={currentForm.quantity}
-                onChange={(e) => setCurrentForm({ ...currentForm, quantity: parseInt(e.target.value) })}
+                value={currentSheet.quantity}
+                onChange={(e) => setCurrentSheet({ ...currentSheet, quantity: parseInt(e.target.value) })}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -1189,8 +1162,8 @@ const AlcptOrder = () => {
                 School
               </Label>
               <Select
-                value={currentForm.schoolId.toString()}
-                onValueChange={(value) => setCurrentForm({ ...currentForm, schoolId: parseInt(value) })}
+                value={currentSheet.schoolId.toString()}
+                onValueChange={(value) => setCurrentSheet({ ...currentSheet, schoolId: parseInt(value) })}
               >
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Select school" />
@@ -1204,33 +1177,33 @@ const AlcptOrder = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddFormDialog(false)}>
+            <Button variant="outline" onClick={() => setShowAddSheetDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleAddForm}>Add Form</Button>
+            <Button onClick={handleAddSheet}>Add Sheets</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Edit Form Dialog */}
-      <Dialog open={showEditFormDialog} onOpenChange={setShowEditFormDialog}>
+      {/* Edit Sheet Dialog */}
+      <Dialog open={showEditSheetDialog} onOpenChange={setShowEditSheetDialog}>
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
-            <DialogTitle>Edit ALCPT Form</DialogTitle>
+            <DialogTitle>Edit Answer Sheets</DialogTitle>
             <DialogDescription>
-              Update the details of the selected ALCPT form.
+              Update the details of the selected answer sheets.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="editFormName" className="text-right">
-                Form Name
+              <Label htmlFor="editSheetName" className="text-right">
+                Sheet Name
               </Label>
               <Input
-                id="editFormName"
+                id="editSheetName"
                 className="col-span-3"
-                value={currentForm.name}
-                onChange={(e) => setCurrentForm({ ...currentForm, name: e.target.value })}
+                value={currentSheet.name}
+                onChange={(e) => setCurrentSheet({ ...currentSheet, name: e.target.value })}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -1242,8 +1215,8 @@ const AlcptOrder = () => {
                 className="col-span-3"
                 type="number"
                 min="0"
-                value={currentForm.quantity}
-                onChange={(e) => setCurrentForm({ ...currentForm, quantity: parseInt(e.target.value) })}
+                value={currentSheet.quantity}
+                onChange={(e) => setCurrentSheet({ ...currentSheet, quantity: parseInt(e.target.value) })}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -1251,8 +1224,8 @@ const AlcptOrder = () => {
                 School
               </Label>
               <Select
-                value={currentForm.schoolId.toString()}
-                onValueChange={(value) => setCurrentForm({ ...currentForm, schoolId: parseInt(value) })}
+                value={currentSheet.schoolId.toString()}
+                onValueChange={(value) => setCurrentSheet({ ...currentSheet, schoolId: parseInt(value) })}
               >
                 <SelectTrigger className="col-span-3" id="editSchool">
                   <SelectValue placeholder="Select school" />
@@ -1266,10 +1239,10 @@ const AlcptOrder = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditFormDialog(false)}>
+            <Button variant="outline" onClick={() => setShowEditSheetDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handleEditForm}>Save Changes</Button>
+            <Button onClick={handleEditSheet}>Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1280,19 +1253,19 @@ const AlcptOrder = () => {
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>
-              Are you sure you want to remove this ALCPT form from the inventory? This action cannot be undone.
+              Are you sure you want to remove these answer sheets from the inventory? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <p className="mb-2"><strong>Form:</strong> {currentForm.name}</p>
-            <p><strong>Quantity:</strong> {currentForm.quantity}</p>
+            <p className="mb-2"><strong>Sheet:</strong> {currentSheet.name}</p>
+            <p><strong>Quantity:</strong> {currentSheet.quantity}</p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDeleteConfirmation(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDeleteForm}>
-              Delete Form
+            <Button variant="destructive" onClick={handleDeleteSheet}>
+              Delete Sheets
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1302,9 +1275,9 @@ const AlcptOrder = () => {
       <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
-            <DialogTitle>Upload ALCPT Form</DialogTitle>
+            <DialogTitle>Upload Answer Sheet Form</DialogTitle>
             <DialogDescription>
-              Upload an ALCPT form document or inventory list.
+              Upload an answer sheet document or inventory list.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -1315,7 +1288,7 @@ const AlcptOrder = () => {
               <Input
                 id="formTitle"
                 className="col-span-3"
-                placeholder="ALCPT Inventory Document"
+                placeholder="Answer Sheet Inventory Document"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -1328,7 +1301,7 @@ const AlcptOrder = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="inventory">Inventory Document</SelectItem>
-                  <SelectItem value="form">ALCPT Form</SelectItem>
+                  <SelectItem value="form">Answer Sheet Template</SelectItem>
                   <SelectItem value="receipt">Receipt</SelectItem>
                   <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
@@ -1400,33 +1373,33 @@ const AlcptOrder = () => {
           <DialogHeader>
             <DialogTitle>Update Inventory</DialogTitle>
             <DialogDescription>
-              Add or remove ALCPT forms from your inventory.
+              Add or remove answer sheets from your inventory.
             </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
             <div>
-              <h4 className="text-sm font-medium mb-2">Available Forms</h4>
+              <h4 className="text-sm font-medium mb-2">Available Sheet Types</h4>
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                <Input placeholder="Search forms..." className="pl-10" />
+                <Input placeholder="Search sheets..." className="pl-10" />
               </div>
               <div className="max-h-60 overflow-y-auto rounded-md border">
                 <Table>
                   <TableHeader className="sticky top-0 bg-white z-10">
                     <TableRow>
-                      <TableHead>Form Name</TableHead>
+                      <TableHead>Sheet Name</TableHead>
                       <TableHead className="text-right">Action</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {formCatalog.map((form) => (
-                      <TableRow key={form.id}>
-                        <TableCell className="font-medium">{form.name}</TableCell>
+                    {sheetCatalog.map((sheet) => (
+                      <TableRow key={sheet.id}>
+                        <TableCell className="font-medium">{sheet.name}</TableCell>
                         <TableCell className="text-right">
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => addFormToInventoryUpdate(form.id)}
+                            onClick={() => addSheetToInventoryUpdate(sheet.id)}
                           >
                             Add
                           </Button>
@@ -1439,27 +1412,27 @@ const AlcptOrder = () => {
             </div>
             
             <div>
-              <h4 className="text-sm font-medium mb-2">Forms to Update</h4>
+              <h4 className="text-sm font-medium mb-2">Sheets to Update</h4>
               {inventoryUpdateItems.length > 0 ? (
                 <div className="space-y-3">
                   {inventoryUpdateItems.map((item) => (
-                    <div key={item.formId} className="flex justify-between items-center border-b pb-2">
+                    <div key={item.sheetId} className="flex justify-between items-center border-b pb-2">
                       <div className="text-sm">{item.name}</div>
                       <div className="flex items-center gap-2">
                         <Button
                           variant="outline"
                           size="icon"
                           className="h-6 w-6"
-                          onClick={() => updateInventoryQuantity(item.formId, item.quantity - 1)}
+                          onClick={() => updateInventoryQuantity(item.sheetId, item.quantity - 10)}
                         >
                           -
                         </Button>
-                        <span className="w-8 text-center">{item.quantity}</span>
+                        <span className="w-12 text-center">{item.quantity}</span>
                         <Button
                           variant="outline"
                           size="icon"
                           className="h-6 w-6"
-                          onClick={() => updateInventoryQuantity(item.formId, item.quantity + 1)}
+                          onClick={() => updateInventoryQuantity(item.sheetId, item.quantity + 10)}
                         >
                           +
                         </Button>
@@ -1487,8 +1460,8 @@ const AlcptOrder = () => {
               ) : (
                 <div className="text-center py-12 text-gray-500 border rounded-md">
                   <ClipboardCheck className="mx-auto h-12 w-12 text-gray-300 mb-3" />
-                  <p>No forms selected</p>
-                  <p className="text-sm mt-1">Add forms from the available list</p>
+                  <p>No sheets selected</p>
+                  <p className="text-sm mt-1">Add sheets from the available list</p>
                 </div>
               )}
             </div>
@@ -1510,4 +1483,4 @@ const AlcptOrder = () => {
   );
 };
 
-export default AlcptOrder;
+export default AnswerSheets;

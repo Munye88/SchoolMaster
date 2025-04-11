@@ -268,7 +268,7 @@ const BasicNavbar = () => {
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       <BookOpen className="h-4 w-4 mr-2 text-indigo-600" />
-                      DLI Book Order
+                      DLI Book Inventory
                     </Link>
                     <Link 
                       href="/dli/alcpt-order"
@@ -276,7 +276,15 @@ const BasicNavbar = () => {
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       <ListChecks className="h-4 w-4 mr-2 text-emerald-600" />
-                      ALCPT Order
+                      ALCPT Forms
+                    </Link>
+                    <Link 
+                      href="/dli/answer-sheets"
+                      onClick={() => setShowDLILinks(false)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                    >
+                      <FileText className="h-4 w-4 mr-2 text-purple-600" />
+                      Answer Sheets
                     </Link>
                   </div>
                 )}
