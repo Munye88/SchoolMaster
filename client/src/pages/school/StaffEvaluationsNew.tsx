@@ -49,9 +49,9 @@ const StaffEvaluations = () => {
     queryKey: ['/api/evaluations'],
   });
 
-  const schoolInstructors = instructors.filter(instructor => 
-    !selectedSchool || instructor.schoolId === selectedSchool
-  );
+  const schoolInstructors = selectedSchool 
+    ? instructors.filter(instructor => instructor.schoolId === selectedSchool) 
+    : instructors;
   
   // Create mock evaluation data for instructors if none exist
   const createEvaluationMutation = useMutation({
@@ -113,7 +113,7 @@ const StaffEvaluations = () => {
       quarters: quarters,
       nationality: instructor.nationality,
       evaluationsCount: instructorEvals.length,
-      school: currentSchool?.name || "Unknown"
+      school: "Unknown"
     };
   });
 
@@ -170,7 +170,7 @@ const StaffEvaluations = () => {
         <div>
           <h1 className="text-2xl font-bold">
             <span className="bg-gradient-to-r from-[#0A2463] to-[#3E92CC] bg-clip-text text-transparent">
-              {currentSchool ? `${currentSchool.name} Staff Evaluations` : 'Staff Evaluations'}
+              Staff Evaluations
             </span>
           </h1>
           <p className="text-gray-500">Monitor instructor performance across quarterly evaluations</p>
