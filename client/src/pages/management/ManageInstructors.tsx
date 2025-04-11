@@ -92,7 +92,7 @@ export default function ManageInstructors() {
 
   // Create instructor mutation
   const createInstructorMutation = useMutation({
-    mutationFn: async (instructorData: InstructorFormValues) => {
+    mutationFn: async (instructorData: any) => {
       console.log("📝 Making API request with data:", instructorData);
       
       try {
@@ -132,7 +132,7 @@ export default function ManageInstructors() {
 
   // Update instructor mutation
   const updateInstructorMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number, data: InstructorFormValues }) => {
+    mutationFn: async ({ id, data }: { id: number, data: any }) => {
       console.log("📝 Making API update request with data:", data);
       
       try {

@@ -220,8 +220,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
-      const updateData = insertInstructorSchema.partial().parse(req.body);
+      console.log("🚀 PATCH /api/instructors/:id - Request body:", req.body);
+      
+      // Check for fields mismatch
+      const { status, position, ...rest } = req.body;
+      const processedData = {
+        ...rest,
+        ...(status && { accompaniedStatus: status }), // Only add if status exists
+        ...(position && { role: position }) // Only add if position exists
+      };
+      
+      console.log("🚀 Processed data before schema validation:", processedData);
+      
+      const updateData = insertInstructorSchema.partial().parse(processedData);
+      console.log("🚀 Validated update data:", updateData);
+      
       const updatedInstructor = await storage.updateInstructor(id, updateData);
+      console.log("🚀 Updated instructor:", updatedInstructor);
       
       if (!updatedInstructor) {
         return res.status(404).json({ message: "Instructor not found" });
@@ -237,10 +252,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(updatedInstructor);
     } catch (error) {
+      console.error("❌ Error updating instructor:", error);
       if (error instanceof z.ZodError) {
+        console.error("❌ Zod validation error:", JSON.stringify(error.errors, null, 2));
         return res.status(400).json({ message: "Invalid instructor data", errors: error.errors });
       }
-      res.status(500).json({ message: "Failed to update instructor" });
+      res.status(500).json({ message: "Failed to update instructor", error: error.message });
     }
   });
   
