@@ -20,6 +20,7 @@ const BasicNavbar = () => {
   const [showSchoolLinks, setShowSchoolLinks] = useState<string | null>(null);
   const [showAdminLinks, setShowAdminLinks] = useState<boolean>(false);
   const [showTrainingLinks, setShowTrainingLinks] = useState<boolean>(false);
+  const [showDLILinks, setShowDLILinks] = useState<boolean>(false);
   const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
   
   const isActive = (path: string) => {
@@ -241,16 +242,45 @@ const BasicNavbar = () => {
                 <span>Courses</span>
               </Link>
               
-              <Link 
-                href="/students"
-                className={cn(
-                  "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors", 
-                  isActive("/students") && "text-[#0A2463] bg-gray-100 font-medium"
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    // Toggle DLI dropdown and close others
+                    setShowDLILinks(!showDLILinks);
+                    if (showSchoolLinks) setShowSchoolLinks(null);
+                    if (showAdminLinks) setShowAdminLinks(false);
+                    if (showTrainingLinks) setShowTrainingLinks(false);
+                  }}
+                  className={cn(
+                    "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                    (isActive("/dli") || showDLILinks) && "text-[#0A2463] bg-gray-100 font-medium"
+                  )}
+                >
+                  <BookText className="h-4 w-4 mr-2" />
+                  <span>DLI</span>
+                </button>
+                
+                {showDLILinks && (
+                  <div className="absolute left-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <Link 
+                      href="/dli/book-order"
+                      onClick={() => setShowDLILinks(false)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                    >
+                      <BookOpen className="h-4 w-4 mr-2 text-indigo-600" />
+                      DLI Book Order
+                    </Link>
+                    <Link 
+                      href="/dli/alcpt-order"
+                      onClick={() => setShowDLILinks(false)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                    >
+                      <ListChecks className="h-4 w-4 mr-2 text-emerald-600" />
+                      ALCPT Order
+                    </Link>
+                  </div>
                 )}
-              >
-                <GraduationCap className="h-4 w-4 mr-2" />
-                <span>Students</span>
-              </Link>
+              </div>
               
               <Link 
                 href="/test-tracker"
@@ -439,7 +469,7 @@ const BasicNavbar = () => {
       </div>
       
       {/* Click outside handler to close dropdowns */}
-      {(showSchoolLinks || showUserMenu || showAdminLinks || showTrainingLinks) && (
+      {(showSchoolLinks || showUserMenu || showAdminLinks || showTrainingLinks || showDLILinks) && (
         <div 
           className="fixed inset-0 bg-transparent z-40"
           onClick={() => {
@@ -447,6 +477,7 @@ const BasicNavbar = () => {
             setShowUserMenu(false);
             setShowAdminLinks(false);
             setShowTrainingLinks(false);
+            setShowDLILinks(false);
           }}
         />
       )}
