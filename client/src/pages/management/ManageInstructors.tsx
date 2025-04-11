@@ -44,10 +44,10 @@ import {
 import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-// Extended schema with validation
-const instructorSchema = insertInstructorSchema.extend({
+// Create a form-specific validation schema that matches our form field names
+const instructorFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  position: z.string().min(2, "Position must be at least 2 characters"),
+  position: z.string().min(2, "Position must be at least 2 characters"), // Front-end name for 'role'
   nationality: z.string().min(2, "Nationality must be at least 2 characters"),
   startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: "Invalid date format",
@@ -56,23 +56,12 @@ const instructorSchema = insertInstructorSchema.extend({
   schoolId: z.number().positive("Please select a school"),
   compound: z.string().min(2, "Compound must be at least 2 characters"),
   phone: z.string().min(6, "Phone must be at least 6 characters"),
-  status: z.string().min(2, "Status must be at least 2 characters"),
+  status: z.string().min(2, "Status must be at least 2 characters"), // Front-end name for 'accompaniedStatus'
   imageUrl: z.string().optional(),
 });
 
-// Define our form values type that's different from the schema in naming
-interface InstructorFormValues {
-  name: string;
-  position: string; // This maps to role in the schema
-  nationality: string;
-  credentials: string;
-  startDate: string;
-  compound: string;
-  schoolId: number;
-  phone: string;
-  status: string; // This maps to accompaniedStatus in the schema
-  imageUrl?: string;
-}
+// Define our form values type based on the form schema
+type InstructorFormValues = z.infer<typeof instructorFormSchema>;
 
 export default function ManageInstructors() {
   const { toast } = useToast();
@@ -194,7 +183,7 @@ export default function ManageInstructors() {
 
   // Create form
   const createForm = useForm<InstructorFormValues>({
-    resolver: zodResolver(instructorSchema),
+    resolver: zodResolver(instructorFormSchema),
     defaultValues: {
       name: "",
       position: "ELT Instructor",
@@ -211,7 +200,7 @@ export default function ManageInstructors() {
 
   // Edit form
   const editForm = useForm<InstructorFormValues>({
-    resolver: zodResolver(instructorSchema),
+    resolver: zodResolver(instructorFormSchema),
     defaultValues: {
       name: "",
       position: "",
@@ -250,39 +239,57 @@ export default function ManageInstructors() {
 
   // Handle create form submission
   const onCreateSubmit = (values: InstructorFormValues) => {
-    console.log("Creating instructor with data:", values);
+    console.log("Creating instructor with form values:", values);
     
-    // Map form values to the correct schema fields
-    const mappedValues = {
-      ...values,
-      accompaniedStatus: values.status, // Map status to accompaniedStatus
-      role: values.position // Map position to role
+    // Create a new object with only the fields we need, explicitly mapped to the schema
+    const instructorData = {
+      name: values.name,
+      nationality: values.nationality,
+      credentials: values.credentials,
+      startDate: values.startDate,
+      compound: values.compound,
+      schoolId: values.schoolId,
+      phone: values.phone,
+      imageUrl: values.imageUrl || null,
+      
+      // Map renamed fields explicitly
+      accompaniedStatus: values.status,
+      role: values.position
     };
     
-    console.log("📝 Mapped values for API:", mappedValues);
+    console.log("📝 Explicitly mapped data for API:", instructorData);
     
     // Don't close dialog immediately - it will be closed on success in the mutation
-    createInstructorMutation.mutate(mappedValues);
+    createInstructorMutation.mutate(instructorData);
   };
 
   // Handle edit form submission
   const onEditSubmit = (values: InstructorFormValues) => {
     if (selectedInstructor) {
-      console.log("Updating instructor with data:", values);
+      console.log("Updating instructor with form values:", values);
       
-      // Map form values to the correct schema fields
-      const mappedValues = {
-        ...values,
-        accompaniedStatus: values.status, // Map status to accompaniedStatus
-        role: values.position // Map position to role
+      // Create a new object with only the fields we need, explicitly mapped to the schema
+      const instructorData = {
+        name: values.name,
+        nationality: values.nationality,
+        credentials: values.credentials,
+        startDate: values.startDate,
+        compound: values.compound,
+        schoolId: values.schoolId,
+        phone: values.phone,
+        imageUrl: values.imageUrl || null,
+        
+        // Map renamed fields explicitly
+        accompaniedStatus: values.status,
+        role: values.position
       };
       
-      console.log("📝 Mapped values for API update:", mappedValues);
+      console.log("📝 Explicitly mapped data for API update:", instructorData);
       
       // Don't close dialog immediately - it will be closed on success in the mutation
       updateInstructorMutation.mutate({ 
         id: selectedInstructor.id, 
-        data: mappedValues 
+        data: instructorData 
       });
     }
   };
