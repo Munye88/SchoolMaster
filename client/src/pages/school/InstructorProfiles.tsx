@@ -260,9 +260,29 @@ const SchoolInstructorProfiles = () => {
               filteredInstructors.map((instructor) => (
                 <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="h-32 bg-[#0A2463] flex items-center justify-center">
-                    <div className="h-24 w-24 rounded-full border-4 border-white bg-blue-100 flex items-center justify-center text-[#0A2463] font-bold text-xl">
-                      {instructor.name.split(' ').map(n => n[0]).join('')}
-                    </div>
+                    {instructor.imageUrl ? (
+                      <div className="h-24 w-24 rounded-full border-4 border-white overflow-hidden">
+                        <img 
+                          src={instructor.imageUrl} 
+                          alt={instructor.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Hide the img element if it fails to load and show initials instead
+                            const target = e.currentTarget;
+                            const parent = target.parentElement;
+                            if (parent) {
+                              parent.innerHTML = `<div class="h-24 w-24 rounded-full border-4 border-white bg-blue-100 flex items-center justify-center text-[#0A2463] font-bold text-xl">
+                                ${instructor.name.split(' ').map(n => n[0]).join('')}
+                              </div>`;
+                            }
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-24 w-24 rounded-full border-4 border-white bg-blue-100 flex items-center justify-center text-[#0A2463] font-bold text-xl">
+                        {instructor.name.split(' ').map(n => n[0]).join('')}
+                      </div>
+                    )}
                   </div>
                   <CardContent className="pt-4">
                     <h3 className="font-bold text-lg mb-1">{instructor.name}</h3>

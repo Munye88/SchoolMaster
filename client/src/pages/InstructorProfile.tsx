@@ -86,7 +86,21 @@ const InstructorProfile = () => {
                   <div className="flex justify-between items-center">
                     {instructor.imageUrl ? (
                       <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white">
-                        <img src={instructor.imageUrl} alt={instructor.name} className="w-full h-full object-cover" />
+                        <img 
+                          src={instructor.imageUrl} 
+                          alt={instructor.name} 
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Hide image and show initials if image fails to load
+                            const target = e.currentTarget;
+                            const parent = target.parentElement;
+                            if (parent) {
+                              parent.innerHTML = `<div class="w-12 h-12 rounded-full bg-white text-[#0A2463] flex items-center justify-center text-lg font-bold">
+                                ${instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                              </div>`;
+                            }
+                          }}
+                        />
                       </div>
                     ) : (
                       <div className="w-12 h-12 rounded-full bg-white text-[#0A2463] flex items-center justify-center text-lg font-bold">
@@ -179,6 +193,16 @@ const InstructorProfile = () => {
                     src={instructor.imageUrl} 
                     alt={instructor.name} 
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Hide image and show initials if image fails to load
+                      const target = e.currentTarget;
+                      const parent = target.parentElement;
+                      if (parent) {
+                        parent.innerHTML = `<div class="w-32 h-32 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-3xl font-bold">
+                          ${instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        </div>`;
+                      }
+                    }}
                   />
                 </div>
               ) : (
