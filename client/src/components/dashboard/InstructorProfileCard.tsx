@@ -47,7 +47,7 @@ const InstructorProfileCard = ({ instructor, isLoading = false }: InstructorProf
       <CardContent className="p-6 md:flex">
         <div className="md:w-1/4 flex flex-col items-center mb-6 md:mb-0">
           {instructor.imageUrl ? (
-            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[#3E92CC]">
+            <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#3E92CC] shadow-lg">
               <img 
                 src={instructor.imageUrl} 
                 alt={instructor.name} 
@@ -57,13 +57,13 @@ const InstructorProfileCard = ({ instructor, isLoading = false }: InstructorProf
                   const target = e.currentTarget;
                   const parent = target.parentElement;
                   if (parent) {
-                    parent.innerHTML = `<div class="w-24 h-24 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-2xl font-bold">${getInitials(instructor.name)}</div>`;
+                    parent.innerHTML = `<div class="w-32 h-32 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-3xl font-bold">${getInitials(instructor.name)}</div>`;
                   }
                 }}
               />
             </div>
           ) : (
-            <div className="w-24 h-24 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-2xl font-bold">
+            <div className="w-32 h-32 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-3xl font-bold shadow-lg">
               {getInitials(instructor.name)}
             </div>
           )}
