@@ -35,22 +35,49 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useSchool } from '@/hooks/useSchool';
-import { BookText, CalendarDays, Search, Filter, Download, Printer, ArrowUpDown, Plus, FileText, FileCheck, Package } from 'lucide-react';
+import { BookText, CalendarDays, Search, Filter, Download, Printer, ArrowUpDown, Plus, FileText, FileCheck, Package, Edit, Trash2, Upload, FileUp } from 'lucide-react';
 
-// Mock data for book orders
+// Mock data for book orders - expanded to include more books for each school
 const bookOrders = [
+  // KNFA Books
   { id: 1, name: 'American Language Course Book 1', level: 'Beginner', quantity: 25, status: 'In Stock', schoolId: 349 },
   { id: 2, name: 'American Language Course Book 2', level: 'Beginner', quantity: 30, status: 'In Stock', schoolId: 349 },
   { id: 3, name: 'American Language Course Book 3', level: 'Elementary', quantity: 15, status: 'Low Stock', schoolId: 349 },
+  { id: 9, name: 'American Language Course Book 9', level: 'Advanced', quantity: 10, status: 'Low Stock', schoolId: 349 },
+  { id: 11, name: 'American Language Course Book 12', level: 'Advanced', quantity: 8, status: 'In Stock', schoolId: 349 },
+  { id: 13, name: 'American Language Course Book 15', level: 'Expert', quantity: 5, status: 'Low Stock', schoolId: 349 },
+  { id: 16, name: 'American Language Course Book 18', level: 'Expert', quantity: 2, status: 'Out of Stock', schoolId: 349 },
+  
+  // NFS East Books
   { id: 4, name: 'American Language Course Book 4', level: 'Elementary', quantity: 8, status: 'Out of Stock', schoolId: 350 },
   { id: 5, name: 'American Language Course Book 5', level: 'Intermediate', quantity: 20, status: 'In Stock', schoolId: 350 },
+  { id: 10, name: 'American Language Course Book 10', level: 'Advanced', quantity: 3, status: 'Out of Stock', schoolId: 350 },
+  { id: 14, name: 'American Language Course Book 16', level: 'Expert', quantity: 6, status: 'In Stock', schoolId: 350 },
+  { id: 17, name: 'American Language Course Book 21', level: 'Expert', quantity: 4, status: 'Low Stock', schoolId: 350 },
+  { id: 19, name: 'American Language Course Book 25', level: 'Master', quantity: 2, status: 'Out of Stock', schoolId: 350 },
+  { id: 21, name: 'American Language Course Book 29', level: 'Master', quantity: 1, status: 'Out of Stock', schoolId: 350 },
+  
+  // NFS West Books
   { id: 6, name: 'American Language Course Book 6', level: 'Intermediate', quantity: 18, status: 'In Stock', schoolId: 351 },
   { id: 7, name: 'American Language Course Book 7', level: 'Upper Intermediate', quantity: 12, status: 'Low Stock', schoolId: 351 },
   { id: 8, name: 'American Language Course Book 8', level: 'Upper Intermediate', quantity: 5, status: 'Out of Stock', schoolId: 351 },
-  { id: 9, name: 'American Language Course Book 9', level: 'Advanced', quantity: 10, status: 'Low Stock', schoolId: 349 },
-  { id: 10, name: 'American Language Course Book 10', level: 'Advanced', quantity: 3, status: 'Out of Stock', schoolId: 350 },
+  { id: 12, name: 'American Language Course Book 14', level: 'Advanced', quantity: 7, status: 'In Stock', schoolId: 351 },
+  { id: 15, name: 'American Language Course Book 17', level: 'Expert', quantity: 9, status: 'In Stock', schoolId: 351 },
+  { id: 18, name: 'American Language Course Book 23', level: 'Master', quantity: 3, status: 'Low Stock', schoolId: 351 },
+  { id: 20, name: 'American Language Course Book 28', level: 'Master', quantity: 0, status: 'Out of Stock', schoolId: 351 },
+  { id: 22, name: 'American Language Course Book 34', level: 'Master', quantity: 0, status: 'Out of Stock', schoolId: 351 },
 ];
 
 // Mock data for order history
@@ -88,6 +115,29 @@ const BookOrder = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [localBookOrders, setLocalBookOrders] = useState(bookOrders);
+  
+  // State for dialogs
+  const [showAddBookDialog, setShowAddBookDialog] = useState(false);
+  const [showEditBookDialog, setShowEditBookDialog] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  
+  // State for book being edited or deleted
+  const [currentBook, setCurrentBook] = useState<{
+    id?: number;
+    name: string;
+    level: string;
+    quantity: number;
+    status: string;
+    schoolId: number;
+  }>({
+    name: '',
+    level: 'Beginner',
+    quantity: 0,
+    status: 'Out of Stock',
+    schoolId: selectedSchool?.id || 349,
+  });
   
   // State for new order form
   const [orderItems, setOrderItems] = useState<{
@@ -98,7 +148,7 @@ const BookOrder = () => {
   }[]>([]);
   
   // Filter books by school, search query, level, and status
-  const filteredBooks = bookOrders.filter(book => {
+  const filteredBooks = localBookOrders.filter(book => {
     const matchesSchool = !selectedSchool || book.schoolId === selectedSchool.id;
     const matchesSearch = book.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesLevel = selectedLevel === 'all' || book.level === selectedLevel;
@@ -106,6 +156,133 @@ const BookOrder = () => {
     
     return matchesSchool && matchesSearch && matchesLevel && matchesStatus;
   });
+  
+  // Add a new book to inventory
+  const handleAddBook = () => {
+    // Generate new ID by finding max ID and adding 1
+    const newId = Math.max(...localBookOrders.map(book => book.id)) + 1;
+    
+    // Determine status based on quantity
+    let status = 'Out of Stock';
+    if (currentBook.quantity > 20) {
+      status = 'In Stock';
+    } else if (currentBook.quantity > 0) {
+      status = 'Low Stock';
+    }
+    
+    const newBook = {
+      id: newId,
+      name: currentBook.name,
+      level: currentBook.level,
+      quantity: currentBook.quantity,
+      status: status,
+      schoolId: currentBook.schoolId,
+    };
+    
+    setLocalBookOrders([...localBookOrders, newBook]);
+    setShowAddBookDialog(false);
+    setCurrentBook({
+      name: '',
+      level: 'Beginner',
+      quantity: 0,
+      status: 'Out of Stock',
+      schoolId: selectedSchool?.id || 349,
+    });
+    
+    toast({
+      title: "Book added",
+      description: `${newBook.name} has been added to the inventory.`,
+    });
+  };
+  
+  // Edit an existing book
+  const handleEditBook = () => {
+    if (!currentBook.id) return;
+    
+    // Determine status based on quantity
+    let status = 'Out of Stock';
+    if (currentBook.quantity > 20) {
+      status = 'In Stock';
+    } else if (currentBook.quantity > 0) {
+      status = 'Low Stock';
+    }
+    
+    const updatedBooks = localBookOrders.map(book => {
+      if (book.id === currentBook.id) {
+        return {
+          ...book,
+          name: currentBook.name,
+          level: currentBook.level,
+          quantity: currentBook.quantity,
+          status: status,
+          schoolId: currentBook.schoolId,
+        };
+      }
+      return book;
+    });
+    
+    setLocalBookOrders(updatedBooks);
+    setShowEditBookDialog(false);
+    
+    toast({
+      title: "Book updated",
+      description: `${currentBook.name} has been updated.`,
+    });
+  };
+  
+  // Delete a book
+  const handleDeleteBook = () => {
+    if (!currentBook.id) return;
+    
+    const updatedBooks = localBookOrders.filter(book => book.id !== currentBook.id);
+    setLocalBookOrders(updatedBooks);
+    setShowDeleteConfirmation(false);
+    
+    toast({
+      title: "Book removed",
+      description: `${currentBook.name} has been removed from the inventory.`,
+    });
+  };
+  
+  // Edit book setup
+  const openEditDialog = (book: {
+    id: number;
+    name: string;
+    level: string;
+    quantity: number;
+    status: string;
+    schoolId: number;
+  }) => {
+    setCurrentBook({
+      id: book.id,
+      name: book.name,
+      level: book.level,
+      quantity: book.quantity,
+      status: book.status,
+      schoolId: book.schoolId,
+    });
+    setShowEditBookDialog(true);
+  };
+  
+  // Delete book setup
+  const openDeleteDialog = (book: {
+    id: number;
+    name: string;
+    level: string;
+    quantity: number;
+    status: string;
+    schoolId: number;
+  }) => {
+    setCurrentBook({
+      id: book.id,
+      name: book.name,
+      level: book.level,
+      quantity: book.quantity,
+      status: book.status,
+      schoolId: book.schoolId,
+    });
+    setShowDeleteConfirmation(true);
+  };
   
   // Filter order history by school
   const filteredHistory = orderHistory.filter(order => {
@@ -323,6 +500,33 @@ const BookOrder = () => {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <CardTitle>Book Inventory</CardTitle>
                 <div className="flex flex-wrap gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-9 gap-1"
+                    onClick={() => {
+                      setCurrentBook({
+                        name: '',
+                        level: 'Beginner',
+                        quantity: 0,
+                        status: 'Out of Stock',
+                        schoolId: selectedSchool?.id || 349,
+                      });
+                      setShowAddBookDialog(true);
+                    }}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Book
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-9 gap-1"
+                    onClick={() => setShowUploadDialog(true)}
+                  >
+                    <FileUp className="h-4 w-4" />
+                    Upload Form
+                  </Button>
                   <Button variant="outline" size="sm" className="h-9">
                     <Printer className="h-4 w-4 mr-2" />
                     Print
@@ -399,7 +603,23 @@ const BookOrder = () => {
                               {book.status}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right space-x-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => openEditDialog(book)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => openDeleteDialog(book)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                             <Button 
                               variant="outline" 
                               size="sm"
@@ -622,6 +842,295 @@ const BookOrder = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Add Book Dialog */}
+      <Dialog open={showAddBookDialog} onOpenChange={setShowAddBookDialog}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Add New Book</DialogTitle>
+            <DialogDescription>
+              Enter the details of the new book to add to the inventory.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="bookName" className="text-right">
+                Book Name
+              </Label>
+              <Input
+                id="bookName"
+                className="col-span-3"
+                value={currentBook.name}
+                onChange={(e) => setCurrentBook({ ...currentBook, name: e.target.value })}
+                placeholder="American Language Course Book X"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="level" className="text-right">
+                Level
+              </Label>
+              <Select
+                value={currentBook.level}
+                onValueChange={(value) => setCurrentBook({ ...currentBook, level: value })}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Beginner">Beginner</SelectItem>
+                  <SelectItem value="Elementary">Elementary</SelectItem>
+                  <SelectItem value="Intermediate">Intermediate</SelectItem>
+                  <SelectItem value="Upper Intermediate">Upper Intermediate</SelectItem>
+                  <SelectItem value="Advanced">Advanced</SelectItem>
+                  <SelectItem value="Expert">Expert</SelectItem>
+                  <SelectItem value="Master">Master</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="quantity" className="text-right">
+                Quantity
+              </Label>
+              <Input
+                id="quantity"
+                className="col-span-3"
+                type="number"
+                min="0"
+                value={currentBook.quantity}
+                onChange={(e) => setCurrentBook({ ...currentBook, quantity: parseInt(e.target.value) })}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="school" className="text-right">
+                School
+              </Label>
+              <Select
+                value={currentBook.schoolId.toString()}
+                onValueChange={(value) => setCurrentBook({ ...currentBook, schoolId: parseInt(value) })}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select school" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="349">KNFA</SelectItem>
+                  <SelectItem value="350">NFS East</SelectItem>
+                  <SelectItem value="351">NFS West</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddBookDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddBook}>Add Book</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Book Dialog */}
+      <Dialog open={showEditBookDialog} onOpenChange={setShowEditBookDialog}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Edit Book</DialogTitle>
+            <DialogDescription>
+              Update the details of the selected book.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="editBookName" className="text-right">
+                Book Name
+              </Label>
+              <Input
+                id="editBookName"
+                className="col-span-3"
+                value={currentBook.name}
+                onChange={(e) => setCurrentBook({ ...currentBook, name: e.target.value })}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="editLevel" className="text-right">
+                Level
+              </Label>
+              <Select
+                value={currentBook.level}
+                onValueChange={(value) => setCurrentBook({ ...currentBook, level: value })}
+              >
+                <SelectTrigger className="col-span-3" id="editLevel">
+                  <SelectValue placeholder="Select level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Beginner">Beginner</SelectItem>
+                  <SelectItem value="Elementary">Elementary</SelectItem>
+                  <SelectItem value="Intermediate">Intermediate</SelectItem>
+                  <SelectItem value="Upper Intermediate">Upper Intermediate</SelectItem>
+                  <SelectItem value="Advanced">Advanced</SelectItem>
+                  <SelectItem value="Expert">Expert</SelectItem>
+                  <SelectItem value="Master">Master</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="editQuantity" className="text-right">
+                Quantity
+              </Label>
+              <Input
+                id="editQuantity"
+                className="col-span-3"
+                type="number"
+                min="0"
+                value={currentBook.quantity}
+                onChange={(e) => setCurrentBook({ ...currentBook, quantity: parseInt(e.target.value) })}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="editSchool" className="text-right">
+                School
+              </Label>
+              <Select
+                value={currentBook.schoolId.toString()}
+                onValueChange={(value) => setCurrentBook({ ...currentBook, schoolId: parseInt(value) })}
+              >
+                <SelectTrigger className="col-span-3" id="editSchool">
+                  <SelectValue placeholder="Select school" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="349">KNFA</SelectItem>
+                  <SelectItem value="350">NFS East</SelectItem>
+                  <SelectItem value="351">NFS West</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditBookDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleEditBook}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to remove this book from the inventory? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="mb-2"><strong>Book:</strong> {currentBook.name}</p>
+            <p><strong>Quantity:</strong> {currentBook.quantity}</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteConfirmation(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteBook}>
+              Delete Book
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Upload Form Dialog */}
+      <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Upload Book Form</DialogTitle>
+            <DialogDescription>
+              Upload a book form document or inventory list.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="formTitle" className="text-right">
+                Title
+              </Label>
+              <Input
+                id="formTitle"
+                className="col-span-3"
+                placeholder="Book Inventory Form"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="formType" className="text-right">
+                Type
+              </Label>
+              <Select defaultValue="inventory">
+                <SelectTrigger className="col-span-3" id="formType">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="inventory">Inventory Form</SelectItem>
+                  <SelectItem value="order">Order Form</SelectItem>
+                  <SelectItem value="receipt">Receipt</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="school" className="text-right">
+                School
+              </Label>
+              <Select defaultValue={selectedSchool ? selectedSchool.id.toString() : "349"}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select school" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="349">KNFA</SelectItem>
+                  <SelectItem value="350">NFS East</SelectItem>
+                  <SelectItem value="351">NFS West</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">
+                File
+              </Label>
+              <div className="col-span-3">
+                <div className="flex items-center justify-center w-full">
+                  <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Upload className="w-8 h-8 mb-3 text-gray-400" />
+                      <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                      <p className="text-xs text-gray-500">PDF, DOC, XLS or images (MAX. 10MB)</p>
+                    </div>
+                    <input id="dropzone-file" type="file" className="hidden" />
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="comments" className="text-right">
+                Comments
+              </Label>
+              <Textarea
+                id="comments"
+                className="col-span-3"
+                placeholder="Enter any additional notes about this document"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowUploadDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => {
+              toast({
+                title: "Form uploaded",
+                description: "The document has been successfully uploaded.",
+              });
+              setShowUploadDialog(false);
+            }}>
+              Upload
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
