@@ -57,6 +57,7 @@ const instructorSchema = insertInstructorSchema.extend({
   compound: z.string().min(2, "Compound must be at least 2 characters"),
   phone: z.string().min(6, "Phone must be at least 6 characters"),
   status: z.string().min(2, "Status must be at least 2 characters"),
+  imageUrl: z.string().optional(),
 });
 
 type InstructorFormValues = z.infer<typeof instructorSchema>;
@@ -190,6 +191,7 @@ export default function ManageInstructors() {
         compound: selectedInstructor.compound,
         phone: selectedInstructor.phone,
         status: selectedInstructor.accompaniedStatus, // Use accompaniedStatus
+        imageUrl: selectedInstructor.imageUrl || "", // Include the imageUrl if available
       });
     }
   }, [selectedInstructor, editForm]);
@@ -405,6 +407,72 @@ export default function ManageInstructors() {
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={createForm.control}
+                    name="imageUrl"
+                    render={({ field }) => (
+                      <FormItem className="col-span-2">
+                        <FormLabel>Profile Image URL</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Enter image URL (e.g., https://example.com/image.jpg)" 
+                            {...field} 
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        {field.value && (
+                          <div className="mt-2">
+                            <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
+                            <div className="w-16 h-16 rounded-full overflow-hidden border border-gray-200">
+                              <img 
+                                src={field.value} 
+                                alt="Instructor preview" 
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Invalid+URL";
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={editForm.control}
+                    name="imageUrl"
+                    render={({ field }) => (
+                      <FormItem className="col-span-2">
+                        <FormLabel>Profile Image URL</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Enter image URL (e.g., https://example.com/image.jpg)" 
+                            {...field} 
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        {field.value && (
+                          <div className="mt-2">
+                            <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
+                            <div className="w-16 h-16 rounded-full overflow-hidden border border-gray-200">
+                              <img 
+                                src={field.value} 
+                                alt="Instructor preview" 
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Invalid+URL";
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
                 <DialogFooter>
@@ -444,9 +512,27 @@ export default function ManageInstructors() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {instructors?.map((instructor) => (
             <Card key={instructor.id}>
-              <CardHeader>
-                <CardTitle>{instructor.name}</CardTitle>
-                <CardDescription>{instructor.role || "ELT Instructor"}</CardDescription>
+              <CardHeader className="flex flex-row items-center gap-4">
+                {instructor.imageUrl ? (
+                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#3E92CC]">
+                    <img 
+                      src={instructor.imageUrl} 
+                      alt={instructor.name} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Invalid+URL";
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-xl font-bold">
+                    {instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                  </div>
+                )}
+                <div>
+                  <CardTitle>{instructor.name}</CardTitle>
+                  <CardDescription>{instructor.role || "ELT Instructor"}</CardDescription>
+                </div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-gray-600">
