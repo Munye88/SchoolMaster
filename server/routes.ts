@@ -176,8 +176,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/instructors", async (req, res) => {
     try {
-      const instructorData = insertInstructorSchema.parse(req.body);
+      console.log("🚀 POST /api/instructors - Request body:", req.body);
+      
+      // Check for fields mismatch
+      const { status, position, ...rest } = req.body;
+      const processedData = {
+        ...rest,
+        accompaniedStatus: status, // Map from 'status' to 'accompaniedStatus'
+        role: position, // Map from 'position' to 'role'
+      };
+      
+      console.log("🚀 Processed data before schema validation:", processedData);
+      
+      const instructorData = insertInstructorSchema.parse(processedData);
+      console.log("🚀 Validated instructor data:", instructorData);
+      
       const instructor = await storage.createInstructor(instructorData);
+      console.log("🚀 Created instructor:", instructor);
       
       // Log activity
       await storage.createActivity({
@@ -189,10 +204,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(201).json(instructor);
     } catch (error) {
+      console.error("❌ Error creating instructor:", error);
       if (error instanceof z.ZodError) {
+        console.error("❌ Zod validation error:", JSON.stringify(error.errors, null, 2));
         return res.status(400).json({ message: "Invalid instructor data", errors: error.errors });
       }
-      res.status(500).json({ message: "Failed to create instructor" });
+      res.status(500).json({ message: "Failed to create instructor", error: error.message });
     }
   });
   

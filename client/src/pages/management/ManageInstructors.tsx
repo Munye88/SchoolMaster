@@ -60,7 +60,19 @@ const instructorSchema = insertInstructorSchema.extend({
   imageUrl: z.string().optional(),
 });
 
-type InstructorFormValues = z.infer<typeof instructorSchema>;
+// Define our form values type that's different from the schema in naming
+interface InstructorFormValues {
+  name: string;
+  position: string; // This maps to role in the schema
+  nationality: string;
+  credentials: string;
+  startDate: string;
+  compound: string;
+  schoolId: number;
+  phone: string;
+  status: string; // This maps to accompaniedStatus in the schema
+  imageUrl?: string;
+}
 
 export default function ManageInstructors() {
   const { toast } = useToast();
@@ -186,13 +198,14 @@ export default function ManageInstructors() {
     defaultValues: {
       name: "",
       position: "ELT Instructor",
-      nationality: "",
+      nationality: "American", // Default to American
       startDate: format(new Date(), 'yyyy-MM-dd'),
       credentials: "",
-      schoolId: 0,
-      compound: "",
+      schoolId: 349, // Default to KNFA
+      compound: "Al Reem", // Default to Al Reem
       phone: "",
       status: "Unaccompanied",
+      imageUrl: "" // Explicitly set imageUrl
     }
   });
 
@@ -238,18 +251,38 @@ export default function ManageInstructors() {
   // Handle create form submission
   const onCreateSubmit = (values: InstructorFormValues) => {
     console.log("Creating instructor with data:", values);
+    
+    // Map form values to the correct schema fields
+    const mappedValues = {
+      ...values,
+      accompaniedStatus: values.status, // Map status to accompaniedStatus
+      role: values.position // Map position to role
+    };
+    
+    console.log("📝 Mapped values for API:", mappedValues);
+    
     // Don't close dialog immediately - it will be closed on success in the mutation
-    createInstructorMutation.mutate(values);
+    createInstructorMutation.mutate(mappedValues);
   };
 
   // Handle edit form submission
   const onEditSubmit = (values: InstructorFormValues) => {
     if (selectedInstructor) {
       console.log("Updating instructor with data:", values);
+      
+      // Map form values to the correct schema fields
+      const mappedValues = {
+        ...values,
+        accompaniedStatus: values.status, // Map status to accompaniedStatus
+        role: values.position // Map position to role
+      };
+      
+      console.log("📝 Mapped values for API update:", mappedValues);
+      
       // Don't close dialog immediately - it will be closed on success in the mutation
       updateInstructorMutation.mutate({ 
         id: selectedInstructor.id, 
-        data: values 
+        data: mappedValues 
       });
     }
   };
