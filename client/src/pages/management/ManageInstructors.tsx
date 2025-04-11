@@ -572,7 +572,7 @@ export default function ManageInstructors() {
             <Card key={instructor.id}>
               <CardHeader className="flex flex-row items-center gap-4">
                 {instructor.imageUrl ? (
-                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#3E92CC]">
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#3E92CC] shadow-md">
                     <img 
                       src={instructor.imageUrl} 
                       alt={instructor.name} 
@@ -583,7 +583,7 @@ export default function ManageInstructors() {
                     />
                   </div>
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-xl font-bold">
+                  <div className="w-20 h-20 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-xl font-bold shadow-md">
                     {instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                   </div>
                 )}

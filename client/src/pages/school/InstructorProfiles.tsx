@@ -259,9 +259,9 @@ const SchoolInstructorProfiles = () => {
             ) : (
               filteredInstructors.map((instructor) => (
                 <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="h-32 bg-[#0A2463] flex items-center justify-center">
+                  <div className="h-44 bg-[#0A2463] flex items-center justify-center">
                     {instructor.imageUrl ? (
-                      <div className="h-24 w-24 rounded-full border-4 border-white overflow-hidden">
+                      <div className="h-36 w-36 rounded-full border-4 border-white overflow-hidden shadow-xl">
                         <img 
                           src={instructor.imageUrl} 
                           alt={instructor.name}
@@ -271,7 +271,7 @@ const SchoolInstructorProfiles = () => {
                             const target = e.currentTarget;
                             const parent = target.parentElement;
                             if (parent) {
-                              parent.innerHTML = `<div class="h-24 w-24 rounded-full border-4 border-white bg-blue-100 flex items-center justify-center text-[#0A2463] font-bold text-xl">
+                              parent.innerHTML = `<div class="h-36 w-36 rounded-full border-4 border-white bg-blue-100 flex items-center justify-center text-[#0A2463] font-bold text-2xl">
                                 ${instructor.name.split(' ').map(n => n[0]).join('')}
                               </div>`;
                             }
@@ -279,7 +279,7 @@ const SchoolInstructorProfiles = () => {
                         />
                       </div>
                     ) : (
-                      <div className="h-24 w-24 rounded-full border-4 border-white bg-blue-100 flex items-center justify-center text-[#0A2463] font-bold text-xl">
+                      <div className="h-36 w-36 rounded-full border-4 border-white bg-blue-100 flex items-center justify-center text-[#0A2463] font-bold text-2xl shadow-xl">
                         {instructor.name.split(' ').map(n => n[0]).join('')}
                       </div>
                     )}

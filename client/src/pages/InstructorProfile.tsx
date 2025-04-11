@@ -188,7 +188,7 @@ const InstructorProfile = () => {
           <Card>
             <CardContent className="p-6 flex flex-col items-center">
               {instructor.imageUrl ? (
-                <div className="w-32 h-32 rounded-full mb-4 overflow-hidden border-4 border-[#3E92CC]">
+                <div className="w-48 h-48 rounded-full mb-4 overflow-hidden border-4 border-[#3E92CC] shadow-lg">
                   <img 
                     src={instructor.imageUrl} 
                     alt={instructor.name} 
@@ -198,7 +198,7 @@ const InstructorProfile = () => {
                       const target = e.currentTarget;
                       const parent = target.parentElement;
                       if (parent) {
-                        parent.innerHTML = `<div class="w-32 h-32 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-3xl font-bold">
+                        parent.innerHTML = `<div class="w-48 h-48 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-4xl font-bold">
                           ${instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                         </div>`;
                       }
@@ -206,7 +206,7 @@ const InstructorProfile = () => {
                   />
                 </div>
               ) : (
-                <div className="w-32 h-32 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-3xl font-bold mb-4">
+                <div className="w-48 h-48 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-4xl font-bold mb-4 shadow-lg">
                   {instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                 </div>
               )}
