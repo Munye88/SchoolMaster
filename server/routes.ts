@@ -236,6 +236,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Instructor not found" });
       }
       
+      // Get all evaluations for this instructor
+      const instructorEvaluations = await storage.getEvaluationsByInstructor(id);
+      
+      // Delete all evaluations for this instructor first
+      for (const evaluation of instructorEvaluations) {
+        await db.delete(evaluations).where(eq(evaluations.id, evaluation.id));
+      }
+      
+      // Check for courses referencing this instructor
+      const instructorCourses = await storage.getCoursesByInstructor(id);
+      
+      // Update courses to remove instructor reference
+      for (const course of instructorCourses) {
+        await db.update(courses)
+          .set({ instructorId: null })
+          .where(eq(courses.id, course.id));
+      }
+      
+      // Now delete the instructor
       await storage.deleteInstructor(id);
       
       // Log activity
@@ -248,7 +267,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(204).send();
     } catch (error) {
-      res.status(500).json({ message: "Failed to delete instructor" });
+      console.error("Error deleting instructor:", error);
+      res.status(500).json({ message: "Failed to delete instructor", error: error.message });
     }
   });
   
