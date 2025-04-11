@@ -240,23 +240,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Instructor not found" });
       }
       
-      // Get all evaluations for this instructor
-      const instructorEvaluations = await storage.getEvaluationsByInstructor(id);
+      // 1. Delete all staff attendance records for this instructor
+      const staffAttendanceRecords = await storage.getStaffAttendanceByInstructor(id);
+      for (const record of staffAttendanceRecords) {
+        await storage.deleteStaffAttendance(record.id);
+      }
       
-      // Delete all evaluations for this instructor first
+      // 2. Delete all evaluations for this instructor
+      const instructorEvaluations = await storage.getEvaluationsByInstructor(id);
       for (const evaluation of instructorEvaluations) {
         await db.delete(evaluations).where(eq(evaluations.id, evaluation.id));
       }
       
-      // Check for courses referencing this instructor
+      // 3. Update courses to remove instructor reference
       const instructorCourses = await storage.getCoursesByInstructor(id);
-      
-      // Update courses to remove instructor reference
       for (const course of instructorCourses) {
-        // First get the course by ID using storage method
         const courseToUpdate = await storage.getCourse(course.id);
         if (courseToUpdate) {
-          // Then update it using storage method which accepts null values
           await storage.updateCourse(course.id, { 
             ...courseToUpdate,
             instructorId: 0 // Use 0 as a placeholder value since null is causing issues
@@ -264,7 +264,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // Now delete the instructor
+      // 4. Now delete the instructor
       await storage.deleteInstructor(id);
       
       // Log activity
@@ -278,7 +278,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       console.error("Error deleting instructor:", error);
-      res.status(500).json({ message: "Failed to delete instructor", error: error.message });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ message: "Failed to delete instructor", error: errorMessage });
     }
   });
   
