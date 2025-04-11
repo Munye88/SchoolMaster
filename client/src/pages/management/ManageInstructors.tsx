@@ -241,26 +241,12 @@ export default function ManageInstructors() {
   const onCreateSubmit = (values: InstructorFormValues) => {
     console.log("Creating instructor with form values:", values);
     
-    // Create a new object with only the fields we need, explicitly mapped to the schema
-    const instructorData = {
-      name: values.name,
-      nationality: values.nationality,
-      credentials: values.credentials,
-      startDate: values.startDate,
-      compound: values.compound,
-      schoolId: values.schoolId,
-      phone: values.phone,
-      imageUrl: values.imageUrl || null,
-      
-      // Map renamed fields explicitly
-      accompaniedStatus: values.status,
-      role: values.position
-    };
-    
-    console.log("📝 Explicitly mapped data for API:", instructorData);
+    // We'll let the server handle the field mapping as it already does that
+    // in the POST /api/instructors endpoint
+    console.log("📝 Sending form values to API:", values);
     
     // Don't close dialog immediately - it will be closed on success in the mutation
-    createInstructorMutation.mutate(instructorData);
+    createInstructorMutation.mutate(values);
   };
 
   // Handle edit form submission
@@ -268,28 +254,13 @@ export default function ManageInstructors() {
     if (selectedInstructor) {
       console.log("Updating instructor with form values:", values);
       
-      // Create a new object with only the fields we need, explicitly mapped to the schema
-      const instructorData = {
-        name: values.name,
-        nationality: values.nationality,
-        credentials: values.credentials,
-        startDate: values.startDate,
-        compound: values.compound,
-        schoolId: values.schoolId,
-        phone: values.phone,
-        imageUrl: values.imageUrl || null,
-        
-        // Map renamed fields explicitly
-        accompaniedStatus: values.status,
-        role: values.position
-      };
-      
-      console.log("📝 Explicitly mapped data for API update:", instructorData);
+      // Let the server handle field mapping like we're doing for create
+      console.log("📝 Sending form values to API for update:", values);
       
       // Don't close dialog immediately - it will be closed on success in the mutation
       updateInstructorMutation.mutate({ 
         id: selectedInstructor.id, 
-        data: instructorData 
+        data: values 
       });
     }
   };
