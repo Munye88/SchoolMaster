@@ -81,10 +81,26 @@ export default function ManageInstructors() {
   // Create instructor mutation
   const createInstructorMutation = useMutation({
     mutationFn: async (instructorData: InstructorFormValues) => {
-      const response = await apiRequest('POST', '/api/instructors', instructorData);
-      return await response.json();
+      console.log("📝 Making API request with data:", instructorData);
+      
+      try {
+        const response = await apiRequest('POST', '/api/instructors', instructorData);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("📝 API error response:", errorText);
+          throw new Error(`Server error: ${response.status} - ${errorText || response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log("📝 API success response:", data);
+        return data;
+      } catch (error) {
+        console.error("📝 API request failed:", error);
+        throw error;
+      }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("📝 Mutation successful, created instructor:", data);
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
       setIsCreateDialogOpen(false);
       toast({
@@ -93,9 +109,10 @@ export default function ManageInstructors() {
       });
     },
     onError: (error) => {
+      console.error("📝 Mutation error:", error);
       toast({
         title: "Error creating instructor",
-        description: error.message,
+        description: error instanceof Error ? error.message : "An unknown error occurred",
         variant: "destructive"
       });
     }
@@ -104,10 +121,26 @@ export default function ManageInstructors() {
   // Update instructor mutation
   const updateInstructorMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number, data: InstructorFormValues }) => {
-      const response = await apiRequest('PATCH', `/api/instructors/${id}`, data);
-      return await response.json();
+      console.log("📝 Making API update request with data:", data);
+      
+      try {
+        const response = await apiRequest('PATCH', `/api/instructors/${id}`, data);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("📝 API error response:", errorText);
+          throw new Error(`Server error: ${response.status} - ${errorText || response.statusText}`);
+        }
+        
+        const responseData = await response.json();
+        console.log("📝 API success response:", responseData);
+        return responseData;
+      } catch (error) {
+        console.error("📝 API update request failed:", error);
+        throw error;
+      }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("📝 Update mutation successful:", data);
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
       setIsEditDialogOpen(false);
       setSelectedInstructor(null);
@@ -117,9 +150,10 @@ export default function ManageInstructors() {
       });
     },
     onError: (error) => {
+      console.error("📝 Update mutation error:", error);
       toast({
         title: "Error updating instructor",
-        description: error.message,
+        description: error instanceof Error ? error.message : "An unknown error occurred",
         variant: "destructive"
       });
     }
@@ -204,20 +238,19 @@ export default function ManageInstructors() {
   // Handle create form submission
   const onCreateSubmit = (values: InstructorFormValues) => {
     console.log("Creating instructor with data:", values);
+    // Don't close dialog immediately - it will be closed on success in the mutation
     createInstructorMutation.mutate(values);
-    setIsCreateDialogOpen(false); // Close the dialog after submission
   };
 
   // Handle edit form submission
   const onEditSubmit = (values: InstructorFormValues) => {
     if (selectedInstructor) {
       console.log("Updating instructor with data:", values);
+      // Don't close dialog immediately - it will be closed on success in the mutation
       updateInstructorMutation.mutate({ 
         id: selectedInstructor.id, 
         data: values 
       });
-      setIsEditDialogOpen(false); // Close the dialog after submission
-      setSelectedInstructor(null);
     }
   };
 
@@ -300,8 +333,6 @@ export default function ManageInstructors() {
                               <SelectItem value="American">American</SelectItem>
                               <SelectItem value="British">British</SelectItem>
                               <SelectItem value="Canadian">Canadian</SelectItem>
-                              <SelectItem value="Australian">Australian</SelectItem>
-                              <SelectItem value="Other">Other</SelectItem>
                             </SelectContent>
                           </Select>
                         </FormControl>
@@ -645,8 +676,6 @@ export default function ManageInstructors() {
                             <SelectItem value="American">American</SelectItem>
                             <SelectItem value="British">British</SelectItem>
                             <SelectItem value="Canadian">Canadian</SelectItem>
-                            <SelectItem value="Australian">Australian</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
