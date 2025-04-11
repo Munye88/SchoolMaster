@@ -337,6 +337,22 @@ const StaffEvaluations = () => {
                     placeholder="Search instructors..." 
                     className="max-w-xs"
                   />
+                  <Button 
+                    className="bg-[#0A2463] hover:bg-[#071A4A] gap-2"
+                    onClick={() => {
+                      setSelectedInstructor(null);
+                      setDialogMode("add");
+                      setEvalScore(85);
+                      setEvalQuarter("Q1");
+                      setEvalFeedback("");
+                      setEvalDate(format(new Date(), 'yyyy-MM-dd'));
+                      setEvalAttachment(null);
+                      setDialogOpen(true);
+                    }}
+                  >
+                    <PlusIcon className="h-4 w-4" />
+                    Add New Evaluation
+                  </Button>
                 </div>
               </div>
             </CardHeader>
@@ -547,7 +563,7 @@ const StaffEvaluations = () => {
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>
-              {dialogMode === "add" ? "Add Evaluation Score" : "Edit Evaluation Score"} for {selectedInstructor?.name}
+              {dialogMode === "add" ? "Add Evaluation Score" : "Edit Evaluation Score"} {selectedInstructor ? `for ${selectedInstructor.name}` : ''}
             </DialogTitle>
             <DialogDescription>
               Enter the evaluation details below. Click save when you're done.
@@ -555,6 +571,33 @@ const StaffEvaluations = () => {
           </DialogHeader>
           
           <div className="grid gap-4 py-4">
+            {!selectedInstructor && (
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="instructor" className="text-right">
+                  Instructor
+                </Label>
+                <Select 
+                  onValueChange={(val) => {
+                    const instructorId = parseInt(val, 10);
+                    const instr = schoolInstructors.find(i => i.id === instructorId);
+                    if (instr) {
+                      setSelectedInstructor(instr);
+                    }
+                  }}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select Instructor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {schoolInstructors.map(instructor => (
+                      <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                        {instructor.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="quarter" className="text-right">
                 Quarter
@@ -668,8 +711,18 @@ const StaffEvaluations = () => {
                     evaluatorId: null
                   });
                   setDialogOpen(false);
+                  
+                  // Reset after saving
+                  if (dialogMode === "add") {
+                    setSelectedInstructor(null);
+                    setEvalScore(85);
+                    setEvalQuarter("Q1");
+                    setEvalFeedback("");
+                    setEvalAttachment(null);
+                  }
                 }
               }} 
+              disabled={!selectedInstructor}
               className="gap-2 bg-[#0A2463] hover:bg-[#071A4A]"
             >
               <SaveIcon size={16} />
