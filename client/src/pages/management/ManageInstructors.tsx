@@ -209,7 +209,11 @@ export default function ManageInstructors() {
   // Handle edit form submission
   const onEditSubmit = (values: InstructorFormValues) => {
     if (selectedInstructor) {
-      updateInstructorMutation.mutate({ id: selectedInstructor.id, data: values });
+      console.log("Updating instructor with data:", values);
+      updateInstructorMutation.mutate({ 
+        id: selectedInstructor.id, 
+        data: values 
+      });
     }
   };
 

@@ -575,6 +575,19 @@ const StaffEvaluations = () => {
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="date" className="text-right">
+                Evaluation Date
+              </Label>
+              <Input
+                id="date"
+                type="date"
+                value={evalDate}
+                onChange={(e) => setEvalDate(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="score" className="text-right">
                 Score (%)
               </Label>
@@ -600,6 +613,35 @@ const StaffEvaluations = () => {
                 onChange={(e) => setEvalFeedback(e.target.value)}
                 className="col-span-3"
               />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="attachment" className="text-right">
+                Formal Evaluation
+              </Label>
+              <div className="col-span-3">
+                <Input
+                  id="attachment"
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        setEvalAttachment(event.target?.result as string);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="col-span-3"
+                />
+                {evalAttachment && (
+                  <p className="text-xs text-green-600 mt-1">
+                    ✓ Formal evaluation document attached
+                  </p>
+                )}
+              </div>
             </div>
           </div>
           
