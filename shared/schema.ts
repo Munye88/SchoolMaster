@@ -106,8 +106,10 @@ export const evaluations = pgTable("evaluations", {
   quarter: text("quarter").notNull(),
   year: text("year").notNull(),
   score: integer("score").notNull(),
+  evaluationDate: text("evaluation_date"),
   feedback: text("feedback"),
   evaluatorId: integer("evaluator_id").references(() => users.id),
+  attachmentUrl: text("attachment_url"),
 });
 
 export const insertEvaluationSchema = createInsertSchema(evaluations).pick({
@@ -115,8 +117,10 @@ export const insertEvaluationSchema = createInsertSchema(evaluations).pick({
   quarter: true,
   year: true,
   score: true,
+  evaluationDate: true,
   feedback: true,
   evaluatorId: true,
+  attachmentUrl: true,
 });
 
 export const documents = pgTable("documents", {

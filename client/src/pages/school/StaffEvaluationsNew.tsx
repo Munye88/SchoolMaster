@@ -662,7 +662,9 @@ const StaffEvaluations = () => {
                     score: evalScore,
                     quarter: evalQuarter,
                     year: selectedYear,
+                    evaluationDate: evalDate,
                     feedback: evalFeedback || null,
+                    attachmentUrl: evalAttachment || null,
                     evaluatorId: null
                   });
                   setDialogOpen(false);

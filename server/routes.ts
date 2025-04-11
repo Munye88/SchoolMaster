@@ -2,6 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 import { 
   insertInstructorSchema, 
   insertCourseSchema, 
@@ -12,7 +14,9 @@ import {
   insertTestResultSchema,
   insertEvaluationSchema,
   insertDocumentSchema,
-  insertStaffAttendanceSchema
+  insertStaffAttendanceSchema,
+  evaluations,
+  courses
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
@@ -249,9 +253,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Update courses to remove instructor reference
       for (const course of instructorCourses) {
-        await db.update(courses)
-          .set({ instructorId: null })
-          .where(eq(courses.id, course.id));
+        // First get the course by ID using storage method
+        const courseToUpdate = await storage.getCourse(course.id);
+        if (courseToUpdate) {
+          // Then update it using storage method which accepts null values
+          await storage.updateCourse(course.id, { 
+            ...courseToUpdate,
+            instructorId: 0 // Use 0 as a placeholder value since null is causing issues
+          });
+        }
       }
       
       // Now delete the instructor
