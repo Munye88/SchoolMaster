@@ -6,7 +6,6 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import InstructorProfile from "@/pages/InstructorProfile";
 import Courses from "@/pages/Courses";
-import Students from "@/pages/Students";
 import TestTracker from "@/pages/TestTracker";
 import Reports from "@/pages/Reports";
 import Documents from "@/pages/Documents";
@@ -22,6 +21,8 @@ import StaffEvaluations from "./pages/school/StaffEvaluations";
 import StaffAttendance from "./pages/school/StaffAttendance";
 import SchoolBookInventory from "./pages/school/BookInventory";
 import StaffLeaveTracker from "./pages/school/StaffLeaveTracker";
+import BookOrder from "./pages/dli/BookOrder";
+import AlcptOrder from "./pages/dli/AlcptOrder";
 import AuthPage from "./pages/auth-page";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AuthProvider } from "./hooks/use-auth";
@@ -58,7 +59,8 @@ function Router() {
           <ProtectedRoute path="/instructors" component={InstructorProfile} />
           <ProtectedRoute path="/instructors/:id" component={InstructorProfile} />
           <ProtectedRoute path="/courses" component={Courses} />
-          <ProtectedRoute path="/students" component={Students} />
+          <ProtectedRoute path="/dli/book-order" component={BookOrder} />
+          <ProtectedRoute path="/dli/alcpt-order" component={AlcptOrder} />
           <ProtectedRoute path="/test-tracker" component={TestTracker} />
           <ProtectedRoute path="/reports" component={Reports} />
           <ProtectedRoute path="/documents" component={Documents} />
