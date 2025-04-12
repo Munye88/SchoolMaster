@@ -109,20 +109,20 @@ const Dashboard = () => {
 
   return (
     <div className="flex-1 overflow-y-auto py-6 px-6 bg-gray-50">
-      {/* Welcome Bar */}
-      <div className="bg-[#0A2463] text-white p-4 rounded-lg mb-6 flex justify-between items-center">
+      {/* Dashboard Header */}
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-lg font-semibold">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#0A2463] to-blue-600 bg-clip-text text-transparent">
             {selectedSchool && currentSchool 
               ? `${currentSchool.name} Dashboard` 
-              : 'ELT Program Management Dashboard'}
+              : 'ELT Program Management'}
           </h1>
-          <p className="text-sm opacity-80">Welcome to the school management system</p>
         </div>
         <div className="flex space-x-2">
-          <Button variant="outline" className="bg-white text-[#0A2463] hover:bg-gray-100">
-            <Calendar className="h-4 w-4 mr-2" /> Today: {format(new Date(), "MMMM dd, yyyy")}
-          </Button>
+          <div className="bg-white text-gray-700 px-3 py-2 rounded-md shadow-sm border border-gray-200 flex items-center">
+            <Calendar className="h-4 w-4 mr-2 text-blue-600" /> 
+            <span className="font-medium">{format(new Date(), "MMMM dd, yyyy")}</span>
+          </div>
         </div>
       </div>
 
