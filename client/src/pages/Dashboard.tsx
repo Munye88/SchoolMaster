@@ -108,7 +108,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto py-6 px-6 bg-gray-50">
+    <div className="flex-1 overflow-y-auto py-6 px-6 bg-gradient-to-b from-gray-50 to-white">
       {/* Dashboard Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -117,11 +117,14 @@ const Dashboard = () => {
               ? `${currentSchool.name} Dashboard` 
               : 'ELT Program Management'}
           </h1>
+          <p className="text-sm text-gray-600 mt-1">
+            {`${activeInstructors} instructors • ${totalStudents} students • ${activeCourses} active courses`}
+          </p>
         </div>
         <div className="flex space-x-2">
           <div className="bg-white text-gray-700 px-3 py-2 rounded-md shadow-sm border border-gray-200 flex items-center">
             <Calendar className="h-4 w-4 mr-2 text-blue-600" /> 
-            <span className="font-medium">{format(new Date(), "MMMM dd, yyyy")}</span>
+            <span className="font-medium">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
           </div>
         </div>
       </div>
