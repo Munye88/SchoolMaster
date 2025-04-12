@@ -102,11 +102,36 @@ interface Instructor {
 const TestTracker = () => {
   const { selectedSchool, schools } = useSchool();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTestType, setSelectedTestType] = useState("Book");
+  const [selectedTestType, setSelectedTestType] = useState<'Book' | 'ALCPT' | 'ECL' | 'OPI'>('Book');
   const [selectedYear, setSelectedYear] = useState(2025);
   const [selectedMonth, setSelectedMonth] = useState("April");
   const [selectedCycle, setSelectedCycle] = useState(1);
   const [selectedSchoolFilter, setSelectedSchoolFilter] = useState("all");
+  const [courseFilter, setCourseFilter] = useState("all");
+  const [testTypeFilter, setTestTypeFilter] = useState("all");
+  const [nationalityFilter, setNationalityFilter] = useState("all");
+  
+  // Mock data for individual test results (used in the detailed view)
+  const testResults: TestResult[] = [
+    // Sample test results would go here
+  ];
+  
+  // Generate unique course and test type values for filters
+  const uniqueCourses = Array.from(new Set(testResults.map(result => result.courseName)));
+  const uniqueTestTypes = Array.from(new Set(testResults.map(result => result.type)));
+  
+  // Filter test results based on search and filters
+  const filteredTestResults = testResults.filter(result => {
+    const matchesSearch = 
+      result.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      result.courseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      result.type.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCourse = courseFilter === "all" || result.courseName === courseFilter;
+    const matchesType = testTypeFilter === "all" || result.type === testTypeFilter;
+    
+    return matchesSearch && matchesCourse && matchesType;
+  });
   
   // Mock instructor data with nationalities for the PowerBI visualization
   const mockInstructors: Instructor[] = [
