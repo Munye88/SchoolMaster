@@ -112,12 +112,7 @@ const Dashboard = () => {
       {/* Dashboard Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-[#0A2463] to-blue-600 bg-clip-text text-transparent">
-            {selectedSchool && selectedSchool 
-              ? `${selectedSchool.name} Dashboard` 
-              : 'ELT Program Management'}
-          </h1>
-          <p className="text-sm text-gray-600 mt-1 italic">
+          <p className="text-lg text-gray-600 italic">
             "Education is the most powerful weapon which you can use to change the world." — Nelson Mandela
           </p>
         </div>
