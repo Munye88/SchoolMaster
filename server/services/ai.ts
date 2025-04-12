@@ -432,7 +432,7 @@ Reports:
               
               for (const test of testResults.slice(0, 50)) { // Limit to 50 for API constraints
                 const course = courses.find(c => c.id === test.courseId);
-                dataToAnalyze += `${course?.name || "Unknown"},${test.studentId},${test.testType},${test.score},${test.date}\n`;
+                dataToAnalyze += `${course?.name || "Unknown"},${test.studentId},${test.type},${test.score},${test.testDate}\n`;
               }
             }
             

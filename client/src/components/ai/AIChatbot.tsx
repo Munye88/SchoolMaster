@@ -10,9 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Send, X, Minimize2, Maximize2, MessageSquare, Trash } from "lucide-react";
+import { 
+  Loader2, Send, X, Minimize2, Maximize2, 
+  MessageSquare, Trash, Brain, Search, Database,
+  BarChart, ArrowRight
+} from "lucide-react";
 import { useAIChat } from "@/hooks/use-ai-chat";
 import { useSchool } from "@/hooks/useSchool";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function AIChatbot() {
   const [minimized, setMinimized] = useState(false);  // Start with the chat window open
