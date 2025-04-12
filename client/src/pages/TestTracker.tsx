@@ -544,6 +544,138 @@ const TestTracker = () => {
       fileInputRef.click();
     }
   };
+  
+  // Handle print report functionality
+  const handlePrintReport = () => {
+    // Create a printable version of the current test data
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    
+    const schoolName = selectedSchoolFilter !== 'all' 
+      ? schools.find(s => s.id.toString() === selectedSchoolFilter)?.name 
+      : 'All Schools';
+    
+    const title = selectedTestType === 'Book' 
+      ? `${schoolName} - Book Test Results - Cycle ${selectedCycle}, ${selectedYear}` 
+      : `${schoolName} - ${selectedTestType} Test Results - ${selectedMonth}, ${selectedYear}`;
+    
+    // Create the HTML content for printing
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { color: #0A2463; margin-bottom: 10px; }
+            h2 { color: #3E92CC; margin-top: 20px; margin-bottom: 10px; font-size: 18px; }
+            .header { display: flex; justify-content: space-between; border-bottom: 2px solid #0A2463; padding-bottom: 10px; margin-bottom: 20px; }
+            .logo { font-weight: bold; font-size: 24px; color: #0A2463; }
+            .date { font-size: 14px; color: #666; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+            th { background-color: #f1f5f9; text-align: left; padding: 10px; font-weight: bold; }
+            td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; }
+            .summary { background-color: #f8fafc; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+            .stat { display: inline-block; margin-right: 30px; }
+            .label { font-size: 12px; color: #64748b; }
+            .value { font-size: 20px; font-weight: bold; }
+            .green { color: #22c55e; }
+            .red { color: #ef4444; }
+            .pass-badge { background-color: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+            .fail-badge { background-color: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+            .footer { margin-top: 40px; font-size: 12px; color: #94a3b8; text-align: center; }
+            @media print {
+              .no-print { display: none; }
+              body { margin: 0; padding: 15px; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="logo">GOVCIO ELT PROGRAM</div>
+            <div class="date">Generated: ${new Date().toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}</div>
+          </div>
+          
+          <h1>${title}</h1>
+          
+          <div class="summary">
+            <div class="stat">
+              <div class="label">Total Students</div>
+              <div class="value">${filteredTestData.reduce((sum, data) => sum + data.studentCount, 0)}</div>
+            </div>
+            <div class="stat">
+              <div class="label">Average Score</div>
+              <div class="value">${
+                filteredTestData.length > 0
+                  ? Math.round(filteredTestData.reduce((sum, data) => sum + data.averageScore, 0) / filteredTestData.length)
+                  : 0
+              }</div>
+            </div>
+            <div class="stat">
+              <div class="label">Pass Rate</div>
+              <div class="value ${
+                filteredTestData.length > 0 && 
+                Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length) >= 85
+                  ? 'green'
+                  : 'red'
+              }">${
+                filteredTestData.length > 0
+                  ? Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length)
+                  : 0
+              }%</div>
+            </div>
+            <div class="stat">
+              <div class="label">Benchmark</div>
+              <div class="value">85%</div>
+            </div>
+          </div>
+          
+          <h2>School Performance Breakdown</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>School</th>
+                <th>Students</th>
+                <th>Average Score</th>
+                <th>Pass Rate</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredTestData.map(data => `
+                <tr>
+                  <td>${data.schoolName}</td>
+                  <td>${data.studentCount}</td>
+                  <td>${data.averageScore}</td>
+                  <td>${data.passingRate}%</td>
+                  <td>
+                    <span class="${data.passingRate >= 85 ? 'pass-badge' : 'fail-badge'}">
+                      ${data.passingRate >= 85 ? 'PASS' : 'FAIL'}
+                    </span>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          
+          <button class="no-print" style="padding: 10px 20px; background: #0A2463; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px;" onclick="window.print()">
+            Print Report
+          </button>
+          
+          <div class="footer">
+            GOVCIO ELT PROGRAM MANAGEMENT SYSTEM - CONFIDENTIAL - FOR INTERNAL USE ONLY
+          </div>
+        </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
+  };
 
   return (
     <main className="flex-1 overflow-y-auto py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
