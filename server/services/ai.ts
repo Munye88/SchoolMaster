@@ -1,14 +1,60 @@
 import { AIChatRequest, AIChatResponse } from "../../client/src/lib/ai-types";
 import { storage } from "../storage";
 import { getPerplexityResponse } from "./perplexity";
+import { getOpenAIResponse, getAdvancedAnalysis } from "./openai";
 
 /**
- * Determines whether a message is complex enough to use the Perplexity API
+ * Enum representing different AI service providers
  */
-function isComplexQuery(message: string): boolean {
-  // Define patterns for complex questions requiring advanced analysis
-  const complexPatterns = [
-    // Data analysis patterns
+enum AIService {
+  PERPLEXITY = "perplexity",
+  OPENAI = "openai",
+  OPENAI_ANALYSIS = "openai_analysis",
+  LOCAL = "local"
+}
+
+/**
+ * Determines which AI service to use based on the query complexity and type
+ */
+function determineAIService(message: string): AIService {
+  // Define patterns for data analysis queries that benefit from OpenAI's analysis capabilities
+  const analysisPatterns = [
+    "analyze data",
+    "analyze trends",
+    "analyze scores",
+    "data analysis",
+    "statistical analysis",
+    "performance metrics",
+    "comparison between",
+    "pass rate",
+    "failure rate",
+    "performance over time",
+    "distribution of",
+    "trends in",
+    "correlation between",
+    "regression analysis",
+    "forecast",
+    "predict future",
+    "historical performance"
+  ];
+  
+  // Define patterns for complex questions requiring Perplexity's web search capabilities
+  const perplexityPatterns = [
+    "search for",
+    "find information on",
+    "latest information about",
+    "current standards for",
+    "industry benchmarks",
+    "best practices",
+    "military standards",
+    "aviation training standards",
+    "regulatory requirements",
+    "compare with industry",
+    "global standards"
+  ];
+  
+  // Define patterns for general complex queries that benefit from OpenAI's reasoning
+  const openaiPatterns = [
     "compare",
     "trend",
     "correlate",
@@ -25,18 +71,11 @@ function isComplexQuery(message: string): boolean {
     "improve",
     "enhance",
     "optimize",
-    
-    // Complex reasoning patterns
     "what if",
     "scenario",
-    "forecast",
-    "predict",
     "best way to",
     "most effective",
-    
-    // Specific analysis requests
     "evaluation percentage",
-    "analyze test scores",
     "instructor performance",
     "score distribution",
     "statistical",
@@ -46,12 +85,29 @@ function isComplexQuery(message: string): boolean {
     "standard deviation"
   ];
   
-  // Check if message contains any complex patterns
-  return complexPatterns.some(pattern => message.toLowerCase().includes(pattern));
+  const messageLower = message.toLowerCase();
+  
+  // First check if it's a data analysis query
+  if (analysisPatterns.some(pattern => messageLower.includes(pattern))) {
+    return AIService.OPENAI_ANALYSIS;
+  }
+  
+  // Next check if it requires Perplexity's web search
+  if (perplexityPatterns.some(pattern => messageLower.includes(pattern))) {
+    return AIService.PERPLEXITY;
+  }
+  
+  // Then check if it's a complex query for OpenAI
+  if (openaiPatterns.some(pattern => messageLower.includes(pattern))) {
+    return AIService.OPENAI;
+  }
+  
+  // Default to local response for simple queries
+  return AIService.LOCAL;
 }
 
 /**
- * Generates an AI response using local data lookup or Perplexity API for complex questions
+ * Generates an AI response using local data lookup or advanced AI services for complex questions
  */
 export async function generateAIResponse(request: AIChatRequest): Promise<AIChatResponse> {
   try {
@@ -260,86 +316,158 @@ Reports:
 - How is PowerBI used in reports?`;
     }
     else {
-      // Check if this is a complex query that should use the Perplexity API
-      if (isComplexQuery(userMessage)) {
-        try {
-          // Gather additional context data about the system for advanced analysis
-          let contextData = "";
+      // Determine which AI service to use based on the query
+      const aiService = determineAIService(userMessage);
+      
+      try {
+        // Gather common context data
+        let contextData = "";
+        const schools = await storage.getSchools();
+        const instructors = await storage.getInstructors();
+        const courses = await storage.getCourses();
+        
+        // Build base context data
+        contextData += `Schools: ${schools.map(s => s.name).join(", ")}. `;
+        contextData += `Total instructors: ${instructors.length}. `;
+        contextData += `Total courses: ${courses.length}. `;
+        
+        // Add school-specific context if a school is selected
+        if (request.schoolId) {
+          const school = schools.find(s => s.id === request.schoolId);
+          const schoolInstructors = instructors.filter(i => i.schoolId === request.schoolId);
+          const schoolCourses = courses.filter(c => c.schoolId === request.schoolId);
           
-          // Add schools info
-          const schools = await storage.getSchools();
-          contextData += `Schools: ${schools.map(s => s.name).join(", ")}. `;
+          if (school) {
+            contextData += `\nCurrent school context: ${school.name} (${school.code})
+- ${schoolInstructors.length} instructors
+- ${schoolCourses.length} active courses`;
+          }
+        }
+        
+        // Add evaluation data if related to evaluations
+        if (userMessage.includes("evaluation") || userMessage.includes("score") || userMessage.includes("performance")) {
+          const evaluations = await storage.getEvaluations();
+          const passingCount = evaluations.filter(e => e.score >= 85).length;
+          const passRate = evaluations.length > 0 ? (passingCount / evaluations.length) * 100 : 0;
           
-          // Add instructor stats
-          const instructors = await storage.getInstructors();
-          contextData += `Total instructors: ${instructors.length}. `;
-          
-          // Add evaluation data summary if it's an evaluation question
-          if (userMessage.includes("evaluation") || userMessage.includes("score") || userMessage.includes("performance")) {
-            const evaluations = await storage.getEvaluations();
-            contextData += `
-Evaluations data: 
+          contextData += `\nEvaluations data: 
 - Total evaluations recorded: ${evaluations.length}
 - Passing score threshold: 85%
 - Quarterly evaluations are color-coded (green for >=85%, red for <85%)
-- Instructor evaluation stats: ${
-  Math.round((evaluations.filter(e => e.score >= 85).length / evaluations.length) * 100)
-}% of instructors are meeting or exceeding the 85% threshold.
-            `;
+- Overall pass rate: ${Math.round(passRate)}% of instructors are meeting or exceeding the 85% threshold`;
+          
+          // Add school-specific evaluation data if a school is selected
+          if (request.schoolId) {
+            const schoolEvaluations = evaluations.filter(e => {
+              const instructor = instructors.find(i => i.id === e.instructorId);
+              return instructor && instructor.schoolId === request.schoolId;
+            });
             
-            // Add specific school context if schoolId is provided
+            if (schoolEvaluations.length > 0) {
+              const schoolPassingCount = schoolEvaluations.filter(e => e.score >= 85).length;
+              const schoolPassRate = (schoolPassingCount / schoolEvaluations.length) * 100;
+              
+              contextData += `\nSelected school evaluation data:
+- ${schoolEvaluations.length} evaluations recorded
+- ${Math.round(schoolPassRate)}% of instructors meeting or exceeding 85% threshold`;
+            }
+          }
+        }
+        
+        // Add test data if related to tests or scores
+        if (userMessage.includes("test") || userMessage.includes("score") || userMessage.includes("alcpt") || userMessage.includes("ecl")) {
+          const testResults = await storage.getTestResults();
+          
+          if (testResults.length > 0) {
+            contextData += `\nTest data:
+- Total test results: ${testResults.length}
+- Test types include ALCPT, Book tests, and ECL tests
+- ALCPT average: 85% (pass threshold: 80%)
+- Book tests average: 82% pass rate
+- ECL tests average: 83%`;
+            
+            // Add school-specific test data if a school is selected
             if (request.schoolId) {
-              const school = schools.find(s => s.id === request.schoolId);
-              const schoolInstructors = instructors.filter(i => i.schoolId === request.schoolId);
-              const schoolEvaluations = evaluations.filter(e => {
-                const instructor = instructors.find(i => i.id === e.instructorId);
-                return instructor && instructor.schoolId === request.schoolId;
+              const schoolCourses = courses.filter(c => c.schoolId === request.schoolId);
+              const schoolTestResults = testResults.filter(tr => {
+                const course = schoolCourses.find(c => c.id === tr.courseId);
+                return course !== undefined;
               });
               
-              if (school) {
-                contextData += `
-School specific data for ${school.name}: 
-- Instructors: ${schoolInstructors.length}
-- Evaluations: ${schoolEvaluations.length}
-- Average evaluation score: ${
-  Math.round(
-    schoolEvaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / 
-    (schoolEvaluations.length || 1)
-  )
-}%
-                `;
+              if (schoolTestResults.length > 0) {
+                const schoolName = schools.find(s => s.id === request.schoolId)?.name || "Selected school";
+                contextData += `\n${schoolName} test data:
+- ${schoolTestResults.length} test results recorded`;
               }
             }
           }
-          
-          // Add test data summary if it's a test question
-          if (userMessage.includes("test") || userMessage.includes("score") || userMessage.includes("alcpt") || userMessage.includes("ecl")) {
-            contextData += `
-Test score data:
-- ALCPT scores average 85% across all schools
-- Book tests have an 82% average pass rate
-- ECL test scores average 82% across all schools
-- NFS East generally has the highest test scores
-            `;
-          }
-          
-          // Get response from Perplexity API
-          const aiResponse = await getPerplexityResponse(request.messages, contextData);
-          return {
-            message: {
-              role: "assistant",
-              content: aiResponse
-            }
-          };
-        } catch (error) {
-          console.error("Error using Perplexity API:", error);
-          // Fall back to default response if API call fails
-          response = "I encountered an issue while analyzing that complex question. Let me try a simpler response. " + 
-                    "The GOVCIO/SAMS ELT Program has 3 schools with 20 instructors each. The evaluation passing threshold is 85%.";
         }
-      } else {
-        // For non-complex queries, use the default response
-        response = `I understand you're asking about "${userMessage.substring(0, 50)}..." Let me try to help. The GOVCIO/SAMS ELT Program website provides comprehensive management of three schools (KNFA, NFS East, NFS West), tracking instructors, courses, test results, and evaluations.
+        
+        // Now handle the AI service based on the determined type
+        switch (aiService) {
+          case AIService.OPENAI_ANALYSIS:
+            // For data analysis, collect additional structured data to analyze
+            let dataToAnalyze = "";
+            
+            if (userMessage.includes("evaluation") || userMessage.includes("score")) {
+              const evaluations = await storage.getEvaluations();
+              // Format evaluation data for analysis
+              dataToAnalyze = "Evaluation Data:\n";
+              dataToAnalyze += "School,InstructorID,Quarter,Score,PassingStatus\n";
+              
+              for (const evaluation of evaluations.slice(0, 50)) { // Limit to 50 for API constraints
+                const instructor = instructors.find(i => i.id === evaluation.instructorId);
+                const school = instructor ? schools.find(s => s.id === instructor.schoolId) : null;
+                const schoolName = school ? school.name : "Unknown";
+                const passingStatus = evaluation.score >= 85 ? "Passing" : "Below Threshold";
+                
+                dataToAnalyze += `${schoolName},${evaluation.instructorId},${evaluation.quarter},${evaluation.score},${passingStatus}\n`;
+              }
+            }
+            else if (userMessage.includes("test") || userMessage.includes("alcpt") || userMessage.includes("ecl")) {
+              const testResults = await storage.getTestResults();
+              // Format test data for analysis
+              dataToAnalyze = "Test Result Data:\n";
+              dataToAnalyze += "Course,Student,TestType,Score,Date\n";
+              
+              for (const test of testResults.slice(0, 50)) { // Limit to 50 for API constraints
+                const course = courses.find(c => c.id === test.courseId);
+                dataToAnalyze += `${course?.name || "Unknown"},${test.studentId},${test.testType},${test.score},${test.date}\n`;
+              }
+            }
+            
+            const openAIAnalysis = await getAdvancedAnalysis(request.messages, contextData, dataToAnalyze);
+            return {
+              message: {
+                role: "assistant",
+                content: openAIAnalysis
+              }
+            };
+            
+          case AIService.OPENAI:
+            // For complex reasoning, use OpenAI
+            const openAIResponse = await getOpenAIResponse(request.messages, contextData);
+            return {
+              message: {
+                role: "assistant",
+                content: openAIResponse
+              }
+            };
+            
+          case AIService.PERPLEXITY:
+            // For queries requiring web search capabilities
+            const perplexityResponse = await getPerplexityResponse(request.messages, contextData);
+            return {
+              message: {
+                role: "assistant",
+                content: perplexityResponse
+              }
+            };
+            
+          case AIService.LOCAL:
+          default:
+            // For simpler queries, use the default response
+            response = `I understand you're asking about "${userMessage.substring(0, 50)}..." Let me try to help. The GOVCIO/SAMS ELT Program website provides comprehensive management of three schools (KNFA, NFS East, NFS West), tracking instructors, courses, test results, and evaluations.
 
 If you're looking for specific information, try asking about:
 - School information and document access
@@ -350,6 +478,11 @@ If you're looking for specific information, try asking about:
 - How to navigate specific website features
 
 I'm here to help you find what you need!`;
+        }
+      } catch (error) {
+        console.error("Error processing AI request:", error);
+        response = "I encountered an issue while analyzing your question. Let me try a simpler response. " + 
+                  "The GOVCIO/SAMS ELT Program has 3 schools with 20 instructors each. The evaluation passing threshold is 85%.";
       }
     }
     
