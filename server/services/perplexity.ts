@@ -95,7 +95,8 @@ export async function getPerplexityResponse(
     }
 
     const data = (await response.json()) as PerplexityResponse;
-    return data.choices[0].message.content;
+    const responseText = data.choices[0].message.content;
+    return `[Perplexity] ${responseText}`;
   } catch (error) {
     console.error("Error calling Perplexity API:", error);
     return "I encountered an error processing your request. Please try again later.";

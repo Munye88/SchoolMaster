@@ -111,32 +111,56 @@ export function AIChatbot() {
         <ScrollArea ref={scrollAreaRef} className="h-full p-4">
           {messages.length === 0 ? (
             <div className="text-center text-muted-foreground py-8">
-              <p className="mb-2">Welcome to the AI Assistant!</p>
-              <p className="text-sm">
-                Ask me about test scores, evaluations, or other data from the system.
-                For example:
+              <p className="mb-2 font-bold text-lg bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">
+                Enhanced AI Assistant
               </p>
-              <div className="mt-4 flex flex-col gap-2">
+              <div className="flex gap-1 justify-center mb-3">
+                <Badge className="bg-blue-500 hover:bg-blue-600 text-xs flex items-center gap-1">
+                  <BarChart className="w-3 h-3" />
+                  <span>GPT-4o Analysis</span>
+                </Badge>
+                <Badge className="bg-purple-500 hover:bg-purple-600 text-xs flex items-center gap-1">
+                  <Brain className="w-3 h-3" />
+                  <span>GPT-4o</span>
+                </Badge>
+                <Badge className="bg-green-500 hover:bg-green-600 text-xs flex items-center gap-1">
+                  <Search className="w-3 h-3" />
+                  <span>Perplexity</span>
+                </Badge>
+              </div>
+              <p className="text-sm">
+                Powered by multiple AI models, I can now answer complex questions about data, explain trends, 
+                perform analyses, and provide deeper insights about the GOVCIO/SAMS ELT Program.
+              </p>
+              <p className="text-sm mt-2 font-medium">Try asking:</p>
+              <div className="mt-3 flex flex-col gap-2">
                 <Button 
                   variant="outline" 
                   className="text-xs"
-                  onClick={() => sendMessage("What is the book test average for the month of March?")}
+                  onClick={() => sendMessage("Analyze the instructor evaluation scores across all schools")}
                 >
-                  What is the book test average for the month of March?
+                  <BarChart className="w-3 h-3 mr-1" /> Analyze the instructor evaluation scores across all schools
                 </Button>
                 <Button 
                   variant="outline" 
                   className="text-xs"
-                  onClick={() => sendMessage("Summarize the instructor evaluation scores")}
+                  onClick={() => sendMessage("Explain why NFS East has higher test results than other schools")}
                 >
-                  Summarize the instructor evaluation scores
+                  <Brain className="w-3 h-3 mr-1" /> Explain why NFS East has higher test results than other schools
                 </Button>
                 <Button 
                   variant="outline" 
                   className="text-xs"
-                  onClick={() => sendMessage("Which school has the highest ALCPT scores?")}
+                  onClick={() => sendMessage("What are current best practices for aviation English training?")}
                 >
-                  Which school has the highest ALCPT scores?
+                  <Search className="w-3 h-3 mr-1" /> What are current best practices for aviation English training?
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="text-xs"
+                  onClick={() => sendMessage("How many instructors are there in each school?")}
+                >
+                  <Database className="w-3 h-3 mr-1" /> How many instructors are there in each school?
                 </Button>
               </div>
             </div>
@@ -150,12 +174,57 @@ export function AIChatbot() {
                   }`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-lg p-3 ${
+                    className={`max-w-[80%] rounded-lg p-3 relative ${
                       message.role === "user"
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted"
                     }`}
                   >
+                    {/* AI model badge for assistant messages */}
+                    {message.role === "assistant" && message.content && (
+                      <div className="absolute -top-3 -right-2">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div>
+                                {message.content.includes("OpenAI analysis") ? (
+                                  <Badge className="bg-blue-500 hover:bg-blue-600 text-xs flex items-center gap-1">
+                                    <BarChart className="w-3 h-3" />
+                                    <span>GPT-4o Analysis</span>
+                                  </Badge>
+                                ) : message.content.includes("OpenAI") ? (
+                                  <Badge className="bg-purple-500 hover:bg-purple-600 text-xs flex items-center gap-1">
+                                    <Brain className="w-3 h-3" />
+                                    <span>GPT-4o</span>
+                                  </Badge>
+                                ) : message.content.includes("Perplexity") ? (
+                                  <Badge className="bg-green-500 hover:bg-green-600 text-xs flex items-center gap-1">
+                                    <Search className="w-3 h-3" />
+                                    <span>Perplexity</span>
+                                  </Badge>
+                                ) : (
+                                  <Badge className="bg-gray-500 hover:bg-gray-600 text-xs flex items-center gap-1">
+                                    <Database className="w-3 h-3" />
+                                    <span>Database</span>
+                                  </Badge>
+                                )}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {message.content.includes("OpenAI analysis")
+                                ? "Advanced data analysis powered by OpenAI's GPT-4o model"
+                                : message.content.includes("OpenAI")
+                                ? "Response generated by OpenAI's GPT-4o model"
+                                : message.content.includes("Perplexity")
+                                ? "Response with web search from Perplexity API"
+                                : "Response from local database information"}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    )}
+                    
+                    {/* Message content */}
                     {message.content.split("\n").map((text, i) => (
                       <p key={i} className={i > 0 ? "mt-2" : ""}>
                         {text}

@@ -49,7 +49,8 @@ export async function getOpenAIResponse(
       max_tokens: 800,
     });
 
-    return response.choices[0].message.content || "I couldn't generate a response. Please try again.";
+    const responseText = response.choices[0].message.content || "I couldn't generate a response. Please try again.";
+    return `[OpenAI] ${responseText}`;
   } catch (error) {
     console.error("Error calling OpenAI API:", error);
     return "I encountered an error processing your request with OpenAI. Please try again later.";
@@ -101,7 +102,8 @@ export async function getAdvancedAnalysis(
       max_tokens: 1200,
     });
 
-    return response.choices[0].message.content || "I couldn't analyze this data. Please try again.";
+    const responseText = response.choices[0].message.content || "I couldn't analyze this data. Please try again.";
+    return `[OpenAI analysis] ${responseText}`;
   } catch (error) {
     console.error("Error calling OpenAI API for data analysis:", error);
     return "I encountered an error analyzing this data with OpenAI. Please try again later.";
