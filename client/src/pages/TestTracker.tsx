@@ -346,7 +346,7 @@ const TestTracker = () => {
       id: i * 3 + 1,
       cycle: i + 1,
       year: 2025,
-      testType: 'Book',
+      testType: 'Book' as 'Book',
       schoolId: 349,
       schoolName: 'KNFA',
       studentCount: Math.floor(Math.random() * 10) + 20,
@@ -359,7 +359,7 @@ const TestTracker = () => {
       id: i * 3 + 2,
       cycle: i + 1,
       year: 2025,
-      testType: 'Book',
+      testType: 'Book' as 'Book',
       schoolId: 350,
       schoolName: 'NFS East',
       studentCount: Math.floor(Math.random() * 10) + 18,
@@ -372,7 +372,7 @@ const TestTracker = () => {
       id: i * 3 + 3,
       cycle: i + 1,
       year: 2025,
-      testType: 'Book',
+      testType: 'Book' as 'Book',
       schoolId: 351,
       schoolName: 'NFS West',
       studentCount: Math.floor(Math.random() * 10) + 15,
@@ -526,8 +526,8 @@ const TestTracker = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#0A2463] to-[#3E92CC]">
-            {selectedSchool 
-              ? `${schools.find(s => s.id === selectedSchool)?.name} Test Tracker` 
+            {selectedSchoolFilter !== 'all'
+              ? `${schools.find(s => s.id.toString() === selectedSchoolFilter)?.name} Test Tracker` 
               : 'Test Tracker'}
           </h1>
           <p className="text-gray-600 mt-1 font-medium">Track and analyze aggregate test results across all schools</p>

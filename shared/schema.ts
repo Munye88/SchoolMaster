@@ -338,3 +338,18 @@ export const staffAttendanceRelations = relations(staffAttendance, ({ one }) => 
 
 export type StaffAttendance = typeof staffAttendance.$inferSelect;
 export type InsertStaffAttendance = z.infer<typeof insertStaffAttendanceSchema>;
+
+// Type for Aggregated Test Data visualization
+export interface AggregateTestData {
+  id: number;
+  cycle?: number;
+  month?: string;
+  year: number;
+  testType: 'Book' | 'ALCPT' | 'ECL' | 'OPI';
+  schoolId: number;
+  schoolName: string;
+  studentCount: number;
+  averageScore: number;
+  passingScore: number;
+  passingRate: number;
+}
