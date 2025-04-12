@@ -21,7 +21,9 @@ import {
   XCircle, 
   Clock, 
   TrendingUp,
-  Calendar
+  Calendar,
+  Printer,
+  Clipboard
 } from "lucide-react";
 import { useSchool } from "@/hooks/useSchool";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -1242,17 +1244,12 @@ const TestTracker = () => {
         </CardContent>
       </Card>
       
-      <Tabs defaultValue="all" className="mb-6">
+      <div className="bg-white rounded-lg shadow-md border p-4 mb-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
-          <TabsList className="flex flex-wrap">
-            <TabsTrigger value="all">All Tests</TabsTrigger>
-            <TabsTrigger value="recent">Recent</TabsTrigger>
-            <TabsTrigger value="passed">Passed</TabsTrigger>
-            <TabsTrigger value="failed">Failed</TabsTrigger>
-            <TabsTrigger value="nationality" className="flex items-center">
-              <Flag className="h-4 w-4 mr-1" /> Nationality Analysis
-            </TabsTrigger>
-          </TabsList>
+          <h2 className="text-xl font-bold text-blue-800 flex items-center">
+            <Clipboard className="h-5 w-5 mr-2 text-blue-700" />
+            Detailed Test Analysis
+          </h2>
           
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <div className="relative flex-1 sm:flex-none">
@@ -1289,13 +1286,26 @@ const TestTracker = () => {
               </SelectContent>
             </Select>
             
-            <Button variant="outline">
-              <Download className="h-4 w-4" />
+            <Button 
+              variant="outline" 
+              className="flex-1 sm:flex-none bg-white hover:bg-gray-50 border-blue-200 text-blue-600"
+              onClick={() => handlePrintReport()}
+            >
+              <Printer className="h-4 w-4 mr-2" />
+              Print Report
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="flex-1 sm:flex-none border-blue-200 text-blue-600 hover:bg-blue-50"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export
             </Button>
           </div>
         </div>
         
-        <TabsContent value="all">
+        <div>
           <Card>
             <CardContent className="p-0">
               <Table>
@@ -1361,306 +1371,10 @@ const TestTracker = () => {
               </Table>
             </CardContent>
           </Card>
-        </TabsContent>
+        </div>
         
-        {/* Other tabs would filter the results accordingly */}
-        <TabsContent value="recent">
-          <Card>
-            <CardContent className="p-6 text-center text-gray-500">
-              Recent tests view (last 30 days)
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="passed">
-          <Card>
-            <CardContent className="p-6 text-center text-gray-500">
-              Passed tests view
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="failed">
-          <Card>
-            <CardContent className="p-6 text-center text-gray-500">
-              Failed tests view
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Nationality Analysis Tab - PowerBI Style */}
-        <TabsContent value="nationality">
-          <Card>
-            <CardHeader className="border-b">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-                <div>
-                  <CardTitle>Instructor Nationality Analysis</CardTitle>
-                  <CardDescription>
-                    Performance breakdown by instructor nationality (American, British, Canadian)
-                  </CardDescription>
-                </div>
-                <div className="flex items-center gap-3 mt-4 md:mt-0">
-                  <Select value={nationalityFilter} onValueChange={setNationalityFilter}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Filter by nationality" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Nationalities</SelectItem>
-                      <SelectItem value="American">American</SelectItem>
-                      <SelectItem value="British">British</SelectItem>
-                      <SelectItem value="Canadian">Canadian</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center">
-                      <div className="mr-2 p-2 bg-blue-100 rounded-full">
-                        <User className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <CardTitle className="text-sm font-medium">Instructor Distribution</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-60">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <RechartPieChart>
-                          <Pie
-                            data={[
-                              { name: "American", value: mockInstructors.filter(i => i.nationality === "American").length, color: "#2563EB" },
-                              { name: "British", value: mockInstructors.filter(i => i.nationality === "British").length, color: "#DC2626" },
-                              { name: "Canadian", value: mockInstructors.filter(i => i.nationality === "Canadian").length, color: "#16A34A" }
-                            ]}
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                            labelLine={false}
-                          >
-                            {[
-                              { name: "American", color: "#2563EB" },
-                              { name: "British", color: "#DC2626" },
-                              { name: "Canadian", color: "#16A34A" }
-                            ].map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(value) => [`${value} instructors`, 'Count']} />
-                        </RechartPieChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center">
-                      <div className="mr-2 p-2 bg-green-100 rounded-full">
-                        <UserCheck className="h-4 w-4 text-green-600" />
-                      </div>
-                      <CardTitle className="text-sm font-medium">Performance Scores</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-60">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                          data={[
-                            {
-                              name: "American",
-                              avgScore: Math.round(mockInstructors
-                                .filter(i => i.nationality === "American")
-                                .reduce((sum, i) => sum + i.score, 0) / 
-                                (mockInstructors.filter(i => i.nationality === "American").length || 1)),
-                              count: mockInstructors.filter(i => i.nationality === "American").length,
-                              color: "#2563EB"
-                            },
-                            {
-                              name: "British",
-                              avgScore: Math.round(mockInstructors
-                                .filter(i => i.nationality === "British")
-                                .reduce((sum, i) => sum + i.score, 0) / 
-                                (mockInstructors.filter(i => i.nationality === "British").length || 1)),
-                              count: mockInstructors.filter(i => i.nationality === "British").length,
-                              color: "#DC2626"
-                            },
-                            {
-                              name: "Canadian",
-                              avgScore: Math.round(mockInstructors
-                                .filter(i => i.nationality === "Canadian")
-                                .reduce((sum, i) => sum + i.score, 0) / 
-                                (mockInstructors.filter(i => i.nationality === "Canadian").length || 1)),
-                              count: mockInstructors.filter(i => i.nationality === "Canadian").length,
-                              color: "#16A34A"
-                            }
-                          ]}
-                          margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="name" />
-                          <YAxis domain={[0, 100]} label={{ value: 'Score', angle: -90, position: 'insideLeft' }} />
-                          <Tooltip formatter={(value) => [`${value}%`, 'Average Score']} />
-                          <Legend />
-                          <Bar 
-                            dataKey="avgScore" 
-                            name="Average Score" 
-                            fill="#0A2463" 
-                            radius={[4, 4, 0, 0]}
-                          />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center">
-                      <div className="mr-2 p-2 bg-red-100 rounded-full">
-                        <Flag className="h-4 w-4 text-red-600" />
-                      </div>
-                      <CardTitle className="text-sm font-medium">Test Pass Rates</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-60">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart 
-                          outerRadius={90} 
-                          width={730} 
-                          height={250} 
-                          data={[
-                            {
-                              nationality: "American",
-                              passRate: Math.round(mockInstructors
-                                .filter(i => i.nationality === "American")
-                                .reduce((sum, i) => sum + (i.testsPassed / (i.testsPassed + i.testsFailed) * 100), 0) / 
-                                (mockInstructors.filter(i => i.nationality === "American").length || 1)),
-                              students: 120,
-                              courses: 5
-                            },
-                            {
-                              nationality: "British",
-                              passRate: Math.round(mockInstructors
-                                .filter(i => i.nationality === "British")
-                                .reduce((sum, i) => sum + (i.testsPassed / (i.testsPassed + i.testsFailed) * 100), 0) / 
-                                (mockInstructors.filter(i => i.nationality === "British").length || 1)),
-                              students: 95,
-                              courses: 4
-                            },
-                            {
-                              nationality: "Canadian",
-                              passRate: Math.round(mockInstructors
-                                .filter(i => i.nationality === "Canadian")
-                                .reduce((sum, i) => sum + (i.testsPassed / (i.testsPassed + i.testsFailed) * 100), 0) / 
-                                (mockInstructors.filter(i => i.nationality === "Canadian").length || 1)),
-                              students: 75,
-                              courses: 3
-                            }
-                          ]}
-                        >
-                          <PolarGrid />
-                          <PolarAngleAxis dataKey="nationality" />
-                          <PolarRadiusAxis angle={30} domain={[0, 100]} />
-                          <Radar name="Pass Rate" dataKey="passRate" stroke="#0A2463" fill="#0A2463" fillOpacity={0.6} />
-                          <Tooltip formatter={(value) => [`${value}%`, 'Pass Rate']} />
-                          <Legend />
-                        </RadarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Instructors Table by Nationality */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Instructor Performance Details</h3>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Nationality</TableHead>
-                      <TableHead>Credentials</TableHead>
-                      <TableHead>Score</TableHead>
-                      <TableHead>Tests Passed</TableHead>
-                      <TableHead>Pass Rate</TableHead>
-                      <TableHead>Courses</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {mockInstructors
-                      .filter(i => nationalityFilter === 'all' || i.nationality === nationalityFilter)
-                      .map(instructor => (
-                        <TableRow key={instructor.id}>
-                          <TableCell className="font-medium">{instructor.name}</TableCell>
-                          <TableCell>
-                            <Badge className={
-                              instructor.nationality === "American" ? "bg-blue-100 text-blue-800" :
-                              instructor.nationality === "British" ? "bg-red-100 text-red-800" :
-                              "bg-green-100 text-green-800"
-                            }>
-                              {instructor.nationality}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{instructor.credentials}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <span className={
-                                instructor.score >= 90 ? "text-green-600 font-medium" :
-                                instructor.score >= 80 ? "text-blue-600 font-medium" :
-                                "text-yellow-600 font-medium"
-                              }>
-                                {instructor.score}%
-                              </span>
-                              <Progress 
-                                value={instructor.score} 
-                                className={`h-2 w-20 ${
-                                  instructor.score >= 90 ? "bg-green-500" :
-                                  instructor.score >= 80 ? "bg-blue-500" :
-                                  "bg-yellow-500"
-                                }`}
-                              />
-                            </div>
-                          </TableCell>
-                          <TableCell>{instructor.testsPassed} / {instructor.testsPassed + instructor.testsFailed}</TableCell>
-                          <TableCell>
-                            {Math.round((instructor.testsPassed / (instructor.testsPassed + instructor.testsFailed)) * 100)}%
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex flex-wrap gap-1">
-                              {instructor.courses.map(course => (
-                                <Badge key={course} variant="outline" className="bg-gray-100 text-xs">
-                                  {course}
-                                </Badge>
-                              ))}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </div>
-              
-              <div className="mt-8 text-center">
-                <p className="text-sm text-gray-500 max-w-3xl mx-auto mb-4">
-                  This nationality analysis helps identify performance variations and strengths among 
-                  instructors from different backgrounds. The passing score requirement for instructors is 85%.
-                </p>
-                <Button className="bg-[#0A2463] hover:bg-[#071A4A] gap-2">
-                  <FileText size={16} /> Export Nationality Report
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        {/* We've removed the other tabs from the UI */}
+      </div>
     </main>
   );
 };
