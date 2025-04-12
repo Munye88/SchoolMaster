@@ -3,7 +3,26 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, Upload, Download, Filter, BarChart2, PieChart, FileText, User, Flag, UserCheck, ArrowUpRight, Award, BookOpen, CheckCircle2, XCircle, Clock, TrendingUp } from "lucide-react";
+import { 
+  Search, 
+  Upload, 
+  Download, 
+  Filter, 
+  BarChart2, 
+  PieChart, 
+  FileText, 
+  User, 
+  Flag, 
+  UserCheck, 
+  ArrowUpRight, 
+  Award, 
+  BookOpen, 
+  CheckCircle2, 
+  XCircle, 
+  Clock, 
+  TrendingUp,
+  Calendar
+} from "lucide-react";
 import { useSchool } from "@/hooks/useSchool";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -39,7 +58,22 @@ import {
   AreaChart
 } from "recharts";
 
-// Mock data for test results
+// TestData types
+interface AggregateTestData {
+  id: number;
+  cycle?: number;
+  month?: string;
+  year: number;
+  testType: 'Book' | 'ALCPT' | 'ECL' | 'OPI';
+  schoolId: number;
+  schoolName: string;
+  studentCount: number;
+  averageScore: number;
+  passingScore: number;
+  passingRate: number;
+}
+
+// Missing interface for backward compatibility
 interface TestResult {
   id: number;
   studentName: string;
@@ -52,7 +86,7 @@ interface TestResult {
   schoolId: number;
 }
 
-// Mock data for instructors with nationality
+// Missing interface for backward compatibility
 interface Instructor {
   id: number;
   name: string;
@@ -66,11 +100,13 @@ interface Instructor {
 }
 
 const TestTracker = () => {
-  const { selectedSchool, currentSchool } = useSchool();
+  const { selectedSchool, schools } = useSchool();
   const [searchQuery, setSearchQuery] = useState("");
-  const [courseFilter, setCourseFilter] = useState("all");
-  const [testTypeFilter, setTestTypeFilter] = useState("all");
-  const [nationalityFilter, setNationalityFilter] = useState("all");
+  const [selectedTestType, setSelectedTestType] = useState("Book");
+  const [selectedYear, setSelectedYear] = useState(2025);
+  const [selectedMonth, setSelectedMonth] = useState("April");
+  const [selectedCycle, setSelectedCycle] = useState(1);
+  const [selectedSchoolFilter, setSelectedSchoolFilter] = useState("all");
   
   // Mock instructor data with nationalities for the PowerBI visualization
   const mockInstructors: Instructor[] = [
@@ -303,23 +339,131 @@ const TestTracker = () => {
     }
   ];
   
-  // Filter test results
-  const filteredTestResults = mockTestResults.filter(result => 
-    (selectedSchool ? result.schoolId === currentSchool?.id : true) &&
-    (courseFilter === "all" || result.courseName === courseFilter) &&
-    (testTypeFilter === "all" || result.type === testTypeFilter) &&
-    (result.studentName.toLowerCase().includes(searchQuery.toLowerCase()) || 
-     result.courseName.toLowerCase().includes(searchQuery.toLowerCase()))
+  // Mock aggregate test data for cycle-based Book tests
+  const bookTestData: AggregateTestData[] = Array.from({ length: 15 }, (_, i) => [
+    // KNFA (schoolId: 349)
+    {
+      id: i * 3 + 1,
+      cycle: i + 1,
+      year: 2025,
+      testType: 'Book',
+      schoolId: 349,
+      schoolName: 'KNFA',
+      studentCount: Math.floor(Math.random() * 10) + 20,
+      averageScore: Math.floor(Math.random() * 15) + 75,
+      passingScore: 75,
+      passingRate: Math.floor(Math.random() * 20) + 75
+    },
+    // NFS East (schoolId: 350)
+    {
+      id: i * 3 + 2,
+      cycle: i + 1,
+      year: 2025,
+      testType: 'Book',
+      schoolId: 350,
+      schoolName: 'NFS East',
+      studentCount: Math.floor(Math.random() * 10) + 18,
+      averageScore: Math.floor(Math.random() * 15) + 72,
+      passingScore: 75, 
+      passingRate: Math.floor(Math.random() * 20) + 70
+    },
+    // NFS West (schoolId: 351)
+    {
+      id: i * 3 + 3,
+      cycle: i + 1,
+      year: 2025,
+      testType: 'Book',
+      schoolId: 351,
+      schoolName: 'NFS West',
+      studentCount: Math.floor(Math.random() * 10) + 15,
+      averageScore: Math.floor(Math.random() * 15) + 70,
+      passingScore: 75,
+      passingRate: Math.floor(Math.random() * 20) + 65
+    }
+  ]).flat();
+
+  // Mock aggregate test data for monthly ALCPT, ECL, and OPI tests
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const testTypes = ['ALCPT', 'ECL', 'OPI'];
+
+  const monthlyTestData: AggregateTestData[] = months.flatMap((month, mIndex) => 
+    testTypes.flatMap((testType, tIndex) => [
+      // KNFA (schoolId: 349)
+      {
+        id: mIndex * 9 + tIndex * 3 + 1 + 100,
+        month,
+        year: 2025,
+        testType: testType as 'ALCPT' | 'ECL' | 'OPI',
+        schoolId: 349,
+        schoolName: 'KNFA',
+        studentCount: Math.floor(Math.random() * 8) + 12,
+        averageScore: Math.floor(Math.random() * 20) + 70,
+        passingScore: 70,
+        passingRate: Math.floor(Math.random() * 25) + 70
+      },
+      // NFS East (schoolId: 350)
+      {
+        id: mIndex * 9 + tIndex * 3 + 2 + 100,
+        month,
+        year: 2025,
+        testType: testType as 'ALCPT' | 'ECL' | 'OPI',
+        schoolId: 350,
+        schoolName: 'NFS East',
+        studentCount: Math.floor(Math.random() * 8) + 10,
+        averageScore: Math.floor(Math.random() * 20) + 65,
+        passingScore: 70,
+        passingRate: Math.floor(Math.random() * 25) + 65
+      },
+      // NFS West (schoolId: 351)
+      {
+        id: mIndex * 9 + tIndex * 3 + 3 + 100,
+        month,
+        year: 2025,
+        testType: testType as 'ALCPT' | 'ECL' | 'OPI',
+        schoolId: 351,
+        schoolName: 'NFS West',
+        studentCount: Math.floor(Math.random() * 8) + 8,
+        averageScore: Math.floor(Math.random() * 20) + 60,
+        passingScore: 70,
+        passingRate: Math.floor(Math.random() * 25) + 60
+      }
+    ])
   );
-  
-  // Calculate passing rate
-  const passingRate = filteredTestResults.length > 0
-    ? Math.round((filteredTestResults.filter(r => r.status === "Pass").length / filteredTestResults.length) * 100)
-    : 0;
-  
-  // Get unique courses and test types for filters
-  const uniqueCourses = Array.from(new Set(mockTestResults.map(r => r.courseName)));
-  const uniqueTestTypes = Array.from(new Set(mockTestResults.map(r => r.type)));
+
+  // All test data combined
+  const allTestData = [...bookTestData, ...monthlyTestData];
+
+  // Filter test data based on selections
+  const filteredTestData = allTestData.filter(data => {
+    // Filter by test type
+    const testTypeMatch = data.testType === selectedTestType;
+    
+    // Filter by school 
+    const schoolMatch = selectedSchoolFilter === 'all' || data.schoolId.toString() === selectedSchoolFilter;
+    
+    // Filter by cycle or month depending on test type
+    const periodMatch = 
+      (selectedTestType === 'Book' && data.cycle === selectedCycle) ||
+      (selectedTestType !== 'Book' && data.month === selectedMonth);
+    
+    // Filter by year
+    const yearMatch = data.year === selectedYear;
+    
+    return testTypeMatch && schoolMatch && periodMatch && yearMatch;
+  });
+
+  // Get all filtered Book test data for comparing cycles (regardless of selected cycle)
+  const allBookTestData = allTestData.filter(data => 
+    data.testType === 'Book' && 
+    (selectedSchoolFilter === 'all' || data.schoolId.toString() === selectedSchoolFilter)
+  );
+
+  // Get all filtered monthly test data for the selected test type (regardless of selected month)
+  const allMonthlyData = allTestData.filter(data => 
+    data.testType === selectedTestType &&
+    data.testType !== 'Book' &&
+    (selectedSchoolFilter === 'all' || data.schoolId.toString() === selectedSchoolFilter)
+  );
   
   // Format date helper
   const formatDate = (date: Date) => {
