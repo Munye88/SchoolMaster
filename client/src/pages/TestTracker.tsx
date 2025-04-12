@@ -857,20 +857,8 @@ const TestTracker = () => {
               ></div>
             </div>
           </CardContent>
-          <CardFooter className="pt-0 text-xs text-gray-500 border-t flex items-center justify-between">
-            <span>Benchmark: 85%</span>
-            <Badge className={
-              filteredTestData.length > 0 && 
-              Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length) >= 85
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
-            }>
-              {filteredTestData.length > 0 && 
-               Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length) >= 85
-                ? "PASS"
-                : "FAIL"
-              }
-            </Badge>
+          <CardFooter className="pt-0 text-xs text-gray-500 border-t">
+            <span>Based on data from {filteredTestData.length} schools</span>
           </CardFooter>
         </Card>
         
@@ -890,8 +878,8 @@ const TestTracker = () => {
             </div>
             <p className="text-xs text-gray-500 mt-1">Out of 100 possible points</p>
             <div className="mt-2 flex items-center gap-2">
-              <span className="text-xs text-gray-600">Passing Score:</span>
-              <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">
+              <span className="text-xs text-gray-600">Points Required:</span>
+              <Badge variant="outline" className="bg-purple-50 text-purple-700 text-xs">
                 {filteredTestData[0]?.passingScore || 0}
               </Badge>
             </div>
@@ -1157,11 +1145,12 @@ const TestTracker = () => {
                         ]}
                         cx="50%"
                         cy="50%"
-                        labelLine={true}
-                        outerRadius={100}
+                        labelLine={false}
+                        outerRadius={120}
+                        innerRadius={60}
                         fill="#8884d8"
                         dataKey="value"
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, value }) => `${name}: ${value} students`}
                       >
                         <Cell key="KNFA" fill="#4285F4" />
                         <Cell key="NFS East" fill="#34A853" />
@@ -1190,21 +1179,32 @@ const TestTracker = () => {
                       data={filteredTestData}
                       margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                       layout="vertical"
+                      barSize={40}
                     >
-                      <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                      <XAxis type="number" domain={[0, 100]} />
-                      <YAxis type="category" dataKey="schoolName" width={100} />
-                      <Tooltip />
-                      <Legend />
+                      <CartesianGrid strokeDasharray="3 3" horizontal={true} />
+                      <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 14 }} />
+                      <YAxis type="category" dataKey="schoolName" width={100} tick={{ fontSize: 14, fontWeight: 'bold' }} />
+                      <Tooltip 
+                        contentStyle={{ fontSize: '14px' }} 
+                        formatter={(value) => [`${value}%`, 'Pass Rate']}
+                      />
+                      <Legend wrapperStyle={{ fontSize: '14px' }} />
                       <Bar 
                         dataKey="passingRate" 
                         name="Pass Rate (%)" 
-                        radius={[0, 4, 4, 0]}
+                        radius={[0, 8, 8, 0]}
+                        label={{ 
+                          position: 'right', 
+                          formatter: (value) => `${value}%`, 
+                          fill: '#000', 
+                          fontSize: 14,
+                          fontWeight: 'bold' 
+                        }}
                       >
                         {filteredTestData.map((entry, index) => (
                           <Cell 
                             key={`cell-${index}`} 
-                            fill={entry.passingRate >= 85 ? "#34A853" : "#EA4335"} 
+                            fill={entry.passingRate >= 70 ? "#34A853" : "#EA4335"} 
                           />
                         ))}
                       </Bar>
@@ -1215,11 +1215,11 @@ const TestTracker = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 bg-green-500 rounded-sm"></div>
-                      <span className="text-sm font-medium">Pass (≥85%)</span>
+                      <span className="text-sm font-medium">Pass</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 bg-red-500 rounded-sm"></div>
-                      <span className="text-sm font-medium">Fail (&lt;85%)</span>
+                      <span className="text-sm font-medium">Fail</span>
                     </div>
                   </div>
                 </div>
