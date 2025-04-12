@@ -82,7 +82,10 @@ const StaffEvaluations = () => {
   });
 
   const { data: evaluations = [], isLoading: isLoadingEvaluations } = useQuery<Evaluation[]>({
-    queryKey: ['/api/evaluations'],
+    // Include selectedSchool in the queryKey to trigger refetch when school changes
+    queryKey: ['/api/evaluations', selectedSchool],
+    // Make sure query runs even when selectedSchool changes
+    refetchOnWindowFocus: true,
   });
 
   const schoolInstructors = selectedSchool 
@@ -119,7 +122,7 @@ const StaffEvaluations = () => {
         });
       });
     }
-  }, [schoolInstructors, evaluations, isLoadingInstructors, isLoadingEvaluations]);
+  }, [schoolInstructors, evaluations, isLoadingInstructors, isLoadingEvaluations, selectedSchool]);
 
   // Process quarterly data for each instructor
   const instructorQuarterlyData = schoolInstructors.map(instructor => {

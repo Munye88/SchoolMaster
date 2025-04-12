@@ -202,7 +202,7 @@ const Dashboard = () => {
             <CardContent className="p-4 pb-6">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total */}
-                <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg shadow-md p-4 text-white">
+                <div className="bg-gradient-to-r from-blue-500 to-teal-400 rounded-lg shadow-md p-4 text-white">
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="text-sm font-semibold opacity-90 uppercase tracking-wider">Active Courses</h3>
