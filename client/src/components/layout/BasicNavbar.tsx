@@ -42,7 +42,7 @@ const BasicNavbar = () => {
         
         {/* Center - Title */}
         <div className="flex-grow flex justify-center">
-          <span className="font-bold text-xl tracking-wide">GOVCIO/SAMS ELT PROGRAM</span>
+          <span className="font-bold text-xl tracking-wide">GOVCIO/SAMS ELT PROGRAM MANAGEMENT</span>
         </div>
         
         {/* Right - Controls */}
