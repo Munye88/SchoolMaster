@@ -522,15 +522,15 @@ const TestTracker = () => {
 
   return (
     <main className="flex-1 overflow-y-auto py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
-      {/* Header Section with Improved Styling */}
+      {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#0A2463] to-[#3E92CC]">
-            {selectedSchool && currentSchool 
-              ? `${currentSchool.name} Test Tracker` 
+            {selectedSchool 
+              ? `${schools.find(s => s.id === selectedSchool)?.name} Test Tracker` 
               : 'Test Tracker'}
           </h1>
-          <p className="text-gray-600 mt-1 font-medium">Track and analyze student performance across all courses</p>
+          <p className="text-gray-600 mt-1 font-medium">Track and analyze aggregate test results across all schools</p>
         </div>
         
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -543,80 +543,126 @@ const TestTracker = () => {
           </Button>
           
           <Button className="bg-[#0A2463] hover:bg-[#071A4A] flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all duration-200">
-            <BarChart2 className="mr-2 h-4 w-4" /> View Analysis
+            <Download className="mr-2 h-4 w-4" /> Export Data
           </Button>
         </div>
       </div>
       
-      {/* Search and Filter Controls - Redesigned */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8 rounded-lg p-1">
+      {/* Test Type Selector */}
+      <Tabs defaultValue="Book" className="mb-6" onValueChange={(value) => setSelectedTestType(value as 'Book' | 'ALCPT' | 'ECL' | 'OPI')}>
+        <TabsList className="mb-2">
+          <TabsTrigger value="Book" className="flex items-center gap-1">
+            <BookOpen className="h-4 w-4" />
+            Book Tests
+          </TabsTrigger>
+          <TabsTrigger value="ALCPT" className="flex items-center gap-1">
+            <FileText className="h-4 w-4" />
+            ALCPT
+          </TabsTrigger>
+          <TabsTrigger value="ECL" className="flex items-center gap-1">
+            <Award className="h-4 w-4" />
+            ECL
+          </TabsTrigger>
+          <TabsTrigger value="OPI" className="flex items-center gap-1">
+            <User className="h-4 w-4" />
+            OPI
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+      
+      {/* Filter Controls */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 rounded-lg p-1">
+        {/* School Filter */}
         <Card className="shadow-sm bg-gradient-to-r from-blue-50 to-indigo-50 border border-indigo-100 hover:shadow-md transition-all duration-200">
           <CardContent className="p-4">
-            <div className="relative flex-grow">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-400" size={18} />
-              <Input 
-                className="pl-10 bg-white border-indigo-100" 
-                placeholder="Search by student or course name"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-sm bg-gradient-to-r from-purple-50 to-blue-50 border border-blue-100 hover:shadow-md transition-all duration-200">
-          <CardContent className="p-4">
-            <Select value={courseFilter} onValueChange={setCourseFilter}>
+            <Select value={selectedSchoolFilter} onValueChange={setSelectedSchoolFilter}>
               <SelectTrigger className="bg-white border-blue-100">
-                <BookOpen className="h-4 w-4 mr-2 text-blue-500" />
-                <SelectValue placeholder="Course Filter" />
+                <Flag className="h-4 w-4 mr-2 text-blue-500" />
+                <SelectValue placeholder="Select School" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Courses</SelectItem>
-                {uniqueCourses.map(course => (
-                  <SelectItem key={course} value={course}>{course}</SelectItem>
+                <SelectItem value="all">All Schools</SelectItem>
+                {schools.map(school => (
+                  <SelectItem key={school.id} value={school.id.toString()}>{school.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </CardContent>
         </Card>
         
+        {/* Period Selector - Either Cycle (for Book tests) or Month (for other tests) */}
+        <Card className="shadow-sm bg-gradient-to-r from-purple-50 to-blue-50 border border-blue-100 hover:shadow-md transition-all duration-200">
+          <CardContent className="p-4">
+            {selectedTestType === 'Book' ? (
+              <Select value={selectedCycle.toString()} onValueChange={(value) => setSelectedCycle(parseInt(value))}>
+                <SelectTrigger className="bg-white border-blue-100">
+                  <BookOpen className="h-4 w-4 mr-2 text-blue-500" />
+                  <SelectValue placeholder="Select Cycle" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 15 }, (_, i) => (
+                    <SelectItem key={i+1} value={(i+1).toString()}>Cycle {i+1}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                <SelectTrigger className="bg-white border-blue-100">
+                  <Calendar className="h-4 w-4 mr-2 text-blue-500" />
+                  <SelectValue placeholder="Select Month" />
+                </SelectTrigger>
+                <SelectContent>
+                  {['January', 'February', 'March', 'April', 'May', 'June', 
+                    'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                    <SelectItem key={month} value={month}>{month}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </CardContent>
+        </Card>
+        
+        {/* Year Selector */}
         <Card className="shadow-sm bg-gradient-to-r from-indigo-50 to-purple-50 border border-purple-100 hover:shadow-md transition-all duration-200">
           <CardContent className="p-4">
-            <Select value={testTypeFilter} onValueChange={setTestTypeFilter}>
+            <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(parseInt(value))}>
               <SelectTrigger className="bg-white border-purple-100">
-                <FileText className="h-4 w-4 mr-2 text-purple-500" />
-                <SelectValue placeholder="Test Type" />
+                <Clock className="h-4 w-4 mr-2 text-purple-500" />
+                <SelectValue placeholder="Select Year" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Test Types</SelectItem>
-                {uniqueTestTypes.map(type => (
-                  <SelectItem key={type} value={type}>{type}</SelectItem>
-                ))}
+                <SelectItem value="2024">2024</SelectItem>
+                <SelectItem value="2025">2025</SelectItem>
               </SelectContent>
             </Select>
           </CardContent>
         </Card>
       </div>
       
-      {/* Summary Statistics - Redesigned with Icons and Better Styling */}
+      {/* Summary Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Total Students Card */}
         <Card className="shadow-md border-t-4 border-t-blue-500 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-sm font-medium text-gray-700">
-              <FileText className="h-5 w-5 mr-2 text-blue-500" />
-              <span>Total Tests</span>
+              <User className="h-5 w-5 mr-2 text-blue-500" />
+              <span>Total Students</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-600">{filteredTestResults.length}</div>
-            <p className="text-xs text-gray-500 mt-1">Across all courses</p>
+            <div className="text-3xl font-bold text-blue-600">
+              {filteredTestData.reduce((sum, data) => sum + data.studentCount, 0)}
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              {selectedTestType === 'Book' ? `Cycle ${selectedCycle}` : selectedMonth} {selectedYear}
+            </p>
           </CardContent>
           <CardFooter className="pt-0 text-xs text-gray-500 border-t">
-            <span>Last 30 days</span>
+            <span>Across all schools</span>
           </CardFooter>
         </Card>
         
+        {/* Passing Rate Card */}
         <Card className="shadow-md border-t-4 border-t-green-500 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-sm font-medium text-gray-700">
@@ -625,20 +671,51 @@ const TestTracker = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-600">{passingRate}%</div>
+            <div className="text-3xl font-bold text-green-600">
+              {filteredTestData.length > 0
+                ? Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length)
+                : 0}%
+            </div>
             <Progress 
-              value={passingRate} 
-              className={`h-2 mt-2 ${passingRate >= 75 ? "bg-green-500" : passingRate >= 60 ? "bg-yellow-500" : "bg-red-500"}`}
+              value={filteredTestData.length > 0
+                ? Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length)
+                : 0} 
+              className="h-2 mt-2 bg-green-100"
             />
+            <div className="h-2 mt-2 w-full bg-gray-100 rounded-full overflow-hidden">
+              <div 
+                className={`h-full rounded-full ${
+                  filteredTestData.length > 0 && 
+                  Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length) >= 85 
+                    ? "bg-green-500" 
+                    : "bg-red-500"
+                }`} 
+                style={{ 
+                  width: `${filteredTestData.length > 0
+                    ? Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length)
+                    : 0}%` 
+                }}
+              ></div>
+            </div>
           </CardContent>
-          <CardFooter className="pt-0 text-xs text-gray-500 border-t">
-            <span className="flex items-center">
-              <ArrowUpRight className="h-3 w-3 mr-1 text-green-500" />
-              {Math.round((filteredTestResults.filter(r => r.status === "Pass").length / (filteredTestResults.length || 1)) * 100)}% success rate
-            </span>
+          <CardFooter className="pt-0 text-xs text-gray-500 border-t flex items-center justify-between">
+            <span>Benchmark: 85%</span>
+            <Badge className={
+              filteredTestData.length > 0 && 
+              Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length) >= 85
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            }>
+              {filteredTestData.length > 0 && 
+               Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length) >= 85
+                ? "PASS"
+                : "FAIL"
+              }
+            </Badge>
           </CardFooter>
         </Card>
         
+        {/* Average Score Card */}
         <Card className="shadow-md border-t-4 border-t-purple-500 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-sm font-medium text-gray-700">
@@ -648,179 +725,146 @@ const TestTracker = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-purple-600">
-              {filteredTestResults.length > 0
-                ? Math.round(filteredTestResults.reduce((sum, result) => sum + result.score, 0) / filteredTestResults.length)
+              {filteredTestData.length > 0
+                ? Math.round(filteredTestData.reduce((sum, data) => sum + data.averageScore, 0) / filteredTestData.length)
                 : 0}
             </div>
             <p className="text-xs text-gray-500 mt-1">Out of 100 possible points</p>
+            <div className="mt-2 flex items-center gap-2">
+              <span className="text-xs text-gray-600">Passing Score:</span>
+              <Badge variant="outline" className="bg-red-50 text-red-700 text-xs">
+                {filteredTestData[0]?.passingScore || 0}
+              </Badge>
+            </div>
           </CardContent>
           <CardFooter className="pt-0 text-xs text-gray-500 border-t">
             <span>Performance indicator</span>
           </CardFooter>
         </Card>
         
+        {/* School Comparison Card */}
         <Card className="shadow-md border-t-4 border-t-indigo-500 hover:shadow-lg transition-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-sm font-medium text-gray-700">
-              <PieChart className="h-5 w-5 mr-2 text-indigo-500" />
-              <span>Tests by Type</span>
+              <Flag className="h-5 w-5 mr-2 text-indigo-500" />
+              <span>School Performance</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-2 flex-wrap">
-              {uniqueTestTypes.map(type => {
-                const count = filteredTestResults.filter(r => r.type === type).length;
-                const colors = {
-                  "ALCPT": "bg-blue-100 text-blue-800",
-                  "ECL": "bg-green-100 text-green-800",
-                  "Book Test": "bg-purple-100 text-purple-800"
-                };
-                const colorClass = colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800";
-                
-                return (
-                  <Badge key={type} variant="outline" className={colorClass}>
-                    {type}: {count}
-                  </Badge>
-                );
-              })}
+            <div className="space-y-2">
+              {/* KNFA */}
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs font-medium text-blue-700">KNFA</span>
+                  <span className="text-xs font-medium text-blue-700">
+                    {filteredTestData.find(d => d.schoolId === 349)?.averageScore || 0}
+                  </span>
+                </div>
+                <Progress 
+                  value={filteredTestData.find(d => d.schoolId === 349)?.averageScore || 0} 
+                  max={100}
+                  className="h-2 bg-blue-200"
+                />
+              </div>
+              
+              {/* NFS East */}
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs font-medium text-green-700">NFS East</span>
+                  <span className="text-xs font-medium text-green-700">
+                    {filteredTestData.find(d => d.schoolId === 350)?.averageScore || 0}
+                  </span>
+                </div>
+                <Progress 
+                  value={filteredTestData.find(d => d.schoolId === 350)?.averageScore || 0} 
+                  max={100}
+                  className="h-2 bg-green-200"
+                />
+              </div>
+              
+              {/* NFS West */}
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs font-medium text-orange-700">NFS West</span>
+                  <span className="text-xs font-medium text-orange-700">
+                    {filteredTestData.find(d => d.schoolId === 351)?.averageScore || 0}
+                  </span>
+                </div>
+                <Progress 
+                  value={filteredTestData.find(d => d.schoolId === 351)?.averageScore || 0} 
+                  max={100}
+                  className="h-2 bg-orange-200"
+                />
+              </div>
             </div>
           </CardContent>
           <CardFooter className="pt-0 text-xs text-gray-500 border-t">
-            <span>Distribution by test category</span>
+            <span>Average scores by school</span>
           </CardFooter>
         </Card>
       </div>
       
-      {/* PowerBI Analytics Section */}
+      {/* Test Data Visualization Section */}
       <Card className="mb-8 shadow-lg border-none overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-[#0A2463] to-[#3E92CC] text-white">
           <div className="flex flex-col md:flex-row md:items-center justify-between">
             <div>
-              <CardTitle className="text-2xl">PowerBI Analytics Dashboard</CardTitle>
+              <CardTitle className="text-2xl">
+                {selectedTestType === 'Book' 
+                  ? `Book Test Analytics - Cycle ${selectedCycle}` 
+                  : `${selectedTestType} Test Analytics - ${selectedMonth} ${selectedYear}`}
+              </CardTitle>
               <CardDescription className="text-blue-100 mt-1">
-                Comprehensive test performance analysis from Excel test tracker data
+                Comprehensive {selectedTestType} test performance analysis across all schools
               </CardDescription>
             </div>
             <Button className="mt-4 md:mt-0 gap-2 bg-white text-[#0A2463] hover:bg-blue-100 transition-all duration-300">
-              <FileText size={16} /> Open in PowerBI
+              <Download size={16} /> Export Analysis
             </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-6 bg-gradient-to-b from-blue-50 to-white">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Test Score Distribution by Course */}
+            {/* School Comparison Chart */}
             <Card className="shadow-md border border-blue-100 hover:shadow-lg transition-all duration-300">
               <CardHeader className="pb-2 bg-blue-50 border-b border-blue-100">
                 <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
                   <BarChart2 className="mr-2 h-5 w-5 text-blue-600" />
-                  Test Score Distribution by Course
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={(() => {
-                      const courseData = Array.from(
-                        new Set(filteredTestResults.map(r => r.courseName))
-                      ).map(course => {
-                        const results = filteredTestResults.filter(r => r.courseName === course);
-                        const avgScore = results.length 
-                          ? Math.round(results.reduce((sum, r) => sum + r.score, 0) / results.length) 
-                          : 0;
-                        const passingScore = results.length 
-                          ? results[0].passingScore 
-                          : 0;
-                        return {
-                          name: course,
-                          avgScore,
-                          passingScore,
-                          passCount: results.filter(r => r.status === "Pass").length,
-                          failCount: results.filter(r => r.status === "Fail").length,
-                        };
-                      });
-                      return courseData;
-                    })()}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 70 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis 
-                      dataKey="name" 
-                      angle={-45} 
-                      textAnchor="end" 
-                      height={70}
-                      tick={{ fontSize: 12 }}
-                    />
-                    <YAxis domain={[0, 100]} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar 
-                      dataKey="avgScore" 
-                      name="Average Score" 
-                      fill="#0A2463" 
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Bar 
-                      dataKey="passingScore" 
-                      name="Passing Threshold" 
-                      fill="#E63946" 
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Test Type Performance */}
-            <Card className="shadow-md border border-green-100 hover:shadow-lg transition-all duration-300">
-              <CardHeader className="pb-2 bg-green-50 border-b border-green-100">
-                <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
-                  <CheckCircle2 className="mr-2 h-5 w-5 text-green-600" />
-                  Test Type Performance
+                  School Performance Comparison
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
-                      data={(() => {
-                        return Array.from(new Set(filteredTestResults.map(r => r.type)))
-                          .map(type => {
-                            const results = filteredTestResults.filter(r => r.type === type);
-                            const avgScore = results.length 
-                              ? Math.round(results.reduce((sum, r) => sum + r.score, 0) / results.length) 
-                              : 0;
-                            return {
-                              name: type,
-                              avgScore,
-                              passRate: results.length 
-                                ? Math.round((results.filter(r => r.status === "Pass").length / results.length) * 100)
-                                : 0,
-                              count: results.length
-                            };
-                          });
-                      })()}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                      data={filteredTestData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis dataKey="name" />
+                      <XAxis dataKey="schoolName" />
                       <YAxis yAxisId="left" orientation="left" domain={[0, 100]} />
                       <YAxis yAxisId="right" orientation="right" domain={[0, 100]} />
-                      <Tooltip />
+                      <Tooltip formatter={(value, name) => [value, name === 'studentCount' ? 'Students' : name]} />
                       <Legend />
                       <Bar 
                         yAxisId="left"
-                        dataKey="avgScore" 
+                        dataKey="averageScore" 
                         name="Average Score" 
-                        fill="#0A2463" 
+                        fill="#4285F4" 
                         radius={[4, 4, 0, 0]}
                       />
                       <Bar 
                         yAxisId="right"
-                        dataKey="passRate" 
+                        dataKey="passingRate" 
                         name="Pass Rate (%)" 
-                        fill="#10B981" 
+                        fill="#34A853" 
+                        radius={[4, 4, 0, 0]}
+                      />
+                      <Bar 
+                        yAxisId="left"
+                        dataKey="studentCount" 
+                        name="Student Count" 
+                        fill="#FBBC05" 
                         radius={[4, 4, 0, 0]}
                       />
                     </BarChart>
@@ -829,153 +873,214 @@ const TestTracker = () => {
               </CardContent>
             </Card>
             
-            {/* Score Distribution */}
+            {/* Trend Analysis */}
+            {selectedTestType === 'Book' ? (
+              // Book Test Cycles Trend
+              <Card className="shadow-md border border-green-100 hover:shadow-lg transition-all duration-300">
+                <CardHeader className="pb-2 bg-green-50 border-b border-green-100">
+                  <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
+                    <TrendingUp className="mr-2 h-5 w-5 text-green-600" />
+                    Book Test Cycles Trend
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={allBookTestData.filter(data => data.schoolId.toString() === (selectedSchoolFilter === 'all' ? '349' : selectedSchoolFilter)).sort((a, b) => (a.cycle || 0) - (b.cycle || 0))}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="cycle" label={{ value: 'Cycle', position: 'insideBottomRight', offset: -5 }} />
+                        <YAxis domain={[0, 100]} />
+                        <Tooltip />
+                        <Legend />
+                        <Line 
+                          type="monotone" 
+                          dataKey="averageScore" 
+                          name="Average Score" 
+                          stroke="#4285F4" 
+                          strokeWidth={2}
+                          activeDot={{ r: 8 }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="passingRate" 
+                          name="Passing Rate" 
+                          stroke="#34A853" 
+                          strokeWidth={2}
+                          activeDot={{ r: 8 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              // Monthly Test Trend
+              <Card className="shadow-md border border-green-100 hover:shadow-lg transition-all duration-300">
+                <CardHeader className="pb-2 bg-green-50 border-b border-green-100">
+                  <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
+                    <TrendingUp className="mr-2 h-5 w-5 text-green-600" />
+                    {selectedTestType} Monthly Trend
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <div className="h-80">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={allMonthlyData.filter(data => 
+                          data.schoolId.toString() === (selectedSchoolFilter === 'all' ? '349' : selectedSchoolFilter) &&
+                          data.testType === selectedTestType
+                        )}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="month" 
+                          label={{ value: 'Month', position: 'insideBottomRight', offset: -5 }}
+                        />
+                        <YAxis domain={[0, 100]} />
+                        <Tooltip />
+                        <Legend />
+                        <Line 
+                          type="monotone" 
+                          dataKey="averageScore" 
+                          name="Average Score" 
+                          stroke="#4285F4" 
+                          strokeWidth={2}
+                          activeDot={{ r: 8 }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="passingRate" 
+                          name="Passing Rate" 
+                          stroke="#34A853" 
+                          strokeWidth={2}
+                          activeDot={{ r: 8 }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* School Comparison PieChart */}
             <Card className="shadow-md border border-purple-100 hover:shadow-lg transition-all duration-300">
               <CardHeader className="pb-2 bg-purple-50 border-b border-purple-100">
                 <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
                   <PieChart className="mr-2 h-5 w-5 text-purple-600" />
-                  Score Distribution
+                  Student Distribution by School
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
-                  <RechartPieChart>
-                    <Pie
-                      data={[
-                        { name: "90-100", value: filteredTestResults.filter(r => r.score >= 90 && r.score <= 100).length, color: "#10B981" },
-                        { name: "80-89", value: filteredTestResults.filter(r => r.score >= 80 && r.score < 90).length, color: "#3B82F6" },
-                        { name: "70-79", value: filteredTestResults.filter(r => r.score >= 70 && r.score < 80).length, color: "#A78BFA" },
-                        { name: "60-69", value: filteredTestResults.filter(r => r.score >= 60 && r.score < 70).length, color: "#F59E0B" },
-                        { name: "Below 60", value: filteredTestResults.filter(r => r.score < 60).length, color: "#EF4444" }
-                      ]}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {[
-                        { name: "90-100", color: "#10B981" },
-                        { name: "80-89", color: "#3B82F6" },
-                        { name: "70-79", color: "#A78BFA" },
-                        { name: "60-69", color: "#F59E0B" },
-                        { name: "Below 60", color: "#EF4444" }
-                      ].map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => [`${value} test(s)`, 'Count']} />
-                    <Legend />
-                  </RechartPieChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+                    <RechartPieChart>
+                      <Pie
+                        data={[
+                          { 
+                            name: "KNFA", 
+                            value: filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0, 
+                            color: "#4285F4" 
+                          },
+                          { 
+                            name: "NFS East", 
+                            value: filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0, 
+                            color: "#34A853" 
+                          },
+                          { 
+                            name: "NFS West", 
+                            value: filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0, 
+                            color: "#FBBC05" 
+                          }
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={true}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      >
+                        <Cell key="KNFA" fill="#4285F4" />
+                        <Cell key="NFS East" fill="#34A853" />
+                        <Cell key="NFS West" fill="#FBBC05" />
+                      </Pie>
+                      <Tooltip formatter={(value) => [`${value} students`, 'Count']} />
+                      <Legend />
+                    </RechartPieChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
             
-            {/* Performance Trends */}
-            <Card className="shadow-md border border-amber-100 hover:shadow-lg transition-all duration-300">
-              <CardHeader className="pb-2 bg-amber-50 border-b border-amber-100">
+            {/* Passing Score Analysis */}
+            <Card className="shadow-md border border-orange-100 hover:shadow-lg transition-all duration-300">
+              <CardHeader className="pb-2 bg-orange-50 border-b border-orange-100">
                 <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
-                  <TrendingUp className="mr-2 h-5 w-5 text-amber-600" />
-                  Performance Trends (3 Months)
+                  <Award className="mr-2 h-5 w-5 text-orange-600" />
+                  Pass/Fail Analysis
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={(() => {
-                      // Get current date and previous 3 months
-                      const now = new Date();
-                      const months: string[] = [];
-                      for (let i = 2; i >= 0; i--) {
-                        const d = new Date(now);
-                        d.setMonth(d.getMonth() - i);
-                        months.push(d.toLocaleString('default', { month: 'short' }));
-                      }
-                      
-                      // Return trend data for each test type
-                      return months.map(month => {
-                        const prevMonth = new Date(now);
-                        prevMonth.setMonth(prevMonth.getMonth() - months.indexOf(month) - 1);
-                        const nextMonth = new Date(now);
-                        nextMonth.setMonth(nextMonth.getMonth() - months.indexOf(month));
-                        
-                        const results = filteredTestResults.filter(r => {
-                          const testDate = new Date(r.testDate);
-                          return testDate > prevMonth && testDate <= nextMonth;
-                        });
-                        
-                        return {
-                          name: month,
-                          ALCPT: results.filter(r => r.type === "ALCPT").length > 0
-                            ? Math.round(results.filter(r => r.type === "ALCPT").reduce((sum, r) => sum + r.score, 0) / 
-                                results.filter(r => r.type === "ALCPT").length)
-                            : 0,
-                          BookTest: results.filter(r => r.type === "Book Test").length > 0
-                            ? Math.round(results.filter(r => r.type === "Book Test").reduce((sum, r) => sum + r.score, 0) / 
-                                results.filter(r => r.type === "Book Test").length)
-                            : 0,
-                          ECL: results.filter(r => r.type === "ECL").length > 0
-                            ? Math.round(results.filter(r => r.type === "ECL").reduce((sum, r) => sum + r.score, 0) / 
-                                results.filter(r => r.type === "ECL").length)
-                            : 0
-                        };
-                      });
-                    })()}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" />
-                    <YAxis domain={[0, 100]} />
-                    <Tooltip />
-                    <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="ALCPT" 
-                      name="ALCPT"
-                      stroke="#0A2463" 
-                      strokeWidth={2} 
-                      dot={{ r: 6 }}
-                      activeDot={{ r: 8 }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="BookTest" 
-                      name="Book Test"
-                      stroke="#10B981" 
-                      strokeWidth={2} 
-                      dot={{ r: 6 }}
-                      activeDot={{ r: 8 }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="ECL" 
-                      name="ECL"
-                      stroke="#F59E0B" 
-                      strokeWidth={2} 
-                      dot={{ r: 6 }}
-                      activeDot={{ r: 8 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+                    <BarChart
+                      data={filteredTestData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      layout="vertical"
+                    >
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                      <XAxis type="number" domain={[0, 100]} />
+                      <YAxis type="category" dataKey="schoolName" width={100} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar 
+                        dataKey="passingRate" 
+                        name="Pass Rate (%)" 
+                        radius={[0, 4, 4, 0]}
+                      >
+                        {filteredTestData.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.passingRate >= 85 ? "#34A853" : "#EA4335"} 
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="mt-4 flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-green-500 rounded-sm"></div>
+                      <span className="text-sm font-medium">Pass (≥85%)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-red-500 rounded-sm"></div>
+                      <span className="text-sm font-medium">Fail (&lt;85%)</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
           
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500 max-w-3xl mx-auto mb-4">
-              This PowerBI dashboard integrates with Excel test tracker data to provide comprehensive
-              analysis of student performance across different courses and test types.
-              It helps instructors identify trends and areas for improvement.
+              This test analytics dashboard provides comprehensive performance analysis across all schools.
+              The data visualizations help school administrators identify trends and areas for improvement.
             </p>
-            <Button className="bg-[#0A2463] hover:bg-[#071A4A] gap-2">
-              <FileText size={16} /> Download Full PowerBI Report
-            </Button>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Button className="bg-[#0A2463] hover:bg-[#071A4A] gap-2">
+                <Download size={16} /> Export Test Results
+              </Button>
+              <Button variant="outline" className="border-[#0A2463] text-[#0A2463] gap-2">
+                <FileText size={16} /> Generate PDF Report
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
