@@ -1096,6 +1096,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           status: staffLeave.status,
           comments: staffLeave.comments,
           approvedBy: staffLeave.approvedBy,
+          leaveType: staffLeave.leaveType,
           schoolId: instructors.schoolId
         })
         .from(staffLeave)

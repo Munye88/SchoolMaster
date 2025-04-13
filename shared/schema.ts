@@ -367,7 +367,7 @@ export const staffLeave = pgTable("staff_leave", {
   destination: text("destination").notNull(),
   status: text("status").notNull(), // e.g., "pending", "approved", "completed"
   comments: text("comments"),
-  approvedBy: integer("approved_by").references(() => users.id)
+  approvedBy: integer("approvedby").references(() => users.id)
 });
 
 export const insertStaffLeaveSchema = createInsertSchema(staffLeave).pick({

@@ -334,7 +334,7 @@ export default function StaffLeaveTracker() {
                 New Leave Request
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
+            <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Leave Request</DialogTitle>
                 <DialogDescription>
@@ -616,7 +616,7 @@ export default function StaffLeaveTracker() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={8} className="text-center py-8">
                     <div className="flex items-center justify-center">
                       <Loader2 className="h-6 w-6 animate-spin mr-2" />
                       <span>Loading leave records...</span>
@@ -625,7 +625,7 @@ export default function StaffLeaveTracker() {
                 </TableRow>
               ) : schoolLeaveRecords.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={8} className="text-center py-8">
                     No leave records found for this school. Add a new leave request using the button above.
                   </TableCell>
                 </TableRow>
