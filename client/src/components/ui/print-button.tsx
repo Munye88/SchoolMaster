@@ -82,6 +82,40 @@ export function PrintButton({
                   button, .no-print {
                     display: none !important;
                   }
+                  /* Specific styling for leave request details dialog */
+                  .leave-details h4 {
+                    font-size: 14px;
+                    font-weight: 500;
+                    color: #333;
+                    margin-bottom: 4px;
+                  }
+                  .leave-details p {
+                    font-size: 16px;
+                    margin-bottom: 16px;
+                  }
+                  .leave-details .instructor-card {
+                    background-color: #f9f9f9 !important;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-bottom: 24px;
+                  }
+                  .leave-details .instructor-name {
+                    font-size: 18px;
+                    font-weight: bold;
+                  }
+                  /* Dialog header/footer shouldn't appear in print */
+                  .leave-details-dialog-header,
+                  .leave-details-dialog-footer {
+                    display: none !important;
+                  }
+                  /* Grid layout for date fields */
+                  .leave-details .dates-grid,
+                  .leave-details .leave-type-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 24px;
+                    margin-bottom: 24px;
+                  }
                 }
               </style>
             </head>

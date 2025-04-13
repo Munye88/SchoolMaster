@@ -883,7 +883,7 @@ export default function StaffLeaveTracker() {
       {/* View Leave Dialog */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
+          <DialogHeader className="leave-details-dialog-header">
             <DialogTitle>Leave Request Details</DialogTitle>
             <DialogDescription>
               View details for {selectedLeave?.instructorName}'s leave request
@@ -891,12 +891,12 @@ export default function StaffLeaveTracker() {
           </DialogHeader>
           
           {selectedLeave && (
-            <div className="py-4">
+            <div className="py-4 leave-details" id="leave-details-print">
               {/* Instructor and ID Card */}
-              <div className="bg-gray-50 border border-gray-200 rounded-md p-6 mb-6">
+              <div className="bg-gray-50 border border-gray-200 rounded-md p-6 mb-6 instructor-card">
                 <div className="mb-3">
                   <h4 className="text-base font-medium mb-1">Instructor</h4>
-                  <p className="text-lg font-bold">{selectedLeave.instructorName}</p>
+                  <p className="text-lg font-bold instructor-name">{selectedLeave.instructorName}</p>
                 </div>
                 <div>
                   <h4 className="text-base font-medium mb-1">Employee ID</h4>
@@ -905,7 +905,7 @@ export default function StaffLeaveTracker() {
               </div>
               
               {/* Dates Row */}
-              <div className="grid grid-cols-3 gap-6 mb-6">
+              <div className="grid grid-cols-3 gap-6 mb-6 dates-grid">
                 <div>
                   <h4 className="text-base font-medium mb-1">Start Date</h4>
                   <p className="text-base">{formatWithOrdinal(new Date(selectedLeave.startDate))}</p>
@@ -921,7 +921,7 @@ export default function StaffLeaveTracker() {
               </div>
               
               {/* Leave Type and Days Row */}
-              <div className="grid grid-cols-3 gap-6 mb-6">
+              <div className="grid grid-cols-3 gap-6 mb-6 leave-type-grid">
                 <div>
                   <h4 className="text-base font-medium mb-1">Leave Type</h4>
                   <p className="text-base">{selectedLeave.leaveType || 'PTO'}</p>
@@ -967,6 +967,7 @@ export default function StaffLeaveTracker() {
                       onClick={() => {
                         window.open(selectedLeave.attachmentUrl, '_blank');
                       }}
+                      className="no-print"
                     >
                       <Download className="h-4 w-4 mr-2" />
                       View Attachment
@@ -982,10 +983,14 @@ export default function StaffLeaveTracker() {
             </div>
           )}
           
-          <DialogFooter>
+          <DialogFooter className="leave-details-dialog-footer">
             <Button variant="outline" onClick={() => setViewDialogOpen(false)}>
               Close
             </Button>
+            <PrintButton contentId="leave-details-print" variant="secondary">
+              <Printer className="h-4 w-4 mr-2" />
+              Print
+            </PrintButton>
             <Button 
               variant="default" 
               className="bg-[#0A2463]"
