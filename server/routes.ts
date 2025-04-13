@@ -15,8 +15,11 @@ import {
   insertEvaluationSchema,
   insertDocumentSchema,
   insertStaffAttendanceSchema,
+  insertStaffLeaveSchema,
   evaluations,
-  courses
+  courses,
+  staffLeave,
+  instructors
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
@@ -1072,6 +1075,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ message: "Failed to delete attendance record" });
+    }
+  });
+  
+  // Staff leave routes
+  app.get("/api/staff-leave", async (req, res) => {
+    try {
+      // Join with instructors to get instructor names
+      const leaveRecords = await db
+        .select({
+          id: staffLeave.id,
+          instructorId: staffLeave.instructorId,
+          instructorName: instructors.name,
+          startDate: staffLeave.startDate,
+          endDate: staffLeave.endDate,
+          returnDate: staffLeave.returnDate,
+          ptodays: staffLeave.ptodays,
+          rrdays: staffLeave.rrdays,
+          destination: staffLeave.destination,
+          status: staffLeave.status,
+          comments: staffLeave.comments,
+          approvedBy: staffLeave.approvedBy,
+          schoolId: instructors.schoolId
+        })
+        .from(staffLeave)
+        .innerJoin(instructors, eq(staffLeave.instructorId, instructors.id));
+      
+      res.json(leaveRecords);
+    } catch (error) {
+      console.error("Error fetching staff leave records:", error);
+      res.status(500).json({ error: "Failed to fetch staff leave records" });
+    }
+  });
+
+  app.post("/api/staff-leave", async (req, res) => {
+    try {
+      const newLeave = req.body;
+      const [leave] = await db.insert(staffLeave).values(newLeave).returning();
+      res.status(201).json(leave);
+    } catch (error) {
+      console.error("Error creating staff leave record:", error);
+      res.status(500).json({ error: "Failed to create staff leave record" });
+    }
+  });
+  
+  app.patch("/api/staff-leave/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid staff leave ID" });
+    }
+    
+    try {
+      const updateData = req.body;
+      const [updatedLeave] = await db
+        .update(staffLeave)
+        .set(updateData)
+        .where(eq(staffLeave.id, id))
+        .returning();
+        
+      if (!updatedLeave) {
+        return res.status(404).json({ message: "Staff leave record not found" });
+      }
+      
+      res.json(updatedLeave);
+    } catch (error) {
+      console.error("Error updating staff leave record:", error);
+      res.status(500).json({ message: "Failed to update staff leave record" });
+    }
+  });
+  
+  app.delete("/api/staff-leave/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid staff leave ID" });
+    }
+    
+    try {
+      await db.delete(staffLeave).where(eq(staffLeave.id, id));
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting staff leave record:", error);
+      res.status(500).json({ message: "Failed to delete staff leave record" });
     }
   });
 
