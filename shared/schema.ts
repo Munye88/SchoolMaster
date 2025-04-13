@@ -353,3 +353,45 @@ export interface AggregateTestData {
   passingScore: number;
   passingRate: number;
 }
+
+// Staff Leave Tracker
+export const staffLeave = pgTable("staff_leave", {
+  id: serial("id").primaryKey(),
+  instructorId: integer("instructor_id").notNull().references(() => instructors.id),
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date").notNull(),
+  returnDate: date("return_date").notNull(),
+  ptodays: integer("pto_days").notNull(),
+  rrdays: integer("rr_days").notNull(),
+  destination: text("destination").notNull(),
+  status: text("status").notNull(), // e.g., "pending", "approved", "completed"
+  comments: text("comments"),
+  approvedBy: integer("approved_by").references(() => users.id)
+});
+
+export const insertStaffLeaveSchema = createInsertSchema(staffLeave).pick({
+  instructorId: true,
+  startDate: true,
+  endDate: true,
+  returnDate: true,
+  ptodays: true,
+  rrdays: true,
+  destination: true,
+  status: true,
+  comments: true,
+  approvedBy: true
+});
+
+export const staffLeaveRelations = relations(staffLeave, ({ one }) => ({
+  instructor: one(instructors, {
+    fields: [staffLeave.instructorId],
+    references: [instructors.id]
+  }),
+  approver: one(users, {
+    fields: [staffLeave.approvedBy],
+    references: [users.id]
+  })
+}));
+
+export type StaffLeave = typeof staffLeave.$inferSelect;
+export type InsertStaffLeave = z.infer<typeof insertStaffLeaveSchema>;

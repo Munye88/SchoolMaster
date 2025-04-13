@@ -104,6 +104,11 @@ const StaffEvaluations = () => {
     },
   });
 
+  // Initialize filteredInstructors when schoolInstructors change
+  useEffect(() => {
+    setFilteredInstructors([]);
+  }, [schoolInstructors]);
+
   // If no evaluations exist, create sample data (just for testing)
   useEffect(() => {
     if (!isLoadingInstructors && !isLoadingEvaluations && evaluations.length === 0 && schoolInstructors.length > 0) {
@@ -383,7 +388,12 @@ const StaffEvaluations = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {instructorQuarterlyData.map((instructor) => (
+                  {(filteredInstructors.length > 0 
+                    ? instructorQuarterlyData.filter(inst => 
+                        filteredInstructors.some(fi => fi.id === inst.id)
+                      ) 
+                    : instructorQuarterlyData
+                  ).map((instructor) => (
                     <TableRow key={instructor.id}>
                       <TableCell className="font-medium">{instructor.name}</TableCell>
                       <TableCell className="text-center">{format(new Date(), 'MM/dd/yy')}</TableCell>
