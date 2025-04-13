@@ -4,7 +4,8 @@ import {
   CardContent, 
   CardDescription, 
   CardHeader, 
-  CardTitle 
+  CardTitle, 
+  CardFooter
 } from "@/components/ui/card";
 import { 
   Table, 
@@ -16,6 +17,27 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -24,11 +46,16 @@ import {
 } from "@/components/ui/select";
 import { Calendar } from '@/components/ui/calendar';
 import { useState, useEffect } from 'react';
-import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2 } from 'lucide-react';
+import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save } from 'lucide-react';
 import { useSchool } from '@/hooks/useSchool';
-import { format } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { useToast } from "@/hooks/use-toast";
+import { PrintButton } from '@/components/ui/print-button';
 
 // Define the interface for staff leave data from API
 interface StaffLeave {
@@ -61,10 +88,39 @@ interface LeaveFormData {
   approvedBy?: number;
 }
 
+// Define validation schema for the leave form
+const leaveFormSchema = z.object({
+  instructorId: z.number({
+    required_error: "Instructor is required",
+    invalid_type_error: "Instructor is required",
+  }),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().min(1, "End date is required"),
+  returnDate: z.string().min(1, "Return date is required"),
+  ptodays: z.number({
+    required_error: "PTO days are required",
+    invalid_type_error: "PTO days must be a number",
+  }).min(0, "PTO days must be a positive number"),
+  rrdays: z.number({
+    required_error: "R&R days are required", 
+    invalid_type_error: "R&R days must be a number",
+  }).min(0, "R&R days must be a positive number"),
+  destination: z.string().min(1, "Destination is required"),
+  status: z.string().min(1, "Status is required"),
+  comments: z.string().optional(),
+});
+
+type LeaveFormValues = z.infer<typeof leaveFormSchema>;
+
 export default function StaffLeaveTracker() {
   const params = useParams();
   const { schoolCode } = params;
   const { schools, selectSchool } = useSchool();
+  const { toast } = useToast();
+  
+  // UI state
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedLeave, setSelectedLeave] = useState<StaffLeave | null>(null);
   
   // Find the current school from all schools
   const currentSchool = schools.find(school => school.code === schoolCode);
@@ -91,10 +147,40 @@ export default function StaffLeaveTracker() {
     enabled: !!currentSchool?.id,
   });
   
+  // Fetch instructors for the current school
+  const { 
+    data: instructors = [],
+    isLoading: isLoadingInstructors
+  } = useQuery({
+    queryKey: ['/api/instructors', currentSchool?.id],
+    enabled: !!currentSchool?.id,
+  });
+  
+  // Filter instructors by current school
+  const schoolInstructors = currentSchool 
+    ? instructors.filter((instructor: any) => instructor.schoolId === currentSchool.id)
+    : [];
+  
   // Filter leave records by selected school
   const schoolLeaveRecords = currentSchool 
     ? leaveRecords.filter(record => record.schoolId === currentSchool.id)
     : leaveRecords;
+    
+  // Initialize the form
+  const form = useForm<LeaveFormValues>({
+    resolver: zodResolver(leaveFormSchema),
+    defaultValues: {
+      instructorId: 0,
+      startDate: format(new Date(), 'yyyy-MM-dd'),
+      endDate: format(new Date(), 'yyyy-MM-dd'),
+      returnDate: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
+      ptodays: 0,
+      rrdays: 0,
+      destination: '',
+      status: 'Pending',
+      comments: '',
+    },
+  });
   
   // Create leave record mutation
   const createLeaveMutation = useMutation({
@@ -127,6 +213,70 @@ export default function StaffLeaveTracker() {
       queryClient.invalidateQueries({ queryKey: ['/api/staff-leave'] });
     }
   });
+  
+  // Form submission handler
+  const onSubmit = async (values: LeaveFormValues) => {
+    try {
+      if (!currentSchool) {
+        toast({
+          title: "Error",
+          description: "School information not available",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const leaveData: LeaveFormData = {
+        ...values,
+        schoolId: currentSchool.id
+      };
+      
+      await createLeaveMutation.mutateAsync(leaveData);
+      
+      toast({
+        title: "Success",
+        description: "Leave request created successfully",
+      });
+      
+      // Reset form and close dialog
+      form.reset();
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Error submitting leave request:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create leave request",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  // Calculate days between two dates
+  const calculateDays = (start: string, end: string) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end days
+    return diffDays;
+  };
+  
+  // Update total days when dates change
+  useEffect(() => {
+    const startDate = form.watch('startDate');
+    const endDate = form.watch('endDate');
+    const returnDate = form.watch('returnDate');
+    
+    if (startDate && endDate && returnDate) {
+      const totalDays = calculateDays(startDate, endDate);
+      const returnDays = calculateDays(endDate, returnDate);
+      
+      // Update PTO days based on total days
+      form.setValue('ptodays', totalDays);
+      
+      // Update R&R days based on return date
+      form.setValue('rrdays', returnDays - 1); // -1 because return day is not counted as R&R
+    }
+  }, [form.watch('startDate'), form.watch('endDate'), form.watch('returnDate')]);
   
   const months = [
     "January", "February", "March", "April", "May", "June", 
@@ -180,15 +330,245 @@ export default function StaffLeaveTracker() {
             )}
           </div>
           
-          <Button>
-            <FileText className="h-4 w-4 mr-2" />
-            Export Report
-          </Button>
+          <PrintButton 
+            contentId="leaveTrackerContent" 
+            variant="outline"
+          />
           
-          <Button className="bg-[#0A2463]">
-            <PlusCircle className="h-4 w-4 mr-2" />
-            New Leave Request
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-[#0A2463]">
+                <PlusCircle className="h-4 w-4 mr-2" />
+                New Leave Request
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Add New Leave Request</DialogTitle>
+                <DialogDescription>
+                  Create a new leave request for an instructor
+                </DialogDescription>
+              </DialogHeader>
+              
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+                  <FormField
+                    control={form.control}
+                    name="instructorId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Instructor</FormLabel>
+                        <Select 
+                          onValueChange={(value) => field.onChange(parseInt(value))}
+                          defaultValue={field.value.toString()}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select instructor" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {isLoadingInstructors ? (
+                              <div className="p-2 flex items-center justify-center">
+                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                <span>Loading instructors...</span>
+                              </div>
+                            ) : (
+                              schoolInstructors.map((instructor: any) => (
+                                <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                                  {instructor.name}
+                                </SelectItem>
+                              ))
+                            )}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="grid grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="startDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Start Date</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="date" 
+                              {...field} 
+                              onChange={(e) => field.onChange(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="endDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>End Date</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="date" 
+                              {...field} 
+                              onChange={(e) => field.onChange(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="returnDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Return Date</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="date" 
+                              {...field} 
+                              onChange={(e) => field.onChange(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="ptodays"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>PTO Days</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              {...field} 
+                              onChange={(e) => field.onChange(parseInt(e.target.value))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="rrdays"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>R&R Days</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              {...field} 
+                              onChange={(e) => field.onChange(parseInt(e.target.value))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="destination"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Destination</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Enter destination" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Status</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Pending">Pending</SelectItem>
+                            <SelectItem value="Approved">Approved</SelectItem>
+                            <SelectItem value="Rejected">Rejected</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="comments"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Comments</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Add any additional comments"
+                            rows={3}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <DialogFooter>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => setIsDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit"
+                      disabled={createLeaveMutation.isPending}
+                      className="bg-[#0A2463]"
+                    >
+                      {createLeaveMutation.isPending ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-4 w-4 mr-2" />
+                          Save Request
+                        </>
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
       
