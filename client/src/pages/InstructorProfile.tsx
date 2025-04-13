@@ -12,6 +12,7 @@ import { Calendar, Mail, Phone, Home, Award, FileText, Star, Settings } from "lu
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSchool } from "@/hooks/useSchool";
+import { PrintButton } from "@/components/ui/print-button";
 import CourseCard from "@/components/dashboard/CourseCard";
 
 const InstructorProfile = () => {
@@ -172,14 +173,17 @@ const InstructorProfile = () => {
   }
   
   return (
-    <main className="flex-1 overflow-y-auto py-6 px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <main id="instructorProfileContent" className="flex-1 overflow-y-auto py-6 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-[#0A2463]">{instructor.name}</h1>
-        <Link href="/instructors">
-          <Button variant="outline" className="border-[#0A2463] text-[#0A2463]">
-            Back to Instructors
-          </Button>
-        </Link>
+        <div className="flex space-x-2">
+          <PrintButton contentId="instructorProfileContent" />
+          <Link href="/instructors">
+            <Button variant="outline" className="border-[#0A2463] text-[#0A2463]">
+              Back to Instructors
+            </Button>
+          </Link>
+        </div>
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

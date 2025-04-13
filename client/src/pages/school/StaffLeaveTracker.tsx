@@ -475,6 +475,34 @@ export default function StaffLeaveTracker() {
                   
                   <FormField
                     control={form.control}
+                    name="leaveType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Leave Type</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select leave type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="PTO">PTO</SelectItem>
+                            <SelectItem value="R&R">R&R</SelectItem>
+                            <SelectItem value="Paternity">Paternity</SelectItem>
+                            <SelectItem value="Bereavement">Bereavement</SelectItem>
+                            <SelectItem value="Negative PTO">Negative PTO</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
                     name="destination"
                     render={({ field }) => (
                       <FormItem>
@@ -577,6 +605,7 @@ export default function StaffLeaveTracker() {
               <TableRow>
                 <TableHead>NAME</TableHead>
                 <TableHead>EMPLOYEE ID</TableHead>
+                <TableHead>LEAVE TYPE</TableHead>
                 <TableHead>PTO</TableHead>
                 <TableHead>R&R</TableHead>
                 <TableHead>DESTINATION</TableHead>
@@ -605,6 +634,7 @@ export default function StaffLeaveTracker() {
                   <TableRow key={leave.id}>
                     <TableCell className="font-medium">{leave.instructorName}</TableCell>
                     <TableCell>INST-{leave.instructorId.toString().padStart(4, '0')}</TableCell>
+                    <TableCell>{leave.leaveType || 'PTO'}</TableCell>
                     <TableCell>{leave.ptodays} days</TableCell>
                     <TableCell>{leave.rrdays} days</TableCell>
                     <TableCell>{leave.destination}</TableCell>
