@@ -17,7 +17,9 @@ import {
   TrendingUp,
   FileText,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Plane,
+  Clock
 } from "lucide-react";
 import { PrintButton } from "@/components/ui/print-button";
 import { useSchool } from "@/hooks/useSchool";
@@ -98,6 +100,42 @@ const Reports = () => {
     { month: 'Oct', knfa: 95, nfsEast: 92, nfsWest: 92 },
     { month: 'Nov', knfa: 94, nfsEast: 94, nfsWest: 93 },
     { month: 'Dec', knfa: 95, nfsEast: 96, nfsWest: 94 }
+  ];
+  
+  // Staff leave data
+  const leaveTypeData = [
+    { name: 'PTO/R&R', value: 48, fill: '#0A2463' },
+    { name: 'Paternity', value: 12, fill: '#4CB944' },
+    { name: 'Bereavement', value: 8, fill: '#FF8811' },
+    { name: 'Negative PTO', value: 4, fill: '#E63946' }
+  ];
+  
+  const leaveBySchoolData = [
+    { name: 'KNFA', pto: 16, paternity: 4, bereavement: 3, negativePto: 1 },
+    { name: 'NFS East', pto: 14, paternity: 5, bereavement: 2, negativePto: 1 },
+    { name: 'NFS West', pto: 18, paternity: 3, bereavement: 3, negativePto: 2 }
+  ];
+  
+  const leaveMonthlyTrendsData = [
+    { month: 'Jan', count: 4 },
+    { month: 'Feb', count: 6 },
+    { month: 'Mar', count: 8 },
+    { month: 'Apr', count: 5 },
+    { month: 'May', count: 7 },
+    { month: 'Jun', count: 12 },
+    { month: 'Jul', count: 9 },
+    { month: 'Aug', count: 6 },
+    { month: 'Sep', count: 5 },
+    { month: 'Oct', count: 7 },
+    { month: 'Nov', count: 8 },
+    { month: 'Dec', count: 15 }
+  ];
+  
+  const leaveDurationData = [
+    { duration: '1-3 days', count: 28, fill: '#63CAFF' },
+    { duration: '4-7 days', count: 32, fill: '#0A2463' },
+    { duration: '8-14 days', count: 10, fill: '#4CB944' },
+    { duration: '15+ days', count: 2, fill: '#FF8811' }
   ];
 
   return (
@@ -237,6 +275,10 @@ const Reports = () => {
           <TabsTrigger className="data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-sm" value="evaluations">
             <Award className="h-4 w-4 mr-2" />
             Staff Evaluations
+          </TabsTrigger>
+          <TabsTrigger className="data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-sm" value="staffLeave">
+            <Plane className="h-4 w-4 mr-2" />
+            Staff Leave
           </TabsTrigger>
           <TabsTrigger className="data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-sm" value="trends">
             <TrendingUp className="h-4 w-4 mr-2" />
