@@ -24,38 +24,109 @@ import {
 } from "@/components/ui/select";
 import { Calendar } from '@/components/ui/calendar';
 import { useState, useEffect } from 'react';
-import { PlusCircle, Calendar as CalendarIcon, FileText } from 'lucide-react';
+import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2 } from 'lucide-react';
 import { useSchool } from '@/hooks/useSchool';
 import { format } from 'date-fns';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { queryClient, apiRequest } from '@/lib/queryClient';
+
+// Define the interface for staff leave data from API
+interface StaffLeave {
+  id: number;
+  instructorId: number;
+  instructorName: string;
+  startDate: string;
+  endDate: string;
+  returnDate: string;
+  ptodays: number;
+  rrdays: number;
+  destination: string;
+  status: string;
+  comments?: string;
+  approvedBy?: number;
+  schoolId: number;
+}
+
+// Define the interface for the form data
+interface LeaveFormData {
+  instructorId: number;
+  startDate: string;
+  endDate: string;
+  returnDate: string;
+  ptodays: number;
+  rrdays: number;
+  destination: string;
+  status: string;
+  comments?: string;
+  approvedBy?: number;
+}
 
 export default function StaffLeaveTracker() {
   const params = useParams();
   const { schoolCode } = params;
-  const { setSelectedSchool, schools } = useSchool();
-  
-  // Set the selected school based on the schoolCode from the URL
-  useEffect(() => {
-    if (schoolCode) {
-      setSelectedSchool(schoolCode);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [schoolCode]);
+  const { schools, selectSchool } = useSchool();
   
   // Find the current school from all schools
   const currentSchool = schools.find(school => school.code === schoolCode);
+  
+  // Set the selected school based on the schoolCode from the URL
+  useEffect(() => {
+    if (currentSchool) {
+      selectSchool(currentSchool);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentSchool, schoolCode]);
   
   const [selectedMonth, setSelectedMonth] = useState<string>(format(new Date(), 'MMMM'));
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   
-  // Sample leave data with requested format
-  const leaveData = [
-    { id: 1, name: "John Doe", employeeId: "EMP001", pto: "10 days", rr: "15 days", destination: "London, UK", return: "2024-04-10" },
-    { id: 2, name: "Michael Wilson", employeeId: "EMP002", pto: "5 days", rr: "10 days", destination: "Dubai, UAE", return: "2024-04-15" },
-    { id: 3, name: "Robert Johnson", employeeId: "EMP003", pto: "7 days", rr: "12 days", destination: "Paris, France", return: "2024-04-25" },
-    { id: 4, name: "William Brown", employeeId: "EMP004", pto: "3 days", rr: "8 days", destination: "Tokyo, Japan", return: "2024-05-03" },
-    { id: 5, name: "James Smith", employeeId: "EMP005", pto: "12 days", rr: "18 days", destination: "Sydney, Australia", return: "2024-05-15" },
-  ];
+  // Fetch staff leave data from API
+  const { 
+    data: leaveRecords = [], 
+    isLoading, 
+    error 
+  } = useQuery<StaffLeave[]>({
+    queryKey: ['/api/staff-leave', currentSchool?.id],
+    enabled: !!currentSchool?.id,
+  });
+  
+  // Filter leave records by selected school
+  const schoolLeaveRecords = currentSchool 
+    ? leaveRecords.filter(record => record.schoolId === currentSchool.id)
+    : leaveRecords;
+  
+  // Create leave record mutation
+  const createLeaveMutation = useMutation({
+    mutationFn: async (newLeave: LeaveFormData) => {
+      const res = await apiRequest('POST', '/api/staff-leave', newLeave);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/staff-leave'] });
+    }
+  });
+  
+  // Update leave record mutation
+  const updateLeaveMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number, data: Partial<LeaveFormData> }) => {
+      const res = await apiRequest('PATCH', `/api/staff-leave/${id}`, data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/staff-leave'] });
+    }
+  });
+  
+  // Delete leave record mutation
+  const deleteLeaveMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest('DELETE', `/api/staff-leave/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/staff-leave'] });
+    }
+  });
   
   const months = [
     "January", "February", "March", "April", "May", "June", 
@@ -142,22 +213,39 @@ export default function StaffLeaveTracker() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {leaveData.map((leave) => (
-                <TableRow key={leave.id}>
-                  <TableCell className="font-medium">{leave.name}</TableCell>
-                  <TableCell>{leave.employeeId}</TableCell>
-                  <TableCell>{leave.pto}</TableCell>
-                  <TableCell>{leave.rr}</TableCell>
-                  <TableCell>{leave.destination}</TableCell>
-                  <TableCell>{leave.return}</TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">View</Button>
-                      <Button variant="outline" size="sm">Edit</Button>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    <div className="flex items-center justify-center">
+                      <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                      <span>Loading leave records...</span>
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : schoolLeaveRecords.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8">
+                    No leave records found for this school. Add a new leave request using the button above.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                schoolLeaveRecords.map((leave) => (
+                  <TableRow key={leave.id}>
+                    <TableCell className="font-medium">{leave.instructorName}</TableCell>
+                    <TableCell>INST-{leave.instructorId.toString().padStart(4, '0')}</TableCell>
+                    <TableCell>{leave.ptodays} days</TableCell>
+                    <TableCell>{leave.rrdays} days</TableCell>
+                    <TableCell>{leave.destination}</TableCell>
+                    <TableCell>{format(new Date(leave.returnDate), 'yyyy-MM-dd')}</TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button variant="outline" size="sm">View</Button>
+                        <Button variant="outline" size="sm">Edit</Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
