@@ -706,7 +706,8 @@ export default function StaffLeaveTracker() {
         </div>
       </div>
       
-      <Card id="leaveTrackerContent">
+      {/* Main card with table for display on screen */}
+      <Card>
         <CardHeader>
           <CardTitle>Staff Leave Records</CardTitle>
           <CardDescription>
@@ -822,6 +823,51 @@ export default function StaffLeaveTracker() {
         </CardContent>
       </Card>
 
+      {/* Hidden table specifically formatted for printing */}
+      <div id="leaveTrackerContent" className="hidden print:block mt-8">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold">{currentSchool?.name} - Staff Leave Records</h1>
+          <p className="text-sm text-gray-500">Generated on {format(new Date(), 'MMMM d, yyyy')}</p>
+        </div>
+
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b-2 border-gray-300">
+              <th className="p-2 text-left">Instructor</th>
+              <th className="p-2 text-left">Employee ID</th>
+              <th className="p-2 text-left">Leave Type</th>
+              <th className="p-2 text-right">PTO Days</th>
+              <th className="p-2 text-right">R&R Days</th>
+              <th className="p-2 text-left">Destination</th>
+              <th className="p-2 text-left">Start Date</th>
+              <th className="p-2 text-left">End Date</th>
+              <th className="p-2 text-left">Return Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {schoolLeaveRecords.map((leave, index) => (
+              <tr key={leave.id} className={index % 2 === 0 ? 'bg-gray-50' : ''}>
+                <td className="p-2 border-b border-gray-200">{leave.instructorName}</td>
+                <td className="p-2 border-b border-gray-200">{leave.employeeId || `INST-${leave.instructorId.toString().padStart(4, '0')}`}</td>
+                <td className="p-2 border-b border-gray-200">{leave.leaveType || 'PTO'}</td>
+                <td className="p-2 border-b border-gray-200 text-right">{leave.ptodays} days</td>
+                <td className="p-2 border-b border-gray-200 text-right">{leave.rrdays} days</td>
+                <td className="p-2 border-b border-gray-200">{leave.destination}</td>
+                <td className="p-2 border-b border-gray-200">{format(new Date(leave.startDate), 'MMM d, yyyy')}</td>
+                <td className="p-2 border-b border-gray-200">{format(new Date(leave.endDate), 'MMM d, yyyy')}</td>
+                <td className="p-2 border-b border-gray-200">{format(new Date(leave.returnDate), 'MMM d, yyyy')}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        
+        <div className="mt-8 text-sm">
+          <p>Total Records: {schoolLeaveRecords.length}</p>
+          <p className="mt-4">Authorized by: ___________________________</p>
+          <p className="mt-4">Date: ___________________________</p>
+        </div>
+      </div>
+
       {/* View Leave Dialog */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">
@@ -834,10 +880,10 @@ export default function StaffLeaveTracker() {
           
           {selectedLeave && (
             <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
+              <div className="border p-4 rounded-md bg-gray-50">
+                <div className="mb-2">
                   <h4 className="text-sm font-medium">Instructor</h4>
-                  <p className="text-sm">{selectedLeave.instructorName}</p>
+                  <p className="text-sm font-bold">{selectedLeave.instructorName}</p>
                 </div>
                 <div>
                   <h4 className="text-sm font-medium">Employee ID</h4>
