@@ -654,6 +654,211 @@ const Reports = () => {
           </div>
         </TabsContent>
         
+        <TabsContent value="staffLeave">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-100 rounded-full">
+                      <Plane className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-[#0A2463]">Leave Types Distribution</CardTitle>
+                      <CardDescription>
+                        Breakdown of leave requests by category
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <Filter className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>All Schools</DropdownMenuItem>
+                      <DropdownMenuItem>KNFA</DropdownMenuItem>
+                      <DropdownMenuItem>NFS East</DropdownMenuItem>
+                      <DropdownMenuItem>NFS West</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </CardHeader>
+              <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart margin={{ top: 20, right: 30, left: 20, bottom: 25 }}>
+                      <Pie
+                        data={leaveTypeData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {leaveTypeData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        formatter={(value) => [`${value} requests`, '']}
+                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                      />
+                      <Legend />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-white border-b border-green-100">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-green-100 rounded-full">
+                      <Clock className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-green-800">Leave Duration Distribution</CardTitle>
+                      <CardDescription>
+                        Analysis of leave request durations
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="sm" className="text-green-700 hover:text-green-900 hover:bg-green-50">
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-green-700 hover:text-green-900 hover:bg-green-50">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="h-80 bg-gradient-to-b from-green-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-green-100 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={leaveDurationData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                      <XAxis dataKey="duration" tick={{ fontSize: 12 }} />
+                      <YAxis tick={{ fontSize: 12 }} />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                        formatter={(value) => [`${value} requests`, '']}
+                      />
+                      <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                      <Bar dataKey="count" name="Number of Requests" radius={[4, 4, 0, 0]}>
+                        {leaveDurationData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <Card className="shadow-md hover:shadow-lg transition-all duration-300 mb-6">
+            <CardHeader className="bg-gradient-to-r from-amber-50 to-white border-b border-amber-100">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-amber-100 rounded-full">
+                    <LineChart className="h-4 w-4 text-amber-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-amber-800">Monthly Leave Trends</CardTitle>
+                    <CardDescription>
+                      Track staff leave requests throughout the year
+                    </CardDescription>
+                  </div>
+                </div>
+                <Button variant="outline" size="sm" className="border-amber-200 hover:bg-amber-50 text-amber-700">
+                  <Download className="mr-2 h-4 w-4" /> Export Data
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="h-80 bg-gradient-to-b from-amber-50 to-white py-3 px-1">
+              <div className="w-full h-full rounded-lg bg-white shadow-inner border border-amber-100 p-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={leaveMonthlyTrendsData}
+                    margin={{ top: 20, right: 30, left: 0, bottom: 25 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
+                    <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                    <YAxis tick={{ fontSize: 12 }} />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                      formatter={(value) => [`${value} requests`, '']} 
+                    />
+                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                    <Area
+                      type="monotone"
+                      dataKey="count"
+                      name="Leave Requests"
+                      stroke="#FF8811"
+                      fill="#FF8811"
+                      fillOpacity={0.3}
+                      activeDot={{ r: 6, strokeWidth: 2 }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="shadow-md hover:shadow-lg transition-all duration-300 mb-6">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-blue-100 rounded-full">
+                    <BarChart2 className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-[#0A2463]">Leave by School & Type</CardTitle>
+                    <CardDescription>
+                      Compare leave distribution across schools
+                    </CardDescription>
+                  </div>
+                </div>
+                <Button variant="outline" size="sm" className="border-blue-200 hover:bg-blue-50 text-blue-700">
+                  <Download className="mr-2 h-4 w-4" /> Export Data
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
+              <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={leaveBySchoolData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                    <YAxis tick={{ fontSize: 12 }} />
+                    <Tooltip
+                      contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                      formatter={(value) => [`${value} requests`, '']}
+                    />
+                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                    <Bar dataKey="pto" name="PTO/R&R" fill="#0A2463" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="paternity" name="Paternity" fill="#4CB944" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="bereavement" name="Bereavement" fill="#FF8811" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="negativePto" name="Negative PTO" fill="#E63946" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
         <TabsContent value="trends">
           <Card className="shadow-md hover:shadow-lg transition-all duration-300 mb-6">
             <CardHeader className="bg-gradient-to-r from-indigo-50 to-white border-b border-indigo-100">
@@ -734,6 +939,7 @@ const Reports = () => {
                   {reportType === "performance" && "Key insights from the performance report"}
                   {reportType === "attendance" && "Key insights from the attendance report"}
                   {reportType === "evaluations" && "Key insights from the staff evaluations"}
+                  {reportType === "staffLeave" && "Key insights from the staff leave data"}
                   {reportType === "trends" && "Key insights from the trends analysis"}
                 </CardDescription>
               </div>
@@ -751,6 +957,7 @@ const Reports = () => {
                   {reportType === "performance" && "Overall performance has improved by 12% since last quarter."}
                   {reportType === "attendance" && "Attendance rate is 96%, which is above the target of 90%."}
                   {reportType === "evaluations" && "85% of instructors received satisfactory or above ratings."}
+                  {reportType === "staffLeave" && "PTO/R&R is the most common leave type at 48 requests (67% of total)."}
                   {reportType === "trends" && "Steady improvement in test scores over the past 6 months."}
                 </span>
               </li>
@@ -764,6 +971,7 @@ const Reports = () => {
                   {reportType === "performance" && "NFS East shows the highest improvement in test scores."}
                   {reportType === "attendance" && "Technical Training courses have the lowest attendance rate."}
                   {reportType === "evaluations" && "Quarterly evaluations are completed for 95% of staff."}
+                  {reportType === "staffLeave" && "December and June show highest leave requests - 15 and 12 respectively."}
                   {reportType === "trends" && "Course enrollment has increased by 23% year over year."}
                 </span>
               </li>
@@ -779,6 +987,7 @@ const Reports = () => {
                   {reportType === "performance" && "Technical Training course pass rates need improvement."}
                   {reportType === "attendance" && "Action needed for students with attendance below 80%."}
                   {reportType === "evaluations" && "3 instructors require performance improvement plans."}
+                  {reportType === "staffLeave" && "Negative PTO requests increased by 33% since last quarter."}
                   {reportType === "trends" && "Aviation course enrollment has declined in Q3."}
                 </span>
               </li>
@@ -808,6 +1017,7 @@ const Reports = () => {
                   {reportType === "performance" && "Schedule additional support sessions for Technical Training courses."}
                   {reportType === "attendance" && "Implement attendance incentives for low attendance courses."}
                   {reportType === "evaluations" && "Conduct focused training for instructors needing improvement."}
+                  {reportType === "staffLeave" && "Optimize staffing levels during December and June peak leave periods."}
                   {reportType === "trends" && "Revise Aviation course curriculum to increase enrollment."}
                 </span>
               </li>
