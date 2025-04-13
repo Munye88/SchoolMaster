@@ -1,8 +1,8 @@
 import { Instructor } from "@shared/schema";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Phone, School, Award, User } from "lucide-react";
+import { StandardInstructorAvatar } from "./StandardInstructorAvatar";
 
 interface InstructorProfileCardProps {
   instructor: Instructor;
@@ -20,15 +20,6 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
     });
   };
 
-  // Get initials for avatar
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(part => part[0])
-      .join('')
-      .toUpperCase();
-  };
-
   // Get color class based on nationality
   const getNationalityColor = (nationality: string) => {
     switch (nationality) {
@@ -43,57 +34,31 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
     }
   };
   
-  // Get color class based on school
-  const getSchoolColorClass = (schoolName: string) => {
+  // Get color for school
+  const getSchoolColor = (schoolName: string) => {
     if (schoolName.includes("KFNA")) {
-      return "bg-[#0A2463]"; // Blue for KFNA
+      return "#0A2463"; // Blue for KFNA
     } else if (schoolName.includes("NFS East")) {
-      return "bg-[#2A7F46]"; // Green for NFS East
+      return "#2A7F46"; // Green for NFS East
     } else if (schoolName.includes("NFS West")) {
-      return "bg-[#E86A33]"; // Orange for NFS West
+      return "#E86A33"; // Orange for NFS West
     }
-    return "bg-[#0A2463]"; // Default blue
+    return "#0A2463"; // Default blue
   };
 
-  const headerBgColor = getSchoolColorClass(schoolName);
-
-  // Generate a unique cache-busting URL for images
-  const getCacheBustedUrl = (url: string) => {
-    if (!url) return '';
-    // Create a timestamp with millisecond precision for better cache busting
-    const timestamp = new Date().getTime();
-    const randomString = Math.random().toString(36).substring(2, 8);
-    // The format ensures maximum cache-busting effectiveness
-    return `${url}?v=${timestamp}-${randomString}-${instructor.id}`;
-  };
+  const headerBgColor = `bg-[${getSchoolColor(schoolName)}]`;
+  const schoolColor = getSchoolColor(schoolName);
 
   return (
     <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
       <CardHeader className={`${headerBgColor} text-white pb-2 flex flex-row items-center`}>
-        <div className="h-20 w-20 mr-4 rounded-full border-4 border-white overflow-hidden shadow-xl bg-[#0A2463] flex items-center justify-center">
-          {instructor.imageUrl ? (
-            <img 
-              src={getCacheBustedUrl(instructor.imageUrl)} 
-              alt={instructor.name}
-              className="object-cover h-full w-full"
-              onError={(e) => {
-                // Hide the img element if it fails to load
-                e.currentTarget.style.display = 'none';
-                // Create initials fallback with consistent styling
-                const parent = e.currentTarget.parentElement;
-                if (parent) {
-                  const fallback = document.createElement('div');
-                  fallback.className = 'h-full w-full flex items-center justify-center text-white font-bold text-xl';
-                  fallback.innerText = getInitials(instructor.name);
-                  parent.appendChild(fallback);
-                }
-              }}
-            />
-          ) : (
-            <div className="h-full w-full flex items-center justify-center text-white font-bold text-xl">
-              {getInitials(instructor.name)}
-            </div>
-          )}
+        <div className="mr-4">
+          <StandardInstructorAvatar
+            imageUrl={instructor.imageUrl}
+            name={instructor.name}
+            size="md"
+            schoolColor={schoolColor}
+          />
         </div>
         <div>
           <h2 className="text-xl font-bold">{instructor.name}</h2>

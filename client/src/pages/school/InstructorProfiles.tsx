@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { InstructorProfileCard } from "@/components/instructors/InstructorProfileCard";
+import { StandardInstructorAvatar } from "@/components/instructors/StandardInstructorAvatar";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
@@ -67,6 +68,18 @@ const SchoolInstructorProfiles = () => {
       return "bg-[#E86A33]"; // Orange for NFS West
     }
     return "bg-[#0A2463]"; // Default blue
+  };
+  
+  // Get color value for school
+  const getSchoolColor = (schoolName: string) => {
+    if (schoolName.includes("KFNA")) {
+      return "#0A2463"; // Blue for KFNA
+    } else if (schoolName.includes("NFS East")) {
+      return "#2A7F46"; // Green for NFS East
+    } else if (schoolName.includes("NFS West")) {
+      return "#E86A33"; // Orange for NFS West
+    }
+    return "#0A2463"; // Default blue
   };
   
   // Find the current school from the school code
@@ -274,29 +287,12 @@ const SchoolInstructorProfiles = () => {
               filteredInstructors.map((instructor) => (
                 <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 shadow-md">
                   <div className={`h-44 ${getSchoolColorClass(currentSchool?.name || '')} flex items-center justify-center`}>
-                    {instructor.imageUrl ? (
-                      <div className="h-36 w-36 rounded-full border-4 border-white overflow-hidden shadow-xl bg-[#0A2463] flex items-center justify-center">
-                        <img 
-                          src={`${instructor.imageUrl}?v=${new Date().getTime()}-${Math.random().toString(36).substring(2, 8)}-${instructor.id}`} 
-                          alt={instructor.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            // Hide the img element if it fails to load and show initials instead
-                            const target = e.currentTarget;
-                            const parent = target.parentElement;
-                            if (parent) {
-                              parent.innerHTML = `<div class="h-full w-full flex items-center justify-center text-white font-bold text-2xl">
-                                ${instructor.name.split(' ').map(n => n[0]).join('')}
-                              </div>`;
-                            }
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <div className="h-36 w-36 rounded-full border-4 border-white bg-[#0A2463] flex items-center justify-center text-white font-bold text-2xl shadow-xl">
-                        {instructor.name.split(' ').map(n => n[0]).join('')}
-                      </div>
-                    )}
+                    <StandardInstructorAvatar
+                      imageUrl={instructor.imageUrl}
+                      name={instructor.name}
+                      size="xl"
+                      schoolColor={getSchoolColor(currentSchool?.name || '')}
+                    />
                   </div>
                   <CardContent className="pt-4">
                     <h3 className="font-bold text-lg mb-1">{instructor.name}</h3>
