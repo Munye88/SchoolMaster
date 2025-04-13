@@ -47,7 +47,7 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useState, useEffect, useRef } from 'react';
-import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2 } from 'lucide-react';
+import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer } from 'lucide-react';
 import { useSchool } from '@/hooks/useSchool';
 import { format, addDays } from 'date-fns';
 import { useQuery, useMutation } from '@tanstack/react-query';
