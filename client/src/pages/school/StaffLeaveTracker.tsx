@@ -45,8 +45,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Calendar } from '@/components/ui/calendar';
-import { useState, useEffect } from 'react';
-import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useState, useEffect, useRef } from 'react';
+import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2 } from 'lucide-react';
 import { useSchool } from '@/hooks/useSchool';
 import { format, addDays } from 'date-fns';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -86,6 +87,7 @@ const leaveFormSchema = z.object({
     required_error: "Instructor is required",
     invalid_type_error: "Instructor is required",
   }),
+  employeeId: z.string().optional(),
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().min(1, "End date is required"),
   returnDate: z.string().min(1, "Return date is required"),
@@ -101,6 +103,7 @@ const leaveFormSchema = z.object({
   destination: z.string().min(1, "Destination is required"),
   status: z.string().min(1, "Status is required"),
   comments: z.string().optional(),
+  attachmentUrl: z.string().optional(),
 });
 
 type LeaveFormValues = z.infer<typeof leaveFormSchema>;
@@ -164,6 +167,7 @@ export default function StaffLeaveTracker() {
     resolver: zodResolver(leaveFormSchema),
     defaultValues: {
       instructorId: 0,
+      employeeId: '',
       startDate: format(new Date(), 'yyyy-MM-dd'),
       endDate: format(new Date(), 'yyyy-MM-dd'),
       returnDate: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
@@ -173,6 +177,7 @@ export default function StaffLeaveTracker() {
       destination: '',
       status: 'Pending',
       comments: '',
+      attachmentUrl: '',
     },
   });
   
@@ -379,6 +384,74 @@ export default function StaffLeaveTracker() {
                         <FormMessage />
                       </FormItem>
                     )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="employeeId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Employee ID</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter employee ID"
+                            {...field}
+                            value={field.value || ''}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Enter the instructor's employee ID
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="attachmentUrl"
+                    render={({ field }) => {
+                      const fileInputRef = useRef<HTMLInputElement>(null);
+                      return (
+                        <FormItem>
+                          <FormLabel>Leave Form Attachment</FormLabel>
+                          <FormControl>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="file"
+                                className="hidden"
+                                ref={fileInputRef}
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    // Handle file upload here - this would be connected to your API
+                                    // For now, just storing the file name
+                                    field.onChange(file.name);
+                                  }
+                                }}
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => fileInputRef.current?.click()}
+                              >
+                                <Paperclip className="h-4 w-4 mr-2" />
+                                Attach Leave Form
+                              </Button>
+                              {field.value && (
+                                <span className="text-sm text-gray-500">
+                                  {field.value.split('/').pop()}
+                                </span>
+                              )}
+                            </div>
+                          </FormControl>
+                          <FormDescription>
+                            Upload a copy of the leave form (PDF or image)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )
+                    }}
                   />
                   
                   <div className="grid grid-cols-3 gap-4">
