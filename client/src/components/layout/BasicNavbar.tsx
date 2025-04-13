@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { 
   Home, School, BookOpen, GraduationCap, ListChecks, BarChart2, Settings, Search, Bell,
   LogOut, LogIn, UserCircle, BookText, BriefcaseBusiness, MessageSquare, AlertTriangle, 
-  BrainCircuit, Users, Lightbulb, FileText
+  BrainCircuit, Users, Lightbulb, FileText, Award
 } from "lucide-react";
 import govcioLogo from "../../assets/govcio-logo.png";
 
@@ -437,6 +437,15 @@ const BasicNavbar = () => {
                       Training Guide Classroom Evaluation
                     </Link>
                     
+                    <Link 
+                      href="/administration/instructor-recognition"
+                      onClick={() => setShowAdminLinks(false)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                    >
+                      <Award className="h-4 w-4 mr-2 text-amber-600" />
+                      Instructor Recognition
+                    </Link>
+
                     <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 text-xs font-medium uppercase text-gray-500 mt-2">
                       Management
                     </div>

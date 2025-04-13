@@ -12,6 +12,7 @@ import Documents from "@/pages/Documents";
 import Administration from "@/pages/Administration";
 import TrainingDevelopment from "@/pages/TrainingDevelopment";
 import DLI from "@/pages/DLI";
+import InstructorRecognition from "@/pages/InstructorRecognition";
 import BasicNavbar from "@/components/layout/BasicNavbar";
 import SchoolInstructorProfiles from "./pages/school/InstructorProfiles";
 import SchoolTimetable from "./pages/school/Timetable";
@@ -75,6 +76,7 @@ function Router() {
           <ProtectedRoute path="/administration/employee-handbook" component={Administration} />
           <ProtectedRoute path="/administration/performance-policy" component={Administration} />
           <ProtectedRoute path="/administration/classroom-evaluation" component={Administration} />
+          <ProtectedRoute path="/administration/instructor-recognition" component={InstructorRecognition} />
           
           {/* Training & Development routes */}
           <ProtectedRoute path="/training-development" component={TrainingDevelopment} />
