@@ -589,6 +589,7 @@ export default function ManageInstructors() {
                                     name={createForm.getValues("name") || "New Instructor"}
                                     size="lg"
                                     schoolColor={getSchoolColor(getSchoolName(createForm.getValues("schoolId")))}
+                                    key={`create-preview-${Date.now()}`} // Force re-render when field.value changes
                                   />
                                 </div>
                               </div>
@@ -925,6 +926,7 @@ export default function ManageInstructors() {
                                   name={editForm.getValues("name") || "Instructor"}
                                   size="lg"
                                   schoolColor={getSchoolColor(getSchoolName(editForm.getValues("schoolId")))}
+                                  key={`edit-preview-${Date.now()}`} // Force re-render when field.value changes
                                 />
                               </div>
                             </div>

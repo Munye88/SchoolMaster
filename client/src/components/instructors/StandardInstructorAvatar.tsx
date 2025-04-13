@@ -13,13 +13,30 @@ export function StandardInstructorAvatar({
   size = 'md',
   schoolColor = '#0A2463' // Default blue for KFNA
 }: StandardInstructorAvatarProps) {
-  const [cacheBustKey, setCacheBustKey] = useState<string>('');
+  const [imageError, setImageError] = useState(false);
+  const [imageSource, setImageSource] = useState<string | null>(null);
   
-  // Generate a new cache bust key on mount and when imageUrl changes
+  // Process the image URL when it changes
   useEffect(() => {
-    const timestamp = new Date().getTime();
-    const randomString = Math.random().toString(36).substring(2, 8);
-    setCacheBustKey(`?v=${timestamp}-${randomString}`);
+    if (!imageUrl) {
+      setImageSource(null);
+      setImageError(false);
+      return;
+    }
+    
+    // If it's already a data URL (base64), use it directly
+    if (imageUrl.startsWith('data:')) {
+      setImageSource(imageUrl);
+    } else {
+      // For regular URLs, add a cache-busting parameter
+      const timestamp = new Date().getTime();
+      const randomString = Math.random().toString(36).substring(2, 8);
+      const cacheBustKey = `?v=${timestamp}-${randomString}`;
+      setImageSource(`${imageUrl}${cacheBustKey}`);
+    }
+    
+    // Reset error state when imageUrl changes
+    setImageError(false);
   }, [imageUrl]);
   
   // Get initials from name
@@ -39,34 +56,33 @@ export function StandardInstructorAvatar({
     xl: "h-36 w-36 text-3xl",
   };
   
+  // Font size for initials
+  const initialsFontSize = {
+    sm: "text-base",
+    md: "text-xl",
+    lg: "text-2xl",
+    xl: "text-3xl",
+  };
+  
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    console.error(`Image failed to load for ${name}:`, e);
+    setImageError(true);
+  };
+  
   return (
     <div 
       className={`${sizeClasses[size]} rounded-full border-4 border-white overflow-hidden shadow-xl flex items-center justify-center`}
       style={{ backgroundColor: schoolColor }}
     >
-      {imageUrl ? (
+      {imageSource && !imageError ? (
         <img
-          src={`${imageUrl}${cacheBustKey}`}
+          src={imageSource}
           alt={name}
           className="h-full w-full object-cover"
-          onError={(e) => {
-            // If image fails to load, show initials instead
-            e.currentTarget.style.display = 'none';
-            const parent = e.currentTarget.parentElement;
-            if (parent) {
-              // Create fallback with initials
-              const fallback = document.createElement('div');
-              fallback.className = 'h-full w-full flex items-center justify-center text-white font-bold';
-              fallback.style.fontSize = size === 'sm' ? '1rem' : 
-                                        size === 'md' ? '1.25rem' : 
-                                        size === 'lg' ? '1.5rem' : '1.875rem';
-              fallback.innerText = getInitials(name);
-              parent.appendChild(fallback);
-            }
-          }}
+          onError={handleImageError}
         />
       ) : (
-        <div className="h-full w-full flex items-center justify-center text-white font-bold">
+        <div className={`h-full w-full flex items-center justify-center text-white font-bold ${initialsFontSize[size]}`}>
           {getInitials(name)}
         </div>
       )}
