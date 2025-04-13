@@ -549,10 +549,16 @@ export default function ManageInstructors() {
                                   onChange={(e) => {
                                     const file = e.target.files?.[0];
                                     if (file) {
+                                      console.log("File selected:", file.name, file.type, file.size);
                                       const reader = new FileReader();
                                       reader.onload = (event) => {
                                         const base64Image = event.target?.result as string;
+                                        console.log("Base64 image generated:", 
+                                          base64Image ? `${base64Image.substring(0, 50)}... (length: ${base64Image.length})` : "None");
                                         field.onChange(base64Image);
+                                      };
+                                      reader.onerror = (error) => {
+                                        console.error("Error reading file:", error);
                                       };
                                       reader.readAsDataURL(file);
                                     }
@@ -881,9 +887,16 @@ export default function ManageInstructors() {
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
+                                  console.log("Edit form - File selected:", file.name, file.type, file.size);
                                   const reader = new FileReader();
                                   reader.onload = (event) => {
-                                    field.onChange(event.target?.result as string);
+                                    const base64Image = event.target?.result as string;
+                                    console.log("Edit form - Base64 image generated:", 
+                                      base64Image ? `${base64Image.substring(0, 50)}... (length: ${base64Image.length})` : "None");
+                                    field.onChange(base64Image);
+                                  };
+                                  reader.onerror = (error) => {
+                                    console.error("Error reading file:", error);
                                   };
                                   reader.readAsDataURL(file);
                                 }
