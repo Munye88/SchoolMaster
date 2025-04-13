@@ -57,13 +57,16 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
 
   const headerBgColor = getSchoolColorClass(schoolName);
 
+  // Add a key to the image URL to force re-render when it changes
+  const imageKey = `${instructor.id}-${Date.now()}`;
+
   return (
     <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
       <CardHeader className={`${headerBgColor} text-white pb-2 flex flex-row items-center`}>
         <Avatar className="h-20 w-20 mr-4 border-2 border-white shadow-md">
           {instructor.imageUrl ? (
             <img 
-              src={instructor.imageUrl} 
+              src={`${instructor.imageUrl}?key=${imageKey}`} 
               alt={instructor.name}
               className="object-cover h-full w-full"
               onError={(e) => {

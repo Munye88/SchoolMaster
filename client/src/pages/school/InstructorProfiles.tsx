@@ -72,9 +72,11 @@ const SchoolInstructorProfiles = () => {
   // Find the current school from the school code
   const currentSchool = schools.find(school => school.code === schoolCode);
   
-  // Fetch all instructors
+  // Fetch all instructors with a dependency on the school code to ensure refetching when school changes
   const { data: allInstructors = [], isLoading: isLoadingAllInstructors } = useQuery<Instructor[]>({
-    queryKey: ['/api/instructors'],
+    queryKey: ['/api/instructors', schoolCode],
+    refetchOnWindowFocus: true, // Refetch when window regains focus
+    refetchOnMount: true, // Refetch when component mounts
   });
   
   // Filter instructors for the current school
@@ -275,7 +277,7 @@ const SchoolInstructorProfiles = () => {
                     {instructor.imageUrl ? (
                       <div className="h-36 w-36 rounded-full border-4 border-white overflow-hidden shadow-xl">
                         <img 
-                          src={instructor.imageUrl} 
+                          src={`${instructor.imageUrl}?key=${instructor.id}-${Date.now()}`} 
                           alt={instructor.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {

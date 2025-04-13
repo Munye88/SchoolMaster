@@ -5,7 +5,9 @@ import { addColumnsToStaffLeave } from './migrations/add_columns_to_staff_leave'
 import { updateNfsEastInstructors } from './migrations/update_nfs_east_instructors';
 import { updateNfsEastImages } from './migrations/update_nfs_east_images';
 import { updateKfnaInstructors } from './migrations/update_kfna_instructors';
+import { updateKfnaImages } from './migrations/update_kfna_images';
 import { updateNfsWestInstructors } from './migrations/update_nfs_west_instructors';
+import { updateNfsWestImages } from './migrations/update_nfs_west_images';
 
 export async function initDatabase() {
   try {
@@ -52,8 +54,14 @@ export async function initDatabase() {
     // Update KFNA instructors (limit to exactly 20)
     await updateKfnaInstructors();
     
+    // Update KFNA instructor images
+    await updateKfnaImages();
+    
     // Update NFS West instructors (set to exactly 27)
     await updateNfsWestInstructors();
+    
+    // Update NFS West instructor images
+    await updateNfsWestImages();
     
     return true;
   } catch (error) {
