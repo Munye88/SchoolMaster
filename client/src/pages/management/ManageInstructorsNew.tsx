@@ -298,14 +298,14 @@ export default function ManageInstructors() {
         <div className="flex items-center gap-4">
           <div className="w-64">
             <Select 
-              onValueChange={(value) => setSelectedSchoolId(value ? parseInt(value) : null)}
-              value={selectedSchoolId?.toString() || ""}
+              onValueChange={(value) => setSelectedSchoolId(value === "all" ? null : parseInt(value))}
+              value={selectedSchoolId?.toString() || "all"}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Filter by school" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Schools</SelectItem>
+                <SelectItem value="all">All Schools</SelectItem>
                 {schools?.map((school) => (
                   <SelectItem key={school.id} value={school.id.toString()}>
                     {school.name}
