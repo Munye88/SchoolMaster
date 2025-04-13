@@ -58,6 +58,24 @@ import * as z from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { PrintButton } from '@/components/ui/print-button';
 
+// Custom date formatter with ordinal suffix (1st, 2nd, 3rd, etc.)
+function formatWithOrdinal(date: Date): string {
+  const day = date.getDate();
+  const month = date.toLocaleString('default', { month: 'long' });
+  const year = date.getFullYear();
+  
+  let suffix = 'th';
+  if (day % 10 === 1 && day !== 11) {
+    suffix = 'st';
+  } else if (day % 10 === 2 && day !== 12) {
+    suffix = 'nd';
+  } else if (day % 10 === 3 && day !== 13) {
+    suffix = 'rd';
+  }
+  
+  return `${month} ${day}${suffix}, ${year}`;
+}
+
 // Define the interface for staff leave data from API
 interface StaffLeave {
   id: number;
@@ -873,89 +891,93 @@ export default function StaffLeaveTracker() {
           </DialogHeader>
           
           {selectedLeave && (
-            <div className="space-y-4 py-4">
-              <div className="border p-4 rounded-md bg-gray-50">
-                <div className="mb-2">
-                  <h4 className="text-sm font-medium">Instructor</h4>
-                  <p className="text-sm font-bold">{selectedLeave.instructorName}</p>
+            <div className="py-4">
+              {/* Instructor and ID Card */}
+              <div className="bg-gray-50 border border-gray-200 rounded-md p-6 mb-6">
+                <div className="mb-3">
+                  <h4 className="text-base font-medium mb-1">Instructor</h4>
+                  <p className="text-lg font-bold">{selectedLeave.instructorName}</p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium">Employee ID</h4>
-                  <p className="text-sm">{selectedLeave.employeeId || `INST-${selectedLeave.instructorId.toString().padStart(4, '0')}`}</p>
+                  <h4 className="text-base font-medium mb-1">Employee ID</h4>
+                  <p className="text-base">{selectedLeave.employeeId || `INST-${selectedLeave.instructorId.toString().padStart(4, '0')}`}</p>
                 </div>
               </div>
               
-              <div className="grid grid-cols-3 gap-4">
+              {/* Dates Row */}
+              <div className="grid grid-cols-3 gap-6 mb-6">
                 <div>
-                  <h4 className="text-sm font-medium">Start Date</h4>
-                  <p className="text-sm">{format(new Date(selectedLeave.startDate), 'PPP')}</p>
+                  <h4 className="text-base font-medium mb-1">Start Date</h4>
+                  <p className="text-base">{formatWithOrdinal(new Date(selectedLeave.startDate))}</p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium">End Date</h4>
-                  <p className="text-sm">{format(new Date(selectedLeave.endDate), 'PPP')}</p>
+                  <h4 className="text-base font-medium mb-1">End Date</h4>
+                  <p className="text-base">{formatWithOrdinal(new Date(selectedLeave.endDate))}</p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium">Return Date</h4>
-                  <p className="text-sm">{format(new Date(selectedLeave.returnDate), 'PPP')}</p>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <h4 className="text-sm font-medium">Leave Type</h4>
-                  <p className="text-sm">{selectedLeave.leaveType || 'PTO'}</p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium">PTO Days</h4>
-                  <p className="text-sm">{selectedLeave.ptodays} days</p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium">R&R Days</h4>
-                  <p className="text-sm">{selectedLeave.rrdays} days</p>
+                  <h4 className="text-base font-medium mb-1">Return Date</h4>
+                  <p className="text-base">{formatWithOrdinal(new Date(selectedLeave.returnDate))}</p>
                 </div>
               </div>
               
-              <div>
-                <h4 className="text-sm font-medium">Destination</h4>
-                <p className="text-sm">{selectedLeave.destination}</p>
+              {/* Leave Type and Days Row */}
+              <div className="grid grid-cols-3 gap-6 mb-6">
+                <div>
+                  <h4 className="text-base font-medium mb-1">Leave Type</h4>
+                  <p className="text-base">{selectedLeave.leaveType || 'PTO'}</p>
+                </div>
+                <div>
+                  <h4 className="text-base font-medium mb-1">PTO Days</h4>
+                  <p className="text-base">{selectedLeave.ptodays} days</p>
+                </div>
+                <div>
+                  <h4 className="text-base font-medium mb-1">R&R Days</h4>
+                  <p className="text-base">{selectedLeave.rrdays} days</p>
+                </div>
               </div>
               
-              <div>
-                <h4 className="text-sm font-medium">Status</h4>
-                <p className="text-sm">{selectedLeave.status}</p>
+              {/* Destination */}
+              <div className="mb-6">
+                <h4 className="text-base font-medium mb-1">Destination</h4>
+                <p className="text-base">{selectedLeave.destination}</p>
               </div>
               
+              {/* Status */}
+              <div className="mb-6">
+                <h4 className="text-base font-medium mb-1">Status</h4>
+                <p className="text-base">{selectedLeave.status}</p>
+              </div>
+              
+              {/* Comments (if any) */}
               {selectedLeave.comments && (
-                <div>
-                  <h4 className="text-sm font-medium">Comments</h4>
-                  <p className="text-sm">{selectedLeave.comments}</p>
+                <div className="mb-6">
+                  <h4 className="text-base font-medium mb-1">Comments</h4>
+                  <p className="text-base">{selectedLeave.comments}</p>
                 </div>
               )}
               
+              {/* Attachment */}
               <div>
-                <h4 className="text-sm font-medium">Attachment</h4>
-                <div className="flex items-center gap-2 mt-1">
-                  {selectedLeave.attachmentUrl ? (
-                    <>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          // Download or view the attachment
-                          window.open(selectedLeave.attachmentUrl, '_blank');
-                        }}
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        View Attachment
-                      </Button>
-                      <span className="text-sm text-gray-500">
-                        {selectedLeave.attachmentUrl.split('/').pop()}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-sm text-gray-500">No attachment has been uploaded for this leave request.</span>
-                  )}
-                </div>
+                <h4 className="text-base font-medium mb-1">Attachment</h4>
+                {selectedLeave.attachmentUrl ? (
+                  <div className="flex items-center gap-3">
+                    <Button 
+                      variant="outline" 
+                      size="default"
+                      onClick={() => {
+                        window.open(selectedLeave.attachmentUrl, '_blank');
+                      }}
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      View Attachment
+                    </Button>
+                    <span className="text-gray-500">
+                      {selectedLeave.attachmentUrl.split('/').pop()}
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No attachment has been uploaded for this leave request.</p>
+                )}
               </div>
             </div>
           )}
