@@ -57,8 +57,15 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
 
   const headerBgColor = getSchoolColorClass(schoolName);
 
-  // Add a key to the image URL to force re-render when it changes
-  const imageKey = `${instructor.id}-${Date.now()}`;
+  // Generate a unique cache-busting URL for images
+  const getCacheBustedUrl = (url: string) => {
+    if (!url) return '';
+    // Create a timestamp with millisecond precision for better cache busting
+    const timestamp = new Date().getTime();
+    const randomString = Math.random().toString(36).substring(2, 8);
+    // The format ensures maximum cache-busting effectiveness
+    return `${url}?v=${timestamp}-${randomString}-${instructor.id}`;
+  };
 
   return (
     <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
@@ -66,7 +73,7 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
         <Avatar className="h-20 w-20 mr-4 border-2 border-white shadow-md">
           {instructor.imageUrl ? (
             <img 
-              src={`${instructor.imageUrl}?key=${imageKey}`} 
+              src={getCacheBustedUrl(instructor.imageUrl)} 
               alt={instructor.name}
               className="object-cover h-full w-full"
               onError={(e) => {

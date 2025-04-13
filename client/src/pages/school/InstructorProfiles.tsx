@@ -277,7 +277,7 @@ const SchoolInstructorProfiles = () => {
                     {instructor.imageUrl ? (
                       <div className="h-36 w-36 rounded-full border-4 border-white overflow-hidden shadow-xl">
                         <img 
-                          src={`${instructor.imageUrl}?key=${instructor.id}-${Date.now()}`} 
+                          src={`${instructor.imageUrl}?v=${new Date().getTime()}-${Math.random().toString(36).substring(2, 8)}-${instructor.id}`} 
                           alt={instructor.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {

@@ -103,7 +103,14 @@ export default function ManageInstructors() {
     },
     onSuccess: (data) => {
       console.log("📝 Mutation successful, created instructor:", data);
+      // Force invalidate all instructor queries to ensure updates are reflected everywhere
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
+      
+      // Invalidate all school-specific instructor queries too
+      schools?.forEach(school => {
+        queryClient.invalidateQueries({ queryKey: ['/api/instructors', school.code] });
+      });
+      
       setIsCreateDialogOpen(false);
       toast({
         title: "Instructor created",
@@ -143,7 +150,14 @@ export default function ManageInstructors() {
     },
     onSuccess: (data) => {
       console.log("📝 Update mutation successful:", data);
+      // Force invalidate all instructor queries to ensure updates are reflected everywhere
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
+      
+      // Invalidate all school-specific instructor queries too
+      schools?.forEach(school => {
+        queryClient.invalidateQueries({ queryKey: ['/api/instructors', school.code] });
+      });
+      
       setIsEditDialogOpen(false);
       setSelectedInstructor(null);
       toast({
@@ -172,7 +186,14 @@ export default function ManageInstructors() {
       return id;
     },
     onSuccess: () => {
+      // Force invalidate all instructor queries to ensure updates are reflected everywhere
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
+      
+      // Invalidate all school-specific instructor queries too
+      schools?.forEach(school => {
+        queryClient.invalidateQueries({ queryKey: ['/api/instructors', school.code] });
+      });
+      
       toast({
         title: "Instructor deleted",
         description: "The instructor has been deleted successfully."
