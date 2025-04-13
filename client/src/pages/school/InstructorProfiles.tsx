@@ -74,8 +74,18 @@ const SchoolInstructorProfiles = () => {
   console.log("All instructors:", allInstructors.length);
   console.log("School instructors:", schoolInstructors.length);
   
-  // Filter instructors based on search and nationality
+  // Filter instructors based on search, nationality, and exclude archived/non-ELT
   const filteredInstructors = schoolInstructors.filter(instructor => {
+    // Skip archived instructors
+    if (instructor.role === "ARCHIVED") {
+      return false;
+    }
+    
+    // If it's NFS East, only show ELT Instructors
+    if (currentSchool?.code === "NFS_EAST" && instructor.role !== "ELT Instructor") {
+      return false;
+    }
+    
     // Apply nationality filter
     if (selectedView !== "all" && instructor.nationality.toLowerCase() !== selectedView.toLowerCase()) {
       return false;
