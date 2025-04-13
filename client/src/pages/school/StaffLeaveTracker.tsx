@@ -824,48 +824,42 @@ export default function StaffLeaveTracker() {
       </Card>
 
       {/* Hidden table specifically formatted for printing */}
-      <div id="leaveTrackerContent" className="hidden print:block mt-8">
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold">{currentSchool?.name} - Staff Leave Records</h1>
-          <p className="text-sm text-gray-500">Generated on {format(new Date(), 'MMMM d, yyyy')}</p>
+      <div id="leaveTrackerContent" className="hidden print:block mt-8 p-8">
+        <div className="text-center mb-12">
+          <h1 className="text-3xl font-bold mb-4">{currentSchool?.name} - Staff Leave Records</h1>
+          <p className="text-base text-gray-600">Generated on {format(new Date(), 'MMMM d, yyyy')}</p>
         </div>
 
-        <table className="w-full border-collapse">
+        <table className="w-full border-collapse border-spacing-y-4">
           <thead>
-            <tr className="border-b-2 border-gray-300">
-              <th className="p-2 text-left">Instructor</th>
-              <th className="p-2 text-left">Employee ID</th>
-              <th className="p-2 text-left">Leave Type</th>
-              <th className="p-2 text-right">PTO Days</th>
-              <th className="p-2 text-right">R&R Days</th>
-              <th className="p-2 text-left">Destination</th>
-              <th className="p-2 text-left">Start Date</th>
-              <th className="p-2 text-left">End Date</th>
-              <th className="p-2 text-left">Return Date</th>
+            <tr>
+              <th className="py-4 text-left font-bold border-b-2 border-gray-400">Instructor</th>
+              <th className="py-4 text-left font-bold border-b-2 border-gray-400">Employee ID</th>
+              <th className="py-4 text-left font-bold border-b-2 border-gray-400">Leave Type</th>
+              <th className="py-4 text-center font-bold border-b-2 border-gray-400">PTO</th>
+              <th className="py-4 text-center font-bold border-b-2 border-gray-400">R&R</th>
+              <th className="py-4 text-left font-bold border-b-2 border-gray-400">Destination</th>
+              <th className="py-4 text-left font-bold border-b-2 border-gray-400">Start</th>
+              <th className="py-4 text-left font-bold border-b-2 border-gray-400">End</th>
+              <th className="py-4 text-left font-bold border-b-2 border-gray-400">Return</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="mt-4">
             {schoolLeaveRecords.map((leave, index) => (
               <tr key={leave.id} className={index % 2 === 0 ? 'bg-gray-50' : ''}>
-                <td className="p-2 border-b border-gray-200">{leave.instructorName}</td>
-                <td className="p-2 border-b border-gray-200">{leave.employeeId || `INST-${leave.instructorId.toString().padStart(4, '0')}`}</td>
-                <td className="p-2 border-b border-gray-200">{leave.leaveType || 'PTO'}</td>
-                <td className="p-2 border-b border-gray-200 text-right">{leave.ptodays} days</td>
-                <td className="p-2 border-b border-gray-200 text-right">{leave.rrdays} days</td>
-                <td className="p-2 border-b border-gray-200">{leave.destination}</td>
-                <td className="p-2 border-b border-gray-200">{format(new Date(leave.startDate), 'MMM d, yyyy')}</td>
-                <td className="p-2 border-b border-gray-200">{format(new Date(leave.endDate), 'MMM d, yyyy')}</td>
-                <td className="p-2 border-b border-gray-200">{format(new Date(leave.returnDate), 'MMM d, yyyy')}</td>
+                <td className="py-4 px-2 border-b border-gray-200">{leave.instructorName}</td>
+                <td className="py-4 px-2 border-b border-gray-200">{leave.employeeId || `INST-${leave.instructorId.toString().padStart(4, '0')}`}</td>
+                <td className="py-4 px-2 border-b border-gray-200">{leave.leaveType || 'PTO'}</td>
+                <td className="py-4 px-2 border-b border-gray-200 text-center">{leave.ptodays}</td>
+                <td className="py-4 px-2 border-b border-gray-200 text-center">{leave.rrdays}</td>
+                <td className="py-4 px-2 border-b border-gray-200">{leave.destination}</td>
+                <td className="py-4 px-2 border-b border-gray-200">{format(new Date(leave.startDate), 'MMM d')}</td>
+                <td className="py-4 px-2 border-b border-gray-200">{format(new Date(leave.endDate), 'MMM d')}</td>
+                <td className="py-4 px-2 border-b border-gray-200">{format(new Date(leave.returnDate), 'MMM d')}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        
-        <div className="mt-8 text-sm">
-          <p>Total Records: {schoolLeaveRecords.length}</p>
-          <p className="mt-4">Authorized by: ___________________________</p>
-          <p className="mt-4">Date: ___________________________</p>
-        </div>
       </div>
 
       {/* View Leave Dialog */}
