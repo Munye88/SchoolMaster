@@ -20,7 +20,7 @@ import { useSchool } from "@/hooks/useSchool";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function AIChatbot() {
-  const [minimized, setMinimized] = useState(false);  // Start with the chat window open
+  const [minimized, setMinimized] = useState(true);  // Start with the chat window minimized
   const [isExpanded, setIsExpanded] = useState(false);
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
