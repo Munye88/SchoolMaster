@@ -46,12 +46,24 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
     return "#0A2463"; // Default blue
   };
 
-  const headerBgColor = `bg-[${getSchoolColor(schoolName)}]`;
+  // Get color class based on school for Tailwind classes
+  const getSchoolColorClass = (schoolName: string) => {
+    if (schoolName.includes("KFNA")) {
+      return "bg-[#0A2463]"; // Blue for KFNA
+    } else if (schoolName.includes("NFS East")) {
+      return "bg-[#2A7F46]"; // Green for NFS East
+    } else if (schoolName.includes("NFS West")) {
+      return "bg-[#E86A33]"; // Orange for NFS West
+    }
+    return "bg-[#0A2463]"; // Default blue
+  };
+  
   const schoolColor = getSchoolColor(schoolName);
+  const headerBgColorClass = getSchoolColorClass(schoolName);
 
   return (
     <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
-      <CardHeader className={`${headerBgColor} text-white pb-2 flex flex-row items-center`}>
+      <CardHeader className={`${headerBgColorClass} text-white pb-2 flex flex-row items-center`}>
         <div className="mr-4">
           <StandardInstructorAvatar
             imageUrl={instructor.imageUrl}
