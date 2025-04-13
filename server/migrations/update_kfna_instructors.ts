@@ -248,7 +248,7 @@ export async function updateKfnaInstructors() {
           name: newData.name,
           nationality: newData.nationality,
           credentials: newData.credentials,
-          startDate: new Date(newData.startDate),
+          startDate: newData.startDate,
           compound: newData.compound,
           phone: newData.phone,
           accompaniedStatus: newData.accompaniedStatus,
@@ -272,7 +272,7 @@ export async function updateKfnaInstructors() {
             schoolId: 349, // KFNA school ID
             nationality: newData.nationality,
             credentials: newData.credentials,
-            startDate: new Date(newData.startDate),
+            startDate: newData.startDate,
             compound: newData.compound,
             phone: newData.phone,
             accompaniedStatus: newData.accompaniedStatus,

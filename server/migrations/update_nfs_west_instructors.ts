@@ -299,7 +299,7 @@ export async function updateNfsWestInstructors() {
           name: newData.name,
           nationality: newData.nationality,
           credentials: newData.credentials,
-          startDate: new Date(newData.startDate),
+          startDate: newData.startDate,
           compound: newData.compound,
           phone: newData.phone,
           accompaniedStatus: newData.accompaniedStatus,
@@ -326,7 +326,7 @@ export async function updateNfsWestInstructors() {
             schoolId: 351, // NFS West school ID
             nationality: newData.nationality,
             credentials: newData.credentials,
-            startDate: new Date(newData.startDate),
+            startDate: newData.startDate,
             compound: newData.compound,
             phone: newData.phone,
             accompaniedStatus: newData.accompaniedStatus,
