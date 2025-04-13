@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { StandardInstructorAvatar } from "@/components/instructors/StandardInstructorAvatar";
 
 // Create a form-specific validation schema that matches our form field names
 const instructorFormSchema = z.object({
@@ -263,6 +264,18 @@ export default function ManageInstructors() {
   // Get school name from ID
   const getSchoolName = (schoolId: number) => {
     return schools?.find(school => school.id === schoolId)?.name || "Unknown School";
+  };
+  
+  // Get color value for school
+  const getSchoolColor = (schoolName: string) => {
+    if (schoolName.includes("KFNA")) {
+      return "#0A2463"; // Blue for KFNA
+    } else if (schoolName.includes("NFS East")) {
+      return "#2A7F46"; // Green for NFS East
+    } else if (schoolName.includes("NFS West")) {
+      return "#E86A33"; // Orange for NFS West
+    }
+    return "#0A2463"; // Default blue
   };
 
   // Handle create form submission
@@ -564,11 +577,12 @@ export default function ManageInstructors() {
                             {field.value && (
                               <div className="mt-2">
                                 <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
-                                <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-200">
-                                  <img 
-                                    src={field.value} 
-                                    alt="Instructor preview" 
-                                    className="w-full h-full object-cover"
+                                <div className="flex justify-center">
+                                  <StandardInstructorAvatar 
+                                    imageUrl={field.value}
+                                    name={createForm.getValues("name") || "New Instructor"}
+                                    size="lg"
+                                    schoolColor={getSchoolColor(getSchoolName(createForm.getValues("schoolId")))}
                                   />
                                 </div>
                               </div>
@@ -622,29 +636,12 @@ export default function ManageInstructors() {
           {filteredInstructors?.map((instructor) => (
             <Card key={instructor.id}>
               <CardHeader className="flex flex-row items-center gap-4">
-                {instructor.imageUrl ? (
-                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#3E92CC] shadow-md">
-                    <img 
-                      src={`${instructor.imageUrl}?t=${Date.now()}`}
-                      alt={instructor.name} 
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        // Replace with initials if image fails to load
-                        const target = e.currentTarget;
-                        const parent = target.parentElement;
-                        if (parent) {
-                          parent.innerHTML = `<div class="w-20 h-20 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-xl font-bold">
-                            ${instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                          </div>`;
-                        }
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="w-20 h-20 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-xl font-bold shadow-md">
-                    {instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                  </div>
-                )}
+                <StandardInstructorAvatar
+                  imageUrl={instructor.imageUrl}
+                  name={instructor.name}
+                  size="md"
+                  schoolColor={getSchoolColor(getSchoolName(instructor.schoolId))}
+                />
                 <div>
                   <CardTitle>{instructor.name}</CardTitle>
                   <CardDescription>{instructor.role || "ELT Instructor"}</CardDescription>
@@ -909,11 +906,14 @@ export default function ManageInstructors() {
                           {field.value && (
                             <div className="mt-2">
                               <p className="text-sm text-gray-500 mb-1">Preview:</p>
-                              <img 
-                                src={field.value} 
-                                alt="Profile preview" 
-                                className="w-24 h-24 object-cover rounded-full border"
-                              />
+                              <div className="flex justify-center">
+                                <StandardInstructorAvatar 
+                                  imageUrl={field.value}
+                                  name={editForm.getValues("name") || "Instructor"}
+                                  size="lg"
+                                  schoolColor={getSchoolColor(getSchoolName(editForm.getValues("schoolId")))}
+                                />
+                              </div>
                             </div>
                           )}
                         </div>
