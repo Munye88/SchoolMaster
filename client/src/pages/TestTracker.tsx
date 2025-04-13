@@ -631,10 +631,7 @@ const TestTracker = () => {
                   : 0
               }%</div>
             </div>
-            <div class="stat">
-              <div class="label">Benchmark</div>
-              <div class="value">85%</div>
-            </div>
+            <!-- Benchmark removed as requested -->
           </div>
           
           <h2>School Performance Breakdown</h2>
@@ -656,8 +653,8 @@ const TestTracker = () => {
                   <td>${data.averageScore}</td>
                   <td>${data.passingRate}%</td>
                   <td>
-                    <span class="${data.passingRate >= 85 ? 'pass-badge' : 'fail-badge'}">
-                      ${data.passingRate >= 85 ? 'PASS' : 'FAIL'}
+                    <span class="${data.passingRate >= 70 ? 'pass-badge' : 'fail-badge'}">
+                      ${data.passingRate >= 70 ? 'PASS' : 'NEEDS IMPROVEMENT'}
                     </span>
                   </td>
                 </tr>
@@ -845,9 +842,9 @@ const TestTracker = () => {
               <div 
                 className={`h-full rounded-full ${
                   filteredTestData.length > 0 && 
-                  Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length) >= 85 
+                  Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length) >= 70 
                     ? "bg-green-500" 
-                    : "bg-red-500"
+                    : "bg-orange-500"
                 }`} 
                 style={{ 
                   width: `${filteredTestData.length > 0

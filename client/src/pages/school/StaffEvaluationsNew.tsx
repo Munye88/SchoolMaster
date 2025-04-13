@@ -75,6 +75,7 @@ const StaffEvaluations = () => {
   const [evalFeedback, setEvalFeedback] = useState<string>("");
   const [evalDate, setEvalDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
   const [evalAttachment, setEvalAttachment] = useState<string | null>(null);
+  const [filteredInstructors, setFilteredInstructors] = useState<Instructor[]>([]);
   
   // Fetch instructors and evaluations
   const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
@@ -339,6 +340,15 @@ const StaffEvaluations = () => {
                   <Input 
                     placeholder="Search instructors..." 
                     className="max-w-xs"
+                    onChange={(e) => {
+                      const searchTerm = e.target.value.toLowerCase();
+                      setFilteredInstructors(
+                        instructors.filter(instructor => 
+                          instructor.name.toLowerCase().includes(searchTerm) ||
+                          instructor.nationality.toLowerCase().includes(searchTerm)
+                        )
+                      );
+                    }}
                   />
                   <Button 
                     className="bg-[#0A2463] hover:bg-[#071A4A] gap-2"
