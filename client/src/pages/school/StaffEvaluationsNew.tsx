@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PrintButton } from "@/components/ui/print-button";
 import { 
   Dialog,
   DialogContent, 
@@ -222,6 +223,7 @@ const StaffEvaluations = () => {
         </div>
         
         <div className="flex gap-2">
+          <PrintButton contentId="staffEvaluationContent" />
           <Button variant="outline" className="gap-2">
             <Download size={16} /> Export
           </Button>
