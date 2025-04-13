@@ -155,6 +155,7 @@ const Reports = () => {
         </div>
         
         <div className="flex items-center gap-2">
+          <PrintButton contentId="reportsContent" />
           <Button variant="outline" size="sm">
             <Calendar className="mr-2 h-4 w-4" /> Date Range
           </Button>

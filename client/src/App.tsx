@@ -11,6 +11,7 @@ import Reports from "@/pages/Reports";
 import Documents from "@/pages/Documents";
 import Administration from "@/pages/Administration";
 import TrainingDevelopment from "@/pages/TrainingDevelopment";
+import DLI from "@/pages/DLI";
 import BasicNavbar from "@/components/layout/BasicNavbar";
 import SchoolInstructorProfiles from "./pages/school/InstructorProfiles";
 import SchoolTimetable from "./pages/school/Timetable";
@@ -60,6 +61,7 @@ function Router() {
           <ProtectedRoute path="/instructors" component={InstructorProfile} />
           <ProtectedRoute path="/instructors/:id" component={InstructorProfile} />
           <ProtectedRoute path="/courses" component={Courses} />
+          <ProtectedRoute path="/dli" component={DLI} />
           <ProtectedRoute path="/dli/book-order" component={BookOrder} />
           <ProtectedRoute path="/dli/alcpt-order" component={AlcptOrder} />
           <ProtectedRoute path="/dli/answer-sheets" component={AnswerSheets} />
