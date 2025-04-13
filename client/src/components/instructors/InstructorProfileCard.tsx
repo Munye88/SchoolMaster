@@ -42,15 +42,30 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
         return "bg-gray-100 text-gray-800";
     }
   };
+  
+  // Get color class based on school
+  const getSchoolColorClass = (schoolName: string) => {
+    if (schoolName.includes("KFNA")) {
+      return "bg-[#0A2463]"; // Blue for KFNA
+    } else if (schoolName.includes("NFS East")) {
+      return "bg-[#2A7F46]"; // Green for NFS East
+    } else if (schoolName.includes("NFS West")) {
+      return "bg-[#E86A33]"; // Orange for NFS West
+    }
+    return "bg-[#0A2463]"; // Default blue
+  };
+
+  const headerBgColor = getSchoolColorClass(schoolName);
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="bg-[#0A2463] text-white pb-2 flex flex-row items-center">
+    <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
+      <CardHeader className={`${headerBgColor} text-white pb-2 flex flex-row items-center`}>
         <Avatar className="h-20 w-20 mr-4 border-2 border-white shadow-md">
           {instructor.imageUrl ? (
             <img 
               src={instructor.imageUrl} 
-              alt={instructor.name} 
+              alt={instructor.name}
+              className="object-cover h-full w-full"
               onError={(e) => {
                 // Hide the img element if it fails to load
                 e.currentTarget.style.display = 'none';

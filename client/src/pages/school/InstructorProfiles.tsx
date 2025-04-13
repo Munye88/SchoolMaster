@@ -57,6 +57,18 @@ const SchoolInstructorProfiles = () => {
   const [selectedTab, setSelectedTab] = useState("grid");
   const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);
   
+  // Get color class based on school
+  const getSchoolColorClass = (schoolName: string) => {
+    if (schoolName.includes("KFNA")) {
+      return "bg-[#0A2463]"; // Blue for KFNA
+    } else if (schoolName.includes("NFS East")) {
+      return "bg-[#2A7F46]"; // Green for NFS East
+    } else if (schoolName.includes("NFS West")) {
+      return "bg-[#E86A33]"; // Orange for NFS West
+    }
+    return "bg-[#0A2463]"; // Default blue
+  };
+  
   // Find the current school from the school code
   const currentSchool = schools.find(school => school.code === schoolCode);
   
@@ -258,8 +270,8 @@ const SchoolInstructorProfiles = () => {
               </div>
             ) : (
               filteredInstructors.map((instructor) => (
-                <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="h-44 bg-[#0A2463] flex items-center justify-center">
+                <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 shadow-md">
+                  <div className={`h-44 ${getSchoolColorClass(currentSchool?.name || '')} flex items-center justify-center`}>
                     {instructor.imageUrl ? (
                       <div className="h-36 w-36 rounded-full border-4 border-white overflow-hidden shadow-xl">
                         <img 
@@ -333,7 +345,7 @@ const SchoolInstructorProfiles = () => {
                     <div className="mt-4 flex gap-2">
                       <Button 
                         size="sm" 
-                        className="w-full bg-[#0A2463] hover:bg-[#071A4A]"
+                        className={`w-full ${getSchoolColorClass(currentSchool?.name || '')} hover:opacity-90`}
                         onClick={() => handleViewInstructor(instructor)}
                       >
                         View Full Profile
@@ -398,7 +410,9 @@ const SchoolInstructorProfiles = () => {
                           <Button 
                             variant="ghost" 
                             size="sm" 
-                            className="text-[#0A2463]"
+                            className={`text-${currentSchool?.name.includes("NFS East") ? "green" : 
+                                                currentSchool?.name.includes("NFS West") ? "orange" : 
+                                                "blue"}-600`}
                             onClick={() => handleViewInstructor(instructor)}
                           >
                             View
