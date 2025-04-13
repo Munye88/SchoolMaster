@@ -792,19 +792,26 @@ export default function StaffLeaveTracker() {
                           <Edit className="h-4 w-4 mr-1" />
                           Edit
                         </Button>
-                        {leave.attachmentUrl && (
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => {
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            if (leave.attachmentUrl) {
                               // Download or view the attachment
                               window.open(leave.attachmentUrl, '_blank');
-                            }}
-                          >
-                            <Paperclip className="h-4 w-4 mr-1" />
-                            Form
-                          </Button>
-                        )}
+                            } else {
+                              toast({
+                                title: "No Attachment",
+                                description: "No attachment has been uploaded for this leave request.",
+                                variant: "default"
+                              });
+                            }
+                          }}
+                          className={!leave.attachmentUrl ? "opacity-50" : ""}
+                        >
+                          <Paperclip className="h-4 w-4 mr-1" />
+                          Attachment
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -885,27 +892,31 @@ export default function StaffLeaveTracker() {
                 </div>
               )}
               
-              {selectedLeave.attachmentUrl && (
-                <div>
-                  <h4 className="text-sm font-medium">Attachment</h4>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
-                        // Download or view the attachment
-                        window.open(selectedLeave.attachmentUrl, '_blank');
-                      }}
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Download Attachment
-                    </Button>
-                    <span className="text-sm text-gray-500">
-                      {selectedLeave.attachmentUrl.split('/').pop()}
-                    </span>
-                  </div>
+              <div>
+                <h4 className="text-sm font-medium">Attachment</h4>
+                <div className="flex items-center gap-2 mt-1">
+                  {selectedLeave.attachmentUrl ? (
+                    <>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          // Download or view the attachment
+                          window.open(selectedLeave.attachmentUrl, '_blank');
+                        }}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        View Attachment
+                      </Button>
+                      <span className="text-sm text-gray-500">
+                        {selectedLeave.attachmentUrl.split('/').pop()}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-sm text-gray-500">No attachment has been uploaded for this leave request.</span>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           )}
           
