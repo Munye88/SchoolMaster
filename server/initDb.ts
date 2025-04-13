@@ -2,6 +2,7 @@ import { db } from './db';
 import { staffAttendance } from '@shared/schema';
 import { sql } from 'drizzle-orm';
 import { addColumnsToStaffLeave } from './migrations/add_columns_to_staff_leave';
+import { updateNfsEastInstructors } from './migrations/update_nfs_east_instructors';
 
 export async function initDatabase() {
   try {
@@ -38,6 +39,9 @@ export async function initDatabase() {
     
     // Run the staff leave table migration
     await addColumnsToStaffLeave();
+    
+    // Update NFS East instructors
+    await updateNfsEastInstructors();
     
     return true;
   } catch (error) {
