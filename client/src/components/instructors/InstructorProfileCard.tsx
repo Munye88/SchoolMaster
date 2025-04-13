@@ -70,7 +70,7 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
   return (
     <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
       <CardHeader className={`${headerBgColor} text-white pb-2 flex flex-row items-center`}>
-        <Avatar className="h-20 w-20 mr-4 border-2 border-white shadow-md">
+        <div className="h-20 w-20 mr-4 rounded-full border-4 border-white overflow-hidden shadow-xl bg-[#0A2463] flex items-center justify-center">
           {instructor.imageUrl ? (
             <img 
               src={getCacheBustedUrl(instructor.imageUrl)} 
@@ -79,23 +79,22 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
               onError={(e) => {
                 // Hide the img element if it fails to load
                 e.currentTarget.style.display = 'none';
-                // Find the parent Avatar element and add fallback
-                const avatar = e.currentTarget.closest('.h-20');
-                if (avatar) {
-                  // Add the AvatarFallback as a child
+                // Create initials fallback with consistent styling
+                const parent = e.currentTarget.parentElement;
+                if (parent) {
                   const fallback = document.createElement('div');
-                  fallback.className = 'bg-blue-200 text-[#0A2463] w-full h-full flex items-center justify-center font-bold text-xl';
+                  fallback.className = 'h-full w-full flex items-center justify-center text-white font-bold text-xl';
                   fallback.innerText = getInitials(instructor.name);
-                  avatar.appendChild(fallback);
+                  parent.appendChild(fallback);
                 }
               }}
             />
           ) : (
-            <AvatarFallback className="bg-blue-200 text-[#0A2463] text-xl font-bold">
+            <div className="h-full w-full flex items-center justify-center text-white font-bold text-xl">
               {getInitials(instructor.name)}
-            </AvatarFallback>
+            </div>
           )}
-        </Avatar>
+        </div>
         <div>
           <h2 className="text-xl font-bold">{instructor.name}</h2>
           <p className="text-sm text-blue-100">{instructor.role || "ELT Instructor"}</p>
