@@ -93,8 +93,6 @@ export default function ManageCourses() {
     resolver: zodResolver(courseSchema),
     defaultValues: {
       name: "",
-      schoolId: undefined,
-      instructorId: undefined,
       status: "Active",
       startDate: format(new Date(), "yyyy-MM-dd"),
       endDate: "",
@@ -109,8 +107,6 @@ export default function ManageCourses() {
     resolver: zodResolver(courseSchema),
     defaultValues: {
       name: "",
-      schoolId: undefined,
-      instructorId: undefined,
       status: "Active",
       startDate: "",
       endDate: "",
