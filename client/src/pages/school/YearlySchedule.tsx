@@ -3,21 +3,23 @@ import { useSchool } from "@/hooks/useSchool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, Printer, Share2, CalendarDays, FileSpreadsheet } from "lucide-react";
+import { PrintButton } from "@/components/ui/print-button";
 
 const SchoolYearlySchedule = () => {
-  const { currentSchool } = useSchool();
+  const { selectedSchool } = useSchool();
   
   return (
-    <div className="flex-1 p-8 bg-gray-50 overflow-y-auto">
+    <div id="yearlyScheduleContent" className="flex-1 p-8 bg-gray-50 overflow-y-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#0A2463]">
-            {currentSchool ? `${currentSchool.name} Yearly Schedule` : 'Yearly Schedule'}
+            {selectedSchool ? `${selectedSchool.name} Yearly Schedule` : 'Yearly Schedule'}
           </h1>
           <p className="text-gray-500">View annual academic calendar and events</p>
         </div>
         
         <div className="flex gap-2">
+          <PrintButton contentId="yearlyScheduleContent" />
           <Button variant="outline" className="gap-2">
             <Download size={16} /> Export
           </Button>
