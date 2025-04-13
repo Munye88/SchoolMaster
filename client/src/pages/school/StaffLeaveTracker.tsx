@@ -116,7 +116,28 @@ export default function StaffLeaveTracker() {
   
   // UI state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedLeave, setSelectedLeave] = useState<StaffLeave | null>(null);
+  
+  // Create an edit form separate from the add form
+  const editForm = useForm<LeaveFormValues>({
+    resolver: zodResolver(leaveFormSchema),
+    defaultValues: {
+      instructorId: 0,
+      employeeId: '',
+      startDate: format(new Date(), 'yyyy-MM-dd'),
+      endDate: format(new Date(), 'yyyy-MM-dd'),
+      returnDate: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
+      ptodays: 0,
+      rrdays: 0,
+      leaveType: 'PTO',
+      destination: '',
+      status: 'Pending',
+      comments: '',
+      attachmentUrl: '',
+    },
+  });
   
   // Find the current school from all schools
   const currentSchool = schools.find(school => school.code === schoolCode);
@@ -259,7 +280,7 @@ export default function StaffLeaveTracker() {
     return diffDays;
   };
   
-  // Update total days when dates change
+  // Update total days when dates change for add form
   useEffect(() => {
     const startDate = form.watch('startDate');
     const endDate = form.watch('endDate');
@@ -276,6 +297,24 @@ export default function StaffLeaveTracker() {
       form.setValue('rrdays', returnDays - 1); // -1 because return day is not counted as R&R
     }
   }, [form.watch('startDate'), form.watch('endDate'), form.watch('returnDate')]);
+  
+  // Update total days when dates change for edit form
+  useEffect(() => {
+    const startDate = editForm.watch('startDate');
+    const endDate = editForm.watch('endDate');
+    const returnDate = editForm.watch('returnDate');
+    
+    if (startDate && endDate && returnDate) {
+      const totalDays = calculateDays(startDate, endDate);
+      const returnDays = calculateDays(endDate, returnDate);
+      
+      // Update PTO days based on total days
+      editForm.setValue('ptodays', totalDays);
+      
+      // Update R&R days based on return date
+      editForm.setValue('rrdays', returnDays - 1); // -1 because return day is not counted as R&R
+    }
+  }, [editForm.watch('startDate'), editForm.watch('endDate'), editForm.watch('returnDate')]);
   
   const months = [
     "January", "February", "March", "April", "May", "June", 
@@ -708,7 +747,7 @@ export default function StaffLeaveTracker() {
                 schoolLeaveRecords.map((leave) => (
                   <TableRow key={leave.id}>
                     <TableCell className="font-medium">{leave.instructorName}</TableCell>
-                    <TableCell>INST-{leave.instructorId.toString().padStart(4, '0')}</TableCell>
+                    <TableCell>{leave.employeeId || `INST-${leave.instructorId.toString().padStart(4, '0')}`}</TableCell>
                     <TableCell>{leave.leaveType || 'PTO'}</TableCell>
                     <TableCell>{leave.ptodays} days</TableCell>
                     <TableCell>{leave.rrdays} days</TableCell>
@@ -716,8 +755,43 @@ export default function StaffLeaveTracker() {
                     <TableCell>{format(new Date(leave.returnDate), 'yyyy-MM-dd')}</TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">View</Button>
-                        <Button variant="outline" size="sm">Edit</Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedLeave(leave);
+                            setViewDialogOpen(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedLeave(leave);
+                            // Populate form with selected leave data
+                            editForm.reset({
+                              instructorId: leave.instructorId,
+                              employeeId: leave.employeeId || '',
+                              startDate: format(new Date(leave.startDate), 'yyyy-MM-dd'),
+                              endDate: format(new Date(leave.endDate), 'yyyy-MM-dd'),
+                              returnDate: format(new Date(leave.returnDate), 'yyyy-MM-dd'),
+                              ptodays: leave.ptodays,
+                              rrdays: leave.rrdays,
+                              leaveType: leave.leaveType || 'PTO',
+                              destination: leave.destination,
+                              status: leave.status,
+                              comments: leave.comments || '',
+                              attachmentUrl: leave.attachmentUrl || '',
+                            });
+                            setEditDialogOpen(true);
+                          }}
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -727,6 +801,484 @@ export default function StaffLeaveTracker() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* View Leave Dialog */}
+      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Leave Request Details</DialogTitle>
+            <DialogDescription>
+              View details for {selectedLeave?.instructorName}'s leave request
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedLeave && (
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm font-medium">Instructor</h4>
+                  <p className="text-sm">{selectedLeave.instructorName}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">Employee ID</h4>
+                  <p className="text-sm">{selectedLeave.employeeId || `INST-${selectedLeave.instructorId.toString().padStart(4, '0')}`}</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <h4 className="text-sm font-medium">Start Date</h4>
+                  <p className="text-sm">{format(new Date(selectedLeave.startDate), 'PPP')}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">End Date</h4>
+                  <p className="text-sm">{format(new Date(selectedLeave.endDate), 'PPP')}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">Return Date</h4>
+                  <p className="text-sm">{format(new Date(selectedLeave.returnDate), 'PPP')}</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <h4 className="text-sm font-medium">Leave Type</h4>
+                  <p className="text-sm">{selectedLeave.leaveType || 'PTO'}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">PTO Days</h4>
+                  <p className="text-sm">{selectedLeave.ptodays} days</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium">R&R Days</h4>
+                  <p className="text-sm">{selectedLeave.rrdays} days</p>
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="text-sm font-medium">Destination</h4>
+                <p className="text-sm">{selectedLeave.destination}</p>
+              </div>
+              
+              <div>
+                <h4 className="text-sm font-medium">Status</h4>
+                <p className="text-sm">{selectedLeave.status}</p>
+              </div>
+              
+              {selectedLeave.comments && (
+                <div>
+                  <h4 className="text-sm font-medium">Comments</h4>
+                  <p className="text-sm">{selectedLeave.comments}</p>
+                </div>
+              )}
+              
+              {selectedLeave.attachmentUrl && (
+                <div>
+                  <h4 className="text-sm font-medium">Attachment</h4>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Button variant="outline" size="sm">
+                      <Download className="h-4 w-4 mr-2" />
+                      Download Attachment
+                    </Button>
+                    <span className="text-sm text-gray-500">
+                      {selectedLeave.attachmentUrl.split('/').pop()}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setViewDialogOpen(false)}>
+              Close
+            </Button>
+            <Button 
+              variant="default" 
+              className="bg-[#0A2463]"
+              onClick={() => {
+                setViewDialogOpen(false);
+                if (selectedLeave) {
+                  editForm.reset({
+                    instructorId: selectedLeave.instructorId,
+                    employeeId: selectedLeave.employeeId || '',
+                    startDate: format(new Date(selectedLeave.startDate), 'yyyy-MM-dd'),
+                    endDate: format(new Date(selectedLeave.endDate), 'yyyy-MM-dd'),
+                    returnDate: format(new Date(selectedLeave.returnDate), 'yyyy-MM-dd'),
+                    ptodays: selectedLeave.ptodays,
+                    rrdays: selectedLeave.rrdays,
+                    leaveType: selectedLeave.leaveType || 'PTO',
+                    destination: selectedLeave.destination,
+                    status: selectedLeave.status,
+                    comments: selectedLeave.comments || '',
+                    attachmentUrl: selectedLeave.attachmentUrl || '',
+                  });
+                  setEditDialogOpen(true);
+                }
+              }}
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Edit Leave Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Leave Request</DialogTitle>
+            <DialogDescription>
+              {selectedLeave ? `Update leave request for ${selectedLeave.instructorName}` : 'Update leave request'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(async (values) => {
+              try {
+                if (!selectedLeave) {
+                  toast({
+                    title: "Error",
+                    description: "No leave request selected",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                
+                await updateLeaveMutation.mutateAsync({
+                  id: selectedLeave.id,
+                  data: values
+                });
+                
+                toast({
+                  title: "Success",
+                  description: "Leave request updated successfully",
+                });
+                
+                setEditDialogOpen(false);
+              } catch (error) {
+                console.error("Error updating leave request:", error);
+                toast({
+                  title: "Error",
+                  description: "Failed to update leave request",
+                  variant: "destructive",
+                });
+              }
+            })} className="space-y-4 py-4">
+              <FormField
+                control={editForm.control}
+                name="instructorId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Instructor</FormLabel>
+                    <Select 
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      value={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select instructor" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {isLoadingInstructors ? (
+                          <div className="p-2 flex items-center justify-center">
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                            <span>Loading instructors...</span>
+                          </div>
+                        ) : (
+                          schoolInstructors.map((instructor: any) => (
+                            <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                              {instructor.name}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={editForm.control}
+                name="employeeId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Employee ID</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter employee ID"
+                        {...field}
+                        value={field.value || ''}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Enter the instructor's employee ID
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="attachmentUrl"
+                render={({ field }) => {
+                  const fileInputRef = useRef<HTMLInputElement>(null);
+                  return (
+                    <FormItem>
+                      <FormLabel>Leave Form Attachment</FormLabel>
+                      <FormControl>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="file"
+                            className="hidden"
+                            ref={fileInputRef}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                // Handle file upload here - this would be connected to your API
+                                // For now, just storing the file name
+                                field.onChange(file.name);
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                          >
+                            <Paperclip className="h-4 w-4 mr-2" />
+                            {field.value ? 'Replace Attachment' : 'Attach Leave Form'}
+                          </Button>
+                          {field.value && (
+                            <span className="text-sm text-gray-500">
+                              {field.value.split('/').pop()}
+                            </span>
+                          )}
+                        </div>
+                      </FormControl>
+                      <FormDescription>
+                        Upload or replace the leave form (PDF or image)
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }}
+              />
+              
+              <div className="grid grid-cols-3 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="date" 
+                          {...field} 
+                          onChange={(e) => field.onChange(e.target.value)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={editForm.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Date</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="date" 
+                          {...field} 
+                          onChange={(e) => field.onChange(e.target.value)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={editForm.control}
+                  name="returnDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Return Date</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="date" 
+                          {...field} 
+                          onChange={(e) => field.onChange(e.target.value)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="ptodays"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>PTO Days</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          {...field} 
+                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={editForm.control}
+                  name="rrdays"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>R&R Days</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          {...field} 
+                          onChange={(e) => field.onChange(parseInt(e.target.value))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <FormField
+                control={editForm.control}
+                name="leaveType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Leave Type</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select leave type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="PTO">PTO</SelectItem>
+                        <SelectItem value="R&R">R&R</SelectItem>
+                        <SelectItem value="Paternity">Paternity</SelectItem>
+                        <SelectItem value="Bereavement">Bereavement</SelectItem>
+                        <SelectItem value="Negative PTO">Negative PTO</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={editForm.control}
+                name="destination"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Destination</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter destination" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={editForm.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Pending">Pending</SelectItem>
+                        <SelectItem value="Approved">Approved</SelectItem>
+                        <SelectItem value="Rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={editForm.control}
+                name="comments"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Comments</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        {...field} 
+                        placeholder="Add any additional comments"
+                        rows={3}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setEditDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit"
+                  disabled={updateLeaveMutation.isPending}
+                  className="bg-[#0A2463]"
+                >
+                  {updateLeaveMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Updating...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Update Request
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

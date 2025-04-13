@@ -1,6 +1,7 @@
 import { db } from './db';
 import { staffAttendance } from '@shared/schema';
 import { sql } from 'drizzle-orm';
+import { addColumnsToStaffLeave } from './migrations/add_columns_to_staff_leave';
 
 export async function initDatabase() {
   try {
@@ -34,6 +35,9 @@ export async function initDatabase() {
     } else {
       console.log('staff_attendance table already exists.');
     }
+    
+    // Run the staff leave table migration
+    await addColumnsToStaffLeave();
     
     return true;
   } catch (error) {
