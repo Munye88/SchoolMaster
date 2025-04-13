@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PrintButton } from "@/components/ui/print-button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
 import { 
@@ -627,7 +628,7 @@ const StaffAttendance = () => {
   };
 
   return (
-    <div className="flex-1 p-8 bg-gray-50 overflow-y-auto">
+    <div id="staffAttendanceContent" className="flex-1 p-8 bg-gray-50 overflow-y-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-500 text-transparent bg-clip-text">
@@ -637,6 +638,7 @@ const StaffAttendance = () => {
         </div>
         
         <div className="flex gap-2">
+          <PrintButton contentId="staffAttendanceContent" />
           <Button 
             variant="outline" 
             className="gap-2"
