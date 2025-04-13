@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { CalendarRange, Clock, Award, BookOpen, GraduationCap } from "lucide-react";
+import { PrintButton } from "@/components/ui/print-button";
 
 // Course type information
 const courseTypes = [
@@ -111,7 +112,7 @@ export default function Courses() {
 
   if (isLoadingCourses || isLoadingSchools) {
     return (
-      <div className="container mx-auto py-6">
+      <div id="coursesContent" className="container mx-auto py-6">
         <div className="flex flex-col justify-center items-center h-80">
           <div className="w-16 h-16 relative mb-6">
             <div className="w-16 h-16 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin"></div>
@@ -125,7 +126,7 @@ export default function Courses() {
   }
 
   return (
-    <div className="container mx-auto py-6">
+    <div id="coursesContent" className="container mx-auto py-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-[#0A2463] to-blue-600 bg-clip-text text-transparent mb-4">
           Course Programs
@@ -163,13 +164,16 @@ export default function Courses() {
             ))}
           </div>
           
-          <div className="relative w-full md:w-64">
-            <input 
-              type="text" 
-              placeholder="Search courses..." 
-              className="w-full pl-10 pr-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+          <div className="flex items-center gap-2">
+            <PrintButton contentId="coursesContent" />
+            <div className="relative w-full md:w-64">
+              <input 
+                type="text" 
+                placeholder="Search courses..." 
+                className="w-full pl-10 pr-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+            </div>
           </div>
         </div>
         
