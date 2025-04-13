@@ -74,19 +74,8 @@ interface StaffLeave {
   schoolId: number;
 }
 
-// Define the interface for the form data
-interface LeaveFormData {
-  instructorId: number;
-  startDate: string;
-  endDate: string;
-  returnDate: string;
-  ptodays: number;
-  rrdays: number;
-  destination: string;
-  status: string;
-  comments?: string;
-  approvedBy?: number;
-}
+// Alias for form data, including schoolId
+interface LeaveFormData extends Omit<StaffLeave, 'id' | 'instructorName'> {}
 
 // Define validation schema for the leave form
 const leaveFormSchema = z.object({
@@ -572,7 +561,7 @@ export default function StaffLeaveTracker() {
         </div>
       </div>
       
-      <Card>
+      <Card id="leaveTrackerContent">
         <CardHeader>
           <CardTitle>Staff Leave Records</CardTitle>
           <CardDescription>
