@@ -3,6 +3,7 @@ import { useSchool } from "@/hooks/useSchool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, FilePlus, Printer, Search, Share2 } from "lucide-react";
+import { PrintButton } from "@/components/ui/print-button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -234,24 +235,22 @@ const getStatusColor = (status: Book["status"]) => {
 };
 
 const SchoolBookInventory = () => {
-  const { currentSchool } = useSchool();
+  const { selectedSchool } = useSchool();
   
   return (
-    <div className="flex-1 p-8 bg-gray-50 overflow-y-auto">
+    <div id="bookInventoryContent" className="flex-1 p-8 bg-gray-50 overflow-y-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#0A2463]">
-            {currentSchool ? `${currentSchool.name} Book Inventory` : 'Book Inventory'}
+            {selectedSchool ? `${selectedSchool.name} Book Inventory` : 'Book Inventory'}
           </h1>
           <p className="text-gray-500">Manage and track textbooks and learning materials</p>
         </div>
         
         <div className="flex gap-2">
+          <PrintButton contentId="bookInventoryContent" />
           <Button variant="outline" className="gap-2">
             <Download size={16} /> Export
-          </Button>
-          <Button variant="outline" className="gap-2">
-            <Printer size={16} /> Print
           </Button>
           <Button variant="outline" className="gap-2">
             <Share2 size={16} /> Share
