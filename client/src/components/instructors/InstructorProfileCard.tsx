@@ -45,34 +45,33 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="bg-[#0A2463] text-white pt-4 pb-3 flex flex-col items-center">
-        <Avatar className="h-32 w-32 mb-3 border-4 border-white shadow-md">
+      <CardHeader className="bg-[#0A2463] text-white pb-2 flex flex-row items-center">
+        <Avatar className="h-20 w-20 mr-4 border-2 border-white shadow-md">
           {instructor.imageUrl ? (
             <img 
               src={instructor.imageUrl} 
               alt={instructor.name} 
-              className="w-full h-full object-cover"
               onError={(e) => {
                 // Hide the img element if it fails to load
                 e.currentTarget.style.display = 'none';
                 // Find the parent Avatar element and add fallback
-                const avatar = e.currentTarget.closest('.h-32');
+                const avatar = e.currentTarget.closest('.h-20');
                 if (avatar) {
                   // Add the AvatarFallback as a child
                   const fallback = document.createElement('div');
-                  fallback.className = 'bg-blue-200 text-[#0A2463] w-full h-full flex items-center justify-center font-bold text-3xl';
+                  fallback.className = 'bg-blue-200 text-[#0A2463] w-full h-full flex items-center justify-center font-bold text-xl';
                   fallback.innerText = getInitials(instructor.name);
                   avatar.appendChild(fallback);
                 }
               }}
             />
           ) : (
-            <AvatarFallback className="bg-blue-200 text-[#0A2463] text-3xl font-bold">
+            <AvatarFallback className="bg-blue-200 text-[#0A2463] text-xl font-bold">
               {getInitials(instructor.name)}
             </AvatarFallback>
           )}
         </Avatar>
-        <div className="text-center">
+        <div>
           <h2 className="text-xl font-bold">{instructor.name}</h2>
           <p className="text-sm text-blue-100">{instructor.role || "ELT Instructor"}</p>
         </div>

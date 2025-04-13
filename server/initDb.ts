@@ -3,7 +3,6 @@ import { staffAttendance } from '@shared/schema';
 import { sql } from 'drizzle-orm';
 import { addColumnsToStaffLeave } from './migrations/add_columns_to_staff_leave';
 import { updateNfsEastInstructors } from './migrations/update_nfs_east_instructors';
-import { updateInstructorProfiles } from './migrations/update_instructor_profiles';
 
 export async function initDatabase() {
   try {
@@ -43,9 +42,6 @@ export async function initDatabase() {
     
     // Update NFS East instructors
     await updateNfsEastInstructors();
-    
-    // Update instructor profiles with images
-    await updateInstructorProfiles();
     
     return true;
   } catch (error) {
