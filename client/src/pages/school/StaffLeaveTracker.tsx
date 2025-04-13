@@ -1,4 +1,5 @@
 import { useParams } from 'wouter';
+import { Instructor } from '@shared/schema';
 import { 
   Card, 
   CardContent, 
@@ -186,14 +187,14 @@ export default function StaffLeaveTracker() {
   const { 
     data: instructors = [],
     isLoading: isLoadingInstructors
-  } = useQuery({
+  } = useQuery<Instructor[]>({
     queryKey: ['/api/instructors', currentSchool?.id],
     enabled: !!currentSchool?.id,
   });
   
   // Filter instructors by current school
   const schoolInstructors = currentSchool 
-    ? instructors.filter((instructor: any) => instructor.schoolId === currentSchool.id)
+    ? instructors.filter((instructor) => instructor.schoolId === currentSchool.id)
     : [];
   
   // Filter leave records by selected school
@@ -430,7 +431,7 @@ export default function StaffLeaveTracker() {
                                 <span>Loading instructors...</span>
                               </div>
                             ) : (
-                              schoolInstructors.map((instructor: any) => (
+                              schoolInstructors.map((instructor) => (
                                 <SelectItem key={instructor.id} value={instructor.id.toString()}>
                                   {instructor.name}
                                 </SelectItem>
@@ -1086,7 +1087,7 @@ export default function StaffLeaveTracker() {
                             <span>Loading instructors...</span>
                           </div>
                         ) : (
-                          schoolInstructors.map((instructor: any) => (
+                          schoolInstructors.map((instructor) => (
                             <SelectItem key={instructor.id} value={instructor.id.toString()}>
                               {instructor.name}
                             </SelectItem>
