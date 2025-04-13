@@ -358,6 +358,7 @@ export interface AggregateTestData {
 export const staffLeave = pgTable("staff_leave", {
   id: serial("id").primaryKey(),
   instructorId: integer("instructor_id").notNull().references(() => instructors.id),
+  employeeId: text("employee_id"),
   startDate: date("start_date").notNull(),
   endDate: date("end_date").notNull(),
   returnDate: date("return_date").notNull(),
@@ -367,11 +368,13 @@ export const staffLeave = pgTable("staff_leave", {
   destination: text("destination").notNull(),
   status: text("status").notNull(), // e.g., "pending", "approved", "completed"
   comments: text("comments"),
-  approvedBy: integer("approvedby").references(() => users.id)
+  approvedBy: integer("approvedby").references(() => users.id),
+  attachmentUrl: text("attachment_url")
 });
 
 export const insertStaffLeaveSchema = createInsertSchema(staffLeave).pick({
   instructorId: true,
+  employeeId: true,
   startDate: true,
   endDate: true,
   returnDate: true,
@@ -381,7 +384,8 @@ export const insertStaffLeaveSchema = createInsertSchema(staffLeave).pick({
   destination: true,
   status: true,
   comments: true,
-  approvedBy: true
+  approvedBy: true,
+  attachmentUrl: true
 });
 
 export const staffLeaveRelations = relations(staffLeave, ({ one }) => ({

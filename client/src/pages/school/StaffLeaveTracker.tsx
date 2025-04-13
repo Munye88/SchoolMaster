@@ -62,6 +62,7 @@ interface StaffLeave {
   id: number;
   instructorId: number;
   instructorName: string;
+  employeeId?: string; // Employee ID field
   startDate: string;
   endDate: string;
   returnDate: string;
@@ -73,6 +74,7 @@ interface StaffLeave {
   comments?: string;
   approvedBy?: number;
   schoolId: number;
+  attachmentUrl?: string; // URL to attachment
 }
 
 // Alias for form data, including schoolId
