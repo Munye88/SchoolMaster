@@ -754,7 +754,7 @@ export default function StaffLeaveTracker() {
                     <TableCell>{leave.destination}</TableCell>
                     <TableCell>{format(new Date(leave.returnDate), 'yyyy-MM-dd')}</TableCell>
                     <TableCell>
-                      <div className="flex space-x-2">
+                      <div className="flex items-center space-x-2">
                         <Button 
                           variant="outline" 
                           size="sm"
@@ -792,6 +792,19 @@ export default function StaffLeaveTracker() {
                           <Edit className="h-4 w-4 mr-1" />
                           Edit
                         </Button>
+                        {leave.attachmentUrl && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => {
+                              // Download or view the attachment
+                              window.open(leave.attachmentUrl, '_blank');
+                            }}
+                          >
+                            <Paperclip className="h-4 w-4 mr-1" />
+                            Form
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -876,7 +889,14 @@ export default function StaffLeaveTracker() {
                 <div>
                   <h4 className="text-sm font-medium">Attachment</h4>
                   <div className="flex items-center gap-2 mt-1">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        // Download or view the attachment
+                        window.open(selectedLeave.attachmentUrl, '_blank');
+                      }}
+                    >
                       <Download className="h-4 w-4 mr-2" />
                       Download Attachment
                     </Button>
