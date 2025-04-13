@@ -71,12 +71,12 @@ export default function ManageInstructors() {
   const [selectedSchoolId, setSelectedSchoolId] = useState<number | null>(null);
 
   // Fetch instructors with school filter dependency
-  const { data: instructors, isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
+  const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
     queryKey: ['/api/instructors', selectedSchoolId],
   });
 
   // Fetch schools for the dropdown
-  const { data: schools } = useQuery<School[]>({
+  const { data: schools = [] } = useQuery<School[]>({
     queryKey: ['/api/schools'],
   });
 
@@ -164,7 +164,12 @@ export default function ManageInstructors() {
   // Delete instructor mutation
   const deleteInstructorMutation = useMutation({
     mutationFn: async (id: number) => {
-      await apiRequest('DELETE', `/api/instructors/${id}`);
+      const response = await apiRequest('DELETE', `/api/instructors/${id}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server error: ${response.status} - ${errorText || response.statusText}`);
+      }
+      return id;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
@@ -212,6 +217,7 @@ export default function ManageInstructors() {
       compound: "",
       phone: "",
       status: "",
+      imageUrl: "",
     }
   });
 
@@ -310,282 +316,280 @@ export default function ManageInstructors() {
           </div>
 
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button size="lg" className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md transition-all hover:shadow-lg">
-              <Plus className="mr-2 h-5 w-5" />
-              <span className="font-semibold">Add Instructor</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader className="sticky top-0 bg-white z-10 pb-2">
-              <DialogTitle className="text-xl">Add New Instructor</DialogTitle>
-              <DialogDescription>
-                Create a new instructor in the system.
-              </DialogDescription>
-            </DialogHeader>
+            <DialogTrigger asChild>
+              <Button size="lg" className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md transition-all hover:shadow-lg">
+                <Plus className="mr-2 h-5 w-5" />
+                <span className="font-semibold">Add Instructor</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader className="sticky top-0 bg-white z-10 pb-2">
+                <DialogTitle className="text-xl">Add New Instructor</DialogTitle>
+                <DialogDescription>
+                  Create a new instructor in the system.
+                </DialogDescription>
+              </DialogHeader>
 
-            <Form {...createForm}>
-              <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={createForm.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter instructor name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <Form {...createForm}>
+                <form onSubmit={createForm.handleSubmit(onCreateSubmit)} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={createForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Full Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter instructor name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={createForm.control}
-                    name="position"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Position</FormLabel>
-                        <FormControl>
-                          <Input placeholder="E.g., ELT Instructor" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={createForm.control}
+                      name="position"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Position</FormLabel>
+                          <FormControl>
+                            <Input placeholder="E.g., ELT Instructor" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={createForm.control}
-                    name="nationality"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nationality</FormLabel>
-                        <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select nationality" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="American">American</SelectItem>
-                              <SelectItem value="British">British</SelectItem>
-                              <SelectItem value="Canadian">Canadian</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={createForm.control}
+                      name="nationality"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nationality</FormLabel>
+                          <FormControl>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select nationality" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="American">American</SelectItem>
+                                <SelectItem value="British">British</SelectItem>
+                                <SelectItem value="Canadian">Canadian</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={createForm.control}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Start Date</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={createForm.control}
+                      name="startDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Start Date</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={createForm.control}
-                    name="credentials"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Credentials</FormLabel>
-                        <FormControl>
-                          <Input placeholder="E.g., CELTA, DELTA, M.Ed." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={createForm.control}
+                      name="credentials"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Credentials</FormLabel>
+                          <FormControl>
+                            <Input placeholder="E.g., CELTA, DELTA, M.Ed." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={createForm.control}
-                    name="schoolId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>School</FormLabel>
-                        <FormControl>
-                          <Select 
-                            onValueChange={(value) => field.onChange(parseInt(value))} 
-                            defaultValue={field.value > 0 ? field.value.toString() : undefined}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select school" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {schools?.map((school) => (
-                                <SelectItem key={school.id} value={school.id.toString()}>
-                                  {school.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={createForm.control}
+                      name="schoolId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>School</FormLabel>
+                          <FormControl>
+                            <Select 
+                              onValueChange={(value) => field.onChange(parseInt(value))} 
+                              defaultValue={field.value > 0 ? field.value.toString() : undefined}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select school" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {schools?.map((school) => (
+                                  <SelectItem key={school.id} value={school.id.toString()}>
+                                    {school.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={createForm.control}
-                    name="compound"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Compound</FormLabel>
-                        <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select compound" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Al Reem">Al Reem</SelectItem>
-                              <SelectItem value="Saken">Saken</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={createForm.control}
+                      name="compound"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Compound</FormLabel>
+                          <FormControl>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select compound" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Al Reem">Al Reem</SelectItem>
+                                <SelectItem value="Saken">Saken</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={createForm.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Contact number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={createForm.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Contact number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={createForm.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <FormControl>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Accompanied">Accompanied</SelectItem>
-                              <SelectItem value="Unaccompanied">Unaccompanied</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={createForm.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Status</FormLabel>
+                          <FormControl>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select status" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Accompanied">Accompanied</SelectItem>
+                                <SelectItem value="Unaccompanied">Unaccompanied</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={createForm.control}
-                    name="imageUrl"
-                    render={({ field }) => (
-                      <FormItem className="col-span-2">
-                        <FormLabel>Profile Image</FormLabel>
-                        <div className="space-y-4">
-                          <div className="flex flex-col space-y-2">
-                            <div className="flex items-center gap-2">
-                              <Input
-                                id="create-image-upload"
-                                type="file"
-                                accept="image/*"
-                                className="max-w-sm"
-                                onChange={(e) => {
-                                  const file = e.target.files?.[0];
-                                  if (file) {
-                                    const reader = new FileReader();
-                                    reader.onload = (event) => {
-                                      const base64Image = event.target?.result as string;
-                                      field.onChange(base64Image);
-                                    };
-                                    reader.readAsDataURL(file);
-                                  }
-                                }}
-                              />
-                              {field.value && (
-                                <Button 
-                                  type="button" 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => field.onChange("")}
-                                >
-                                  Clear
-                                </Button>
-                              )}
-                            </div>
-                            <p className="text-xs text-gray-500">
-                              Upload a photo of the instructor (JPEG, PNG, or GIF up to 5MB)
-                            </p>
-                          </div>
-                          
-                          {field.value && (
-                            <div className="mt-2">
-                              <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
-                              <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-200">
-                                <img 
-                                  src={field.value} 
-                                  alt="Instructor preview" 
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Invalid+Image";
+                    <FormField
+                      control={createForm.control}
+                      name="imageUrl"
+                      render={({ field }) => (
+                        <FormItem className="col-span-2">
+                          <FormLabel>Profile Image</FormLabel>
+                          <div className="space-y-4">
+                            <div className="flex flex-col space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  id="create-image-upload"
+                                  type="file"
+                                  accept="image/*"
+                                  className="max-w-sm"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      const reader = new FileReader();
+                                      reader.onload = (event) => {
+                                        const base64Image = event.target?.result as string;
+                                        field.onChange(base64Image);
+                                      };
+                                      reader.readAsDataURL(file);
+                                    }
                                   }}
                                 />
+                                {field.value && (
+                                  <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => field.onChange("")}
+                                  >
+                                    Clear
+                                  </Button>
+                                )}
                               </div>
+                              <p className="text-xs text-gray-500">
+                                Upload a photo of the instructor (JPEG, PNG, or GIF up to 5MB)
+                              </p>
                             </div>
-                          )}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                            
+                            {field.value && (
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-500 mb-1">Image Preview:</p>
+                                <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-200">
+                                  <img 
+                                    src={field.value} 
+                                    alt="Instructor preview" 
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="lg"
-                    className="hover:bg-gray-100 border-gray-300"
-                    onClick={() => setIsCreateDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md hover:shadow-lg font-semibold"
-                    disabled={createInstructorMutation.isPending}
-                  >
-                    {createInstructorMutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      "Create Instructor"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+                  <DialogFooter>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="lg"
+                      className="hover:bg-gray-100 border-gray-300"
+                      onClick={() => setIsCreateDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      size="lg"
+                      className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md hover:shadow-lg font-semibold"
+                      disabled={createInstructorMutation.isPending}
+                    >
+                      {createInstructorMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        "Create Instructor"
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {isLoadingInstructors ? (
@@ -600,11 +604,18 @@ export default function ManageInstructors() {
                 {instructor.imageUrl ? (
                   <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#3E92CC] shadow-md">
                     <img 
-                      src={instructor.imageUrl} 
+                      src={`${instructor.imageUrl}?t=${Date.now()}`}
                       alt={instructor.name} 
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Invalid+URL";
+                        // Replace with initials if image fails to load
+                        const target = e.currentTarget;
+                        const parent = target.parentElement;
+                        if (parent) {
+                          parent.innerHTML = `<div class="w-20 h-20 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-xl font-bold">
+                            ${instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                          </div>`;
+                        }
                       }}
                     />
                   </div>
@@ -881,9 +892,6 @@ export default function ManageInstructors() {
                                 src={field.value} 
                                 alt="Profile preview" 
                                 className="w-24 h-24 object-cover rounded-full border"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Invalid+URL";
-                                }}
                               />
                             </div>
                           )}

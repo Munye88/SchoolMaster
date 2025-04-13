@@ -34,7 +34,7 @@ import { SchoolProvider } from "@/hooks/useSchool";
 
 // Management pages
 import ManageSchools from "./pages/management/ManageSchools";
-import ManageInstructors from "./pages/management/ManageInstructors";
+import ManageInstructors from "./pages/management/ManageInstructorsNew";
 import ManageStudents from "./pages/management/ManageStudents";
 import ManageCourses from "./pages/management/ManageCourses";
 
