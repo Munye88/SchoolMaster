@@ -36,7 +36,7 @@ import { SchoolProvider } from "@/hooks/useSchool";
 import ManageSchools from "./pages/management/ManageSchools";
 import ManageInstructors from "./pages/management/ManageInstructorsNew";
 import ManageStudents from "./pages/management/ManageStudents";
-import ManageCourses from "./pages/management/ManageCourses";
+import ManageCourses from "./pages/management/ManageCoursesNew";
 
 function NavbarWithAuth() {
   const { user } = useAuth();
