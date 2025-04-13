@@ -98,11 +98,11 @@ const DLI = () => {
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-[#0A2463] to-blue-600 bg-clip-text text-transparent">
             {selectedSchool 
-              ? `${selectedSchool.name} DLI Resources` 
-              : 'DLI Resources Management'}
+              ? `${selectedSchool.name} DLI Book Inventory` 
+              : 'DLI Book Inventory Management'}
           </h1>
           <p className="text-gray-600 mt-1">
-            Track and manage ALCPT forms, answer sheets, and reference materials
+            Track and manage DLI books, ALCPT forms, and answer sheets
           </p>
         </div>
         
