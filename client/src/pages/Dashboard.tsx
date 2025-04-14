@@ -617,17 +617,7 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* Notifications - enhanced with student count changes, staff changes, and course completions */}
-          <Notifications
-            instructors={instructors}
-            staffAttendance={staffAttendance}
-            staffLeave={staffLeave}
-            evaluations={evaluations}
-            courses={courses}
-            students={students}
-          />
-
+          
           {/* Student Distribution */}
           <Card className="shadow-sm">
             <CardHeader className="p-4 pb-2">
@@ -988,6 +978,18 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* Notifications - enhanced with student count changes, staff changes, and course completions */}
+      <div className="mt-6">
+        <Notifications
+          instructors={instructors}
+          staffAttendance={staffAttendance}
+          staffLeave={staffLeave}
+          evaluations={evaluations}
+          courses={courses}
+          students={students}
+        />
       </div>
     </div>
   );
