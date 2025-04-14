@@ -35,11 +35,6 @@ const BasicNavbar = () => {
     <div className="flex flex-col">
       {/* Top bar with brand */}
       <div className="bg-[#0A2463] text-white h-16 flex items-center px-6">
-        {/* Left side - Logo */}
-        <div className="flex-shrink-0 w-24 mr-2">
-          <img src={govcioLogo} alt="GovCIO Logo" className="h-10" />
-        </div>
-        
         {/* Center - Title */}
         <div className="flex-grow flex justify-center">
           <span className="font-bold text-xl tracking-wide">GOVCIO/SAMS ELT PROGRAM MANAGEMENT</span>
