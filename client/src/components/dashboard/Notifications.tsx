@@ -6,6 +6,7 @@ import {
 import { format, subDays } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { StaffAttendance, StaffLeave, Evaluation, Instructor, Course, Student } from "@shared/schema";
 import { useSchool } from '@/hooks/useSchool';
@@ -246,86 +247,75 @@ const Notifications: React.FC<NotificationsProps> = ({
   }
 
   return (
-    <Card className="shadow-md border border-gray-200 overflow-hidden">
-      <CardHeader className="p-4 pb-3 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
-        <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center justify-between">
-          <div className="flex items-center">
-            <Bell className="h-5 w-5 mr-2 text-blue-500" />
-            Notifications
+    <div>
+      <div className="bg-gradient-to-r from-[#0A2463] to-[#1A3473] rounded-lg shadow-md p-4 text-white mb-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h3 className="text-sm font-semibold opacity-90 uppercase tracking-wider">Total Alerts</h3>
+            <p className="text-3xl font-bold mt-1">{allAlerts.length}</p>
           </div>
-          <Badge className="bg-blue-100 hover:bg-blue-200 text-blue-800 border border-blue-300">
-            {allAlerts.length} {allAlerts.length === 1 ? 'alert' : 'alerts'}
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      
-      <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="px-4 pt-2 bg-gray-50 border-b">
-          <TabsList className="bg-gray-100 p-1">
-            <TabsTrigger value="all" className="data-[state=active]:bg-white flex items-center gap-1">
-              <Bookmark className="h-4 w-4" />
-              <span>All</span>
-              <Badge variant="outline" className="ml-1 bg-gray-100 text-xs py-0 px-1.5 h-5">{getCategoryCount("all")}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="staff" className="data-[state=active]:bg-white flex items-center gap-1">
-              <Users className="h-4 w-4" />
-              <span>Staff</span>
-              <Badge variant="outline" className="ml-1 bg-gray-100 text-xs py-0 px-1.5 h-5">{getCategoryCount("staff")}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="students" className="data-[state=active]:bg-white flex items-center gap-1">
-              <GraduationCap className="h-4 w-4" />
-              <span>Students</span>
-              <Badge variant="outline" className="ml-1 bg-gray-100 text-xs py-0 px-1.5 h-5">{getCategoryCount("students")}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="courses" className="data-[state=active]:bg-white flex items-center gap-1">
-              <BookOpen className="h-4 w-4" />
-              <span>Courses</span>
-              <Badge variant="outline" className="ml-1 bg-gray-100 text-xs py-0 px-1.5 h-5">{getCategoryCount("courses")}</Badge>
-            </TabsTrigger>
-          </TabsList>
+          <div className="bg-white/20 p-3 rounded-lg">
+            <Bell className="w-8 h-8 text-white" />
+          </div>
         </div>
-        
-        <TabsContent value="all" className="mt-0">
-          <ScrollArea className={`${NOTIFICATION_PANEL_HEIGHT} w-full`}>
-            <div className="p-3 space-y-2">
-              {filteredAlerts.map((alert, index) => (
-                <NotificationCard key={`${alert.type}-${alert.id}-${index}`} alert={alert} />
-              ))}
+      </div>
+      
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex gap-1.5">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className={`py-1 px-2 text-xs ${activeTab === "all" ? "bg-blue-50 border-blue-200" : ""}`}
+            onClick={() => setActiveTab("all")}
+          >
+            <Bookmark className="h-3 w-3 mr-1" />
+            All <span className="ml-1 text-xs opacity-70">({getCategoryCount("all")})</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className={`py-1 px-2 text-xs ${activeTab === "staff" ? "bg-blue-50 border-blue-200" : ""}`}
+            onClick={() => setActiveTab("staff")}
+          >
+            <Users className="h-3 w-3 mr-1" />
+            Staff <span className="ml-1 text-xs opacity-70">({getCategoryCount("staff")})</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className={`py-1 px-2 text-xs ${activeTab === "students" ? "bg-blue-50 border-blue-200" : ""}`}
+            onClick={() => setActiveTab("students")}
+          >
+            <GraduationCap className="h-3 w-3 mr-1" />
+            Students <span className="ml-1 text-xs opacity-70">({getCategoryCount("students")})</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className={`py-1 px-2 text-xs ${activeTab === "courses" ? "bg-blue-50 border-blue-200" : ""}`}
+            onClick={() => setActiveTab("courses")}
+          >
+            <BookOpen className="h-3 w-3 mr-1" />
+            Courses <span className="ml-1 text-xs opacity-70">({getCategoryCount("courses")})</span>
+          </Button>
+        </div>
+      </div>
+      
+      <ScrollArea className="h-[200px] w-full mt-2">
+        <div className="space-y-2">
+          {filteredAlerts.length > 0 ? (
+            filteredAlerts.map((alert, index) => (
+              <NotificationCard key={`${alert.type}-${alert.id}-${index}`} alert={alert} />
+            ))
+          ) : (
+            <div className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg text-gray-500">
+              <CheckCircle className="h-6 w-6 text-green-500 mb-2" />
+              <p className="text-sm">No notifications in this category</p>
             </div>
-          </ScrollArea>
-        </TabsContent>
-        
-        <TabsContent value="staff" className="mt-0">
-          <ScrollArea className={`${NOTIFICATION_PANEL_HEIGHT} w-full`}>
-            <div className="p-3 space-y-2">
-              {filteredAlerts.map((alert, index) => (
-                <NotificationCard key={`${alert.type}-${alert.id}-${index}`} alert={alert} />
-              ))}
-            </div>
-          </ScrollArea>
-        </TabsContent>
-        
-        <TabsContent value="students" className="mt-0">
-          <ScrollArea className={`${NOTIFICATION_PANEL_HEIGHT} w-full`}>
-            <div className="p-3 space-y-2">
-              {filteredAlerts.map((alert, index) => (
-                <NotificationCard key={`${alert.type}-${alert.id}-${index}`} alert={alert} />
-              ))}
-            </div>
-          </ScrollArea>
-        </TabsContent>
-        
-        <TabsContent value="courses" className="mt-0">
-          <ScrollArea className={`${NOTIFICATION_PANEL_HEIGHT} w-full`}>
-            <div className="p-3 space-y-2">
-              {filteredAlerts.map((alert, index) => (
-                <NotificationCard key={`${alert.type}-${alert.id}-${index}`} alert={alert} />
-              ))}
-            </div>
-          </ScrollArea>
-        </TabsContent>
-      </Tabs>
-    </Card>
+          )}
+        </div>
+      </ScrollArea>
+    </div>
   );
 };
 

@@ -798,23 +798,23 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
+          {/* Notifications - enhanced with student count changes, staff changes, and course completions */}
+          <Card className="shadow-sm mt-6">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-lg text-[#0A2463]">Notifications</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pb-6">
+              <Notifications
+                instructors={instructors}
+                staffAttendance={staffAttendance}
+                staffLeave={staffLeave}
+                evaluations={evaluations}
+                courses={courses}
+                students={students}
+              />
+            </CardContent>
+          </Card>
         </div>
-        {/* Notifications - enhanced with student count changes, staff changes, and course completions */}
-        <Card className="shadow-sm">
-          <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-lg text-[#0A2463]">Notifications</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pb-6">
-            <Notifications
-              instructors={instructors}
-              staffAttendance={staffAttendance}
-              staffLeave={staffLeave}
-              evaluations={evaluations}
-              courses={courses}
-              students={students}
-            />
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
