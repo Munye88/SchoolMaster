@@ -254,6 +254,9 @@ export default function StaffLeaveTracker() {
   });
   
   // Form submission handler
+  // Reference to store the selected file
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  
   const onSubmit = async (values: LeaveFormValues) => {
     try {
       if (!currentSchool) {
@@ -265,8 +268,39 @@ export default function StaffLeaveTracker() {
         return;
       }
       
+      let attachmentUrl = values.attachmentUrl;
+      
+      // If there's a file selected, upload it first
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append('attachment', selectedFile);
+        
+        try {
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+          
+          if (!response.ok) {
+            throw new Error('File upload failed');
+          }
+          
+          const data = await response.json();
+          attachmentUrl = data.fileUrl; // Use the URL returned from the server
+        } catch (uploadError) {
+          console.error('Error uploading file:', uploadError);
+          toast({
+            title: "File Upload Error",
+            description: "Failed to upload attachment. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+      
       const leaveData: LeaveFormData = {
         ...values,
+        attachmentUrl,
         schoolId: currentSchool.id
       };
       
@@ -277,7 +311,8 @@ export default function StaffLeaveTracker() {
         description: "Leave request created successfully",
       });
       
-      // Reset form and close dialog
+      // Reset form and file selection
+      setSelectedFile(null);
       form.reset();
       setIsDialogOpen(false);
     } catch (error) {
@@ -482,9 +517,9 @@ export default function StaffLeaveTracker() {
                                 onChange={async (e) => {
                                   const file = e.target.files?.[0];
                                   if (file) {
-                                    // Handle file upload here - this would be connected to your API
-                                    // For now, just storing the file name
-                                    field.onChange(file.name);
+                                    // Store the file for upload during form submission
+                                    setSelectedFile(file);
+                                    field.onChange(file.name); // Just for display purposes
                                   }
                                 }}
                               />
