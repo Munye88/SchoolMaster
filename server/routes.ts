@@ -1218,7 +1218,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Action Logs
   app.get("/api/action-logs", async (req, res) => {
     try {
-      const logs = await db.select().from(actionLogs).orderBy(actionLogs.createdDate);
+      // Use specific fields instead of * to work around schema mismatch issues
+      const logs = await db.select({
+        id: actionLogs.id,
+        title: actionLogs.title,
+        requesterName: actionLogs.requesterName,
+        description: actionLogs.description,
+        createdDate: actionLogs.createdDate,
+        dueDate: actionLogs.dueDate,
+        completedDate: actionLogs.completedDate,
+        status: actionLogs.status,
+        category: actionLogs.category,
+        assignedTo: actionLogs.assignedTo,
+        createdBy: actionLogs.createdBy,
+        schoolId: actionLogs.schoolId
+      }).from(actionLogs).orderBy(actionLogs.createdDate);
+      
       res.json(logs);
     } catch (error) {
       console.error("Error fetching action logs:", error);

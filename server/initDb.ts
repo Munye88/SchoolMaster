@@ -8,6 +8,7 @@ import { updateKfnaInstructors } from './migrations/update_kfna_instructors';
 import { updateKfnaImages } from './migrations/update_kfna_images';
 import { updateNfsWestInstructors } from './migrations/update_nfs_west_instructors';
 import { updateNfsWestImages } from './migrations/update_nfs_west_images';
+import { addCompletedDateField } from './migrations/add_completed_date';
 
 export async function initDatabase() {
   try {
@@ -62,6 +63,9 @@ export async function initDatabase() {
     
     // Update NFS West instructor images
     await updateNfsWestImages();
+    
+    // Add completed_date field to action_logs table
+    await addCompletedDateField();
     
     return true;
   } catch (error) {
