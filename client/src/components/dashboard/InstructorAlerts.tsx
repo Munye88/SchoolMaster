@@ -7,14 +7,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { StaffAttendance, StaffLeave, Evaluation, Instructor } from "@shared/schema";
 import { useSchool } from '@/hooks/useSchool';
 
-interface InstructorAlertsProps {
+interface NotificationsProps {
   instructors: Instructor[];
   staffAttendance: StaffAttendance[];
   staffLeave: StaffLeave[];
   evaluations: Evaluation[];
 }
 
-const InstructorAlerts: React.FC<InstructorAlertsProps> = ({
+const Notifications: React.FC<NotificationsProps> = ({
   instructors,
   staffAttendance,
   staffLeave,
@@ -95,7 +95,7 @@ const InstructorAlerts: React.FC<InstructorAlertsProps> = ({
         <CardHeader className="p-4 pb-2 border-b">
           <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
             <AlertCircle className="h-5 w-5 mr-2 text-green-500" />
-            Instructor Alerts
+            Notifications
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4">
@@ -115,7 +115,7 @@ const InstructorAlerts: React.FC<InstructorAlertsProps> = ({
       <CardHeader className="p-4 pb-2 border-b">
         <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
           <AlertTriangle className="h-5 w-5 mr-2 text-amber-500" />
-          Instructor Alerts ({allAlerts.length})
+          Notifications ({allAlerts.length})
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
@@ -170,4 +170,4 @@ const InstructorAlerts: React.FC<InstructorAlertsProps> = ({
   );
 };
 
-export default InstructorAlerts;
+export default Notifications;
