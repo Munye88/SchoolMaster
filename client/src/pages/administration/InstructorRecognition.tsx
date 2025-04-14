@@ -24,8 +24,8 @@ import { StandardInstructorAvatar } from "@/components/instructors/StandardInstr
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import awardsImage from "../../assets/awards-page.png";
-import govcioLogo from "../../assets/images/govcio-logo-transparent.png";
-import certificateBackground from "../../assets/images/certificate-background.jpeg";
+import govcioLogo from "../../assets/images/govcio-logo-new.png";
+import certificateBackground from "../../assets/images/certificate-background2.jpeg";
 
 type AwardCategory = 'Employee of the Month' | 'Perfect Attendance' | 'Outstanding Performance' | 'Excellence in Teaching';
 
@@ -434,29 +434,29 @@ Return ONLY a JSON array with this structure and nothing else:
       hiddenElement.style.overflow = 'hidden';
       hiddenElement.id = 'hidden-certificate';
       
-      // Certificate HTML with the new background image and positioning
+      // Certificate HTML with the new background image and updated logo
       hiddenElement.innerHTML = `
         <div style="position:relative; width:100%; height:100%; font-family:Arial, sans-serif; background:white;">
-          <!-- Background image -->
+          <!-- Background image - updated to new background -->
           <div style="position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden;">
             <img src="${certificateBackground}" style="width:100%; height:100%; object-fit:cover;" />
           </div>
           
           <!-- Content area -->
           <div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1;">
-            <!-- Logo area - moved to top left as requested -->
+            <!-- Logo area - at top left with new logo -->
             <div style="position:absolute; top:40px; left:40px; height:80px; display:flex; align-items:center;">
-              <img src="${govcioLogo}" style="height:80px;" />
+              <img src="${govcioLogo}" style="height:100px;" />
             </div>
             
             <!-- Certificate title -->
-            <div style="position:absolute; top:140px; left:0; right:0; text-align:center;">
+            <div style="position:absolute; top:150px; left:0; right:0; text-align:center;">
               <h1 style="font-size:54px; color:#1A2E5A; font-weight:bold; margin:0; letter-spacing:2px; line-height:1.1;">CERTIFICATE</h1>
               <h2 style="font-size:28px; color:#1A2E5A; font-style:italic; margin:0; font-weight:normal;">of ${selectedCategory}</h2>
             </div>
             
             <!-- Recipient information with improved spacing -->
-            <div style="position:absolute; top:240px; left:0; right:0; text-align:center;">
+            <div style="position:absolute; top:250px; left:0; right:0; text-align:center;">
               <p style="font-size:16px; color:#333; margin-bottom:15px;">THIS CERTIFICATE IS PRESENTED TO...</p>
               <h3 style="font-size:48px; font-weight:bold; color:#1A2E5A; margin:0 0 40px 0; font-style:italic;">${certificateData.recipientName}</h3>
             </div>
@@ -787,16 +787,16 @@ Return ONLY a JSON array with this structure and nothing else:
                       {/* Certificate Preview that exactly resembles the final design with the new background */}
                       <div className="w-full max-w-lg relative bg-white p-6 rounded-lg shadow mb-6 overflow-hidden" 
                            style={{ aspectRatio: '1.4/1' }}>
-                        {/* Background image */}
+                        {/* Background image - updated to new background */}
                         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
                           <img src={certificateBackground} className="w-full h-full object-cover" alt="Certificate background" />
                         </div>
                         
                         {/* Content overlay */}
                         <div className="relative z-10 h-full">
-                          {/* Logo - moved to top left as requested */}
+                          {/* Logo - updated to new logo */}
                           <div className="absolute top-2 left-3">
-                            <img src={govcioLogo} alt="GovCIO Logo" className="h-7" />
+                            <img src={govcioLogo} alt="GovCIO Logo" className="h-8" />
                           </div>
                           
                           <div className="text-center mt-10 relative z-10">
@@ -815,7 +815,7 @@ Return ONLY a JSON array with this structure and nothing else:
                                   : ''}
                               </p>
                               
-                              {/* Signature - moved to bottom right as requested */}
+                              {/* Signature - positioned at bottom right */}
                               <div className="absolute bottom-2 right-3 w-20 text-center">
                                 <div className="border-b border-gray-400 pb-1 mb-1 flex justify-center">
                                   <span className="text-[8px] leading-none">Signature</span>
