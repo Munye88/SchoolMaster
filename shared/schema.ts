@@ -410,6 +410,7 @@ export const actionLogs = pgTable("action_logs", {
   description: text("description").notNull(),
   createdDate: timestamp("created_date").notNull().defaultNow(),
   dueDate: timestamp("due_date"),
+  completedDate: timestamp("completed_date"),
   status: text("status", { 
     enum: ["pending", "completed", "under_review"] 
   }).notNull().default("pending"),
@@ -425,6 +426,7 @@ export const insertActionLogSchema = createInsertSchema(actionLogs).pick({
   description: true,
   createdDate: true,
   dueDate: true,
+  completedDate: true,
   status: true,
   category: true,
   assignedTo: true,

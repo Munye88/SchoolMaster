@@ -72,11 +72,10 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
                   cx="50%"
                   cy="50%"
                   innerRadius={40}
-                  outerRadius={80}
+                  outerRadius={70}
                   paddingAngle={5}
                   dataKey="value"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  labelLine={false}
+                  // Remove the inline labels that were hard to read
                 >
                   {statusData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -85,7 +84,12 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
                 <Tooltip 
                   formatter={(value, name) => [`${value} items`, name]}
                 />
-                <Legend layout="vertical" verticalAlign="bottom" align="center" />
+                <Legend 
+                  layout="horizontal" 
+                  verticalAlign="bottom" 
+                  align="center"
+                  wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -107,11 +111,9 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
                     cx="50%"
                     cy="50%"
                     innerRadius={40}
-                    outerRadius={80}
+                    outerRadius={70}
                     paddingAngle={5}
                     dataKey="value"
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    labelLine={false}
                   >
                     {categoryData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -120,7 +122,12 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
                   <Tooltip 
                     formatter={(value, name) => [`${value} items`, name]}
                   />
-                  <Legend layout="vertical" verticalAlign="bottom" align="center" />
+                  <Legend 
+                    layout="horizontal" 
+                    verticalAlign="bottom" 
+                    align="center"
+                    wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
