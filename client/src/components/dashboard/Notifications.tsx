@@ -166,15 +166,20 @@ const Notifications: React.FC<NotificationsProps> = ({
     ? courseCompletions.filter(alert => alert.schoolId === selectedSchool.id)
     : courseCompletions;
   
-  // Combine all alerts
-  const allAlerts: Notification[] = [
+  // Combine all alerts and fix possible type issues
+  const correctTypeAlerts = [
     ...filteredAbsentInstructors, 
     ...filteredInstructorsOnLeave, 
     ...filteredLowPerformingInstructors,
     ...filteredStudentChanges,
     ...filteredStaffChanges,
     ...filteredCourseCompletions
-  ].sort((a, b) => {
+  ].map(alert => ({
+    ...alert,
+    priority: alert.priority as 'high' | 'medium' | 'low' | undefined
+  }));
+  
+  const allAlerts: Notification[] = correctTypeAlerts.sort((a, b) => {
     // Sort by priority first
     const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
     const aPriority = (a.priority || 'medium') as 'high' | 'medium' | 'low';
