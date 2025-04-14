@@ -17,12 +17,13 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Award, Calendar, Crown, FileSpreadsheet, Medal, Settings, Star, Trophy, UserCheck, Lightbulb } from "lucide-react";
+import { Award, Calendar, Crown, Download, FileSpreadsheet, Medal, Settings, Star, Trophy, UserCheck, Lightbulb } from "lucide-react";
 import { useAIChat } from "@/hooks/use-ai-chat";
 import { Instructor } from "@shared/schema";
 import { StandardInstructorAvatar } from "@/components/instructors/StandardInstructorAvatar";
-import certificateImage from "../../assets/certificate-template.png";
-import awardsImage from "@assets/Screenshot 2025-04-13 at 22.04.56.png";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import awardsImage from "../../assets/awards-page.png";
 
 type AwardCategory = 'Employee of the Month' | 'Perfect Attendance' | 'Outstanding Performance' | 'Excellence in Teaching';
 
@@ -341,12 +342,68 @@ Return ONLY a JSON array with this structure and nothing else:
     });
   };
 
-  // Handle certificate generation
-  const generateCertificate = () => {
-    toast({
-      title: "Certificate prepared",
-      description: `Award certificate created for ${certificateData.recipientName}.`,
-    });
+  // Handle certificate generation and download
+  const generateCertificate = async () => {
+    try {
+      // Find the certificate element
+      const certificateElement = document.getElementById("certificate-element");
+      if (!certificateElement) {
+        toast({
+          title: "Error",
+          description: "Certificate element not found",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Generating certificate",
+        description: "Please wait while we prepare your certificate...",
+      });
+
+      // Use html2canvas to capture the certificate as an image
+      const canvas = await html2canvas(certificateElement, {
+        scale: 2, // Higher scale for better quality
+        logging: false,
+        useCORS: true,
+        backgroundColor: "#ffffff"
+      });
+
+      // Create PDF with jsPDF
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4"
+      });
+
+      // Calculate positioning to center the image
+      const imgWidth = 280; // A4 width in landscape (297mm) with some margin
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const x = (pageWidth - imgWidth) / 2;
+      const y = (pageHeight - imgHeight) / 2;
+
+      // Add the image to the PDF
+      const imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+
+      // Save the PDF
+      const fileName = `${certificateData.award.replace(/\s+/g, '_')}_${certificateData.recipientName.replace(/\s+/g, '_')}.pdf`;
+      pdf.save(fileName);
+
+      toast({
+        title: "Certificate downloaded",
+        description: `Award certificate for ${certificateData.recipientName} has been downloaded.`,
+      });
+    } catch (error) {
+      console.error("Error generating certificate:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate certificate. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
