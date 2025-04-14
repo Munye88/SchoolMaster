@@ -68,8 +68,25 @@ const InstructorAlerts: React.FC<InstructorAlertsProps> = ({
       };
     });
 
+  // Filter alerts based on selected school
+  const filteredAbsentInstructors = selectedSchool 
+    ? absentInstructors.filter(alert => alert.schoolId === selectedSchool.id)
+    : absentInstructors;
+    
+  const filteredInstructorsOnLeave = selectedSchool
+    ? instructorsOnLeave.filter(alert => alert.schoolId === selectedSchool.id)
+    : instructorsOnLeave;
+    
+  const filteredLowPerformingInstructors = selectedSchool
+    ? lowPerformingInstructors.filter(alert => alert.schoolId === selectedSchool.id)
+    : lowPerformingInstructors;
+  
   // Combine all alerts
-  const allAlerts = [...absentInstructors, ...instructorsOnLeave, ...lowPerformingInstructors];
+  const allAlerts = [
+    ...filteredAbsentInstructors, 
+    ...filteredInstructorsOnLeave, 
+    ...filteredLowPerformingInstructors
+  ];
 
   // If no alerts, show a friendly message
   if (allAlerts.length === 0) {
