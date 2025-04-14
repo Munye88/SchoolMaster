@@ -1,7 +1,11 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage as dbStorage } from "./storage";
 import { z } from "zod";
+import fs from "fs";
+import path from "path";
+import multer from "multer";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { 
@@ -32,6 +36,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Set up authentication
   setupAuth(app);
+  
+  // File upload directory setup
+  const uploadDir = path.join(process.cwd(), 'uploads');
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+  }
+  
+  // Configure multer storage
+  const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+      cb(null, uploadDir);
+    },
+    filename: function(req, file, cb) {
+      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+      const fileExtension = path.extname(file.originalname);
+      cb(null, `${file.fieldname}-${uniqueSuffix}${fileExtension}`);
+    }
+  });
+  
+  const upload = multer({ storage: storage });
   
   // API routes - prefix all routes with /api
   
@@ -1159,6 +1183,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to delete staff leave record" });
     }
   });
+  
+  // File upload endpoint for leave request attachments
+  app.post("/api/upload", upload.single('attachment'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      // Return the file path that can be stored in the database
+      const filePath = `/uploads/${req.file.filename}`;
+      const fileUrl = `${req.protocol}://${req.get('host')}${filePath}`;
+      
+      res.status(201).json({ 
+        message: "File uploaded successfully",
+        fileUrl: fileUrl,
+        fileName: req.file.originalname
+      });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      res.status(500).json({ message: "Failed to upload file", error: errorMessage });
+    }
+  });
+  
+  // Serve uploaded files statically
+  app.use('/uploads', express.static(uploadDir));
 
   const httpServer = createServer(app);
   return httpServer;

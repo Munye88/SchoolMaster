@@ -624,6 +624,7 @@ export default function StaffLeaveTracker() {
                           <SelectContent>
                             <SelectItem value="PTO">PTO</SelectItem>
                             <SelectItem value="R&R">R&R</SelectItem>
+                            <SelectItem value="PTO and R&R">PTO and R&R</SelectItem>
                             <SelectItem value="Paternity">Paternity</SelectItem>
                             <SelectItem value="Bereavement">Bereavement</SelectItem>
                             <SelectItem value="Negative PTO">Negative PTO</SelectItem>
@@ -1280,6 +1281,7 @@ export default function StaffLeaveTracker() {
                       <SelectContent>
                         <SelectItem value="PTO">PTO</SelectItem>
                         <SelectItem value="R&R">R&R</SelectItem>
+                        <SelectItem value="PTO and R&R">PTO and R&R</SelectItem>
                         <SelectItem value="Paternity">Paternity</SelectItem>
                         <SelectItem value="Bereavement">Bereavement</SelectItem>
                         <SelectItem value="Negative PTO">Negative PTO</SelectItem>
