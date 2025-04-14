@@ -232,12 +232,27 @@ export default function ActionLogPage() {
   });
 
   const onCreateSubmit = (data: FormData) => {
-    createMutation.mutate(data);
+    // Convert string date to proper Date object if it exists
+    const formattedData = {
+      ...data,
+      // For dueDate, ensure it stays as a Date object for Zod validation
+      dueDate: data.dueDate,
+      // createdBy will be set on the server side
+    };
+    
+    createMutation.mutate(formattedData);
   };
 
   const onEditSubmit = (data: FormData) => {
     if (selectedLog) {
-      updateMutation.mutate({ id: selectedLog.id, data });
+      // Convert string date to proper Date object if it exists
+      const formattedData = {
+        ...data,
+        // For dueDate, ensure it stays as a Date object for Zod validation
+        dueDate: data.dueDate,
+      };
+      
+      updateMutation.mutate({ id: selectedLog.id, data: formattedData });
     }
   };
 

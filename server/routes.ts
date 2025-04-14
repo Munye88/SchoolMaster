@@ -1248,14 +1248,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/action-logs", async (req, res) => {
     try {
-      const logData = insertActionLogSchema.parse(req.body);
+      // Process incoming data - handle date conversion if needed
+      const rawData = req.body;
+      
+      // Parse the date string to a proper Date object if it exists
+      const processedData = {
+        ...rawData,
+        dueDate: rawData.dueDate ? new Date(rawData.dueDate) : undefined,
+      };
       
       // Set created by to current user if authenticated
       const userId = req.isAuthenticated() ? req.user.id : 1;
       
+      // Now parse with the schema
+      const logData = insertActionLogSchema.parse({
+        ...processedData,
+        createdBy: userId
+      });
+      
       const [log] = await db.insert(actionLogs).values({
         ...logData,
-        createdBy: userId,
         createdDate: new Date()
       }).returning();
       
@@ -1291,7 +1303,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Action log not found" });
       }
       
-      const updateData = insertActionLogSchema.partial().parse(req.body);
+      // Process the incoming data and handle date conversion
+      const rawData = req.body;
+      const processedData = {
+        ...rawData,
+        dueDate: rawData.dueDate ? new Date(rawData.dueDate) : undefined,
+      };
+      
+      const updateData = insertActionLogSchema.partial().parse(processedData);
       
       const [updatedLog] = await db
         .update(actionLogs)
