@@ -438,10 +438,10 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Staff Notifications */}
+          {/* Student Distribution by School */}
           <Card className="shadow-sm">
             <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-lg text-[#0A2463]">Staff Notifications</CardTitle>
+              <CardTitle className="text-lg text-[#0A2463]">Student Distribution by School</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pb-6">
               <div className="space-y-4">
@@ -618,7 +618,17 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* School Distribution */}
+          {/* Notifications - enhanced with student count changes, staff changes, and course completions */}
+          <Notifications
+            instructors={instructors}
+            staffAttendance={staffAttendance}
+            staffLeave={staffLeave}
+            evaluations={evaluations}
+            courses={courses}
+            students={students}
+          />
+
+          {/* Student Distribution */}
           <Card className="shadow-sm">
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-lg text-[#0A2463]">Student Distribution by School</CardTitle>
@@ -765,13 +775,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Notifications - displays alerts for absent instructors, instructors on leave, and those with evaluation scores below 85% */}
-          <Notifications 
-            instructors={instructors}
-            staffAttendance={staffAttendance}
-            staffLeave={staffLeave}
-            evaluations={evaluations}
-          />
+
         </div>
 
         {/* Right Column */}

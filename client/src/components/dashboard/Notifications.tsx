@@ -60,7 +60,7 @@ const Notifications: React.FC<NotificationsProps> = ({
         schoolId: instructor?.schoolId || 0,
         reason: record.comments || 'No reason provided',
         type: 'absent' as NotificationType,
-        priority: 'high', 
+        priority: 'high' as 'high' | 'medium' | 'low', 
         timestamp: new Date(),
       };
     });
@@ -81,7 +81,7 @@ const Notifications: React.FC<NotificationsProps> = ({
         schoolId: instructor?.schoolId || 0,
         reason: `${leave.leaveType || 'PTO'} - Returns ${format(new Date(leave.returnDate), 'MMM dd')}`,
         type: 'leave' as NotificationType,
-        priority: 'medium',
+        priority: 'medium' as 'high' | 'medium' | 'low',
         timestamp: new Date(leave.startDate),
       };
     });
@@ -97,7 +97,7 @@ const Notifications: React.FC<NotificationsProps> = ({
         schoolId: instructor?.schoolId || 0,
         reason: `${evaluation.score}% in ${evaluation.quarter}`,
         type: 'evaluation' as NotificationType,
-        priority: 'high',
+        priority: 'high' as 'high' | 'medium' | 'low',
         timestamp: today,
       };
     });
@@ -110,7 +110,7 @@ const Notifications: React.FC<NotificationsProps> = ({
       schoolId: selectedSchool?.id || 0,
       reason: 'Class size increased from 24 to 27 students in Aviation course',
       type: 'student_change',
-      priority: 'medium',
+      priority: 'medium' as 'high' | 'medium' | 'low',
       timestamp: subDays(new Date(), 1),
     }
   ];
@@ -123,7 +123,7 @@ const Notifications: React.FC<NotificationsProps> = ({
       schoolId: selectedSchool?.id || 0,
       reason: 'Sarah Johnson was added to the instructor roster',
       type: 'staff_change',
-      priority: 'medium',
+      priority: 'medium' as 'high' | 'medium' | 'low',
       timestamp: subDays(new Date(), 2),
     }
   ];
@@ -136,7 +136,7 @@ const Notifications: React.FC<NotificationsProps> = ({
       schoolId: selectedSchool?.id || 0,
       reason: 'Aviation English I has been completed',
       type: 'course_complete',
-      priority: 'low',
+      priority: 'low' as 'high' | 'medium' | 'low',
       timestamp: subDays(new Date(), 3),
     }
   ];
@@ -176,8 +176,10 @@ const Notifications: React.FC<NotificationsProps> = ({
     ...filteredCourseCompletions
   ].sort((a, b) => {
     // Sort by priority first
-    const priorityOrder = { high: 0, medium: 1, low: 2 };
-    const priorityDiff = priorityOrder[a.priority || 'medium'] - priorityOrder[b.priority || 'medium'];
+    const priorityOrder: Record<string, number> = { high: 0, medium: 1, low: 2 };
+    const aPriority = (a.priority || 'medium') as 'high' | 'medium' | 'low';
+    const bPriority = (b.priority || 'medium') as 'high' | 'medium' | 'low';
+    const priorityDiff = priorityOrder[aPriority] - priorityOrder[bPriority];
     
     if (priorityDiff !== 0) return priorityDiff;
     
