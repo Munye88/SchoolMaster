@@ -55,6 +55,24 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
     const dueDate = new Date(log.dueDate);
     return dueDate >= today && dueDate <= nextWeek && log.status !== 'completed';
   }).length;
+  
+  // Calculate average time to completion (for completed items with both dates)
+  let avgCompletionTime = 0;
+  const completedLogs = logs.filter(log => 
+    log.status === 'completed' && log.completedDate && log.createdDate
+  );
+  
+  if (completedLogs.length > 0) {
+    const totalDays = completedLogs.reduce((sum, log) => {
+      const completedDate = new Date(log.completedDate!);
+      const createdDate = new Date(log.createdDate);
+      const diffTime = Math.abs(completedDate.getTime() - createdDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return sum + diffDays;
+    }, 0);
+    
+    avgCompletionTime = Math.round(totalDays / completedLogs.length);
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -161,6 +179,12 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
             <div className="flex items-center justify-between rounded-lg bg-amber-50 dark:bg-amber-900/20 p-3">
               <div className="text-sm font-medium text-amber-700 dark:text-amber-300">Due Soon (7 days)</div>
               <div className="text-xl font-bold text-amber-700 dark:text-amber-300">{dueSoonCount}</div>
+            </div>
+            <div className="flex items-center justify-between rounded-lg bg-purple-50 dark:bg-purple-900/20 p-3">
+              <div className="text-sm font-medium text-purple-700 dark:text-purple-300">Avg. Completion Time</div>
+              <div className="text-xl font-bold text-purple-700 dark:text-purple-300">
+                {completedLogs.length > 0 ? `${avgCompletionTime} days` : 'N/A'}
+              </div>
             </div>
           </div>
         </CardContent>

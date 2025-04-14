@@ -73,10 +73,13 @@ export function PrintableActionLogs({ logs, printRef }: PrintableActionLogsProps
               <td className="border px-4 py-2">{getStatusText(log.status)}</td>
               <td className="border px-4 py-2">{log.category || '-'}</td>
               <td className="border px-4 py-2">
+                {format(new Date(log.createdDate), 'MMM d, yyyy')}
+              </td>
+              <td className="border px-4 py-2">
                 {log.dueDate ? format(new Date(log.dueDate), 'MMM d, yyyy') : '-'}
               </td>
               <td className="border px-4 py-2">
-                {format(new Date(log.createdDate), 'MMM d, yyyy')}
+                {log.completedDate ? format(new Date(log.completedDate), 'MMM d, yyyy') : '-'}
               </td>
             </tr>
           ))}
@@ -101,11 +104,16 @@ export function PrintableActionLogs({ logs, printRef }: PrintableActionLogsProps
                 <span className="font-semibold">Category:</span> {log.category || '-'}
               </div>
               <div>
-                <span className="font-semibold">Due Date:</span> {log.dueDate ? format(new Date(log.dueDate), 'MMM d, yyyy') : '-'}
-              </div>
-              <div>
                 <span className="font-semibold">Created Date:</span> {format(new Date(log.createdDate), 'MMM d, yyyy')}
               </div>
+              <div>
+                <span className="font-semibold">Due Date:</span> {log.dueDate ? format(new Date(log.dueDate), 'MMM d, yyyy') : '-'}
+              </div>
+              {log.status === 'completed' && log.completedDate && (
+                <div>
+                  <span className="font-semibold">Completed Date:</span> {format(new Date(log.completedDate), 'MMM d, yyyy')}
+                </div>
+              )}
             </div>
             <div>
               <span className="font-semibold">Description:</span>
