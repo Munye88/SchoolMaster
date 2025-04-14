@@ -1215,6 +1215,139 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Serve uploaded files statically
   app.use('/uploads', express.static(uploadDir));
 
+  // Action Logs
+  app.get("/api/action-logs", async (req, res) => {
+    try {
+      const logs = await db.select().from(actionLogs).orderBy(actionLogs.createdDate, "desc");
+      res.json(logs);
+    } catch (error) {
+      console.error("Error fetching action logs:", error);
+      res.status(500).json({ message: "Failed to fetch action logs" });
+    }
+  });
+
+  app.get("/api/action-logs/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid action log ID" });
+    }
+    
+    try {
+      const [log] = await db.select().from(actionLogs).where(eq(actionLogs.id, id));
+      
+      if (!log) {
+        return res.status(404).json({ message: "Action log not found" });
+      }
+      
+      res.json(log);
+    } catch (error) {
+      console.error("Error fetching action log:", error);
+      res.status(500).json({ message: "Failed to fetch action log" });
+    }
+  });
+
+  app.post("/api/action-logs", async (req, res) => {
+    try {
+      const logData = insertActionLogSchema.parse(req.body);
+      
+      // Set created by to current user if authenticated
+      const userId = req.isAuthenticated() ? req.user.id : 1;
+      
+      const [log] = await db.insert(actionLogs).values({
+        ...logData,
+        createdBy: userId,
+        createdDate: new Date()
+      }).returning();
+      
+      // Log the activity
+      await dbStorage.createActivity({
+        type: "action_log_created",
+        description: `New action log "${log.title}" created`,
+        timestamp: new Date(),
+        userId: userId
+      });
+      
+      res.status(201).json(log);
+    } catch (error) {
+      console.error("Error creating action log:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid action log data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create action log" });
+    }
+  });
+
+  app.patch("/api/action-logs/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid action log ID" });
+    }
+    
+    try {
+      // Get existing log to check if it exists
+      const [existingLog] = await db.select().from(actionLogs).where(eq(actionLogs.id, id));
+      
+      if (!existingLog) {
+        return res.status(404).json({ message: "Action log not found" });
+      }
+      
+      const updateData = insertActionLogSchema.partial().parse(req.body);
+      
+      const [updatedLog] = await db
+        .update(actionLogs)
+        .set(updateData)
+        .where(eq(actionLogs.id, id))
+        .returning();
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "action_log_updated",
+        description: `Action log "${updatedLog.title}" updated`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(updatedLog);
+    } catch (error) {
+      console.error("Error updating action log:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid action log data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update action log" });
+    }
+  });
+
+  app.delete("/api/action-logs/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid action log ID" });
+    }
+    
+    try {
+      // Get the log before deleting for the activity log
+      const [log] = await db.select().from(actionLogs).where(eq(actionLogs.id, id));
+      
+      if (!log) {
+        return res.status(404).json({ message: "Action log not found" });
+      }
+      
+      await db.delete(actionLogs).where(eq(actionLogs.id, id));
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "action_log_deleted",
+        description: `Action log "${log.title}" deleted`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting action log:", error);
+      res.status(500).json({ message: "Failed to delete action log" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

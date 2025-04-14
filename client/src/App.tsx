@@ -13,6 +13,7 @@ import Administration from "@/pages/Administration";
 import TrainingDevelopment from "@/pages/TrainingDevelopment";
 import DLI from "@/pages/DLI";
 import InstructorRecognition from "@/pages/InstructorRecognition";
+import ActionLogPage from "@/pages/action-log";
 import BasicNavbar from "@/components/layout/BasicNavbar";
 import SchoolInstructorProfiles from "./pages/school/InstructorProfiles";
 import SchoolTimetable from "./pages/school/Timetable";
@@ -69,6 +70,7 @@ function Router() {
           <ProtectedRoute path="/test-tracker" component={TestTracker} />
           <ProtectedRoute path="/reports" component={Reports} />
           <ProtectedRoute path="/documents" component={Documents} />
+          <ProtectedRoute path="/action-log" component={ActionLogPage} />
           
           {/* Administration routes */}
           <ProtectedRoute path="/administration/company-policy" component={Administration} />
