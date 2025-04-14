@@ -318,7 +318,10 @@ export default function ActionLogPage() {
           </Button>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="print:hidden bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90">
+              <Button 
+                onClick={() => setIsCreateDialogOpen(true)}
+                className="print:hidden bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 New Action Item
               </Button>
@@ -482,11 +485,12 @@ export default function ActionLogPage() {
                   <DialogFooter>
                     <Button 
                       type="submit" 
+                      size="lg"
                       disabled={createMutation.isPending}
-                      className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+                      className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white font-semibold py-6"
                     >
                       {createMutation.isPending && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       )}
                       Create Action Item
                     </Button>
@@ -797,11 +801,12 @@ export default function ActionLogPage() {
               <DialogFooter>
                 <Button
                   type="submit"
+                  size="lg"
                   disabled={updateMutation.isPending}
-                  className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+                  className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white font-semibold py-6"
                 >
                   {updateMutation.isPending && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   )}
                   Update Action Item
                 </Button>
