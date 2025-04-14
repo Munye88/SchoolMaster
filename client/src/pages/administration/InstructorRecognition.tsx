@@ -24,6 +24,7 @@ import { StandardInstructorAvatar } from "@/components/instructors/StandardInstr
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import awardsImage from "../../assets/awards-page.png";
+import govcioLogo from "../../assets/images/govcio-logo.png";
 
 type AwardCategory = 'Employee of the Month' | 'Perfect Attendance' | 'Outstanding Performance' | 'Excellence in Teaching';
 
@@ -343,6 +344,17 @@ Return ONLY a JSON array with this structure and nothing else:
     }
   }, [aiResponse, isAiLoading, instructorQuery.data, selectedCategory, selectedSchoolDetails]);
 
+  // Helper function to get ordinal suffix for day of month
+  const getOrdinalSuffix = (day: number): string => {
+    if (day > 3 && day < 21) return "th";
+    switch (day % 10) {
+      case 1: return "st";
+      case 2: return "nd";
+      case 3: return "rd";
+      default: return "th";
+    }
+  };
+
   // Handle instructor selection
   const handleSelectInstructor = (instructor: InstructorWithScore) => {
     setSelectedInstructor(instructor);
@@ -355,13 +367,60 @@ Return ONLY a JSON array with this structure and nothing else:
     });
   };
 
+  // Generate detailed accomplishment text based on instructor data
+  const generateAccomplishmentText = (instructor: InstructorWithScore, category: string) => {
+    if (!instructor) return "";
+    
+    // Get data for text generation
+    const attendance = instructor.attendancePercentage || 0;
+    const evaluation = instructor.evaluationScore || 0;
+    const strengths = instructor.strengths || [];
+    
+    let text = "";
+    
+    // Create texts based on award category
+    switch(category) {
+      case "Perfect Attendance":
+        text = `Your perfect attendance record is a remarkable achievement, reflecting your unwavering commitment and reliability. By maintaining ${attendance}% attendance, you have set an outstanding example for your colleagues. Your consistent presence and dedication have significantly contributed to the success of our team. Your positive attitude and continuous collaboration make you an invaluable asset to our organization. We deeply appreciate your outstanding contributions and exceptional dedication.`;
+        break;
+      case "Employee of the Month":
+        text = `Your outstanding performance as an instructor has been exceptional this month. With an impressive ${evaluation} evaluation score and ${attendance}% attendance rate, you exemplify the highest standards of professionalism and excellence in teaching. Your ${strengths.join(', ').toLowerCase()} have made a significant impact on your students and colleagues alike. Your dedication to educational excellence and unwavering commitment to student success make you truly deserving of this recognition. We are fortunate to have you as a valuable member of our team.`;
+        break;
+      case "Outstanding Performance":
+        text = `Your exceptional performance in all aspects of your role has not gone unnoticed. With a stellar evaluation score of ${evaluation} and excellent attendance record of ${attendance}%, you consistently demonstrate the highest level of competence and dedication. Your strengths in ${strengths.join(', ').toLowerCase()} have elevated the standard of instruction at our institution. Your commitment to excellence and your positive influence on both students and colleagues make you an invaluable asset to our educational community.`;
+        break;
+      case "Excellence in Teaching":
+        text = `Your commitment to teaching excellence has made a profound impact on your students' educational journey. Your innovative teaching methods, thorough subject knowledge, and exceptional communication skills have resulted in an outstanding evaluation score of ${evaluation}. Your dedication is further evidenced by your ${attendance}% attendance record. Your passion for education and unwavering dedication to student success inspire everyone around you. We are truly grateful for your remarkable contributions to our educational mission.`;
+        break;
+      default:
+        text = `Your exceptional dedication and outstanding performance have significantly contributed to our educational excellence. With an impressive evaluation score of ${evaluation} and attendance rate of ${attendance}%, you have consistently demonstrated the highest standards of professionalism. Your skills in ${strengths.join(', ').toLowerCase()} have made a tremendous impact on student learning outcomes. We deeply appreciate your unwavering commitment and valuable contributions to our institution.`;
+    }
+    
+    return text;
+  };
+
   // Handle certificate generation and download
   const generateCertificate = async () => {
+    if (!selectedInstructor) {
+      toast({
+        title: "No instructor selected",
+        description: "Please select an instructor to generate a certificate",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     try {
       toast({
         title: "Generating certificate",
         description: "Please wait while we prepare your certificate...",
       });
+
+      // Get detailed accomplishment text
+      const accomplishmentText = generateAccomplishmentText(selectedInstructor, selectedCategory);
+
+      // Format date for certificate
+      const formattedDate = `${new Date().getDate()}${getOrdinalSuffix(new Date().getDate())} of ${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`;
 
       // Create a hidden certificate element for rendering
       const hiddenElement = document.createElement('div');
@@ -369,48 +428,68 @@ Return ONLY a JSON array with this structure and nothing else:
       hiddenElement.style.left = '-9999px';
       hiddenElement.style.top = '-9999px';
       hiddenElement.style.width = '1100px'; // Wide enough for landscape
-      hiddenElement.style.height = '850px'; // Tall enough for content
+      hiddenElement.style.height = '800px'; // Tall enough for content
       hiddenElement.style.backgroundColor = 'white';
       hiddenElement.style.overflow = 'hidden';
       hiddenElement.id = 'hidden-certificate';
       
-      // Certificate HTML
+      // Certificate HTML - matching exactly the provided example
       hiddenElement.innerHTML = `
-        <div style="position:relative; width:100%; height:100%; padding:40px; font-family:serif; background:white;">
-          <div style="position:absolute; top:0; left:0; width:100%; height:100px; background:#8A3100; display:flex; align-items:center; justify-content:center; padding-top:10px;">
-            <h2 style="color:white; font-size:24px; font-weight:bold; text-align:center;">GOVCIO/SAMS ELT PROGRAM MANAGEMENT</h2>
+        <div style="position:relative; width:100%; height:100%; background:white; font-family:Arial, sans-serif;">
+          <!-- Background design elements -->
+          <div style="position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden;">
+            <!-- Top-right blue corner -->
+            <div style="position:absolute; top:0; right:0; width:350px; height:350px; background:#4AA4E8; transform:rotate(0deg) translate(80px, -150px);"></div>
+            
+            <!-- Left navy stripe -->
+            <div style="position:absolute; bottom:0; left:0; width:80px; height:600px; background:#1A2E5A; transform:rotate(10deg) translate(-30px, 0);"></div>
+            
+            <!-- Bottom-left gray triangle -->
+            <div style="position:absolute; bottom:0; left:0; width:800px; height:500px; background:#E0E0E0; transform:translate(-250px, 250px) rotate(10deg);"></div>
           </div>
           
-          <div style="margin-top:120px; text-align:center;">
-            <h3 style="color:#8A3100; font-size:32px; font-weight:bold; margin-bottom:5px;">GOVCIO/SAMS ELT<br/>PROGRAM</h3>
-            <h4 style="color:#8A3100; font-size:24px; font-weight:bold; margin-top:5px;">Certificate of Recognition</h4>
-            
-            <div style="margin:40px 60px; text-align:center;">
-              <p style="font-size:22px; color:#333; margin-bottom:15px;">This certificate is presented to</p>
-              <h4 style="font-size:38px; font-weight:bold; color:#333; margin:20px 0; letter-spacing:1px;">${certificateData.recipientName}</h4>
-              <p style="font-size:22px; color:#333; font-style:italic; margin-top:15px;">for outstanding achievement as</p>
-              <h5 style="font-size:30px; font-weight:bold; color:#8A3100; margin:15px 0;">${certificateData.award}</h5>
-              <p style="font-size:22px; color:#333; margin-top:15px;">at ${certificateData.school}</p>
+          <!-- White overlay for content area -->
+          <div style="position:absolute; top:50px; left:50px; right:50px; bottom:50px; background:white; box-shadow:0 0 20px rgba(0,0,0,0.1); z-index:1;">
+            <!-- Logo area -->
+            <div style="position:absolute; top:40px; left:40px; right:40px; height:100px; display:flex; align-items:center;">
+              <img src="${govcioLogo}" style="height:80px; margin-right:20px;" />
             </div>
             
-            <div style="display:flex; justify-content:space-between; align-items:flex-end; margin:60px 80px 20px 80px;">
-              <div style="text-align:center;">
-                <div style="height:1px; width:120px; background:#777; margin-bottom:5px;"></div>
-                <p style="font-size:14px; color:#555;">Program Director</p>
+            <!-- Certificate title -->
+            <div style="position:absolute; top:160px; left:40px; right:40px; text-align:center;">
+              <h1 style="font-size:48px; color:#1A2E5A; font-weight:bold; margin:0; letter-spacing:2px;">CERTIFICATE</h1>
+              <h2 style="font-size:24px; color:#1A2E5A; font-style:italic; margin:0; font-weight:normal;">of ${selectedCategory}</h2>
+            </div>
+            
+            <!-- Recipient information -->
+            <div style="position:absolute; top:280px; left:40px; right:40px; text-align:center;">
+              <p style="font-size:16px; color:#333; margin-bottom:15px;">THIS CERTIFICATE IS PRESENTED TO...</p>
+              <h3 style="font-size:42px; font-weight:bold; color:#1A2E5A; margin:20px 0; font-style:italic;">${certificateData.recipientName}</h3>
+            </div>
+            
+            <!-- Accomplishment text -->
+            <div style="position:absolute; top:380px; left:60px; right:60px; text-align:center;">
+              <p style="font-size:16px; line-height:1.5; color:#333; margin:0;">
+                ${accomplishmentText}
+              </p>
+            </div>
+            
+            <!-- Signature and date area -->
+            <div style="position:absolute; bottom:90px; left:70px; right:70px; display:flex; justify-content:space-between;">
+              <div style="text-align:center; width:200px;">
+                <div style="border-bottom:1px solid #333; margin-bottom:5px; height:30px;"></div>
+                <p style="margin:0; font-size:14px;">Timothy A Drummond<br/>(ELT Manager)</p>
               </div>
               
-              <div style="text-align:center; border:3px solid #CA9A4E; border-radius:50%; height:80px; width:80px; display:flex; align-items:center; justify-content:center; background:#FAEBD7;">
-                <p style="font-size:12px; color:#8A3100; font-weight:bold;">SEAL</p>
-              </div>
-              
-              <div style="text-align:center;">
-                <div style="height:1px; width:120px; background:#777; margin-bottom:5px;"></div>
-                <p style="font-size:14px; color:#555;">School Administrator</p>
+              <div style="text-align:center; width:200px;">
+                <div style="border-bottom:1px solid #333; margin-bottom:5px; height:30px;"></div>
+                <p style="margin:0; font-size:14px;">Munye H Sufi<br/>(ELT Senior Instructor)</p>
               </div>
             </div>
             
-            <div style="text-align:center; margin-top:20px;">
-              <p style="font-size:14px; color:#555;">${certificateData.date}</p>
+            <!-- Date -->
+            <div style="position:absolute; bottom:40px; left:70px; font-size:14px; color:#333;">
+              ${formattedDate}
             </div>
           </div>
         </div>
@@ -713,29 +792,48 @@ Return ONLY a JSON array with this structure and nothing else:
                 
                 <TabsContent value="preview" className="pt-4">
                   <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
-                    <div className="p-6 rounded bg-gray-50 flex flex-col items-center justify-center text-center min-h-[200px]">
-                      <div className="w-full max-w-md border border-amber-200 bg-white p-8 rounded-lg shadow-sm mb-6">
-                        <h3 className="text-2xl font-serif font-bold text-amber-800">Certificate Preview</h3>
-                        <p className="text-lg mt-4 font-serif text-gray-700">
-                          {certificateData.award} Certificate for:
-                        </p>
-                        <h4 className="text-2xl font-serif font-bold mt-2 text-gray-800">
-                          {certificateData.recipientName}
-                        </h4>
-                        <p className="text-md font-serif text-gray-600 mt-3">
-                          from {certificateData.school}
-                        </p>
+                    <div className="p-6 rounded bg-gray-50 flex flex-col items-center justify-center text-center min-h-[350px]">
+                      {/* Certificate Preview that mimics the final design */}
+                      <div className="w-full max-w-lg relative bg-white p-8 rounded-lg shadow mb-6 overflow-hidden" 
+                           style={{ aspectRatio: '1.4/1' }}>
+                        {/* Decorative elements */}
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400 opacity-80 transform translate-x-12 -translate-y-12 rotate-15"></div>
+                        <div className="absolute bottom-0 left-0 w-32 h-20 bg-gray-200 transform -translate-x-10 translate-y-10 rotate-12"></div>
+                        <div className="absolute left-0 bottom-0 w-6 h-48 bg-blue-900 opacity-80 transform -translate-x-2 translate-y-5 rotate-12"></div>
+                        
+                        {/* Content - simplified but representative */}
+                        <div className="relative flex items-center mb-3">
+                          <img src={govcioLogo} alt="GovCIO Logo" className="h-10 mr-2" />
+                        </div>
+                        
+                        <div className="text-center mt-3 relative z-10">
+                          <h3 className="text-xl font-bold text-blue-900 tracking-wide">CERTIFICATE</h3>
+                          <p className="text-sm italic text-blue-900">of {certificateData.award}</p>
+                          
+                          <div className="mt-4">
+                            <p className="text-xs text-gray-600">THIS CERTIFICATE IS PRESENTED TO...</p>
+                            <h4 className="text-xl font-bold italic text-blue-900 my-2">
+                              {certificateData.recipientName}
+                            </h4>
+                            
+                            <p className="text-xs text-gray-600 mt-3 mb-3 px-4">
+                              {selectedInstructor ? 
+                                generateAccomplishmentText(selectedInstructor, selectedCategory).substring(0, 100) + '...' 
+                                : ''}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                       
                       <p className="text-sm text-gray-500 mb-4">
-                        The certificate will be generated in standard US Letter landscape format.
-                        Click the download button to generate and view the full certificate.
+                        Click the download button to generate the full certificate with complete layout.
                       </p>
                       
                       <div className="flex gap-2 w-full max-w-md">
                         <Button 
                           className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600" 
                           onClick={generateCertificate}
+                          disabled={!selectedInstructor}
                         >
                           <Download className="h-4 w-4 mr-2" />
                           Download Certificate
@@ -743,12 +841,16 @@ Return ONLY a JSON array with this structure and nothing else:
                         <Button 
                           className="flex-none bg-amber-100 hover:bg-amber-200 text-amber-800" 
                           variant="outline"
+                          disabled={!selectedInstructor}
                           onClick={() => {
-                            navigator.clipboard.writeText(certificateData.reason);
-                            toast({
-                              title: "Copied to clipboard",
-                              description: "Award justification copied to clipboard",
-                            });
+                            if (selectedInstructor) {
+                              const text = generateAccomplishmentText(selectedInstructor, selectedCategory);
+                              navigator.clipboard.writeText(text);
+                              toast({
+                                title: "Copied to clipboard",
+                                description: "Award text copied to clipboard",
+                              });
+                            }
                           }}
                         >
                           <FileSpreadsheet className="h-4 w-4" />
