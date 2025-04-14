@@ -765,8 +765,8 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Instructor Alerts - displays notifications for absent instructors, instructors on leave, and those with evaluation scores below 85% */}
-          <InstructorAlerts 
+          {/* Notifications - displays alerts for absent instructors, instructors on leave, and those with evaluation scores below 85% */}
+          <Notifications 
             instructors={instructors}
             staffAttendance={staffAttendance}
             staffLeave={staffLeave}
