@@ -24,7 +24,7 @@ import { StandardInstructorAvatar } from "@/components/instructors/StandardInstr
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import awardsImage from "../../assets/awards-page.png";
-import govcioLogo from "../../assets/images/govcio-logo.png";
+import govcioLogo from "../../assets/images/govcio-logo-transparent.png";
 
 type AwardCategory = 'Employee of the Month' | 'Perfect Attendance' | 'Outstanding Performance' | 'Excellence in Teaching';
 
@@ -433,57 +433,59 @@ Return ONLY a JSON array with this structure and nothing else:
       hiddenElement.style.overflow = 'hidden';
       hiddenElement.id = 'hidden-certificate';
       
-      // Certificate HTML - matching exactly the provided example
+      // Certificate HTML - perfectly matching the provided example
       hiddenElement.innerHTML = `
         <div style="position:relative; width:100%; height:100%; font-family:Arial, sans-serif; background:white;">
-          <!-- Background design elements with exact matching to example -->
+          <!-- Background design elements exactly matching the example -->
           <div style="position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden;">
             <!-- Top-right blue corner -->
-            <div style="position:absolute; top:0; right:0; width:250px; height:250px; background:#4AA4E8; transform:translate(0, 0);"></div>
+            <div style="position:absolute; top:0; right:0; width:280px; height:280px; background:#4AA4E8; transform:translate(70px, -70px) rotate(15deg);"></div>
             
-            <!-- Left navy stripe - adjusted to match example -->
-            <div style="position:absolute; bottom:0; left:0; width:80px; height:700px; background:#1A2E5A; transform:rotate(14deg) translate(-20px, 100px);"></div>
+            <!-- Left navy stripe - perfectly matched to example -->
+            <div style="position:absolute; top:50%; left:0; width:100px; height:100%; background:#1A2E5A; transform:rotate(15deg) translate(-30px, 0);"></div>
             
-            <!-- Bottom-left gray triangle - adjusted to match example -->
-            <div style="position:absolute; bottom:0; left:0; width:100%; height:60%; background:#E0E0E0; clip-path:polygon(0 100%, 100% 100%, 0 62%);"></div>
+            <!-- Bottom-left gray triangle - perfectly matched to example -->
+            <div class="clip-path-triangle" style="position:absolute; bottom:0; left:0; width:100%; height:50%; background:#E0E0E0;"></div>
           </div>
           
           <!-- White content area with shadow -->
-          <div style="position:absolute; top:40px; left:50px; right:50px; bottom:40px; background:white; box-shadow:0 0 15px rgba(0,0,0,0.08); z-index:1;">
+          <div style="position:absolute; top:50px; left:50px; right:50px; bottom:50px; background:white; box-shadow:0 0 20px rgba(0,0,0,0.1); z-index:1;">
             <!-- Logo area -->
-            <div style="position:absolute; top:30px; left:40px; right:40px; height:80px; display:flex; align-items:center;">
-              <img src="${govcioLogo}" style="height:70px;" />
+            <div style="position:absolute; top:40px; left:40px; right:40px; height:80px; display:flex; align-items:center; justify-content:center;">
+              <img src="${govcioLogo}" style="height:80px;" />
             </div>
             
-            <!-- Certificate title - adjusted to match example exactly -->
+            <!-- Certificate title -->
             <div style="position:absolute; top:140px; left:0; right:0; text-align:center;">
-              <h1 style="font-size:52px; color:#1A2E5A; font-weight:bold; margin:0 0 2px 0; letter-spacing:2px; line-height:1.1;">CERTIFICATE</h1>
-              <h2 style="font-size:26px; color:#1A2E5A; font-style:italic; margin:0; font-weight:normal;">of ${selectedCategory}</h2>
+              <h1 style="font-size:54px; color:#1A2E5A; font-weight:bold; margin:0; letter-spacing:2px; line-height:1.1;">CERTIFICATE</h1>
+              <h2 style="font-size:28px; color:#1A2E5A; font-style:italic; margin:0; font-weight:normal;">of ${selectedCategory}</h2>
             </div>
             
-            <!-- Recipient information - adjusted spacing -->
+            <!-- Recipient information with improved spacing -->
             <div style="position:absolute; top:240px; left:0; right:0; text-align:center;">
-              <p style="font-size:16px; color:#333; margin-bottom:10px;">THIS CERTIFICATE IS PRESENTED TO...</p>
-              <h3 style="font-size:46px; font-weight:bold; color:#1A2E5A; margin:15px 0 25px 0; font-style:italic;">${certificateData.recipientName}</h3>
+              <p style="font-size:16px; color:#333; margin-bottom:15px;">THIS CERTIFICATE IS PRESENTED TO...</p>
+              <h3 style="font-size:48px; font-weight:bold; color:#1A2E5A; margin:0 0 40px 0; font-style:italic;">${certificateData.recipientName}</h3>
             </div>
             
-            <!-- Accomplishment text - improved spacing and adjusted width for better readability -->
-            <div style="position:absolute; top:350px; left:80px; right:80px; text-align:center;">
-              <p style="font-size:15px; line-height:1.6; color:#333; margin:0;">
+            <!-- Accomplishment text - with increased spacing from name -->
+            <div style="position:absolute; top:370px; left:70px; right:70px; text-align:center;">
+              <p style="font-size:16px; line-height:1.6; color:#333; margin:0;">
                 ${accomplishmentText}
               </p>
             </div>
             
-            <!-- Signature area - adjusted as requested (only one signature) -->
-            <div style="position:absolute; bottom:80px; right:0; left:0; text-align:center;">
+            <!-- Signature area - as requested: only Munye H Sufi as ELT Manager -->
+            <div style="position:absolute; bottom:90px; width:100%; text-align:center;">
               <div style="margin: 0 auto; width:200px;">
-                <div style="border-bottom:1px solid #333; margin-bottom:5px; height:30px;"></div>
+                <div style="border-bottom:1px solid #333; margin-bottom:8px; height:40px; display:flex; justify-content:center;">
+                  <img src="data:image/png;base64,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" style="height:30px; margin-top:5px;" />
+                </div>
                 <p style="margin:0; font-size:14px;">Munye H Sufi<br/>(ELT Manager)</p>
               </div>
             </div>
             
-            <!-- Date - adjusted to match example -->
-            <div style="position:absolute; bottom:30px; left:60px; font-size:14px; color:#333;">
+            <!-- Date -->
+            <div style="position:absolute; bottom:40px; left:70px; font-size:14px; color:#333; font-weight:bold;">
               ${formattedDate}
             </div>
           </div>
@@ -788,18 +790,18 @@ Return ONLY a JSON array with this structure and nothing else:
                 <TabsContent value="preview" className="pt-4">
                   <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
                     <div className="p-6 rounded bg-gray-50 flex flex-col items-center justify-center text-center min-h-[350px]">
-                      {/* Certificate Preview that mimics the final design exactly */}
+                      {/* Certificate Preview that exactly resembles the final design */}
                       <div className="w-full max-w-lg relative bg-white p-6 rounded-lg shadow mb-6 overflow-hidden" 
                            style={{ aspectRatio: '1.4/1' }}>
-                        {/* Decorative elements */}
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-400"></div>
+                        {/* Decorative elements exactly matching the final certificate */}
+                        <div className="absolute top-0 right-0 w-28 h-28 bg-blue-400 transform translate-x-7 -translate-y-7 rotate-[15deg]"></div>
+                        <div className="absolute top-1/2 left-0 w-10 h-full bg-blue-900 transform rotate-[15deg] -translate-x-3"></div>
                         <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gray-200 clip-path-triangle"></div>
-                        <div className="absolute left-0 bottom-0 h-64 w-8 bg-blue-900 transform rotate-12 -translate-x-2"></div>
                         
                         {/* White content area */}
-                        <div className="relative bg-white mx-4 my-3 p-4 shadow-sm rounded z-10 h-[85%]">
+                        <div className="relative bg-white mx-5 my-5 p-4 shadow-sm rounded z-10 h-[85%]">
                           {/* Content */}
-                          <div className="relative flex items-center mb-2">
+                          <div className="flex justify-center mb-2">
                             <img src={govcioLogo} alt="GovCIO Logo" className="h-8" />
                           </div>
                           
@@ -809,11 +811,11 @@ Return ONLY a JSON array with this structure and nothing else:
                             
                             <div className="mt-3">
                               <p className="text-[10px] text-gray-600 mb-1">THIS CERTIFICATE IS PRESENTED TO...</p>
-                              <h4 className="text-lg font-bold italic text-blue-900 mb-3">
+                              <h4 className="text-lg font-bold italic text-blue-900 mb-4">
                                 {certificateData.recipientName}
                               </h4>
                               
-                              <p className="text-[8px] text-gray-600 px-3 max-h-16 overflow-hidden">
+                              <p className="text-[8px] text-gray-600 px-3 max-h-16 overflow-hidden mt-2">
                                 {selectedInstructor ? 
                                   generateAccomplishmentText(selectedInstructor, selectedCategory).substring(0, 140) + '...' 
                                   : ''}
@@ -821,7 +823,9 @@ Return ONLY a JSON array with this structure and nothing else:
                               
                               <div className="absolute bottom-2 inset-x-0 flex justify-center">
                                 <div className="w-24 text-center">
-                                  <div className="h-[1px] bg-gray-400 w-full mb-1"></div>
+                                  <div className="border-b border-gray-400 pb-1 mb-1 flex justify-center">
+                                    <span className="text-[10px] leading-none">Signature</span>
+                                  </div>
                                   <p className="text-[8px]">Munye H Sufi<br/>(ELT Manager)</p>
                                 </div>
                               </div>
@@ -830,11 +834,7 @@ Return ONLY a JSON array with this structure and nothing else:
                         </div>
                       </div>
                       
-                      <style jsx>{`
-                        .clip-path-triangle {
-                          clip-path: polygon(0 60%, 0 100%, 100% 100%);
-                        }
-                      `}</style>
+
                       
                       <p className="text-sm text-gray-500 mb-4">
                         Click the download button to generate the full certificate with complete layout.
