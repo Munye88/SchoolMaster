@@ -60,8 +60,9 @@ export function PrintableActionLogs({ logs, printRef }: PrintableActionLogsProps
             <th className="border px-4 py-2 text-left">Requester</th>
             <th className="border px-4 py-2 text-left">Status</th>
             <th className="border px-4 py-2 text-left">Category</th>
-            <th className="border px-4 py-2 text-left">Due Date</th>
             <th className="border px-4 py-2 text-left">Created Date</th>
+            <th className="border px-4 py-2 text-left">Due Date</th>
+            <th className="border px-4 py-2 text-left">Completed Date</th>
           </tr>
         </thead>
         <tbody>
