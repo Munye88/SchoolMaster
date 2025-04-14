@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { 
   GraduationCap, BookOpen, Users, Clock, Calendar, Check, X, ChevronRight,
   User, UserCheck, Building, Activity, BarChart2, Trash2, Plus, UserPlus
 } from "lucide-react";
 import { School as SchoolIcon } from "lucide-react";
-import { Course, Instructor, Student, TestResult, School } from "@shared/schema";
+import { Course, Instructor, Student, TestResult, School, StaffAttendance, StaffLeave, Evaluation, Event } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -13,6 +12,7 @@ import { useSchool } from "@/hooks/useSchool";
 import { Link } from "wouter";
 import { format } from "date-fns";
 import { Calendar as CalendarComponent } from "@/components/dashboard/Calendar";
+import { useQuery } from "@tanstack/react-query";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip, Cell } from 'recharts';
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -64,6 +64,26 @@ const Dashboard = () => {
   // Fetch test results
   const { data: testResults = [] } = useQuery<TestResult[]>({
     queryKey: ['/api/test-results'],
+  });
+  
+  // Fetch staff attendance
+  const { data: staffAttendance = [] } = useQuery<StaffAttendance[]>({
+    queryKey: ['/api/staff-attendance'],
+  });
+  
+  // Fetch staff leave
+  const { data: staffLeave = [] } = useQuery<StaffLeave[]>({
+    queryKey: ['/api/staff-leave'],
+  });
+  
+  // Fetch evaluations
+  const { data: evaluations = [] } = useQuery<Evaluation[]>({
+    queryKey: ['/api/evaluations'],
+  });
+  
+  // Fetch upcoming events
+  const { data: events = [] } = useQuery<Event[]>({
+    queryKey: ['/api/events'],
   });
   
   // Calculate statistics
@@ -417,6 +437,186 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
+          {/* Staff Notifications */}
+          <Card className="shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-lg text-[#0A2463]">Staff Notifications</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pb-6">
+              <div className="space-y-4">
+                {/* Absent Instructors */}
+                {selectedSchool && staffAttendance
+                  .filter(a => 
+                    a.status === "absent" && 
+                    new Date(a.date).toDateString() === new Date().toDateString()
+                  )
+                  .filter(a => {
+                    const instructor = instructors.find(i => i.id === a.instructorId);
+                    return instructor && instructor.schoolId === selectedSchool.id;
+                  })
+                  .length > 0 && (
+                  <div className="bg-red-50 border border-red-100 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                      <h3 className="font-medium text-red-900">Absent Today</h3>
+                    </div>
+                    <div className="space-y-2 mt-2">
+                      {staffAttendance
+                        .filter(a => 
+                          a.status === "absent" && 
+                          new Date(a.date).toDateString() === new Date().toDateString()
+                        )
+                        .filter(a => {
+                          const instructor = instructors.find(i => i.id === a.instructorId);
+                          return instructor && instructor.schoolId === selectedSchool.id;
+                        })
+                        .map(attendance => {
+                          const instructor = instructors.find(i => i.id === attendance.instructorId);
+                          return (
+                            <div key={attendance.id} className="flex items-center justify-between bg-white p-2 rounded border border-red-100 shadow-sm">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-gray-800">{instructor?.name}</span>
+                              </div>
+                              <div className="text-xs bg-red-100 text-red-800 py-1 px-2 rounded">
+                                Absent
+                              </div>
+                            </div>
+                          );
+                        })
+                      }
+                    </div>
+                  </div>
+                )}
+                
+                {/* Instructors on Leave */}
+                {selectedSchool && staffLeave
+                  .filter(l => {
+                    const today = new Date();
+                    const startDate = new Date(l.startDate);
+                    const endDate = new Date(l.endDate);
+                    return today >= startDate && today <= endDate;
+                  })
+                  .filter(l => {
+                    const instructor = instructors.find(i => i.id === l.instructorId);
+                    return instructor && instructor.schoolId === selectedSchool.id;
+                  })
+                  .length > 0 && (
+                  <div className="bg-amber-50 border border-amber-100 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                      <h3 className="font-medium text-amber-900">Currently on Leave</h3>
+                    </div>
+                    <div className="space-y-2 mt-2">
+                      {staffLeave
+                        .filter(l => {
+                          const today = new Date();
+                          const startDate = new Date(l.startDate);
+                          const endDate = new Date(l.endDate);
+                          return today >= startDate && today <= endDate;
+                        })
+                        .filter(l => {
+                          const instructor = instructors.find(i => i.id === l.instructorId);
+                          return instructor && instructor.schoolId === selectedSchool.id;
+                        })
+                        .map(leave => {
+                          const instructor = instructors.find(i => i.id === leave.instructorId);
+                          return (
+                            <div key={leave.id} className="flex items-center justify-between bg-white p-2 rounded border border-amber-100 shadow-sm">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-gray-800">{instructor?.name}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="text-xs bg-amber-100 text-amber-800 py-1 px-2 rounded">
+                                  {leave.leaveType}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  Returns: {formatDate(leave.returnDate)}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })
+                      }
+                    </div>
+                  </div>
+                )}
+                
+                {/* Low Evaluation Scores */}
+                {selectedSchool && evaluations
+                  .filter(e => e.score < 85)
+                  .filter(e => {
+                    const instructor = instructors.find(i => i.id === e.instructorId);
+                    return instructor && instructor.schoolId === selectedSchool.id;
+                  })
+                  .length > 0 && (
+                  <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                      <h3 className="font-medium text-blue-900">Evaluation Scores Below 85%</h3>
+                    </div>
+                    <div className="space-y-2 mt-2">
+                      {evaluations
+                        .filter(e => e.score < 85)
+                        .filter(e => {
+                          const instructor = instructors.find(i => i.id === e.instructorId);
+                          return instructor && instructor.schoolId === selectedSchool.id;
+                        })
+                        .map(evaluation => {
+                          const instructor = instructors.find(i => i.id === evaluation.instructorId);
+                          return (
+                            <div key={evaluation.id} className="flex items-center justify-between bg-white p-2 rounded border border-blue-100 shadow-sm">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-gray-800">{instructor?.name}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="text-xs bg-blue-100 text-blue-800 py-1 px-2 rounded">
+                                  {evaluation.score}%
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {evaluation.quarter}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })
+                      }
+                    </div>
+                  </div>
+                )}
+                
+                {/* No Notifications */}
+                {(!selectedSchool || 
+                  (selectedSchool && 
+                   staffAttendance.filter(a => a.status === "absent" && new Date(a.date).toDateString() === new Date().toDateString())
+                     .filter(a => {
+                       const instructor = instructors.find(i => i.id === a.instructorId);
+                       return instructor && instructor.schoolId === selectedSchool.id;
+                     }).length === 0 &&
+                   staffLeave.filter(l => {
+                     const today = new Date();
+                     const startDate = new Date(l.startDate);
+                     const endDate = new Date(l.endDate);
+                     return today >= startDate && today <= endDate;
+                   })
+                   .filter(l => {
+                     const instructor = instructors.find(i => i.id === l.instructorId);
+                     return instructor && instructor.schoolId === selectedSchool.id;
+                   }).length === 0 &&
+                   evaluations.filter(e => e.score < 85)
+                   .filter(e => {
+                     const instructor = instructors.find(i => i.id === e.instructorId);
+                     return instructor && instructor.schoolId === selectedSchool.id;
+                   }).length === 0
+                  )) && (
+                  <div className="flex flex-col items-center justify-center p-6 text-gray-500">
+                    <Check className="h-12 w-12 text-green-500 mb-2" />
+                    <p className="text-center">No staff notifications at this time.</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* School Distribution */}
           <Card className="shadow-sm">
             <CardHeader className="p-4 pb-2">
@@ -623,13 +823,32 @@ const Dashboard = () => {
               <div className="divide-y divide-gray-100">
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-medium text-sm">Student Days</h4>
+                    <span className="bg-amber-100 text-amber-600 text-xs px-2 py-0.5 rounded-full">NFS West</span>
+                  </div>
+                  <div className="flex items-center text-xs text-gray-500 gap-3">
+                    <div className="flex items-center">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      <span>Apr 18, 2025</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="h-3 w-3 mr-1" />
+                      <span>All Day</span>
+                    </div>
+                  </div>
+                  <div className="mt-1 text-xs text-gray-500">
+                    Open house for students to showcase projects and achievement
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-2">
                     <h4 className="font-medium text-sm">Staff Meeting</h4>
                     <span className="bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded-full">KNFA</span>
                   </div>
                   <div className="flex items-center text-xs text-gray-500 gap-3">
                     <div className="flex items-center">
                       <Calendar className="h-3 w-3 mr-1" />
-                      <span>Oct 5, 2024</span>
+                      <span>Apr 20, 2025</span>
                     </div>
                     <div className="flex items-center">
                       <Clock className="h-3 w-3 mr-1" />
@@ -645,7 +864,7 @@ const Dashboard = () => {
                   <div className="flex items-center text-xs text-gray-500 gap-3">
                     <div className="flex items-center">
                       <Calendar className="h-3 w-3 mr-1" />
-                      <span>Oct 8, 2024</span>
+                      <span>May 5, 2025</span>
                     </div>
                     <div className="flex items-center">
                       <Clock className="h-3 w-3 mr-1" />
