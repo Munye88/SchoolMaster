@@ -119,7 +119,7 @@ export function ActionLogCard({ log, onEdit, onDelete, onStatusChange }: ActionL
         </div>
       </CardHeader>
       <CardContent className="pt-4">
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2">
           <Badge className={getStatusColor(log.status)} variant="secondary">
             <div className="flex items-center">
               {getStatusIcon(log.status)}
@@ -127,12 +127,24 @@ export function ActionLogCard({ log, onEdit, onDelete, onStatusChange }: ActionL
             </div>
           </Badge>
           {log.category && (
-            <Badge variant="outline">{log.category}</Badge>
+            <Badge variant="outline" className="ml-2">{log.category}</Badge>
           )}
         </div>
         <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{log.description}</p>
         <div className="grid grid-cols-1 gap-1">
-          {log.dueDate && (
+          <div className="flex items-center text-xs text-muted-foreground">
+            <Clock className="mr-1 h-3.5 w-3.5" />
+            <span>Created {format(new Date(log.createdDate), 'MMM d, yyyy')}</span>
+          </div>
+          
+          {log.status === 'completed' && log.completedDate && (
+            <div className="flex items-center text-xs text-green-600 dark:text-green-400">
+              <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
+              <span>Completed {format(new Date(log.completedDate), 'MMM d, yyyy')}</span>
+            </div>
+          )}
+          
+          {log.dueDate && log.status !== 'completed' && (
             <div className="flex items-center text-xs">
               <Calendar className="mr-1 h-3.5 w-3.5 text-muted-foreground" />
               <span className={`${dueSoon ? 'text-amber-600 dark:text-amber-400 font-semibold' : 'text-muted-foreground'}`}>
@@ -141,10 +153,6 @@ export function ActionLogCard({ log, onEdit, onDelete, onStatusChange }: ActionL
               </span>
             </div>
           )}
-          <div className="flex items-center text-xs text-muted-foreground">
-            <Clock className="mr-1 h-3.5 w-3.5" />
-            <span>Created {format(new Date(log.createdDate), 'MMM d, yyyy')}</span>
-          </div>
         </div>
       </CardContent>
       <CardFooter className="flex justify-between border-t pt-3 pb-3">

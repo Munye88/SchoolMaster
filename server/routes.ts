@@ -1305,10 +1305,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Process the incoming data and handle date conversion
       const rawData = req.body;
-      const processedData = {
+      
+      // If status is being changed to completed, set completedDate
+      let processedData = {
         ...rawData,
         dueDate: rawData.dueDate ? new Date(rawData.dueDate) : undefined,
       };
+      
+      // Set completedDate when status changes to 'completed'
+      if (rawData.status === 'completed' && existingLog.status !== 'completed') {
+        processedData.completedDate = new Date();
+      }
+      
+      // Clear completedDate when status changes from 'completed' to something else
+      if (rawData.status && rawData.status !== 'completed' && existingLog.status === 'completed') {
+        processedData.completedDate = null;
+      }
       
       const updateData = insertActionLogSchema.partial().parse(processedData);
       
