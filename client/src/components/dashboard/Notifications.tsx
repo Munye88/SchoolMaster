@@ -316,7 +316,7 @@ const Notifications: React.FC<NotificationsProps> = ({
         </TabsContent>
         
         <TabsContent value="courses" className="mt-0">
-          <ScrollArea className="h-[320px] w-full">
+          <ScrollArea className={`${NOTIFICATION_PANEL_HEIGHT} w-full`}>
             <div className="p-3 space-y-2">
               {filteredAlerts.map((alert, index) => (
                 <NotificationCard key={`${alert.type}-${alert.id}-${index}`} alert={alert} />
