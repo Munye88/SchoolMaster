@@ -8,7 +8,7 @@ import {
   LogOut, LogIn, UserCircle, BookText, BriefcaseBusiness, MessageSquare, AlertTriangle, 
   BrainCircuit, Users, Lightbulb, FileText, Award, LayoutDashboard
 } from "lucide-react";
-import govcioLogo from "../../assets/images/govcio-logo-main.png";
+import govcioLogo from "../../assets/images/govcio-logo-updated.png";
 
 const BasicNavbar = () => {
   const [location] = useLocation();

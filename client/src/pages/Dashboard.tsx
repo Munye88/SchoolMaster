@@ -16,9 +16,10 @@ import { Calendar as CalendarComponent } from "@/components/dashboard/Calendar";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip, Cell } from 'recharts';
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import govcioLogo from "../assets/images/govcio-logo-updated.png";
 
 const Dashboard = () => {
-  const { selectedSchool, currentSchool } = useSchool();
+  const { selectedSchool } = useSchool();
   
   // State for to-do list
   const [tasks, setTasks] = useState<{id: number; text: string; done: boolean}[]>(() => {
@@ -34,17 +35,17 @@ const Dashboard = () => {
   // Fetch courses
   const { data: courses = [], isLoading: coursesLoading } = useQuery<Course[]>({
     queryKey: selectedSchool 
-      ? ['/api/schools', currentSchool?.id, 'courses'] 
+      ? ['/api/schools', selectedSchool.id, 'courses'] 
       : ['/api/courses'],
-    enabled: !selectedSchool || !!currentSchool?.id,
+    enabled: !selectedSchool || !!selectedSchool.id,
   });
   
   // Fetch instructors
   const { data: instructors = [], isLoading: instructorsLoading } = useQuery<Instructor[]>({
     queryKey: selectedSchool 
-      ? ['/api/schools', currentSchool?.id, 'instructors'] 
+      ? ['/api/schools', selectedSchool.id, 'instructors'] 
       : ['/api/instructors'],
-    enabled: !selectedSchool || !!currentSchool?.id,
+    enabled: !selectedSchool || !!selectedSchool.id,
   });
 
   // Fetch schools
@@ -55,9 +56,9 @@ const Dashboard = () => {
   // Fetch students
   const { data: students = [] } = useQuery<Student[]>({
     queryKey: selectedSchool 
-      ? ['/api/schools', currentSchool?.id, 'students'] 
+      ? ['/api/schools', selectedSchool.id, 'students'] 
       : ['/api/students'],
-    enabled: !selectedSchool || !!currentSchool?.id,
+    enabled: !selectedSchool || !!selectedSchool.id,
   });
 
   // Fetch test results
@@ -111,10 +112,13 @@ const Dashboard = () => {
     <div className="flex-1 overflow-y-auto py-6 px-6 bg-gradient-to-b from-gray-50 to-white">
       {/* Dashboard Header */}
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <p className="text-lg text-gray-600 italic">
-            "Education is the most powerful weapon which you can use to change the world." — Nelson Mandela
-          </p>
+        <div className="flex items-center gap-4">
+          <img src={govcioLogo} alt="GovCIO Logo" className="h-16" />
+          <div>
+            <p className="text-lg text-gray-600 italic">
+              "Education is the most powerful weapon which you can use to change the world." — Nelson Mandela
+            </p>
+          </div>
         </div>
         <div className="flex space-x-2">
           <div className="bg-white text-gray-700 px-3 py-2 rounded-md shadow-sm border border-gray-200 flex items-center">
