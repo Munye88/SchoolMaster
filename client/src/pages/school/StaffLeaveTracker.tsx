@@ -254,8 +254,9 @@ export default function StaffLeaveTracker() {
   });
   
   // Form submission handler
-  // Reference to store the selected file
+  // References to store the selected files for create and edit forms
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedEditFile, setSelectedEditFile] = useState<File | null>(null);
   
   const onSubmit = async (values: LeaveFormValues) => {
     try {
@@ -1081,9 +1082,45 @@ export default function StaffLeaveTracker() {
                   return;
                 }
                 
+                let attachmentUrl = values.attachmentUrl;
+                
+                // If there's a file selected for edit, upload it first
+                if (selectedEditFile) {
+                  const formData = new FormData();
+                  formData.append('attachment', selectedEditFile);
+                  
+                  try {
+                    const response = await fetch('/api/upload', {
+                      method: 'POST',
+                      body: formData,
+                    });
+                    
+                    if (!response.ok) {
+                      throw new Error('File upload failed');
+                    }
+                    
+                    const data = await response.json();
+                    attachmentUrl = data.fileUrl; // Use the URL returned from the server
+                  } catch (uploadError) {
+                    console.error('Error uploading file:', uploadError);
+                    toast({
+                      title: "File Upload Error",
+                      description: "Failed to upload attachment. Please try again.",
+                      variant: "destructive",
+                    });
+                    return;
+                  }
+                }
+                
+                // Update the form values with the new attachment URL if uploaded
+                const updatedValues = {
+                  ...values,
+                  attachmentUrl,
+                };
+                
                 await updateLeaveMutation.mutateAsync({
                   id: selectedLeave.id,
-                  data: values
+                  data: updatedValues
                 });
                 
                 toast({
@@ -1091,6 +1128,8 @@ export default function StaffLeaveTracker() {
                   description: "Leave request updated successfully",
                 });
                 
+                // Reset edit file selection
+                setSelectedEditFile(null);
                 setEditDialogOpen(false);
               } catch (error) {
                 console.error("Error updating leave request:", error);
@@ -1174,9 +1213,9 @@ export default function StaffLeaveTracker() {
                             onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (file) {
-                                // Handle file upload here - this would be connected to your API
-                                // For now, just storing the file name
-                                field.onChange(file.name);
+                                // Store the file for upload during form submission
+                                setSelectedEditFile(file);
+                                field.onChange(file.name); // Just for display purposes
                               }
                             }}
                           />
@@ -1189,9 +1228,22 @@ export default function StaffLeaveTracker() {
                             {field.value ? 'Replace Attachment' : 'Attach Leave Form'}
                           </Button>
                           {field.value && (
-                            <span className="text-sm text-gray-500">
-                              {field.value.split('/').pop()}
-                            </span>
+                            <>
+                              <span className="text-sm text-gray-500">
+                                {field.value.split('/').pop()}
+                              </span>
+                              {!selectedEditFile && (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => window.open(field.value, '_blank')}
+                                >
+                                  <Download className="h-4 w-4 mr-2" />
+                                  View
+                                </Button>
+                              )}
+                            </>
                           )}
                         </div>
                       </FormControl>
