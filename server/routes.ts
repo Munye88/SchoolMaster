@@ -61,7 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Schools
   app.get("/api/schools", async (req, res) => {
-    const schools = await storage.getSchools();
+    const schools = await dbStorage.getSchools();
     res.json(schools);
   });
   
@@ -71,7 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid school ID" });
     }
     
-    const school = await storage.getSchool(id);
+    const school = await dbStorage.getSchool(id);
     if (!school) {
       return res.status(404).json({ message: "School not found" });
     }
@@ -81,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/schools/code/:code", async (req, res) => {
     const code = req.params.code;
-    const school = await storage.getSchoolByCode(code);
+    const school = await dbStorage.getSchoolByCode(code);
     if (!school) {
       return res.status(404).json({ message: "School not found" });
     }
@@ -92,10 +92,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/schools", async (req, res) => {
     try {
       const schoolData = insertSchoolSchema.parse(req.body);
-      const school = await storage.createSchool(schoolData);
+      const school = await dbStorage.createSchool(schoolData);
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "school_added",
         description: `New school "${school.name}" added`,
         timestamp: new Date(),
@@ -119,14 +119,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       const updateData = insertSchoolSchema.partial().parse(req.body);
-      const updatedSchool = await storage.updateSchool(id, updateData);
+      const updatedSchool = await dbStorage.updateSchool(id, updateData);
       
       if (!updatedSchool) {
         return res.status(404).json({ message: "School not found" });
       }
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "school_updated",
         description: `School "${updatedSchool.name}" updated`,
         timestamp: new Date(),
@@ -150,15 +150,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       // Get the school before deleting it for the activity log
-      const school = await storage.getSchool(id);
+      const school = await dbStorage.getSchool(id);
       if (!school) {
         return res.status(404).json({ message: "School not found" });
       }
       
-      await storage.deleteSchool(id);
+      await dbStorage.deleteSchool(id);
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "school_deleted",
         description: `School "${school.name}" deleted`,
         timestamp: new Date(),
@@ -173,7 +173,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Instructors
   app.get("/api/instructors", async (req, res) => {
-    const instructors = await storage.getInstructors();
+    const instructors = await dbStorage.getInstructors();
     res.json(instructors);
   });
   
@@ -183,7 +183,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid instructor ID" });
     }
     
-    const instructor = await storage.getInstructor(id);
+    const instructor = await dbStorage.getInstructor(id);
     if (!instructor) {
       return res.status(404).json({ message: "Instructor not found" });
     }
@@ -197,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid school ID" });
     }
     
-    const instructors = await storage.getInstructorsBySchool(schoolId);
+    const instructors = await dbStorage.getInstructorsBySchool(schoolId);
     res.json(instructors);
   });
   
@@ -218,11 +218,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const instructorData = insertInstructorSchema.parse(processedData);
       console.log("🚀 Validated instructor data:", instructorData);
       
-      const instructor = await storage.createInstructor(instructorData);
+      const instructor = await dbStorage.createInstructor(instructorData);
       console.log("🚀 Created instructor:", instructor);
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "instructor_added",
         description: `New instructor "${instructor.name}" added`,
         timestamp: new Date(),
@@ -262,7 +262,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updateData = insertInstructorSchema.partial().parse(processedData);
       console.log("🚀 Validated update data:", updateData);
       
-      const updatedInstructor = await storage.updateInstructor(id, updateData);
+      const updatedInstructor = await dbStorage.updateInstructor(id, updateData);
       console.log("🚀 Updated instructor:", updatedInstructor);
       
       if (!updatedInstructor) {
@@ -270,7 +270,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "instructor_updated",
         description: `Instructor "${updatedInstructor.name}" updated`,
         timestamp: new Date(),
@@ -296,29 +296,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       // Get the instructor before deleting for the activity log
-      const instructor = await storage.getInstructor(id);
+      const instructor = await dbStorage.getInstructor(id);
       if (!instructor) {
         return res.status(404).json({ message: "Instructor not found" });
       }
       
       // 1. Delete all staff attendance records for this instructor
-      const staffAttendanceRecords = await storage.getStaffAttendanceByInstructor(id);
+      const staffAttendanceRecords = await dbStorage.getStaffAttendanceByInstructor(id);
       for (const record of staffAttendanceRecords) {
-        await storage.deleteStaffAttendance(record.id);
+        await dbStorage.deleteStaffAttendance(record.id);
       }
       
       // 2. Delete all evaluations for this instructor
-      const instructorEvaluations = await storage.getEvaluationsByInstructor(id);
+      const instructorEvaluations = await dbStorage.getEvaluationsByInstructor(id);
       for (const evaluation of instructorEvaluations) {
         await db.delete(evaluations).where(eq(evaluations.id, evaluation.id));
       }
       
       // 3. Update courses to remove instructor reference
-      const instructorCourses = await storage.getCoursesByInstructor(id);
+      const instructorCourses = await dbStorage.getCoursesByInstructor(id);
       for (const course of instructorCourses) {
-        const courseToUpdate = await storage.getCourse(course.id);
+        const courseToUpdate = await dbStorage.getCourse(course.id);
         if (courseToUpdate) {
-          await storage.updateCourse(course.id, { 
+          await dbStorage.updateCourse(course.id, { 
             ...courseToUpdate,
             instructorId: 0 // Use 0 as a placeholder value since null is causing issues
           });
@@ -326,10 +326,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // 4. Now delete the instructor
-      await storage.deleteInstructor(id);
+      await dbStorage.deleteInstructor(id);
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "instructor_deleted",
         description: `Instructor "${instructor.name}" deleted`,
         timestamp: new Date(),
@@ -346,7 +346,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Courses
   app.get("/api/courses", async (req, res) => {
-    const courses = await storage.getCourses();
+    const courses = await dbStorage.getCourses();
     res.json(courses);
   });
   
@@ -356,7 +356,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid course ID" });
     }
     
-    const course = await storage.getCourse(id);
+    const course = await dbStorage.getCourse(id);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
@@ -370,7 +370,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid school ID" });
     }
     
-    const courses = await storage.getCoursesBySchool(schoolId);
+    const courses = await dbStorage.getCoursesBySchool(schoolId);
     res.json(courses);
   });
   
@@ -380,17 +380,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid instructor ID" });
     }
     
-    const courses = await storage.getCoursesByInstructor(instructorId);
+    const courses = await dbStorage.getCoursesByInstructor(instructorId);
     res.json(courses);
   });
   
   app.post("/api/courses", async (req, res) => {
     try {
       const courseData = insertCourseSchema.parse(req.body);
-      const course = await storage.createCourse(courseData);
+      const course = await dbStorage.createCourse(courseData);
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "course_added",
         description: `New course "${course.name}" added`,
         timestamp: new Date(),
@@ -414,14 +414,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       const updateData = insertCourseSchema.partial().parse(req.body);
-      const updatedCourse = await storage.updateCourse(id, updateData);
+      const updatedCourse = await dbStorage.updateCourse(id, updateData);
       
       if (!updatedCourse) {
         return res.status(404).json({ message: "Course not found" });
       }
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "course_updated",
         description: `Course "${updatedCourse.name}" updated`,
         timestamp: new Date(),
@@ -445,15 +445,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       // Get the course before deleting for the activity log
-      const course = await storage.getCourse(id);
+      const course = await dbStorage.getCourse(id);
       if (!course) {
         return res.status(404).json({ message: "Course not found" });
       }
       
-      await storage.deleteCourse(id);
+      await dbStorage.deleteCourse(id);
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "course_deleted",
         description: `Course "${course.name}" deleted`,
         timestamp: new Date(),
@@ -468,7 +468,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Students
   app.get("/api/students", async (req, res) => {
-    const students = await storage.getStudents();
+    const students = await dbStorage.getStudents();
     res.json(students);
   });
   
@@ -478,7 +478,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid student ID" });
     }
     
-    const student = await storage.getStudent(id);
+    const student = await dbStorage.getStudent(id);
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
@@ -492,17 +492,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid school ID" });
     }
     
-    const students = await storage.getStudentsBySchool(schoolId);
+    const students = await dbStorage.getStudentsBySchool(schoolId);
     res.json(students);
   });
   
   app.post("/api/students", async (req, res) => {
     try {
       const studentData = insertStudentSchema.parse(req.body);
-      const student = await storage.createStudent(studentData);
+      const student = await dbStorage.createStudent(studentData);
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "student_added",
         description: `New student "${student.name}" added`,
         timestamp: new Date(),
@@ -526,14 +526,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       const updateData = insertStudentSchema.partial().parse(req.body);
-      const updatedStudent = await storage.updateStudent(id, updateData);
+      const updatedStudent = await dbStorage.updateStudent(id, updateData);
       
       if (!updatedStudent) {
         return res.status(404).json({ message: "Student not found" });
       }
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "student_updated",
         description: `Student "${updatedStudent.name}" updated`,
         timestamp: new Date(),
@@ -557,15 +557,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       // Get the student before deleting for the activity log
-      const student = await storage.getStudent(id);
+      const student = await dbStorage.getStudent(id);
       if (!student) {
         return res.status(404).json({ message: "Student not found" });
       }
       
-      await storage.deleteStudent(id);
+      await dbStorage.deleteStudent(id);
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "student_deleted",
         description: `Student "${student.name}" deleted`,
         timestamp: new Date(),
@@ -580,7 +580,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Test Results
   app.get("/api/test-results", async (req, res) => {
-    const testResults = await storage.getTestResults();
+    const testResults = await dbStorage.getTestResults();
     res.json(testResults);
   });
   
@@ -590,7 +590,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid test result ID" });
     }
     
-    const testResult = await storage.getTestResult(id);
+    const testResult = await dbStorage.getTestResult(id);
     if (!testResult) {
       return res.status(404).json({ message: "Test result not found" });
     }
@@ -604,7 +604,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid student ID" });
     }
     
-    const testResults = await storage.getTestResultsByStudent(studentId);
+    const testResults = await dbStorage.getTestResultsByStudent(studentId);
     res.json(testResults);
   });
   
@@ -614,21 +614,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid course ID" });
     }
     
-    const testResults = await storage.getTestResultsByCourse(courseId);
+    const testResults = await dbStorage.getTestResultsByCourse(courseId);
     res.json(testResults);
   });
   
   app.post("/api/test-results", async (req, res) => {
     try {
       const testResultData = insertTestResultSchema.parse(req.body);
-      const testResult = await storage.createTestResult(testResultData);
+      const testResult = await dbStorage.createTestResult(testResultData);
       
       // Get student name for activity log
-      const student = await storage.getStudent(testResult.studentId);
+      const student = await dbStorage.getStudent(testResult.studentId);
       const studentName = student ? student.name : `Student ID ${testResult.studentId}`;
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "test_result_added",
         description: `New test result added for student "${studentName}"`,
         timestamp: new Date(),
@@ -646,7 +646,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Evaluations
   app.get("/api/evaluations", async (req, res) => {
-    const evaluations = await storage.getEvaluations();
+    const evaluations = await dbStorage.getEvaluations();
     res.json(evaluations);
   });
   
@@ -656,7 +656,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid evaluation ID" });
     }
     
-    const evaluation = await storage.getEvaluation(id);
+    const evaluation = await dbStorage.getEvaluation(id);
     if (!evaluation) {
       return res.status(404).json({ message: "Evaluation not found" });
     }
@@ -670,21 +670,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid instructor ID" });
     }
     
-    const evaluations = await storage.getEvaluationsByInstructor(instructorId);
+    const evaluations = await dbStorage.getEvaluationsByInstructor(instructorId);
     res.json(evaluations);
   });
   
   app.post("/api/evaluations", async (req, res) => {
     try {
       const evaluationData = insertEvaluationSchema.parse(req.body);
-      const evaluation = await storage.createEvaluation(evaluationData);
+      const evaluation = await dbStorage.createEvaluation(evaluationData);
       
       // Get instructor name for activity log
-      const instructor = await storage.getInstructor(evaluation.instructorId);
+      const instructor = await dbStorage.getInstructor(evaluation.instructorId);
       const instructorName = instructor ? instructor.name : `Instructor ID ${evaluation.instructorId}`;
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "evaluation_added",
         description: `New evaluation added for instructor "${instructorName}"`,
         timestamp: new Date(),
@@ -702,7 +702,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Documents
   app.get("/api/documents", async (req, res) => {
-    const documents = await storage.getDocuments();
+    const documents = await dbStorage.getDocuments();
     res.json(documents);
   });
   
@@ -712,7 +712,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid document ID" });
     }
     
-    const document = await storage.getDocument(id);
+    const document = await dbStorage.getDocument(id);
     if (!document) {
       return res.status(404).json({ message: "Document not found" });
     }
@@ -726,17 +726,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid school ID" });
     }
     
-    const documents = await storage.getDocumentsBySchool(schoolId);
+    const documents = await dbStorage.getDocumentsBySchool(schoolId);
     res.json(documents);
   });
   
   app.post("/api/documents", async (req, res) => {
     try {
       const documentData = insertDocumentSchema.parse(req.body);
-      const document = await storage.createDocument(documentData);
+      const document = await dbStorage.createDocument(documentData);
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "document_added",
         description: `New document "${document.title}" added`,
         timestamp: new Date(),
@@ -755,14 +755,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Activities
   app.get("/api/activities/recent", async (req, res) => {
     const limit = parseInt(req.query.limit as string || '5');
-    const activities = await storage.getRecentActivities(limit);
+    const activities = await dbStorage.getRecentActivities(limit);
     res.json(activities);
   });
   
   app.post("/api/activities", async (req, res) => {
     try {
       const activityData = insertActivitySchema.parse(req.body);
-      const activity = await storage.createActivity(activityData);
+      const activity = await dbStorage.createActivity(activityData);
       res.status(201).json(activity);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -774,7 +774,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Events
   app.get("/api/events", async (req, res) => {
-    const events = await storage.getEvents();
+    const events = await dbStorage.getEvents();
     res.json(events);
   });
   
@@ -784,21 +784,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid school ID" });
     }
     
-    const events = await storage.getEvents();
+    const events = await dbStorage.getEvents();
     const schoolEvents = events.filter(event => event.schoolId === schoolId);
     res.json(schoolEvents);
   });
   
   app.get("/api/events/upcoming", async (req, res) => {
     const limit = parseInt(req.query.limit as string || '5');
-    const events = await storage.getUpcomingEvents(limit);
+    const events = await dbStorage.getUpcomingEvents(limit);
     res.json(events);
   });
   
   app.post("/api/events", async (req, res) => {
     try {
       const eventData = insertEventSchema.parse(req.body);
-      const event = await storage.createEvent(eventData);
+      const event = await dbStorage.createEvent(eventData);
       res.status(201).json(event);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -810,11 +810,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Get school statistics
   app.get("/api/statistics/schools", async (req, res) => {
-    const schools = await storage.getSchools();
+    const schools = await dbStorage.getSchools();
     const schoolStats = await Promise.all(
       schools.map(async (school) => {
-        const instructors = await storage.getInstructorsBySchool(school.id);
-        const courses = await storage.getCoursesBySchool(school.id);
+        const instructors = await dbStorage.getInstructorsBySchool(school.id);
+        const courses = await dbStorage.getCoursesBySchool(school.id);
         
         // Calculate total students across all courses for this school
         const totalStudents = courses.reduce((acc, course) => acc + course.studentCount, 0);
@@ -835,7 +835,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Get nationality statistics
   app.get("/api/statistics/nationalities", async (req, res) => {
-    const instructors = await storage.getInstructors();
+    const instructors = await dbStorage.getInstructors();
     
     // Count instructors by nationality
     const nationalityCounts = instructors.reduce((acc, instructor) => {
@@ -863,19 +863,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Add school-specific context if schoolId is provided
       if (chatRequest.schoolId) {
-        const school = await storage.getSchool(chatRequest.schoolId);
+        const school = await dbStorage.getSchool(chatRequest.schoolId);
         if (school) {
           dataContext += `Current school context: ${school.name} (${school.code})\n`;
           
           // Add additional school data
-          const instructors = await storage.getInstructorsBySchool(school.id);
+          const instructors = await dbStorage.getInstructorsBySchool(school.id);
           dataContext += `${school.name} has ${instructors.length} instructors.\n`;
           
-          const courses = await storage.getCoursesBySchool(school.id);
+          const courses = await dbStorage.getCoursesBySchool(school.id);
           dataContext += `${school.name} has ${courses.length} active courses.\n`;
           
           // Add test results summary if available
-          const testResults = await storage.getTestResults();
+          const testResults = await dbStorage.getTestResults();
           if (testResults.length > 0) {
             const schoolTestResults = testResults.filter(tr => {
               // Find the course for this test result
@@ -897,11 +897,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       } else {
         // General context about all schools
-        const schools = await storage.getSchools();
+        const schools = await dbStorage.getSchools();
         dataContext += `System manages ${schools.length} schools: ${schools.map(s => s.name).join(", ")}.\n`;
         
         // Add test results summary
-        const testResults = await storage.getTestResults();
+        const testResults = await dbStorage.getTestResults();
         if (testResults.length > 0) {
           // Calculate averages by test type
           const testTypes = Array.from(new Set(testResults.map(tr => tr.type)));
@@ -913,7 +913,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         // Add instructor evaluation summary
-        const evaluations = await storage.getEvaluations();
+        const evaluations = await dbStorage.getEvaluations();
         if (evaluations.length > 0) {
           const avgScore = evaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / evaluations.length;
           dataContext += `Average instructor evaluation score: ${avgScore.toFixed(1)}%. Passing score is 85%.\n`;
@@ -931,7 +931,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const response = await generateAIResponse(chatRequest);
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "ai_chat",
         description: `AI chat query: "${chatRequest.messages[chatRequest.messages.length - 1].content.substring(0, 50)}${chatRequest.messages[chatRequest.messages.length - 1].content.length > 50 ? '...' : ''}"`,
         timestamp: new Date(),
@@ -962,7 +962,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (isNaN(instructorIdNum)) {
           return res.status(400).json({ message: "Invalid instructor ID" });
         }
-        const attendance = await storage.getStaffAttendanceByInstructor(instructorIdNum);
+        const attendance = await dbStorage.getStaffAttendanceByInstructor(instructorIdNum);
         return res.json(attendance);
       } 
       
@@ -974,10 +974,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         // Get all attendance records
-        const allAttendance = await storage.getAllStaffAttendance();
+        const allAttendance = await dbStorage.getAllStaffAttendance();
         
         // Filter by date (prefix match) and by instructors from the specified school
-        const schoolInstructors = await storage.getInstructorsBySchool(schoolIdNum);
+        const schoolInstructors = await dbStorage.getInstructorsBySchool(schoolIdNum);
         const instructorIds = schoolInstructors.map(instructor => instructor.id);
         
         const filteredAttendance = allAttendance.filter(record => {
@@ -990,12 +990,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (date) {
         // Filter by date only
-        const attendance = await storage.getStaffAttendanceByDate(date as string);
+        const attendance = await dbStorage.getStaffAttendanceByDate(date as string);
         return res.json(attendance);
       }
       
       // Get all records if no specific filters
-      const attendance = await storage.getAllStaffAttendance();
+      const attendance = await dbStorage.getAllStaffAttendance();
       res.json(attendance);
     } catch (error) {
       console.error("Error fetching staff attendance:", error);
@@ -1009,7 +1009,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "Invalid attendance record ID" });
     }
     
-    const attendance = await storage.getStaffAttendance(id);
+    const attendance = await dbStorage.getStaffAttendance(id);
     if (!attendance) {
       return res.status(404).json({ message: "Attendance record not found" });
     }
@@ -1020,11 +1020,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/staff-attendance", async (req, res) => {
     try {
       const attendanceData = insertStaffAttendanceSchema.parse(req.body);
-      const attendance = await storage.createStaffAttendance(attendanceData);
+      const attendance = await dbStorage.createStaffAttendance(attendanceData);
       
       // Log activity
-      const instructor = await storage.getInstructor(attendance.instructorId);
-      await storage.createActivity({
+      const instructor = await dbStorage.getInstructor(attendance.instructorId);
+      await dbStorage.createActivity({
         type: "attendance_recorded",
         description: `Attendance for "${instructor?.name || 'Instructor'}" recorded as ${attendance.status}`,
         timestamp: new Date(),
@@ -1048,15 +1048,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       const updateData = insertStaffAttendanceSchema.partial().parse(req.body);
-      const updatedAttendance = await storage.updateStaffAttendance(id, updateData);
+      const updatedAttendance = await dbStorage.updateStaffAttendance(id, updateData);
       
       if (!updatedAttendance) {
         return res.status(404).json({ message: "Attendance record not found" });
       }
       
       // Log activity
-      const instructor = await storage.getInstructor(updatedAttendance.instructorId);
-      await storage.createActivity({
+      const instructor = await dbStorage.getInstructor(updatedAttendance.instructorId);
+      await dbStorage.createActivity({
         type: "attendance_updated",
         description: `Attendance for "${instructor?.name || 'Instructor'}" updated to ${updatedAttendance.status}`,
         timestamp: new Date(),
@@ -1080,16 +1080,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       // Get the attendance record before deleting for the activity log
-      const attendance = await storage.getStaffAttendance(id);
+      const attendance = await dbStorage.getStaffAttendance(id);
       if (!attendance) {
         return res.status(404).json({ message: "Attendance record not found" });
       }
       
-      const instructor = await storage.getInstructor(attendance.instructorId);
-      await storage.deleteStaffAttendance(id);
+      const instructor = await dbStorage.getInstructor(attendance.instructorId);
+      await dbStorage.deleteStaffAttendance(id);
       
       // Log activity
-      await storage.createActivity({
+      await dbStorage.createActivity({
         type: "attendance_deleted",
         description: `Attendance record for "${instructor?.name || 'Instructor'}" deleted`,
         timestamp: new Date(),
