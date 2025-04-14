@@ -435,60 +435,55 @@ Return ONLY a JSON array with this structure and nothing else:
       
       // Certificate HTML - matching exactly the provided example
       hiddenElement.innerHTML = `
-        <div style="position:relative; width:100%; height:100%; background:white; font-family:Arial, sans-serif;">
-          <!-- Background design elements -->
+        <div style="position:relative; width:100%; height:100%; font-family:Arial, sans-serif; background:white;">
+          <!-- Background design elements with exact matching to example -->
           <div style="position:absolute; top:0; left:0; width:100%; height:100%; overflow:hidden;">
             <!-- Top-right blue corner -->
-            <div style="position:absolute; top:0; right:0; width:350px; height:350px; background:#4AA4E8; transform:rotate(0deg) translate(80px, -150px);"></div>
+            <div style="position:absolute; top:0; right:0; width:250px; height:250px; background:#4AA4E8; transform:translate(0, 0);"></div>
             
-            <!-- Left navy stripe -->
-            <div style="position:absolute; bottom:0; left:0; width:80px; height:600px; background:#1A2E5A; transform:rotate(10deg) translate(-30px, 0);"></div>
+            <!-- Left navy stripe - adjusted to match example -->
+            <div style="position:absolute; bottom:0; left:0; width:80px; height:700px; background:#1A2E5A; transform:rotate(14deg) translate(-20px, 100px);"></div>
             
-            <!-- Bottom-left gray triangle -->
-            <div style="position:absolute; bottom:0; left:0; width:800px; height:500px; background:#E0E0E0; transform:translate(-250px, 250px) rotate(10deg);"></div>
+            <!-- Bottom-left gray triangle - adjusted to match example -->
+            <div style="position:absolute; bottom:0; left:0; width:100%; height:60%; background:#E0E0E0; clip-path:polygon(0 100%, 100% 100%, 0 62%);"></div>
           </div>
           
-          <!-- White overlay for content area -->
-          <div style="position:absolute; top:50px; left:50px; right:50px; bottom:50px; background:white; box-shadow:0 0 20px rgba(0,0,0,0.1); z-index:1;">
+          <!-- White content area with shadow -->
+          <div style="position:absolute; top:40px; left:50px; right:50px; bottom:40px; background:white; box-shadow:0 0 15px rgba(0,0,0,0.08); z-index:1;">
             <!-- Logo area -->
-            <div style="position:absolute; top:40px; left:40px; right:40px; height:100px; display:flex; align-items:center;">
-              <img src="${govcioLogo}" style="height:80px; margin-right:20px;" />
+            <div style="position:absolute; top:30px; left:40px; right:40px; height:80px; display:flex; align-items:center;">
+              <img src="${govcioLogo}" style="height:70px;" />
             </div>
             
-            <!-- Certificate title -->
-            <div style="position:absolute; top:160px; left:40px; right:40px; text-align:center;">
-              <h1 style="font-size:48px; color:#1A2E5A; font-weight:bold; margin:0; letter-spacing:2px;">CERTIFICATE</h1>
-              <h2 style="font-size:24px; color:#1A2E5A; font-style:italic; margin:0; font-weight:normal;">of ${selectedCategory}</h2>
+            <!-- Certificate title - adjusted to match example exactly -->
+            <div style="position:absolute; top:140px; left:0; right:0; text-align:center;">
+              <h1 style="font-size:52px; color:#1A2E5A; font-weight:bold; margin:0 0 2px 0; letter-spacing:2px; line-height:1.1;">CERTIFICATE</h1>
+              <h2 style="font-size:26px; color:#1A2E5A; font-style:italic; margin:0; font-weight:normal;">of ${selectedCategory}</h2>
             </div>
             
-            <!-- Recipient information -->
-            <div style="position:absolute; top:280px; left:40px; right:40px; text-align:center;">
-              <p style="font-size:16px; color:#333; margin-bottom:15px;">THIS CERTIFICATE IS PRESENTED TO...</p>
-              <h3 style="font-size:42px; font-weight:bold; color:#1A2E5A; margin:20px 0; font-style:italic;">${certificateData.recipientName}</h3>
+            <!-- Recipient information - adjusted spacing -->
+            <div style="position:absolute; top:240px; left:0; right:0; text-align:center;">
+              <p style="font-size:16px; color:#333; margin-bottom:10px;">THIS CERTIFICATE IS PRESENTED TO...</p>
+              <h3 style="font-size:46px; font-weight:bold; color:#1A2E5A; margin:15px 0 25px 0; font-style:italic;">${certificateData.recipientName}</h3>
             </div>
             
-            <!-- Accomplishment text -->
-            <div style="position:absolute; top:380px; left:60px; right:60px; text-align:center;">
-              <p style="font-size:16px; line-height:1.5; color:#333; margin:0;">
+            <!-- Accomplishment text - improved spacing and adjusted width for better readability -->
+            <div style="position:absolute; top:350px; left:80px; right:80px; text-align:center;">
+              <p style="font-size:15px; line-height:1.6; color:#333; margin:0;">
                 ${accomplishmentText}
               </p>
             </div>
             
-            <!-- Signature and date area -->
-            <div style="position:absolute; bottom:90px; left:70px; right:70px; display:flex; justify-content:space-between;">
-              <div style="text-align:center; width:200px;">
+            <!-- Signature area - adjusted as requested (only one signature) -->
+            <div style="position:absolute; bottom:80px; right:0; left:0; text-align:center;">
+              <div style="margin: 0 auto; width:200px;">
                 <div style="border-bottom:1px solid #333; margin-bottom:5px; height:30px;"></div>
-                <p style="margin:0; font-size:14px;">Timothy A Drummond<br/>(ELT Manager)</p>
-              </div>
-              
-              <div style="text-align:center; width:200px;">
-                <div style="border-bottom:1px solid #333; margin-bottom:5px; height:30px;"></div>
-                <p style="margin:0; font-size:14px;">Munye H Sufi<br/>(ELT Senior Instructor)</p>
+                <p style="margin:0; font-size:14px;">Munye H Sufi<br/>(ELT Manager)</p>
               </div>
             </div>
             
-            <!-- Date -->
-            <div style="position:absolute; bottom:40px; left:70px; font-size:14px; color:#333;">
+            <!-- Date - adjusted to match example -->
+            <div style="position:absolute; bottom:30px; left:60px; font-size:14px; color:#333;">
               ${formattedDate}
             </div>
           </div>
@@ -793,37 +788,53 @@ Return ONLY a JSON array with this structure and nothing else:
                 <TabsContent value="preview" className="pt-4">
                   <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
                     <div className="p-6 rounded bg-gray-50 flex flex-col items-center justify-center text-center min-h-[350px]">
-                      {/* Certificate Preview that mimics the final design */}
-                      <div className="w-full max-w-lg relative bg-white p-8 rounded-lg shadow mb-6 overflow-hidden" 
+                      {/* Certificate Preview that mimics the final design exactly */}
+                      <div className="w-full max-w-lg relative bg-white p-6 rounded-lg shadow mb-6 overflow-hidden" 
                            style={{ aspectRatio: '1.4/1' }}>
                         {/* Decorative elements */}
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400 opacity-80 transform translate-x-12 -translate-y-12 rotate-15"></div>
-                        <div className="absolute bottom-0 left-0 w-32 h-20 bg-gray-200 transform -translate-x-10 translate-y-10 rotate-12"></div>
-                        <div className="absolute left-0 bottom-0 w-6 h-48 bg-blue-900 opacity-80 transform -translate-x-2 translate-y-5 rotate-12"></div>
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-400"></div>
+                        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gray-200 clip-path-triangle"></div>
+                        <div className="absolute left-0 bottom-0 h-64 w-8 bg-blue-900 transform rotate-12 -translate-x-2"></div>
                         
-                        {/* Content - simplified but representative */}
-                        <div className="relative flex items-center mb-3">
-                          <img src={govcioLogo} alt="GovCIO Logo" className="h-10 mr-2" />
-                        </div>
-                        
-                        <div className="text-center mt-3 relative z-10">
-                          <h3 className="text-xl font-bold text-blue-900 tracking-wide">CERTIFICATE</h3>
-                          <p className="text-sm italic text-blue-900">of {certificateData.award}</p>
+                        {/* White content area */}
+                        <div className="relative bg-white mx-4 my-3 p-4 shadow-sm rounded z-10 h-[85%]">
+                          {/* Content */}
+                          <div className="relative flex items-center mb-2">
+                            <img src={govcioLogo} alt="GovCIO Logo" className="h-8" />
+                          </div>
                           
-                          <div className="mt-4">
-                            <p className="text-xs text-gray-600">THIS CERTIFICATE IS PRESENTED TO...</p>
-                            <h4 className="text-xl font-bold italic text-blue-900 my-2">
-                              {certificateData.recipientName}
-                            </h4>
+                          <div className="text-center mt-2 relative z-10">
+                            <h3 className="text-xl font-bold text-blue-900 tracking-wide leading-tight">CERTIFICATE</h3>
+                            <p className="text-xs italic text-blue-900">of {certificateData.award}</p>
                             
-                            <p className="text-xs text-gray-600 mt-3 mb-3 px-4">
-                              {selectedInstructor ? 
-                                generateAccomplishmentText(selectedInstructor, selectedCategory).substring(0, 100) + '...' 
-                                : ''}
-                            </p>
+                            <div className="mt-3">
+                              <p className="text-[10px] text-gray-600 mb-1">THIS CERTIFICATE IS PRESENTED TO...</p>
+                              <h4 className="text-lg font-bold italic text-blue-900 mb-3">
+                                {certificateData.recipientName}
+                              </h4>
+                              
+                              <p className="text-[8px] text-gray-600 px-3 max-h-16 overflow-hidden">
+                                {selectedInstructor ? 
+                                  generateAccomplishmentText(selectedInstructor, selectedCategory).substring(0, 140) + '...' 
+                                  : ''}
+                              </p>
+                              
+                              <div className="absolute bottom-2 inset-x-0 flex justify-center">
+                                <div className="w-24 text-center">
+                                  <div className="h-[1px] bg-gray-400 w-full mb-1"></div>
+                                  <p className="text-[8px]">Munye H Sufi<br/>(ELT Manager)</p>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
+                      
+                      <style jsx>{`
+                        .clip-path-triangle {
+                          clip-path: polygon(0 60%, 0 100%, 100% 100%);
+                        }
+                      `}</style>
                       
                       <p className="text-sm text-gray-500 mb-4">
                         Click the download button to generate the full certificate with complete layout.
