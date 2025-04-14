@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils";
 import { 
   Home, School, BookOpen, GraduationCap, ListChecks, BarChart2, Settings, Search, Bell,
   LogOut, LogIn, UserCircle, BookText, BriefcaseBusiness, MessageSquare, AlertTriangle, 
-  BrainCircuit, Users, Lightbulb, FileText, Award
+  BrainCircuit, Users, Lightbulb, FileText, Award, LayoutDashboard
 } from "lucide-react";
-import govcioLogo from "../../assets/govcio-logo.png";
+import govcioLogo from "../../assets/images/govcio-logo-main.png";
 
 const BasicNavbar = () => {
   const [location] = useLocation();
@@ -35,9 +35,9 @@ const BasicNavbar = () => {
     <div className="flex flex-col">
       {/* Top bar with brand */}
       <div className="bg-[#0A2463] text-white h-16 flex items-center px-6">
-        {/* Left side - empty space */}
-        <div className="flex-shrink-0 w-10">
-          {/* Empty space where logo was */}
+        {/* Left side - Logo */}
+        <div className="flex-shrink-0 w-24 mr-2">
+          <img src={govcioLogo} alt="GovCIO Logo" className="h-10" />
         </div>
         
         {/* Center - Title */}
@@ -401,13 +401,7 @@ const BasicNavbar = () => {
                     <div className="px-4 py-2 bg-gray-50 border-b border-gray-200 text-xs font-medium uppercase text-gray-500">
                       Documents
                     </div>
-                    <Link 
-                      href="/administration/company-policy"
-                      onClick={() => setShowAdminLinks(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
-                    >
-                      Company Policy
-                    </Link>
+                    {/* Company Policy link removed as requested */}
                     <Link 
                       href="/administration/evaluation-guideline"
                       onClick={() => setShowAdminLinks(false)}
