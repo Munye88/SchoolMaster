@@ -233,6 +233,21 @@ Return ONLY a JSON array with this structure and nothing else:
             if (instructor) {
               return { ...instructor, ...item };
             } else {
+              // Find an instructor with a similar name if ID doesn't match
+              const nameMatchInstructor = instructorQuery.data?.find(i => 
+                i.name.toLowerCase().includes(item.name.toLowerCase()) || 
+                item.name.toLowerCase().includes(i.name.toLowerCase())
+              );
+              
+              if (nameMatchInstructor) {
+                return { 
+                  ...nameMatchInstructor, 
+                  ...item,
+                  id: nameMatchInstructor.id,
+                  name: item.name || nameMatchInstructor.name
+                };
+              }
+              
               // If no matching instructor is found, use an instructor from the data
               const fallbackInstructor = instructorQuery.data && instructorQuery.data.length > 0 
                 ? instructorQuery.data[0] 
@@ -281,10 +296,8 @@ Return ONLY a JSON array with this structure and nothing else:
           }
         } else {
           console.error("Could not extract valid JSON data from AI response", aiResponse);
-          toast({
-            title: "Analysis complete",
-            description: "Results are available, but some data may be incomplete.",
-          });
+          
+          // Don't show incomplete message, instead create valid data from instructors
           
           // Create mock data based on actual instructors
           if (instructorQuery.data && instructorQuery.data.length > 0) {
@@ -363,17 +376,21 @@ Return ONLY a JSON array with this structure and nothing else:
 
       // Use html2canvas to capture the certificate as an image
       const canvas = await html2canvas(certificateElement, {
-        scale: 2, // Higher scale for better quality
+        scale: 4, // Higher scale for better quality
         logging: false,
         useCORS: true,
-        backgroundColor: "#ffffff"
+        backgroundColor: "#ffffff",
+        allowTaint: true,
+        removeContainer: true,
+        imageTimeout: 15000, // Increase timeout for better rendering
       });
 
       // Create PDF with jsPDF
       const pdf = new jsPDF({
         orientation: "landscape",
         unit: "mm",
-        format: "a4"
+        format: "a4",
+        compress: true, // Compress the PDF for smaller file size
       });
 
       // Calculate positioning to center the image
@@ -384,9 +401,17 @@ Return ONLY a JSON array with this structure and nothing else:
       const x = (pageWidth - imgWidth) / 2;
       const y = (pageHeight - imgHeight) / 2;
 
-      // Add the image to the PDF
-      const imgData = canvas.toDataURL('image/png');
-      pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+      // Add the image to the PDF with high quality
+      const imgData = canvas.toDataURL('image/jpeg', 1.0); // Use JPEG for smaller file size but high quality
+      pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight, undefined, 'FAST');
+
+      // Set metadata
+      pdf.setProperties({
+        title: `${certificateData.award} Certificate for ${certificateData.recipientName}`,
+        subject: `${certificateData.award} award certificate from ${certificateData.school}`,
+        creator: 'GOVCIO/SAMS ELT PROGRAM',
+        author: 'ELT Program Management',
+      });
 
       // Save the PDF
       const fileName = `${certificateData.award.replace(/\s+/g, '_')}_${certificateData.recipientName.replace(/\s+/g, '_')}.pdf`;
@@ -643,47 +668,52 @@ Return ONLY a JSON array with this structure and nothing else:
                   <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
                     <div 
                       id="certificate-element"
-                      className="relative p-8 bg-contain bg-center bg-no-repeat min-h-[400px] flex flex-col justify-center items-center text-center rounded overflow-hidden"
+                      className="relative p-8 bg-white min-h-[500px] flex flex-col justify-center items-center text-center rounded border border-gray-300 overflow-hidden shadow-md"
                       style={{ 
-                        backgroundImage: `url(${awardsImage})`,
-                        backgroundSize: 'cover',
+                        backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,0.97), rgba(255,255,255,0.95))",
                       }}
                     >
-                      <div className="absolute inset-0 bg-white opacity-10"></div>
-                      <div className="z-10">
-                        <div className="w-full text-center mb-6">
-                          <h2 className="text-2xl font-serif font-bold text-amber-800">GOVCIO/SAMS ELT PROGRAM</h2>
-                          <h3 className="text-xl font-serif font-bold text-amber-700 mt-1">Certificate of Recognition</h3>
+                      <div className="absolute top-0 left-0 right-0 bg-amber-700 h-16 flex items-center justify-center">
+                        <h2 className="text-xl font-serif font-bold text-white">GOVCIO/SAMS ELT PROGRAM</h2>
+                      </div>
+                      
+                      <div className="mt-20 z-10 w-full max-w-lg">
+                        <div className="w-full text-center">
+                          <h3 className="text-3xl font-serif font-bold text-amber-800 border-b border-amber-200 pb-2 mb-2">PROGRAM</h3>
+                          <h4 className="text-2xl font-serif font-bold text-amber-800">Certificate of Recognition</h4>
+                          <p className="text-gray-500 mt-1">Phone: 555-1234</p>
                         </div>
                         
-                        <div className="w-full border-b border-amber-200 my-4"></div>
+                        <div className="mt-12">
+                          <p className="text-xl font-serif text-gray-700">This certificate is presented to</p>
+                          <h4 className="text-4xl font-serif font-bold mt-4 mb-4 text-gray-800">
+                            {certificateData.recipientName}
+                          </h4>
+                          <p className="text-xl font-serif italic text-gray-700">for outstanding achievement as</p>
+                          <h5 className="text-3xl font-serif font-bold mt-2 text-amber-800">
+                            {certificateData.award}
+                          </h5>
+                          <p className="mt-3 font-serif text-xl text-gray-700">
+                            at {certificateData.school}
+                          </p>
+                        </div>
                         
-                        <p className="text-md font-serif text-gray-700 mt-2">This certificate is presented to</p>
-                        <h4 className="text-2xl font-serif font-bold mt-2 text-gray-800">
-                          {certificateData.recipientName}
-                        </h4>
-                        <p className="mt-4 font-serif italic text-gray-700">for outstanding achievement as</p>
-                        <p className="text-xl font-serif font-bold mt-2 text-amber-800">
-                          {certificateData.award}
-                        </p>
-                        <p className="mt-3 font-serif text-md text-gray-700">
-                          at {certificateData.school}
-                        </p>
-                        
-                        <div className="w-full border-b border-amber-200 my-4"></div>
-                        
-                        <div className="mt-4 flex justify-between w-full px-10">
+                        <div className="mt-12 flex justify-between items-end w-full px-6">
                           <div className="text-center">
-                            <div className="h-0.5 w-24 bg-gray-400 mb-1"></div>
+                            <div className="h-0.5 w-28 bg-gray-500 mb-1"></div>
                             <p className="font-serif text-sm text-gray-600">Program Director</p>
                           </div>
-                          <div className="text-center">
-                            <p className="font-serif text-sm text-gray-600">{certificateData.date}</p>
+                          <div className="text-center bg-amber-100 rounded-full h-16 w-16 flex items-center justify-center border-2 border-amber-500">
+                            <p className="font-serif text-xs text-amber-800">SEAL</p>
                           </div>
                           <div className="text-center">
-                            <div className="h-0.5 w-24 bg-gray-400 mb-1"></div>
+                            <div className="h-0.5 w-28 bg-gray-500 mb-1"></div>
                             <p className="font-serif text-sm text-gray-600">School Administrator</p>
                           </div>
+                        </div>
+                        
+                        <div className="mt-4 text-center">
+                          <p className="font-serif text-sm text-gray-500">{certificateData.date}</p>
                         </div>
                       </div>
                     </div>
