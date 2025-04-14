@@ -438,10 +438,10 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Student Distribution by School */}
+          {/* Staff Alerts */}
           <Card className="shadow-sm">
             <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-lg text-[#0A2463]">Student Distribution by School</CardTitle>
+              <CardTitle className="text-lg text-[#0A2463]">Staff Alerts</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pb-6">
               <div className="space-y-4">
