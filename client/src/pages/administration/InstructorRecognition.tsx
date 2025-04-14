@@ -642,32 +642,74 @@ Return ONLY a JSON array with this structure and nothing else:
                 <TabsContent value="preview" className="pt-4">
                   <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
                     <div 
-                      className="relative p-6 bg-contain bg-center bg-no-repeat min-h-[300px] flex flex-col justify-center items-center text-center"
-                      style={{ backgroundImage: `url(${awardsImage})` }}
+                      id="certificate-element"
+                      className="relative p-8 bg-contain bg-center bg-no-repeat min-h-[400px] flex flex-col justify-center items-center text-center rounded overflow-hidden"
+                      style={{ 
+                        backgroundImage: `url(${awardsImage})`,
+                        backgroundSize: 'cover',
+                      }}
                     >
-                      <h3 className="text-lg font-serif font-bold text-amber-800 mt-12">Certificate of Recognition</h3>
-                      <h4 className="text-xl font-serif font-bold mt-4 text-gray-800">
-                        {certificateData.recipientName}
-                      </h4>
-                      <p className="mt-2 font-serif italic text-gray-600">is hereby recognized as</p>
-                      <p className="text-xl font-serif font-bold mt-2 text-amber-800">
-                        {certificateData.award}
-                      </p>
-                      <p className="mt-2 font-serif text-sm text-gray-600">
-                        {certificateData.school}
-                      </p>
-                      <p className="mt-4 font-serif text-sm text-gray-600">
-                        {certificateData.date}
-                      </p>
+                      <div className="absolute inset-0 bg-white opacity-10"></div>
+                      <div className="z-10">
+                        <div className="w-full text-center mb-6">
+                          <h2 className="text-2xl font-serif font-bold text-amber-800">GOVCIO/SAMS ELT PROGRAM</h2>
+                          <h3 className="text-xl font-serif font-bold text-amber-700 mt-1">Certificate of Recognition</h3>
+                        </div>
+                        
+                        <div className="w-full border-b border-amber-200 my-4"></div>
+                        
+                        <p className="text-md font-serif text-gray-700 mt-2">This certificate is presented to</p>
+                        <h4 className="text-2xl font-serif font-bold mt-2 text-gray-800">
+                          {certificateData.recipientName}
+                        </h4>
+                        <p className="mt-4 font-serif italic text-gray-700">for outstanding achievement as</p>
+                        <p className="text-xl font-serif font-bold mt-2 text-amber-800">
+                          {certificateData.award}
+                        </p>
+                        <p className="mt-3 font-serif text-md text-gray-700">
+                          at {certificateData.school}
+                        </p>
+                        
+                        <div className="w-full border-b border-amber-200 my-4"></div>
+                        
+                        <div className="mt-4 flex justify-between w-full px-10">
+                          <div className="text-center">
+                            <div className="h-0.5 w-24 bg-gray-400 mb-1"></div>
+                            <p className="font-serif text-sm text-gray-600">Program Director</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="font-serif text-sm text-gray-600">{certificateData.date}</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="h-0.5 w-24 bg-gray-400 mb-1"></div>
+                            <p className="font-serif text-sm text-gray-600">School Administrator</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     
-                    <Button 
-                      className="w-full mt-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600" 
-                      onClick={generateCertificate}
-                    >
-                      <FileSpreadsheet className="h-4 w-4 mr-2" />
-                      Generate Certificate
-                    </Button>
+                    <div className="flex gap-2 mt-4">
+                      <Button 
+                        className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600" 
+                        onClick={generateCertificate}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download Certificate
+                      </Button>
+                      <Button 
+                        className="flex-none bg-amber-100 hover:bg-amber-200 text-amber-800" 
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(certificateData.reason);
+                          toast({
+                            title: "Copied to clipboard",
+                            description: "Award justification copied to clipboard",
+                          });
+                        }}
+                      >
+                        <FileSpreadsheet className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </TabsContent>
                 
