@@ -922,10 +922,19 @@ export default function StaffLeaveTracker() {
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader className="leave-details-dialog-header">
-            <DialogTitle>Leave Request Details</DialogTitle>
-            <DialogDescription>
-              View details for {selectedLeave?.instructorName}'s leave request
-            </DialogDescription>
+            <div className="flex items-center justify-between w-full print-header">
+              <div>
+                <DialogTitle>Leave Request Details</DialogTitle>
+                <DialogDescription>
+                  View details for {selectedLeave?.instructorName}'s leave request
+                </DialogDescription>
+              </div>
+              <img 
+                src="/attached_assets/Govcio_logo-removebg-preview.png" 
+                alt="GovCIO Logo" 
+                className="h-12 object-contain" 
+              />
+            </div>
           </DialogHeader>
           
           {selectedLeave && (
