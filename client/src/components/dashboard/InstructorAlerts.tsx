@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { StaffAttendance, StaffLeave, Evaluation, Instructor } from "@shared/schema";
+import { useSchool } from '@/hooks/useSchool';
 
 interface InstructorAlertsProps {
   instructors: Instructor[];
@@ -19,16 +20,17 @@ const InstructorAlerts: React.FC<InstructorAlertsProps> = ({
   staffLeave,
   evaluations,
 }) => {
+  const { selectedSchool } = useSchool();
   // Find absent instructors (those marked absent in staff attendance)
   const absentInstructors = staffAttendance
-    .filter(record => record.status === 'Absent' && new Date(record.date).toDateString() === new Date().toDateString())
+    .filter(record => record.status === 'absent' && new Date(record.date).toDateString() === new Date().toDateString())
     .map(record => {
       const instructor = instructors.find(i => i.id === record.instructorId);
       return {
         id: record.instructorId,
         name: instructor?.name || `Instructor #${record.instructorId}`,
         schoolId: instructor?.schoolId || 0,
-        reason: record.notes || 'No reason provided',
+        reason: record.comments || 'No reason provided',
         type: 'absent' as const,
       };
     });
@@ -45,23 +47,23 @@ const InstructorAlerts: React.FC<InstructorAlertsProps> = ({
       const instructor = instructors.find(i => i.id === leave.instructorId);
       return {
         id: leave.instructorId,
-        name: leave.instructorName || `Instructor #${leave.instructorId}`,
+        name: instructor?.name || `Instructor #${leave.instructorId}`,
         schoolId: instructor?.schoolId || 0,
-        reason: `${leave.leaveType} - Returns ${format(new Date(leave.returnDate), 'MMM dd')}`,
+        reason: `${leave.leaveType || 'PTO'} - Returns ${format(new Date(leave.returnDate), 'MMM dd')}`,
         type: 'leave' as const,
       };
     });
 
   // Find instructors with low evaluation scores (below 85%)
   const lowPerformingInstructors = evaluations
-    .filter(eval => eval.score < 85)
-    .map(eval => {
-      const instructor = instructors.find(i => i.id === eval.instructorId);
+    .filter(evaluation => evaluation.score < 85)
+    .map(evaluation => {
+      const instructor = instructors.find(i => i.id === evaluation.instructorId);
       return {
-        id: eval.instructorId,
-        name: instructor?.name || `Instructor #${eval.instructorId}`,
+        id: evaluation.instructorId,
+        name: instructor?.name || `Instructor #${evaluation.instructorId}`,
         schoolId: instructor?.schoolId || 0,
-        reason: `${eval.score}% in ${eval.quarter}`,
+        reason: `${evaluation.score}% in ${evaluation.quarter}`,
         type: 'evaluation' as const,
       };
     });
