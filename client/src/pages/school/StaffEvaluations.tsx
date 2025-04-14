@@ -39,19 +39,19 @@ const StaffEvaluations = () => {
 
   // Fetch instructors and evaluations
   const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
-    queryKey: ['/api/instructors', selectedSchool, currentSchool?.id],
+    queryKey: ['/api/instructors', selectedSchool?.id],
     refetchOnWindowFocus: true,
   });
 
   const { data: evaluations = [], isLoading: isLoadingEvaluations } = useQuery<Evaluation[]>({
-    queryKey: ['/api/evaluations', selectedSchool, currentSchool?.id],
+    queryKey: ['/api/evaluations', selectedSchool?.id],
     // Ensure the data is reloaded when the school changes
     refetchOnWindowFocus: true,
     // Since selectedSchool is in the queryKey, any change in selected school will trigger a refetch
   });
 
   const schoolInstructors = instructors.filter(instructor => 
-    !selectedSchool || instructor.schoolId === currentSchool?.id
+    !selectedSchool || instructor.schoolId === selectedSchool?.id
   );
 
   // Process evaluation data for visualization
@@ -169,7 +169,7 @@ const StaffEvaluations = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#0A2463]">
-            {currentSchool ? `${currentSchool.name} Staff Evaluations` : 'Staff Evaluations'}
+            {selectedSchool ? `${selectedSchool.name} Staff Evaluations` : 'Staff Evaluations'}
           </h1>
           <p className="text-gray-500">Monitor instructor performance and evaluation metrics</p>
         </div>
@@ -392,7 +392,7 @@ const StaffEvaluations = () => {
                   {evaluations
                     .filter(evaluation => {
                       const instructor = instructors.find(i => i.id === evaluation.instructorId);
-                      return !selectedSchool || instructor?.schoolId === currentSchool?.id;
+                      return !selectedSchool || instructor?.schoolId === selectedSchool?.id;
                     })
                     .map((evaluation, index) => {
                       const instructor = instructors.find(i => i.id === evaluation.instructorId);
