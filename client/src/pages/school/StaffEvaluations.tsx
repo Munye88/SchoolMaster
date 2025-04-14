@@ -41,12 +41,16 @@ const StaffEvaluations = () => {
   const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
     queryKey: ['/api/instructors', selectedSchool?.id],
     refetchOnWindowFocus: true,
+    staleTime: 0, // Don't cache this data
+    refetchOnMount: 'always', // Always refetch on component mount
   });
 
   const { data: evaluations = [], isLoading: isLoadingEvaluations } = useQuery<Evaluation[]>({
     queryKey: ['/api/evaluations', selectedSchool?.id],
     // Ensure the data is reloaded when the school changes
     refetchOnWindowFocus: true,
+    staleTime: 0, // Don't cache this data
+    refetchOnMount: 'always', // Always refetch on component mount
     // Since selectedSchool is in the queryKey, any change in selected school will trigger a refetch
   });
 
