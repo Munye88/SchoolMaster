@@ -358,30 +358,74 @@ Return ONLY a JSON array with this structure and nothing else:
   // Handle certificate generation and download
   const generateCertificate = async () => {
     try {
-      // Find the certificate element
-      const certificateElement = document.getElementById("certificate-element");
-      if (!certificateElement) {
-        toast({
-          title: "Error",
-          description: "Certificate element not found",
-          variant: "destructive"
-        });
-        return;
-      }
-
       toast({
         title: "Generating certificate",
         description: "Please wait while we prepare your certificate...",
       });
 
+      // Create a hidden certificate element for rendering
+      const hiddenElement = document.createElement('div');
+      hiddenElement.style.position = 'absolute';
+      hiddenElement.style.left = '-9999px';
+      hiddenElement.style.top = '-9999px';
+      hiddenElement.style.width = '1100px'; // Wide enough for landscape
+      hiddenElement.style.height = '850px'; // Tall enough for content
+      hiddenElement.style.backgroundColor = 'white';
+      hiddenElement.style.overflow = 'hidden';
+      hiddenElement.id = 'hidden-certificate';
+      
+      // Certificate HTML
+      hiddenElement.innerHTML = `
+        <div style="position:relative; width:100%; height:100%; padding:40px; font-family:serif; background:white;">
+          <div style="position:absolute; top:0; left:0; width:100%; height:100px; background:#8A3100; display:flex; align-items:center; justify-content:center; padding-top:10px;">
+            <h2 style="color:white; font-size:24px; font-weight:bold; text-align:center;">GOVCIO/SAMS ELT PROGRAM MANAGEMENT</h2>
+          </div>
+          
+          <div style="margin-top:120px; text-align:center;">
+            <h3 style="color:#8A3100; font-size:32px; font-weight:bold; margin-bottom:5px;">GOVCIO/SAMS ELT<br/>PROGRAM</h3>
+            <h4 style="color:#8A3100; font-size:24px; font-weight:bold; margin-top:5px;">Certificate of Recognition</h4>
+            
+            <div style="margin:40px 60px; text-align:center;">
+              <p style="font-size:22px; color:#333; margin-bottom:15px;">This certificate is presented to</p>
+              <h4 style="font-size:38px; font-weight:bold; color:#333; margin:20px 0; letter-spacing:1px;">${certificateData.recipientName}</h4>
+              <p style="font-size:22px; color:#333; font-style:italic; margin-top:15px;">for outstanding achievement as</p>
+              <h5 style="font-size:30px; font-weight:bold; color:#8A3100; margin:15px 0;">${certificateData.award}</h5>
+              <p style="font-size:22px; color:#333; margin-top:15px;">at ${certificateData.school}</p>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; margin:60px 80px 20px 80px;">
+              <div style="text-align:center;">
+                <div style="height:1px; width:120px; background:#777; margin-bottom:5px;"></div>
+                <p style="font-size:14px; color:#555;">Program Director</p>
+              </div>
+              
+              <div style="text-align:center; border:3px solid #CA9A4E; border-radius:50%; height:80px; width:80px; display:flex; align-items:center; justify-content:center; background:#FAEBD7;">
+                <p style="font-size:12px; color:#8A3100; font-weight:bold;">SEAL</p>
+              </div>
+              
+              <div style="text-align:center;">
+                <div style="height:1px; width:120px; background:#777; margin-bottom:5px;"></div>
+                <p style="font-size:14px; color:#555;">School Administrator</p>
+              </div>
+            </div>
+            
+            <div style="text-align:center; margin-top:20px;">
+              <p style="font-size:14px; color:#555;">${certificateData.date}</p>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(hiddenElement);
+
       // Use html2canvas to capture the certificate as an image
-      const canvas = await html2canvas(certificateElement, {
+      const canvas = await html2canvas(hiddenElement, {
         scale: 4, // Higher scale for better quality
         logging: false,
         useCORS: true,
         backgroundColor: "#ffffff",
         allowTaint: true,
-        removeContainer: true,
+        removeContainer: false, // Don't remove container yet
         imageTimeout: 15000, // Increase timeout for better rendering
       });
 
@@ -389,12 +433,12 @@ Return ONLY a JSON array with this structure and nothing else:
       const pdf = new jsPDF({
         orientation: "landscape",
         unit: "mm",
-        format: "a4",
+        format: "letter", // Use US Letter format
         compress: true, // Compress the PDF for smaller file size
       });
 
       // Calculate positioning to center the image
-      const imgWidth = 280; // A4 width in landscape (297mm) with some margin
+      const imgWidth = 260; // Letter width in landscape with some margin
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
@@ -412,6 +456,9 @@ Return ONLY a JSON array with this structure and nothing else:
         creator: 'GOVCIO/SAMS ELT PROGRAM',
         author: 'ELT Program Management',
       });
+
+      // Remove the hidden element
+      document.body.removeChild(hiddenElement);
 
       // Save the PDF
       const fileName = `${certificateData.award.replace(/\s+/g, '_')}_${certificateData.recipientName.replace(/\s+/g, '_')}.pdf`;
@@ -666,79 +713,47 @@ Return ONLY a JSON array with this structure and nothing else:
                 
                 <TabsContent value="preview" className="pt-4">
                   <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
-                    <div 
-                      id="certificate-element"
-                      className="relative p-8 bg-white min-h-[500px] flex flex-col justify-center items-center text-center rounded border border-gray-300 overflow-hidden shadow-md"
-                      style={{ 
-                        backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,0.97), rgba(255,255,255,0.95))",
-                      }}
-                    >
-                      <div className="absolute top-0 left-0 right-0 bg-amber-700 h-16 flex items-center justify-center">
-                        <h2 className="text-xl font-serif font-bold text-white">GOVCIO/SAMS ELT PROGRAM</h2>
+                    <div className="p-6 rounded bg-gray-50 flex flex-col items-center justify-center text-center min-h-[200px]">
+                      <div className="w-full max-w-md border border-amber-200 bg-white p-8 rounded-lg shadow-sm mb-6">
+                        <h3 className="text-2xl font-serif font-bold text-amber-800">Certificate Preview</h3>
+                        <p className="text-lg mt-4 font-serif text-gray-700">
+                          {certificateData.award} Certificate for:
+                        </p>
+                        <h4 className="text-2xl font-serif font-bold mt-2 text-gray-800">
+                          {certificateData.recipientName}
+                        </h4>
+                        <p className="text-md font-serif text-gray-600 mt-3">
+                          from {certificateData.school}
+                        </p>
                       </div>
                       
-                      <div className="mt-20 z-10 w-full max-w-lg">
-                        <div className="w-full text-center">
-                          <h3 className="text-3xl font-serif font-bold text-amber-800 border-b border-amber-200 pb-2 mb-2">PROGRAM</h3>
-                          <h4 className="text-2xl font-serif font-bold text-amber-800">Certificate of Recognition</h4>
-                          <p className="text-gray-500 mt-1">Phone: 555-1234</p>
-                        </div>
-                        
-                        <div className="mt-12">
-                          <p className="text-xl font-serif text-gray-700">This certificate is presented to</p>
-                          <h4 className="text-4xl font-serif font-bold mt-4 mb-4 text-gray-800">
-                            {certificateData.recipientName}
-                          </h4>
-                          <p className="text-xl font-serif italic text-gray-700">for outstanding achievement as</p>
-                          <h5 className="text-3xl font-serif font-bold mt-2 text-amber-800">
-                            {certificateData.award}
-                          </h5>
-                          <p className="mt-3 font-serif text-xl text-gray-700">
-                            at {certificateData.school}
-                          </p>
-                        </div>
-                        
-                        <div className="mt-12 flex justify-between items-end w-full px-6">
-                          <div className="text-center">
-                            <div className="h-0.5 w-28 bg-gray-500 mb-1"></div>
-                            <p className="font-serif text-sm text-gray-600">Program Director</p>
-                          </div>
-                          <div className="text-center bg-amber-100 rounded-full h-16 w-16 flex items-center justify-center border-2 border-amber-500">
-                            <p className="font-serif text-xs text-amber-800">SEAL</p>
-                          </div>
-                          <div className="text-center">
-                            <div className="h-0.5 w-28 bg-gray-500 mb-1"></div>
-                            <p className="font-serif text-sm text-gray-600">School Administrator</p>
-                          </div>
-                        </div>
-                        
-                        <div className="mt-4 text-center">
-                          <p className="font-serif text-sm text-gray-500">{certificateData.date}</p>
-                        </div>
+                      <p className="text-sm text-gray-500 mb-4">
+                        The certificate will be generated in standard US Letter landscape format.
+                        Click the download button to generate and view the full certificate.
+                      </p>
+                      
+                      <div className="flex gap-2 w-full max-w-md">
+                        <Button 
+                          className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600" 
+                          onClick={generateCertificate}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Download Certificate
+                        </Button>
+                        <Button 
+                          className="flex-none bg-amber-100 hover:bg-amber-200 text-amber-800" 
+                          variant="outline"
+                          onClick={() => {
+                            navigator.clipboard.writeText(certificateData.reason);
+                            toast({
+                              title: "Copied to clipboard",
+                              description: "Award justification copied to clipboard",
+                            });
+                          }}
+                        >
+                          <FileSpreadsheet className="h-4 w-4" />
+                        </Button>
                       </div>
-                    </div>
-                    
-                    <div className="flex gap-2 mt-4">
-                      <Button 
-                        className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600" 
-                        onClick={generateCertificate}
-                      >
-                        <Download className="h-4 w-4 mr-2" />
-                        Download Certificate
-                      </Button>
-                      <Button 
-                        className="flex-none bg-amber-100 hover:bg-amber-200 text-amber-800" 
-                        variant="outline"
-                        onClick={() => {
-                          navigator.clipboard.writeText(certificateData.reason);
-                          toast({
-                            title: "Copied to clipboard",
-                            description: "Award justification copied to clipboard",
-                          });
-                        }}
-                      >
-                        <FileSpreadsheet className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                 </TabsContent>
