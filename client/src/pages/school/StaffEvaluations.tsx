@@ -33,17 +33,21 @@ import {
 const PASSING_SCORE = 85; // As per requirement, the passing score is 85%
 
 const StaffEvaluations = () => {
-  const { selectedSchool, currentSchool } = useSchool();
+  const { selectedSchool } = useSchool();
   const [selectedTab, setSelectedTab] = useState("overview");
   const [evalData, setEvalData] = useState<any[]>([]);
 
   // Fetch instructors and evaluations
   const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
-    queryKey: ['/api/instructors'],
+    queryKey: ['/api/instructors', selectedSchool, currentSchool?.id],
+    refetchOnWindowFocus: true,
   });
 
   const { data: evaluations = [], isLoading: isLoadingEvaluations } = useQuery<Evaluation[]>({
-    queryKey: ['/api/evaluations'],
+    queryKey: ['/api/evaluations', selectedSchool, currentSchool?.id],
+    // Ensure the data is reloaded when the school changes
+    refetchOnWindowFocus: true,
+    // Since selectedSchool is in the queryKey, any change in selected school will trigger a refetch
   });
 
   const schoolInstructors = instructors.filter(instructor => 
