@@ -441,19 +441,7 @@ export default function ActionLogPage() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={createForm.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category (Optional)</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="Timesheet, Leave, etc." />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {/* Category field removed as requested */}
                   {/* School field removed as requested */}
                   <DialogFooter>
                     <Button 

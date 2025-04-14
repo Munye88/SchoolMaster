@@ -176,10 +176,7 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
               <div className="text-sm font-medium text-red-700 dark:text-red-300">Under Review</div>
               <div className="text-xl font-bold text-red-700 dark:text-red-300">{statusCounts.under_review || 0}</div>
             </div>
-            <div className="flex items-center justify-between rounded-lg bg-amber-50 dark:bg-amber-900/20 p-3">
-              <div className="text-sm font-medium text-amber-700 dark:text-amber-300">Due Soon (7 days)</div>
-              <div className="text-xl font-bold text-amber-700 dark:text-amber-300">{dueSoonCount}</div>
-            </div>
+            {/* Due Soon metric removed as requested */}
             <div className="flex items-center justify-between rounded-lg bg-purple-50 dark:bg-purple-900/20 p-3">
               <div className="text-sm font-medium text-purple-700 dark:text-purple-300">Avg. Completion Time</div>
               <div className="text-xl font-bold text-purple-700 dark:text-purple-300">
