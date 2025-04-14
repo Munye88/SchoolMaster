@@ -11,6 +11,9 @@ import { StaffAttendance, StaffLeave, Evaluation, Instructor, Course, Student } 
 import { useSchool } from '@/hooks/useSchool';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+// Set a smaller height for the notification panel to match other dashboard components
+const NOTIFICATION_PANEL_HEIGHT = "h-[220px]";
+
 interface NotificationsProps {
   instructors: Instructor[];
   staffAttendance: StaffAttendance[];
@@ -283,7 +286,7 @@ const Notifications: React.FC<NotificationsProps> = ({
         </div>
         
         <TabsContent value="all" className="mt-0">
-          <ScrollArea className="h-[320px] w-full">
+          <ScrollArea className={`${NOTIFICATION_PANEL_HEIGHT} w-full`}>
             <div className="p-3 space-y-2">
               {filteredAlerts.map((alert, index) => (
                 <NotificationCard key={`${alert.type}-${alert.id}-${index}`} alert={alert} />
@@ -293,7 +296,7 @@ const Notifications: React.FC<NotificationsProps> = ({
         </TabsContent>
         
         <TabsContent value="staff" className="mt-0">
-          <ScrollArea className="h-[320px] w-full">
+          <ScrollArea className={`${NOTIFICATION_PANEL_HEIGHT} w-full`}>
             <div className="p-3 space-y-2">
               {filteredAlerts.map((alert, index) => (
                 <NotificationCard key={`${alert.type}-${alert.id}-${index}`} alert={alert} />
@@ -303,7 +306,7 @@ const Notifications: React.FC<NotificationsProps> = ({
         </TabsContent>
         
         <TabsContent value="students" className="mt-0">
-          <ScrollArea className="h-[320px] w-full">
+          <ScrollArea className={`${NOTIFICATION_PANEL_HEIGHT} w-full`}>
             <div className="p-3 space-y-2">
               {filteredAlerts.map((alert, index) => (
                 <NotificationCard key={`${alert.type}-${alert.id}-${index}`} alert={alert} />
