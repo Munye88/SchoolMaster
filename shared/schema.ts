@@ -401,3 +401,51 @@ export const staffLeaveRelations = relations(staffLeave, ({ one }) => ({
 
 export type StaffLeave = typeof staffLeave.$inferSelect;
 export type InsertStaffLeave = z.infer<typeof insertStaffLeaveSchema>;
+
+// Action Log for tracking tasks and tickets
+export const actionLogs = pgTable("action_logs", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  requesterName: text("requester_name").notNull(),
+  description: text("description").notNull(),
+  createdDate: timestamp("created_date").notNull().defaultNow(),
+  dueDate: timestamp("due_date"),
+  status: text("status", { 
+    enum: ["pending", "completed", "under_review"] 
+  }).notNull().default("pending"),
+  category: text("category"),
+  assignedTo: integer("assigned_to").references(() => users.id),
+  createdBy: integer("created_by").notNull().references(() => users.id),
+  schoolId: integer("school_id").references(() => schools.id),
+});
+
+export const insertActionLogSchema = createInsertSchema(actionLogs).pick({
+  title: true,
+  requesterName: true,
+  description: true,
+  createdDate: true,
+  dueDate: true,
+  status: true,
+  category: true,
+  assignedTo: true,
+  createdBy: true,
+  schoolId: true,
+});
+
+export const actionLogsRelations = relations(actionLogs, ({ one }) => ({
+  assignee: one(users, {
+    fields: [actionLogs.assignedTo],
+    references: [users.id]
+  }),
+  creator: one(users, {
+    fields: [actionLogs.createdBy],
+    references: [users.id]
+  }),
+  school: one(schools, {
+    fields: [actionLogs.schoolId],
+    references: [schools.id]
+  })
+}));
+
+export type ActionLog = typeof actionLogs.$inferSelect;
+export type InsertActionLog = z.infer<typeof insertActionLogSchema>;

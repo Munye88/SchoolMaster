@@ -20,10 +20,12 @@ import {
   insertDocumentSchema,
   insertStaffAttendanceSchema,
   insertStaffLeaveSchema,
+  insertActionLogSchema,
   evaluations,
   courses,
   staffLeave,
-  instructors
+  instructors,
+  actionLogs
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
