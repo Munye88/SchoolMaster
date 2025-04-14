@@ -243,10 +243,16 @@ export default function ActionLogPage() {
   const handleEditClick = (log: ActionLog) => {
     setSelectedLog(log);
     
-    // Convert string date to Date object if it exists
+    // Convert string date to Date object if it exists and handle null values
     const formattedLog = {
-      ...log,
+      title: log.title,
+      requesterName: log.requesterName,
+      description: log.description,
       dueDate: log.dueDate ? new Date(log.dueDate) : undefined,
+      status: log.status,
+      category: log.category || undefined,
+      assignedTo: log.assignedTo || undefined,
+      schoolId: log.schoolId || undefined
     };
     
     editForm.reset(formattedLog);

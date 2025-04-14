@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { 
   Home, School, BookOpen, GraduationCap, ListChecks, BarChart2, Settings, Search, Bell,
   LogOut, LogIn, UserCircle, BookText, BriefcaseBusiness, MessageSquare, AlertTriangle, 
-  BrainCircuit, Users, Lightbulb, FileText, Award, LayoutDashboard
+  BrainCircuit, Users, Lightbulb, FileText, Award, LayoutDashboard, ClipboardList
 } from "lucide-react";
 import govcioLogo from "../../assets/images/govcio-logo-updated.png";
 
@@ -373,6 +373,17 @@ const BasicNavbar = () => {
                   </div>
                 )}
               </div>
+              
+              <Link 
+                href="/action-log"
+                className={cn(
+                  "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                  isActive("/action-log") && "text-[#0A2463] bg-gray-100 font-medium"
+                )}
+              >
+                <ClipboardList className="h-4 w-4 mr-2" />
+                <span>Action Log</span>
+              </Link>
               
               <div className="relative">
                 <button

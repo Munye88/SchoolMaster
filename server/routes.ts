@@ -1218,7 +1218,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Action Logs
   app.get("/api/action-logs", async (req, res) => {
     try {
-      const logs = await db.select().from(actionLogs).orderBy(actionLogs.createdDate, "desc");
+      const logs = await db.select().from(actionLogs).orderBy(actionLogs.createdDate);
       res.json(logs);
     } catch (error) {
       console.error("Error fetching action logs:", error);
