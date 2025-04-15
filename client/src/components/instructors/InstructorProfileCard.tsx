@@ -1,5 +1,5 @@
 import { Instructor } from "@shared/schema";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Phone, School, Award, User } from "lucide-react";
 import { StandardInstructorAvatar } from "./StandardInstructorAvatar";
@@ -61,68 +61,88 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
   const schoolColor = getSchoolColor(schoolName);
   const headerBgColorClass = getSchoolColorClass(schoolName);
 
+  // Style to match the example screenshot
   return (
-    <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
-      <CardHeader className={`${headerBgColorClass} text-white pb-6 pt-6 flex flex-col items-center`}>
-        <div className="mb-4">
+    <Card className="overflow-hidden border border-gray-200 shadow-md max-w-lg mx-auto">
+      {/* Header with color background and profile picture */}
+      <div className={`${headerBgColorClass} p-6 flex items-center`}>
+        <div className="mr-4">
           <StandardInstructorAvatar
             imageUrl={instructor.imageUrl}
             name={instructor.name}
-            size="xl"
+            size="lg"
             schoolColor={schoolColor}
           />
         </div>
-        <div className="text-center">
+        <div className="text-white">
           <h2 className="text-2xl font-bold">{instructor.name}</h2>
-          <p className="text-sm text-blue-100 mt-1">{instructor.role || "ELT Instructor"}</p>
+          <p className="text-sm mt-1">{instructor.role || "ELT Instructor"}</p>
         </div>
-      </CardHeader>
-      <CardContent className="pt-4">
+      </div>
+      
+      {/* Content section with instructor details */}
+      <CardContent className="pt-6 pb-6">
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <User className="h-4 w-4 text-gray-500" />
-            <span className="font-medium">Nationality:</span>
-            <Badge className={getNationalityColor(instructor.nationality)}>
-              {instructor.nationality}
-            </Badge>
+          <div className="flex items-center gap-3">
+            <User className="h-5 w-5 text-gray-500" />
+            <div className="flex items-center">
+              <span className="font-medium mr-2">Nationality:</span>
+              <Badge className={getNationalityColor(instructor.nationality)}>
+                {instructor.nationality}
+              </Badge>
+            </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-gray-500" />
-            <span className="font-medium">Start Date:</span>
-            <span>{formatDate(instructor.startDate)}</span>
+          <div className="flex items-center gap-3">
+            <Calendar className="h-5 w-5 text-gray-500" />
+            <div>
+              <span className="font-medium mr-2">Start Date:</span>
+              <span>{formatDate(instructor.startDate)}</span>
+            </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Award className="h-4 w-4 text-gray-500" />
-            <span className="font-medium">Credentials:</span>
-            <span>{instructor.credentials}</span>
+          <div className="flex items-center gap-3">
+            <Award className="h-5 w-5 text-gray-500" />
+            <div>
+              <span className="font-medium mr-2">Credentials:</span>
+              <span>{instructor.credentials}</span>
+            </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <School className="h-4 w-4 text-gray-500" />
-            <span className="font-medium">School:</span>
-            <span>{schoolName}</span>
+          <div className="flex items-center gap-3">
+            <School className="h-5 w-5 text-gray-500" />
+            <div>
+              <span className="font-medium mr-2">School:</span>
+              <span>{schoolName}</span>
+            </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-gray-500" />
-            <span className="font-medium">Compound:</span>
-            <span>{instructor.compound}</span>
+          <div className="flex items-center gap-3">
+            <MapPin className="h-5 w-5 text-gray-500" />
+            <div>
+              <span className="font-medium mr-2">Compound:</span>
+              <span>{instructor.compound}</span>
+            </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Phone className="h-4 w-4 text-gray-500" />
-            <span className="font-medium">Phone:</span>
-            <span>{instructor.phone}</span>
+          <div className="flex items-center gap-3">
+            <Phone className="h-5 w-5 text-gray-500" />
+            <div>
+              <span className="font-medium mr-2">Phone:</span>
+              <span>{instructor.phone}</span>
+            </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <User className="h-4 w-4 text-gray-500" />
-            <span className="font-medium">Status:</span>
-            <Badge variant={instructor.accompaniedStatus === "Accompanied" ? "default" : "outline"}>
-              {instructor.accompaniedStatus}
-            </Badge>
+          <div className="flex items-center gap-3">
+            <User className="h-5 w-5 text-gray-500" />
+            <div>
+              <span className="font-medium mr-2">Status:</span>
+              <Badge variant="outline" className={instructor.accompaniedStatus === "Accompanied" 
+                ? "bg-green-100 text-green-800 border-green-300" 
+                : "bg-gray-100 text-gray-800 border-gray-300"}>
+                {instructor.accompaniedStatus}
+              </Badge>
+            </div>
           </div>
         </div>
       </CardContent>

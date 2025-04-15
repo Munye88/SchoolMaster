@@ -48,13 +48,13 @@ export function StandardInstructorAvatar({
       .toUpperCase();
   };
   
-  // Size classes - added 2xl size for larger profile views
+  // Size classes with adjusted proportions
   const sizeClasses = {
     sm: "h-12 w-12 text-base",
     md: "h-20 w-20 text-xl",
     lg: "h-28 w-28 text-2xl",
     xl: "h-36 w-36 text-3xl",
-    '2xl': "h-52 w-52 text-4xl", // Larger size for profile pictures
+    '2xl': "h-48 w-48 text-4xl", // Larger size for profile pictures
   };
   
   // Font size for initials
@@ -71,23 +71,34 @@ export function StandardInstructorAvatar({
     setImageError(true);
   };
   
+  // Construct the border color for the avatars to match the example
+  const getBorderColor = () => {
+    // Match the border color to the example (blue border for all)
+    return "border-[#00AEEF]"; // Light blue border to match the example image
+  };
+  
+  const containerClassName = `${sizeClasses[size]} rounded-full ${getBorderColor()} border-4 overflow-hidden flex items-center justify-center shadow-md`;
+  
   return (
-    <div 
-      className={`${sizeClasses[size]} rounded-full border-4 border-white overflow-hidden shadow-xl flex items-center justify-center`}
-      style={{ backgroundColor: schoolColor }}
-    >
+    <div className={containerClassName}>
       {imageSource && !imageError ? (
-        <div className="h-full w-full relative overflow-hidden">
+        <div className="h-full w-full bg-white">
           <img
             src={imageSource}
             alt={name}
-            className="h-full w-full object-cover object-center absolute inset-0" 
-            style={{ objectPosition: "center 30%" }} /* Position to show faces better */
+            className="h-full w-full object-cover" 
+            style={{ 
+              objectPosition: "center 15%", // Position higher to show faces properly
+              transform: "scale(0.9)" // Scale down slightly to ensure face fits in circle
+            }}
             onError={handleImageError}
           />
         </div>
       ) : (
-        <div className={`h-full w-full flex items-center justify-center text-white font-bold ${initialsFontSize[size]}`}>
+        <div 
+          className={`h-full w-full flex items-center justify-center text-white font-bold ${initialsFontSize[size]}`}
+          style={{ backgroundColor: schoolColor }}
+        >
           {getInitials(name)}
         </div>
       )}

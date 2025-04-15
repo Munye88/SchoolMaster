@@ -178,21 +178,30 @@ const InstructorProfile = () => {
         {/* Instructor Profile Sidebar */}
         <div className="lg:col-span-1 space-y-6">
           <Card>
-            <CardContent className="p-6 flex flex-col items-center">
-              <div className="mb-4">
-                <StandardInstructorAvatar
-                  imageUrl={instructor.imageUrl}
-                  name={instructor.name}
-                  size="2xl"
-                  schoolColor={
-                    instructor.schoolId === 349 ? '#0A2463' : // KFNA (blue)
-                    instructor.schoolId === 350 ? '#2A7F46' : // NFS East (green)
-                    '#E86A33' // NFS West (orange)
-                  }
-                />
+            <div className={instructor.schoolId === 349 ? 'bg-[#0A2463]' : // KFNA (blue)
+                     instructor.schoolId === 350 ? 'bg-[#2A7F46]' : // NFS East (green) 
+                     'bg-[#E86A33]' // NFS West (orange)
+                     }>
+              <div className="p-6 flex items-center">
+                <div className="mr-4">
+                  <StandardInstructorAvatar
+                    imageUrl={instructor.imageUrl}
+                    name={instructor.name}
+                    size="xl"
+                    schoolColor={
+                      instructor.schoolId === 349 ? '#0A2463' : // KFNA (blue)
+                      instructor.schoolId === 350 ? '#2A7F46' : // NFS East (green)
+                      '#E86A33' // NFS West (orange)
+                    }
+                  />
+                </div>
+                <div className="text-white">
+                  <h2 className="text-2xl font-bold">{instructor.name}</h2>
+                  <p className="text-sm mt-1">{instructor.role || 'Instructor'}</p>
+                </div>
               </div>
-              <h2 className="text-xl font-bold text-[#0A2463] mt-2">{instructor.name}</h2>
-              <p className="text-gray-500">{instructor.role || 'Instructor'}</p>
+            </div>
+            <CardContent className="p-6">
               
               <div className="w-full mt-6 space-y-4">
                 <div className="flex items-center">

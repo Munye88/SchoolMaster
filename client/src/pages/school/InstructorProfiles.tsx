@@ -286,17 +286,24 @@ const SchoolInstructorProfiles = () => {
             ) : (
               filteredInstructors.map((instructor) => (
                 <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 shadow-md">
-                  <div className={`h-48 ${getSchoolColorClass(currentSchool?.name || '')} flex items-center justify-center`}>
-                    <StandardInstructorAvatar
-                      imageUrl={instructor.imageUrl}
-                      name={instructor.name}
-                      size="2xl"
-                      schoolColor={getSchoolColor(currentSchool?.name || '')}
-                    />
+                  {/* Header with school color and instructor avatar - matches the example */}
+                  <div className={`${getSchoolColorClass(currentSchool?.name || '')} p-4 flex items-center`}>
+                    <div className="mr-4">
+                      <StandardInstructorAvatar
+                        imageUrl={instructor.imageUrl}
+                        name={instructor.name}
+                        size="md"
+                        schoolColor={getSchoolColor(currentSchool?.name || '')}
+                      />
+                    </div>
+                    <div className="text-white">
+                      <h3 className="font-bold text-xl">{instructor.name}</h3>
+                      <p className="text-sm">{instructor.role || 'ELT Instructor'}</p>
+                    </div>
                   </div>
-                  <CardContent className="pt-4">
-                    <h3 className="font-bold text-lg mb-1">{instructor.name}</h3>
-                    <div className="flex items-center gap-2 mb-3">
+                  
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex flex-wrap gap-2 mb-3">
                       <Badge className={
                         instructor.nationality === "American" ? "bg-blue-100 text-blue-800" :
                         instructor.nationality === "British" ? "bg-red-100 text-red-800" :
@@ -304,10 +311,14 @@ const SchoolInstructorProfiles = () => {
                       }>
                         {instructor.nationality}
                       </Badge>
-                      <p className="text-sm text-gray-500">{instructor.role || 'ELT Instructor'}</p>
+                      <Badge variant="outline" className={instructor.accompaniedStatus === "Accompanied" 
+                          ? "bg-green-100 text-green-800 border-green-300" 
+                          : "bg-gray-100 text-gray-800 border-gray-300"}>
+                        {instructor.accompaniedStatus}
+                      </Badge>
                     </div>
                     
-                    <div className="grid grid-cols-1 gap-2 text-sm mt-4 border-t pt-3">
+                    <div className="grid grid-cols-1 gap-2 text-sm mt-4">
                       <div className="flex justify-between items-center">
                         <p className="text-gray-500 font-medium">Credentials:</p>
                         <p className="text-right">{instructor.credentials}</p>
@@ -328,19 +339,13 @@ const SchoolInstructorProfiles = () => {
                         <p className="text-gray-500 font-medium">Start Date:</p>
                         <p className="text-right">{new Date(instructor.startDate).toLocaleDateString('en-US', {
                           year: 'numeric',
-                          month: 'long',
+                          month: 'short',
                           day: 'numeric'
                         })}</p>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <p className="text-gray-500 font-medium">Status:</p>
-                        <Badge variant={instructor.accompaniedStatus === "Accompanied" ? "default" : "outline"}>
-                          {instructor.accompaniedStatus}
-                        </Badge>
-                      </div>
                     </div>
                     
-                    <div className="mt-4 flex gap-2">
+                    <div className="mt-4">
                       <Button 
                         size="sm" 
                         className={`w-full ${getSchoolColorClass(currentSchool?.name || '')} hover:opacity-90`}
