@@ -75,10 +75,21 @@ export default function ActionLogPage() {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('all');
   const printableRef = useRef<HTMLDivElement>(null);
+  const [logToPrint, setLogToPrint] = useState<ActionLog | null>(null);
+  const { printRef, printSingleActionLog } = usePrintSingleActionLog();
   
-  // Function to handle printing
+  // Function to handle printing all logs
   const handlePrint = () => {
     window.print();
+  };
+  
+  // Function to handle printing a single action log
+  const handlePrintSingleLog = (log: ActionLog) => {
+    setLogToPrint(log);
+    // We need to wait for React to update the DOM with the selected log
+    setTimeout(() => {
+      printSingleActionLog();
+    }, 100);
   };
 
   const { data: actionLogs = [], isLoading } = useQuery({
@@ -565,6 +576,7 @@ export default function ActionLogPage() {
                 onEdit={() => handleEditClick(log)}
                 onDelete={() => handleDeleteClick(log.id)}
                 onStatusChange={handleStatusChange}
+                onPrint={handlePrintSingleLog}
               />
             ))}
           </TabsContent>
@@ -577,6 +589,7 @@ export default function ActionLogPage() {
                 onEdit={() => handleEditClick(log)}
                 onDelete={() => handleDeleteClick(log.id)}
                 onStatusChange={handleStatusChange}
+                onPrint={handlePrintSingleLog}
               />
             ))}
           </TabsContent>
@@ -589,6 +602,7 @@ export default function ActionLogPage() {
                 onEdit={() => handleEditClick(log)}
                 onDelete={() => handleDeleteClick(log.id)}
                 onStatusChange={handleStatusChange}
+                onPrint={handlePrintSingleLog}
               />
             ))}
           </TabsContent>
@@ -601,6 +615,7 @@ export default function ActionLogPage() {
                 onEdit={() => handleEditClick(log)}
                 onDelete={() => handleDeleteClick(log.id)}
                 onStatusChange={handleStatusChange}
+                onPrint={handlePrintSingleLog}
               />
             ))}
           </TabsContent>
@@ -782,6 +797,9 @@ export default function ActionLogPage() {
 
       {/* Printable content - hidden until print */}
       <PrintableActionLogs logs={filteredLogs} printRef={printableRef} />
+      
+      {/* Single printable action log */}
+      <PrintableSingleActionLog log={logToPrint} ref={printRef} />
     </div>
   );
 }
