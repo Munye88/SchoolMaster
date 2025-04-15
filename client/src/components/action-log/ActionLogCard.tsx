@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { Clock, Calendar, Check, CheckCircle2, AlertCircle, MoreHorizontal } from 'lucide-react';
+import { Clock, Calendar, Check, CheckCircle2, AlertCircle, MoreHorizontal, Printer } from 'lucide-react';
 import { 
   Card, 
   CardContent, 
@@ -15,6 +15,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { ActionLog } from '@shared/schema';
 
@@ -23,9 +24,10 @@ interface ActionLogCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onStatusChange: (id: number, status: 'pending' | 'completed' | 'under_review') => void;
+  onPrint: (log: ActionLog) => void;
 }
 
-export function ActionLogCard({ log, onEdit, onDelete, onStatusChange }: ActionLogCardProps) {
+export function ActionLogCard({ log, onEdit, onDelete, onStatusChange, onPrint }: ActionLogCardProps) {
   function getStatusColor(status: string) {
     switch (status) {
       case 'completed':
@@ -111,6 +113,12 @@ export function ActionLogCard({ log, onEdit, onDelete, onStatusChange }: ActionL
               <DropdownMenuItem onClick={() => onStatusChange(log.id, 'completed')}>
                 Mark as Completed
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onPrint(log)} className="text-primary dark:text-primary-foreground">
+                <Printer className="h-4 w-4 mr-2" />
+                Print
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={onDelete}>
                 Delete
               </DropdownMenuItem>

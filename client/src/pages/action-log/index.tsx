@@ -51,6 +51,7 @@ import { cn } from '@/lib/utils';
 import { ActionLogCard } from '@/components/action-log/ActionLogCard';
 import { ActionLogStats } from '@/components/action-log/ActionLogStats';
 import { PrintableActionLogs } from '@/components/action-log/PrintableActionLogs';
+import { PrintableSingleActionLog, usePrintSingleActionLog } from '@/components/action-log/PrintableSingleActionLog';
 
 const actionLogSchema = z.object({
   title: z.string().min(3, { message: 'Title must be at least 3 characters' }),
