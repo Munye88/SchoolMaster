@@ -39,9 +39,12 @@ const Dashboard = () => {
       ? ['/api/schools', selectedSchool.id, 'courses'] 
       : ['/api/courses'],
     enabled: !selectedSchool || !!selectedSchool.id,
-    // Force refetch when navigating back to dashboard
-    refetchOnMount: true,
+    // Force refetch with stronger settings to ensure fresh data
+    refetchOnMount: 'always',
     refetchOnWindowFocus: true,
+    staleTime: 0,
+    gcTime: 0, // This was renamed from cacheTime in TanStack Query v5
+    refetchInterval: 2000 // Poll every 2 seconds while page is open
   });
   
   // Fetch instructors
@@ -63,13 +66,15 @@ const Dashboard = () => {
   });
   
   // Fetch students
-  const { data: students = [] } = useQuery<Student[]>({
+  const { data: students = [], isLoading: studentsLoading } = useQuery<Student[]>({
     queryKey: selectedSchool 
       ? ['/api/schools', selectedSchool.id, 'students'] 
       : ['/api/students'],
     enabled: !selectedSchool || !!selectedSchool.id,
-    refetchOnMount: true,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: true,
+    staleTime: 0,
+    gcTime: 0, // This was renamed from cacheTime in TanStack Query v5
   });
 
   // Fetch test results
@@ -97,31 +102,73 @@ const Dashboard = () => {
     queryKey: ['/api/events'],
   });
   
-  // Calculate statistics - using useEffect to properly calculate derived state
-  const [statistics, setStatistics] = useState({
-    totalStudents: 0,
-    activeInstructors: 0,
-    totalSchools: 0,
-    totalCourses: 5, // Exact count as per requirements
-    activeCourses: 0,
-    completedCourses: 0
+  // Use localStorage to persist statistics across navigation
+  const [statistics, setStatistics] = useState(() => {
+    // Try to load from localStorage first
+    const savedStats = localStorage.getItem('dashboard_statistics');
+    if (savedStats) {
+      try {
+        return JSON.parse(savedStats);
+      } catch (e) {
+        console.error("Failed to parse saved statistics:", e);
+      }
+    }
+    
+    // Default values if nothing in localStorage
+    return {
+      totalStudents: 0,
+      activeInstructors: 0,
+      totalSchools: 0,
+      totalCourses: 5, // Exact count as per requirements
+      activeCourses: 0, 
+      completedCourses: 0
+    };
   });
+  
+  // This flag helps with race conditions
+  const [statisticsCalculated, setStatisticsCalculated] = useState(false);
+  
+  // Calculate active courses directly for better reliability
+  const activeCourseCount = courses.filter(c => c.status === "In Progress").length;
   
   // Update statistics whenever any of the source data changes
   useEffect(() => {
+    if (courses.length === 0) return; // Don't update if courses haven't loaded
+    
     console.log("Updating dashboard statistics:");
     console.log("- Courses:", courses.length, "courses loaded");
     console.log("- Active courses:", courses.filter(c => c.status === "In Progress").length);
     
-    setStatistics({
+    const newStats = {
       totalStudents: students.length || courses.reduce((sum, course) => sum + course.studentCount, 0),
       activeInstructors: instructors.length,
       totalSchools: schools.length,
       totalCourses: 5, // Exact count as per requirements
       activeCourses: courses.filter(c => c.status === "In Progress").length,
       completedCourses: courses.filter(c => c.status === "Completed").length
-    });
+    };
+    
+    setStatistics(newStats);
+    setStatisticsCalculated(true);
+    
+    // Save to localStorage for persistence
+    localStorage.setItem('dashboard_statistics', JSON.stringify(newStats));
   }, [courses, students, instructors, schools]);
+  
+  // Loading state
+  const isLoading = coursesLoading || instructorsLoading || studentsLoading;
+  
+  // Display a loading indicator if data is not ready
+  if (isLoading && !statisticsCalculated) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard data...</p>
+        </div>
+      </div>
+    );
+  }
   
   // Staff nationality data for bar chart
   const nationalityData = [
