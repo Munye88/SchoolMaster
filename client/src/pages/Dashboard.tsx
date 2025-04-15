@@ -134,17 +134,17 @@ const Dashboard = () => {
       {/* Dashboard Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <img src={govcioLogo} alt="GovCIO Logo" className="h-16" />
+          <img src={govcioLogo} alt="GovCIO Logo" className="h-12" />
           <div>
-            <p className="text-lg text-gray-600 italic">
+            <p className="text-sm text-gray-600 italic">
               "Education is the most powerful weapon which you can use to change the world." — Nelson Mandela
             </p>
           </div>
         </div>
         <div className="flex space-x-2">
-          <div className="bg-white text-gray-700 px-3 py-2 rounded-md shadow-sm border border-gray-200 flex items-center">
-            <Calendar className="h-4 w-4 mr-2 text-blue-600" /> 
-            <span className="font-medium">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
+          <div className="bg-white text-gray-700 px-2 py-1.5 rounded-md shadow-sm border border-gray-200 flex items-center">
+            <Calendar className="h-3.5 w-3.5 mr-1.5 text-blue-600" /> 
+            <span className="font-medium text-xs">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
           </div>
         </div>
       </div>
