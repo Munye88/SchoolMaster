@@ -1,15 +1,27 @@
 import { format } from 'date-fns';
 import { ActionLog } from '@shared/schema';
 import governmentLogo from '@assets/Govcio_logo-removebg-preview.png';
-import { useRef, forwardRef, ForwardRefRenderFunction } from 'react';
+import { useState, useEffect } from 'react';
 
 interface PrintableSingleActionLogProps {
   log: ActionLog | null;
+  onClose: () => void;
 }
 
-// Using forwardRef to access the component ref from parent
-const PrintableSingleActionLogComponent: ForwardRefRenderFunction<HTMLDivElement, PrintableSingleActionLogProps> = 
-  ({ log }, ref) => {
+export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleActionLogProps) => {
+  const [isReady, setIsReady] = useState(false);
+  
+  useEffect(() => {
+    // Set a small delay to ensure the component is fully rendered
+    if (log) {
+      const timer = setTimeout(() => {
+        setIsReady(true);
+        print();
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [log]);
   
   function getStatusText(status: string) {
     switch (status) {
@@ -37,24 +49,42 @@ const PrintableSingleActionLogComponent: ForwardRefRenderFunction<HTMLDivElement
     }
   }
 
+  // Close the print preview after printing completes or is cancelled
+  const handleAfterPrint = () => {
+    window.removeEventListener('afterprint', handleAfterPrint);
+    onClose();
+  };
+
+  const print = () => {
+    window.addEventListener('afterprint', handleAfterPrint, { once: true });
+    window.print();
+  };
+
   if (!log) return null;
 
+  // The main printable content
   return (
     <div 
-      ref={ref} 
-      className="hidden print:block print:p-8 m-0 w-full h-full"
-      style={{ pageBreakInside: 'avoid', pageBreakAfter: 'always' }}
+      className="fixed inset-0 bg-white z-50 p-8"
+      style={{ 
+        display: isReady ? 'block' : 'none',
+      }}
     >
-      {/* Header with logo - no navigation */}
-      <div className="flex items-center mb-8">
-        <div className="w-full flex justify-center items-center">
-          <img 
-            src={governmentLogo} 
-            alt="GovCIO Logo" 
-            className="h-20 mb-2" 
-            style={{ height: '80px' }}
-          />
-        </div>
+      {/* Close button - only visible on screen, not in print */}
+      <button 
+        onClick={onClose}
+        className="print:hidden absolute top-4 right-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300"
+      >
+        ✕
+      </button>
+      
+      {/* Header with logo - centered at the top */}
+      <div className="flex justify-center mb-8">
+        <img 
+          src={governmentLogo} 
+          alt="GovCIO Logo" 
+          className="h-20"
+        />
       </div>
 
       <div className="text-center mb-6 border-b pb-4">
@@ -109,17 +139,3 @@ const PrintableSingleActionLogComponent: ForwardRefRenderFunction<HTMLDivElement
     </div>
   );
 };
-
-export const PrintableSingleActionLog = forwardRef(PrintableSingleActionLogComponent);
-
-// Utility hook for printing a single action log
-export function usePrintSingleActionLog() {
-  const printRef = useRef<HTMLDivElement>(null);
-  
-  const printSingleActionLog = () => {
-    // Trigger browser print functionality
-    window.print();
-  };
-  
-  return { printRef, printSingleActionLog };
-}

@@ -51,7 +51,7 @@ import { cn } from '@/lib/utils';
 import { ActionLogCard } from '@/components/action-log/ActionLogCard';
 import { ActionLogStats } from '@/components/action-log/ActionLogStats';
 import { PrintableActionLogs } from '@/components/action-log/PrintableActionLogs';
-import { PrintableSingleActionLog, usePrintSingleActionLog } from '@/components/action-log/PrintableSingleActionLog';
+import { PrintableSingleActionLog } from '@/components/action-log/PrintableSingleActionLog';
 
 const actionLogSchema = z.object({
   title: z.string().min(3, { message: 'Title must be at least 3 characters' }),
@@ -76,7 +76,7 @@ export default function ActionLogPage() {
   const [activeTab, setActiveTab] = useState('all');
   const printableRef = useRef<HTMLDivElement>(null);
   const [logToPrint, setLogToPrint] = useState<ActionLog | null>(null);
-  const { printRef, printSingleActionLog } = usePrintSingleActionLog();
+  const [isPrintingLog, setIsPrintingLog] = useState(false);
   
   // Function to handle printing all logs
   const handlePrint = () => {
@@ -85,22 +85,15 @@ export default function ActionLogPage() {
   
   // Function to handle printing a single action log
   const handlePrintSingleLog = (log: ActionLog) => {
-    // Set the log to print and add a class to the body for print styling
+    // Set the log to print and open the print overlay
     setLogToPrint(log);
-    
-    // We need to wait for React to update the DOM with the selected log
-    setTimeout(() => {
-      // Add a class to body to signal we're printing a single item
-      document.body.classList.add('printing-single-item');
-      
-      // Trigger print
-      printSingleActionLog();
-      
-      // Remove the class after printing is complete or cancelled
-      window.addEventListener('afterprint', () => {
-        document.body.classList.remove('printing-single-item');
-      }, { once: true });
-    }, 100);
+    setIsPrintingLog(true);
+  };
+  
+  // Close the print view
+  const handleClosePrintView = () => {
+    setIsPrintingLog(false);
+    setLogToPrint(null);
   };
 
   const { data: actionLogs = [], isLoading } = useQuery({
