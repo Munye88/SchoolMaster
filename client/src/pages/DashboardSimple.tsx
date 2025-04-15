@@ -45,17 +45,17 @@ const DashboardSimple = () => {
   });
 
   // Fetch schools with simple query structure
-  const { data: schools = [] } = useQuery({
+  const { data: schools = [] } = useQuery<any[]>({
     queryKey: ['/api/schools'],
   });
   
   // Fetch students with simple query structure
-  const { data: students = [] } = useQuery({
+  const { data: students = [] } = useQuery<any[]>({
     queryKey: ['/api/students'],
   });
 
   // Events query
-  const { data: events = [] } = useQuery({
+  const { data: events = [] } = useQuery<any[]>({
     queryKey: ['/api/events'],
   });
   
@@ -76,9 +76,9 @@ const DashboardSimple = () => {
   
   // Fixed statistics to avoid complex calculations and hooks issues
   const statistics = {
-    totalStudents: students.length || 120,
-    activeInstructors: instructors.length || 45,
-    totalSchools: schools.length || 3,
+    totalStudents: students ? students.length : 120,
+    activeInstructors: instructors ? instructors.length : 45,
+    totalSchools: schools ? schools.length : 3,
     totalCourses: 5,
     activeCourses: 3, 
     completedCourses: 2
@@ -413,7 +413,12 @@ const DashboardSimple = () => {
               </div>
             </CardHeader>
             <CardContent className="p-4">
-              <Notifications />
+              <Notifications 
+                instructors={instructors} 
+                staffAttendance={staffAttendance} 
+                staffLeave={staffLeave} 
+                evaluations={evaluations}
+              />
             </CardContent>
           </Card>
         </div>
