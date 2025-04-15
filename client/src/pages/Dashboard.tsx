@@ -102,73 +102,18 @@ const Dashboard = () => {
     queryKey: ['/api/events'],
   });
   
-  // Use localStorage to persist statistics across navigation
-  const [statistics, setStatistics] = useState(() => {
-    // Try to load from localStorage first
-    const savedStats = localStorage.getItem('dashboard_statistics');
-    if (savedStats) {
-      try {
-        return JSON.parse(savedStats);
-      } catch (e) {
-        console.error("Failed to parse saved statistics:", e);
-      }
-    }
-    
-    // Default values if nothing in localStorage
-    return {
-      totalStudents: 0,
-      activeInstructors: 0,
-      totalSchools: 0,
-      totalCourses: 5, // Exact count as per requirements
-      activeCourses: 0, 
-      completedCourses: 0
-    };
-  });
+  // Hard-code statistics for now to simplify and fix the React hooks error
+  const statistics = {
+    totalStudents: students.length || courses.reduce((sum: number, course: any) => sum + course.studentCount, 0),
+    activeInstructors: instructors.length,
+    totalSchools: schools.length,
+    totalCourses: 5, // Exact count as per requirements
+    activeCourses: courses.filter((c: any) => c.status === "In Progress").length,
+    completedCourses: courses.filter((c: any) => c.status === "Completed").length
+  };
   
-  // This flag helps with race conditions
-  const [statisticsCalculated, setStatisticsCalculated] = useState(false);
-  
-  // Calculate active courses directly for better reliability
-  const activeCourseCount = courses.filter(c => c.status === "In Progress").length;
-  
-  // Update statistics whenever any of the source data changes
-  useEffect(() => {
-    if (courses.length === 0) return; // Don't update if courses haven't loaded
-    
-    console.log("Updating dashboard statistics:");
-    console.log("- Courses:", courses.length, "courses loaded");
-    console.log("- Active courses:", courses.filter(c => c.status === "In Progress").length);
-    
-    const newStats = {
-      totalStudents: students.length || courses.reduce((sum, course) => sum + course.studentCount, 0),
-      activeInstructors: instructors.length,
-      totalSchools: schools.length,
-      totalCourses: 5, // Exact count as per requirements
-      activeCourses: courses.filter(c => c.status === "In Progress").length,
-      completedCourses: courses.filter(c => c.status === "Completed").length
-    };
-    
-    setStatistics(newStats);
-    setStatisticsCalculated(true);
-    
-    // Save to localStorage for persistence
-    localStorage.setItem('dashboard_statistics', JSON.stringify(newStats));
-  }, [courses, students, instructors, schools]);
-  
-  // Loading state
+  // Loading state - define this at the component level, not conditionally
   const isLoading = coursesLoading || instructorsLoading || studentsLoading;
-  
-  // Display a loading indicator if data is not ready
-  if (isLoading && !statisticsCalculated) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard data...</p>
-        </div>
-      </div>
-    );
-  }
   
   // Staff nationality data for bar chart
   const nationalityData = [
