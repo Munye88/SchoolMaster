@@ -50,28 +50,23 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
           }
           .header {
             margin-bottom: 30px;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-          }
-          .logo {
-            max-width: 120px;
-            margin-right: 20px;
+            text-align: center;
           }
           .header-content {
-            flex-grow: 1;
+            width: 100%;
           }
           .title {
-            font-size: 24px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 5px;
+          }
+          .subtitle {
+            font-size: 18px;
             font-weight: bold;
             border-bottom: 1px solid #ddd;
             padding-bottom: 10px;
-            margin-bottom: 20px;
-          }
-          .subtitle {
-            font-size: 14px;
-            color: #666;
+            margin-bottom: 10px;
           }
           .content {
             margin-bottom: 30px;
