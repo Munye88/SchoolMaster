@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 type StandardInstructorAvatarProps = {
   imageUrl?: string | null;
   name: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   schoolColor?: string;
 };
 
@@ -48,12 +48,13 @@ export function StandardInstructorAvatar({
       .toUpperCase();
   };
   
-  // Size classes
+  // Size classes - added 2xl size for larger profile views
   const sizeClasses = {
     sm: "h-12 w-12 text-base",
     md: "h-20 w-20 text-xl",
     lg: "h-28 w-28 text-2xl",
     xl: "h-36 w-36 text-3xl",
+    '2xl': "h-52 w-52 text-4xl", // Larger size for profile pictures
   };
   
   // Font size for initials
@@ -62,6 +63,7 @@ export function StandardInstructorAvatar({
     md: "text-xl",
     lg: "text-2xl",
     xl: "text-3xl",
+    '2xl': "text-4xl",
   };
   
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -78,7 +80,7 @@ export function StandardInstructorAvatar({
         <img
           src={imageSource}
           alt={name}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover object-center" // Added object-center to center the image
           onError={handleImageError}
         />
       ) : (

@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSchool } from "@/hooks/useSchool";
 import { PrintButton } from "@/components/ui/print-button";
 import CourseCard from "@/components/dashboard/CourseCard";
+import { StandardInstructorAvatar } from "@/components/instructors/StandardInstructorAvatar";
 
 const InstructorProfile = () => {
   const { id } = useParams();
@@ -85,29 +86,16 @@ const InstructorProfile = () => {
               <Card key={instructor.id} className="overflow-hidden">
                 <CardHeader className="bg-[#0A2463] p-4">
                   <div className="flex justify-between items-center">
-                    {instructor.imageUrl ? (
-                      <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white">
-                        <img 
-                          src={instructor.imageUrl} 
-                          alt={instructor.name} 
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            // Hide image and show initials if image fails to load
-                            const target = e.currentTarget;
-                            const parent = target.parentElement;
-                            if (parent) {
-                              parent.innerHTML = `<div class="w-12 h-12 rounded-full bg-white text-[#0A2463] flex items-center justify-center text-lg font-bold">
-                                ${instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                              </div>`;
-                            }
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-12 h-12 rounded-full bg-white text-[#0A2463] flex items-center justify-center text-lg font-bold">
-                        {instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                      </div>
-                    )}
+                    <StandardInstructorAvatar
+                      imageUrl={instructor.imageUrl}
+                      name={instructor.name}
+                      size="sm"
+                      schoolColor={
+                        instructor.schoolId === 349 ? '#0A2463' : // KFNA (blue)
+                        instructor.schoolId === 350 ? '#2A7F46' : // NFS East (green)
+                        '#E86A33' // NFS West (orange)
+                      }
+                    />
                     <div>
                       <Link href={`/instructors/${instructor.id}`}>
                         <Button variant="outline" size="sm" className="bg-transparent text-white border-white hover:bg-white hover:text-[#0A2463]">
@@ -191,29 +179,16 @@ const InstructorProfile = () => {
         <div className="lg:col-span-1 space-y-6">
           <Card>
             <CardContent className="p-6 flex flex-col items-center">
-              {instructor.imageUrl ? (
-                <div className="w-48 h-48 rounded-full mb-4 overflow-hidden border-4 border-[#3E92CC] shadow-lg">
-                  <img 
-                    src={instructor.imageUrl} 
-                    alt={instructor.name} 
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      // Hide image and show initials if image fails to load
-                      const target = e.currentTarget;
-                      const parent = target.parentElement;
-                      if (parent) {
-                        parent.innerHTML = `<div class="w-48 h-48 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-4xl font-bold">
-                          ${instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                        </div>`;
-                      }
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="w-48 h-48 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-4xl font-bold mb-4 shadow-lg">
-                  {instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                </div>
-              )}
+              <StandardInstructorAvatar
+                imageUrl={instructor.imageUrl}
+                name={instructor.name}
+                size="2xl"
+                schoolColor={
+                  instructor.schoolId === 349 ? '#0A2463' : // KFNA (blue)
+                  instructor.schoolId === 350 ? '#2A7F46' : // NFS East (green)
+                  '#E86A33' // NFS West (orange)
+                }
+              />
               <h2 className="text-xl font-bold text-[#0A2463]">{instructor.name}</h2>
               <p className="text-gray-500">{instructor.role || 'Instructor'}</p>
               
