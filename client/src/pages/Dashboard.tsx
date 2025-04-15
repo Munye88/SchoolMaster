@@ -97,13 +97,31 @@ const Dashboard = () => {
     queryKey: ['/api/events'],
   });
   
-  // Calculate statistics
-  const totalStudents = students.length || courses.reduce((sum, course) => sum + course.studentCount, 0);
-  const activeInstructors = instructors.length;
-  const totalSchools = schools.length;
-  const totalCourses = 5; // Exact count as per requirements
-  const activeCourses = courses.filter(c => c.status === "In Progress").length;
-  const completedCourses = courses.filter(c => c.status === "Completed").length;
+  // Calculate statistics - using useEffect to properly calculate derived state
+  const [statistics, setStatistics] = useState({
+    totalStudents: 0,
+    activeInstructors: 0,
+    totalSchools: 0,
+    totalCourses: 5, // Exact count as per requirements
+    activeCourses: 0,
+    completedCourses: 0
+  });
+  
+  // Update statistics whenever any of the source data changes
+  useEffect(() => {
+    console.log("Updating dashboard statistics:");
+    console.log("- Courses:", courses.length, "courses loaded");
+    console.log("- Active courses:", courses.filter(c => c.status === "In Progress").length);
+    
+    setStatistics({
+      totalStudents: students.length || courses.reduce((sum, course) => sum + course.studentCount, 0),
+      activeInstructors: instructors.length,
+      totalSchools: schools.length,
+      totalCourses: 5, // Exact count as per requirements
+      activeCourses: courses.filter(c => c.status === "In Progress").length,
+      completedCourses: courses.filter(c => c.status === "Completed").length
+    });
+  }, [courses, students, instructors, schools]);
   
   // Staff nationality data for bar chart
   const nationalityData = [
@@ -166,7 +184,7 @@ const Dashboard = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-sm text-gray-500 mb-1">Total Students</p>
-                <h3 className="text-2xl font-bold">{totalStudents}</h3>
+                <h3 className="text-2xl font-bold">{statistics.totalStudents}</h3>
                 <p className="text-xs text-green-600 mt-1">+3% this month</p>
               </div>
               <div className="bg-blue-100 p-2 rounded-lg">
@@ -181,7 +199,7 @@ const Dashboard = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-sm text-gray-500 mb-1">Instructors</p>
-                <h3 className="text-2xl font-bold">{activeInstructors}</h3>
+                <h3 className="text-2xl font-bold">{statistics.activeInstructors}</h3>
                 <p className="text-xs text-green-600 mt-1">Full Staff</p>
               </div>
               <div className="bg-green-100 p-2 rounded-lg">
@@ -196,7 +214,7 @@ const Dashboard = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-sm text-gray-500 mb-1">Schools</p>
-                <h3 className="text-2xl font-bold">{totalSchools}</h3>
+                <h3 className="text-2xl font-bold">{statistics.totalSchools}</h3>
                 <p className="text-xs text-blue-600 mt-1">All Locations</p>
               </div>
               <div className="bg-purple-100 p-2 rounded-lg">
@@ -211,8 +229,8 @@ const Dashboard = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-sm text-gray-500 mb-1">Courses</p>
-                <h3 className="text-2xl font-bold">{totalCourses}</h3>
-                <p className="text-xs text-yellow-600 mt-1">{activeCourses} active</p>
+                <h3 className="text-2xl font-bold">{statistics.totalCourses}</h3>
+                <p className="text-xs text-yellow-600 mt-1">{statistics.activeCourses} active</p>
               </div>
               <div className="bg-yellow-100 p-2 rounded-lg">
                 <BookOpen className="h-6 w-6 text-yellow-600" />
@@ -241,7 +259,7 @@ const Dashboard = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="text-sm font-semibold opacity-90 uppercase tracking-wider">Active Courses</h3>
-                      <p className="text-3xl font-bold mt-1">{activeCourses}</p>
+                      <p className="text-3xl font-bold mt-1">{statistics.activeCourses}</p>
                     </div>
                     <div className="bg-white/20 p-3 rounded-lg">
                       <BookOpen className="w-8 h-8 text-white" />
