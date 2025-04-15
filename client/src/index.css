@@ -18,44 +18,39 @@
     scrollbar-width: none;  /* Firefox */
   }
   
-  /* Print styles for single action log */
+  /* Print styles */
   @media print {
-    /* Hide everything by default */
-    body > * {
+    /* Hide all elements by default except those explicitly meant to be printed */
+    body * {
+      visibility: hidden;
+    }
+    
+    /* Only print what's inside print containers */
+    .print-container, .print-container * {
+      visibility: visible !important;
+    }
+    
+    /* Make sure the print container takes the full page */
+    .print-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* Hide UI elements */
+    nav, header, footer, aside, .app-header, .app-sidebar, 
+    button, .dropdown-menu, .print\:hidden {
       display: none !important;
     }
     
-    /* Only show the printable component */
-    .print\:block {
-      display: block !important;
-    }
-    
-    /* Hide navigation bar and other UI elements */
-    nav, header, footer, aside, .app-header, .app-sidebar {
-      display: none !important;
-    }
-    
-    /* Reset background colors and ensure proper rendering */
+    /* Reset backgrounds and colors for printing */
     body {
       background: white !important;
       color: black !important;
       margin: 0 !important;
       padding: 0 !important;
-    }
-    
-    /* Special case for printing single action item */
-    body.printing-single-item #root > *:not(.print\:block) {
-      display: none !important;
-    }
-    
-    body.printing-single-item .print\:block {
-      position: absolute !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      z-index: 9999 !important;
-      background: white !important;
     }
   }
   

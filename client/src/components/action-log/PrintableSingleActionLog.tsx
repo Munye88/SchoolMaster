@@ -65,7 +65,7 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
   // The main printable content
   return (
     <div 
-      className="fixed inset-0 bg-white z-50 p-8"
+      className="fixed inset-0 bg-white z-50 p-8 print-container"
       style={{ 
         display: isReady ? 'block' : 'none',
       }}

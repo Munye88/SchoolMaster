@@ -802,8 +802,13 @@ export default function ActionLogPage() {
       {/* Printable content - hidden until print */}
       <PrintableActionLogs logs={filteredLogs} printRef={printableRef} />
       
-      {/* Single printable action log */}
-      <PrintableSingleActionLog log={logToPrint} ref={printRef} />
+      {/* Single printable action log - only rendered when isPrintingLog is true */}
+      {isPrintingLog && (
+        <PrintableSingleActionLog 
+          log={logToPrint} 
+          onClose={handleClosePrintView}
+        />
+      )}
     </div>
   );
 }
