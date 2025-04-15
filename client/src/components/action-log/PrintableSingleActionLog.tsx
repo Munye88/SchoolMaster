@@ -1,6 +1,5 @@
 import { format } from 'date-fns';
 import { ActionLog } from '@shared/schema';
-import governmentLogo from '@assets/Govcio_logo-removebg-preview.png';
 import { useEffect, useState } from 'react';
 
 interface PrintableSingleActionLogProps {
@@ -9,12 +8,11 @@ interface PrintableSingleActionLogProps {
 }
 
 export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleActionLogProps) => {
-  const [logoUrl, setLogoUrl] = useState<string>("");
+  const [ready, setReady] = useState(false);
   
-  // Instead of using an image, we'll use text for the logo
   useEffect(() => {
-    // Set a simple text logo version (we'll fix this in the print template)
-    setLogoUrl("GOVCIO LOGO");
+    // Set component as ready
+    setReady(true);
   }, []);
   
   if (!log) return null;
@@ -34,7 +32,7 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
 
   // Direct print method using window.open to create a new window just for printing
   const printLogDirectly = () => {
-    if (!logoUrl) return; // Wait for logo to be ready
+    if (!ready) return; // Wait for component to be ready
     
     // Create HTML content for the print window
     const printContent = `
@@ -50,23 +48,26 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
           }
           .header {
             margin-bottom: 30px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+          }
+          .logo {
+            width: 180px;
+            margin-right: 20px;
           }
           .header-content {
-            width: 100%;
-          }
-          .title {
-            font-size: 22px;
-            font-weight: bold;
-            color: #003366;
-            margin-bottom: 5px;
-          }
-          .subtitle {
-            font-size: 18px;
-            font-weight: bold;
+            flex-grow: 1;
             border-bottom: 1px solid #ddd;
             padding-bottom: 10px;
-            margin-bottom: 10px;
+          }
+          .title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+          }
+          .date {
+            font-size: 14px;
+            color: #666;
           }
           .content {
             margin-bottom: 30px;
@@ -139,10 +140,10 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
       </head>
       <body>
         <div class="header">
+          <img src="/images/govcio-logo-original.png" alt="GovCIO Logo" class="logo">
           <div class="header-content">
-            <h1 class="title">GOVCIO/SAMS ELT PROGRAM MANAGEMENT</h1>
-            <h2 class="subtitle">Action Item Details</h2>
-            <p>Printed: ${format(new Date(), 'MMMM d, yyyy')}</p>
+            <h1 class="title">Action Item Details</h1>
+            <p class="date">Printed: ${format(new Date(), 'MMMM d, yyyy')}</p>
           </div>
         </div>
         
@@ -204,12 +205,12 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
     }, 500);
   };
   
-  // Trigger print immediately when logo is ready
+  // Trigger print immediately when component is ready
   useEffect(() => {
-    if (logoUrl) {
+    if (ready) {
       setTimeout(printLogDirectly, 100);
     }
-  }, [logoUrl]);
+  }, [ready, printLogDirectly]);
   
   // Return an empty div as we're using a separate window for printing
   return (
