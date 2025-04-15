@@ -414,8 +414,9 @@ export default function ActionLogPage() {
                             <FormControl>
                               <Button
                                 variant={"outline"}
+                                size="sm"
                                 className={cn(
-                                  "w-full pl-3 text-left font-normal",
+                                  "w-full pl-3 text-left font-normal text-sm py-2",
                                   !field.value && "text-muted-foreground"
                                 )}
                               >
@@ -424,7 +425,7 @@ export default function ActionLogPage() {
                                 ) : (
                                   <span>Pick a date</span>
                                 )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                <CalendarIcon className="ml-auto h-3.5 w-3.5 opacity-50" />
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
@@ -691,8 +692,9 @@ export default function ActionLogPage() {
                         <FormControl>
                           <Button
                             variant={"outline"}
+                            size="sm"
                             className={cn(
-                              "w-full pl-3 text-left font-normal",
+                              "w-full pl-3 text-left font-normal text-sm py-2",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -701,7 +703,7 @@ export default function ActionLogPage() {
                             ) : (
                               <span>Pick a date</span>
                             )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            <CalendarIcon className="ml-auto h-3.5 w-3.5 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
