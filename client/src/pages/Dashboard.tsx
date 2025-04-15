@@ -39,6 +39,9 @@ const Dashboard = () => {
       ? ['/api/schools', selectedSchool.id, 'courses'] 
       : ['/api/courses'],
     enabled: !selectedSchool || !!selectedSchool.id,
+    // Force refetch when navigating back to dashboard
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
   
   // Fetch instructors
@@ -47,11 +50,16 @@ const Dashboard = () => {
       ? ['/api/schools', selectedSchool.id, 'instructors'] 
       : ['/api/instructors'],
     enabled: !selectedSchool || !!selectedSchool.id,
+    // Force refetch when navigating back to dashboard
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   // Fetch schools
   const { data: schools = [] } = useQuery<School[]>({
     queryKey: ['/api/schools'],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
   
   // Fetch students
@@ -60,6 +68,8 @@ const Dashboard = () => {
       ? ['/api/schools', selectedSchool.id, 'students'] 
       : ['/api/students'],
     enabled: !selectedSchool || !!selectedSchool.id,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   // Fetch test results
