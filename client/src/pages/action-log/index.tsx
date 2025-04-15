@@ -85,10 +85,21 @@ export default function ActionLogPage() {
   
   // Function to handle printing a single action log
   const handlePrintSingleLog = (log: ActionLog) => {
+    // Set the log to print and add a class to the body for print styling
     setLogToPrint(log);
+    
     // We need to wait for React to update the DOM with the selected log
     setTimeout(() => {
+      // Add a class to body to signal we're printing a single item
+      document.body.classList.add('printing-single-item');
+      
+      // Trigger print
       printSingleActionLog();
+      
+      // Remove the class after printing is complete or cancelled
+      window.addEventListener('afterprint', () => {
+        document.body.classList.remove('printing-single-item');
+      }, { once: true });
     }, 100);
   };
 

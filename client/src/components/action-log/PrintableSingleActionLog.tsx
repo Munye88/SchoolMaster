@@ -42,20 +42,24 @@ const PrintableSingleActionLogComponent: ForwardRefRenderFunction<HTMLDivElement
   return (
     <div 
       ref={ref} 
-      className="hidden print:block print:p-6"
+      className="hidden print:block print:p-8 m-0 w-full h-full"
+      style={{ pageBreakInside: 'avoid', pageBreakAfter: 'always' }}
     >
-      {/* Header with logo */}
-      <div className="flex items-center justify-between border-b pb-4 mb-6">
-        <div className="flex items-center">
-          <img src={governmentLogo} alt="GovCIO Logo" className="h-16 mr-4" />
-          <div>
-            <h1 className="text-xl font-bold">GOVCIO/SAMS ELT PROGRAM MANAGEMENT</h1>
-            <p className="text-sm text-gray-600">Action Item - {log.title}</p>
-          </div>
+      {/* Header with logo - no navigation */}
+      <div className="flex items-center mb-8">
+        <div className="w-full flex justify-center items-center">
+          <img 
+            src={governmentLogo} 
+            alt="GovCIO Logo" 
+            className="h-20 mb-2" 
+            style={{ height: '80px' }}
+          />
         </div>
-        <div className="text-right text-sm">
-          <p>Printed: {format(new Date(), 'MMMM d, yyyy')}</p>
-        </div>
+      </div>
+
+      <div className="text-center mb-6 border-b pb-4">
+        <h1 className="text-2xl font-bold">Action Item Details</h1>
+        <p className="text-sm text-gray-600">Printed: {format(new Date(), 'MMMM d, yyyy')}</p>
       </div>
 
       {/* Main content */}
