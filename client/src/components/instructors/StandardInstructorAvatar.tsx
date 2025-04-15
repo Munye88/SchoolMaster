@@ -77,12 +77,15 @@ export function StandardInstructorAvatar({
       style={{ backgroundColor: schoolColor }}
     >
       {imageSource && !imageError ? (
-        <img
-          src={imageSource}
-          alt={name}
-          className="h-full w-full object-cover object-center" // Added object-center to center the image
-          onError={handleImageError}
-        />
+        <div className="h-full w-full relative overflow-hidden">
+          <img
+            src={imageSource}
+            alt={name}
+            className="h-full w-full object-cover object-center absolute inset-0" 
+            style={{ objectPosition: "center 30%" }} /* Position to show faces better */
+            onError={handleImageError}
+          />
+        </div>
       ) : (
         <div className={`h-full w-full flex items-center justify-center text-white font-bold ${initialsFontSize[size]}`}>
           {getInitials(name)}

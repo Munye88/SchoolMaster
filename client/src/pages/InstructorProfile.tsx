@@ -89,7 +89,7 @@ const InstructorProfile = () => {
                     <StandardInstructorAvatar
                       imageUrl={instructor.imageUrl}
                       name={instructor.name}
-                      size="sm"
+                      size="md"
                       schoolColor={
                         instructor.schoolId === 349 ? '#0A2463' : // KFNA (blue)
                         instructor.schoolId === 350 ? '#2A7F46' : // NFS East (green)
@@ -179,17 +179,19 @@ const InstructorProfile = () => {
         <div className="lg:col-span-1 space-y-6">
           <Card>
             <CardContent className="p-6 flex flex-col items-center">
-              <StandardInstructorAvatar
-                imageUrl={instructor.imageUrl}
-                name={instructor.name}
-                size="2xl"
-                schoolColor={
-                  instructor.schoolId === 349 ? '#0A2463' : // KFNA (blue)
-                  instructor.schoolId === 350 ? '#2A7F46' : // NFS East (green)
-                  '#E86A33' // NFS West (orange)
-                }
-              />
-              <h2 className="text-xl font-bold text-[#0A2463]">{instructor.name}</h2>
+              <div className="mb-4">
+                <StandardInstructorAvatar
+                  imageUrl={instructor.imageUrl}
+                  name={instructor.name}
+                  size="2xl"
+                  schoolColor={
+                    instructor.schoolId === 349 ? '#0A2463' : // KFNA (blue)
+                    instructor.schoolId === 350 ? '#2A7F46' : // NFS East (green)
+                    '#E86A33' // NFS West (orange)
+                  }
+                />
+              </div>
+              <h2 className="text-xl font-bold text-[#0A2463] mt-2">{instructor.name}</h2>
               <p className="text-gray-500">{instructor.role || 'Instructor'}</p>
               
               <div className="w-full mt-6 space-y-4">

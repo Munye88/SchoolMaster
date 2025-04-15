@@ -381,7 +381,17 @@ const SchoolInstructorProfiles = () => {
                   <TableBody>
                     {filteredInstructors.map((instructor) => (
                       <TableRow key={instructor.id}>
-                        <TableCell className="font-medium">{instructor.name}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <StandardInstructorAvatar
+                              imageUrl={instructor.imageUrl}
+                              name={instructor.name}
+                              size="sm"
+                              schoolColor={getSchoolColor(currentSchool?.name || '')}
+                            />
+                            <span className="font-medium">{instructor.name}</span>
+                          </div>
+                        </TableCell>
                         <TableCell>
                           <Badge className={
                             instructor.nationality === "American" ? "bg-blue-100 text-blue-800" :

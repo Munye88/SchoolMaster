@@ -63,18 +63,18 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
 
   return (
     <Card className="overflow-hidden border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
-      <CardHeader className={`${headerBgColorClass} text-white pb-2 flex flex-row items-center`}>
-        <div className="mr-4">
+      <CardHeader className={`${headerBgColorClass} text-white pb-6 pt-6 flex flex-col items-center`}>
+        <div className="mb-4">
           <StandardInstructorAvatar
             imageUrl={instructor.imageUrl}
             name={instructor.name}
-            size="lg"
+            size="xl"
             schoolColor={schoolColor}
           />
         </div>
-        <div>
-          <h2 className="text-xl font-bold">{instructor.name}</h2>
-          <p className="text-sm text-blue-100">{instructor.role || "ELT Instructor"}</p>
+        <div className="text-center">
+          <h2 className="text-2xl font-bold">{instructor.name}</h2>
+          <p className="text-sm text-blue-100 mt-1">{instructor.role || "ELT Instructor"}</p>
         </div>
       </CardHeader>
       <CardContent className="pt-4">
