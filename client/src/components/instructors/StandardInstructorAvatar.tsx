@@ -37,7 +37,14 @@ export function StandardInstructorAvatar({
     
     // Reset error state when imageUrl changes
     setImageError(false);
-  }, [imageUrl]);
+    
+    // Log the image source type for debugging
+    if (imageUrl.startsWith('data:')) {
+      console.log(`Loading base64 image for ${name} (length: ${imageUrl.length.toLocaleString()} chars)`);
+    } else {
+      console.log(`Loading URL image for ${name}: ${imageUrl}`);
+    }
+  }, [imageUrl, name]);
   
   // Get initials from name
   const getInitials = (name: string) => {
