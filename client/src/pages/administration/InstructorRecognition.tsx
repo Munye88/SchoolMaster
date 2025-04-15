@@ -27,7 +27,7 @@ import awardsImage from "../../assets/awards-page.png";
 import govcioLogo from "../../assets/images/govcio-logo-new.png";
 import certificateBackground from "../../assets/images/certificate-background2.jpeg";
 
-type AwardCategory = 'Employee of the Month' | 'Perfect Attendance' | 'Outstanding Performance' | 'Excellence in Teaching';
+type AwardCategory = 'Employee of the Month' | 'Perfect Attendance' | 'Outstanding Performance';
 
 interface InstructorWithScore extends Instructor {
   score?: number;
@@ -138,10 +138,16 @@ Here is the simplified data for instructors with their evaluation scores and att
 ${JSON.stringify(simplifiedInstructors, null, 2)}
 
 Please analyze this data and recommend the top 3 candidates for this award based on their performance metrics.
+
+IMPORTANT: Each award category should consider BOTH evaluation scores AND attendance:
+- For "Employee of the Month": Consider a balanced 50/50 weight between evaluation scores and attendance
+- For "Perfect Attendance": Primary focus on attendance (70%) but still consider evaluation scores (30%)
+- For "Outstanding Performance": Primary focus on evaluation scores (70%) but still consider attendance (30%)
+
 For each instructor, provide:
-1. Overall score (0-100) - calculated based on evaluation scores and attendance
+1. Overall score (0-100) - calculated using the appropriate weights mentioned above
 2. Key strengths (3-5 bullet points) - what makes them stand out
-3. Reasons they should be nominated - a short paragraph
+3. Reasons they should be nominated - a short paragraph that mentions BOTH their evaluation performance AND attendance
 4. The evaluation score and attendance percentage should match the data provided
 
 Return ONLY a JSON array with this structure and nothing else:
@@ -390,9 +396,6 @@ Return ONLY a JSON array with this structure and nothing else:
       case "Outstanding Performance":
         text = `Your exceptional performance in all aspects of your role has not gone unnoticed. With a stellar evaluation score of ${evaluation} and excellent attendance record of ${attendance}%, you consistently demonstrate the highest level of competence and dedication. Your strengths in ${strengths.join(', ').toLowerCase()} have elevated the standard of instruction at our institution. Your commitment to excellence and your positive influence on both students and colleagues make you an invaluable asset to our educational community.`;
         break;
-      case "Excellence in Teaching":
-        text = `Your commitment to teaching excellence has made a profound impact on your students' educational journey. Your innovative teaching methods, thorough subject knowledge, and exceptional communication skills have resulted in an outstanding evaluation score of ${evaluation}. Your dedication is further evidenced by your ${attendance}% attendance record. Your passion for education and unwavering dedication to student success inspire everyone around you. We are truly grateful for your remarkable contributions to our educational mission.`;
-        break;
       default:
         text = `Your exceptional dedication and outstanding performance have significantly contributed to our educational excellence. With an impressive evaluation score of ${evaluation} and attendance rate of ${attendance}%, you have consistently demonstrated the highest standards of professionalism. Your skills in ${strengths.join(', ').toLowerCase()} have made a tremendous impact on student learning outcomes. We deeply appreciate your unwavering commitment and valuable contributions to our institution.`;
     }
@@ -639,12 +642,6 @@ Return ONLY a JSON array with this structure and nothing else:
                     <div className="flex items-center">
                       <Star className="h-4 w-4 mr-2 text-blue-600" />
                       <span>Outstanding Performance</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="Excellence in Teaching">
-                    <div className="flex items-center">
-                      <Medal className="h-4 w-4 mr-2 text-purple-600" />
-                      <span>Excellence in Teaching</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
