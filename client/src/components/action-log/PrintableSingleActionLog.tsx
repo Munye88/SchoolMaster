@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import { ActionLog } from '@shared/schema';
-import { useEffect, useState } from 'react';
+import { useEffect, useCallback } from 'react';
+import governmentLogo from '@assets/Govcio_logo-removebg-preview.png';
 
 interface PrintableSingleActionLogProps {
   log: ActionLog | null;
@@ -8,16 +9,9 @@ interface PrintableSingleActionLogProps {
 }
 
 export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleActionLogProps) => {
-  const [ready, setReady] = useState(false);
-  
-  useEffect(() => {
-    // Set component as ready
-    setReady(true);
-  }, []);
-  
   if (!log) return null;
   
-  function getStatusText(status: string) {
+  const getStatusText = (status: string) => {
     switch (status) {
       case 'completed':
         return 'Completed';
@@ -28,14 +22,10 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
       default:
         return status;
     }
-  }
+  };
 
-  // Direct print method using window.open to create a new window just for printing
-  const printLogDirectly = () => {
-    if (!ready) return; // Wait for component to be ready
-    
-    // Create HTML content for the print window
-    const printContent = `
+  const generatePrintContent = useCallback(() => {
+    return `
       <!DOCTYPE html>
       <html>
       <head>
@@ -52,7 +42,7 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
             align-items: center;
           }
           .logo {
-            width: 180px;
+            max-width: 180px;
             margin-right: 20px;
           }
           .header-content {
@@ -140,7 +130,9 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
       </head>
       <body>
         <div class="header">
-          <img src="/images/govcio-logo-original.png" alt="GovCIO Logo" class="logo">
+          <div style="width: 180px; height: 60px; background: #003366; margin-right: 20px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px;">
+            GOVCIO
+          </div>
           <div class="header-content">
             <h1 class="title">Action Item Details</h1>
             <p class="date">Printed: ${format(new Date(), 'MMMM d, yyyy')}</p>
@@ -191,31 +183,22 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
       </body>
       </html>
     `;
-    
-    // Open new window and write content
+  }, [log]);
+
+  // Open new window and trigger print on component mount
+  useEffect(() => {
     const printWindow = window.open('', '_blank');
     if (printWindow) {
-      printWindow.document.write(printContent);
+      printWindow.document.write(generatePrintContent());
       printWindow.document.close();
+      
+      // Close our component after a short delay
+      setTimeout(() => {
+        onClose();
+      }, 500);
     }
-    
-    // Close our component
-    setTimeout(() => {
-      onClose();
-    }, 500);
-  };
-  
-  // Trigger print immediately when component is ready
-  useEffect(() => {
-    if (ready) {
-      setTimeout(printLogDirectly, 100);
-    }
-  }, [ready, printLogDirectly]);
+  }, [log, generatePrintContent, onClose]);
   
   // Return an empty div as we're using a separate window for printing
-  return (
-    <div className="hidden">
-      <button onClick={onClose}>Close</button>
-    </div>
-  );
+  return null;
 };
