@@ -286,11 +286,11 @@ const SchoolInstructorProfiles = () => {
             ) : (
               filteredInstructors.map((instructor) => (
                 <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 shadow-md">
-                  <div className={`h-44 ${getSchoolColorClass(currentSchool?.name || '')} flex items-center justify-center`}>
+                  <div className={`h-48 ${getSchoolColorClass(currentSchool?.name || '')} flex items-center justify-center`}>
                     <StandardInstructorAvatar
                       imageUrl={instructor.imageUrl}
                       name={instructor.name}
-                      size="xl"
+                      size="2xl"
                       schoolColor={getSchoolColor(currentSchool?.name || '')}
                     />
                   </div>

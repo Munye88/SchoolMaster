@@ -68,7 +68,7 @@ export function InstructorProfileCard({ instructor, schoolName }: InstructorProf
           <StandardInstructorAvatar
             imageUrl={instructor.imageUrl}
             name={instructor.name}
-            size="md"
+            size="lg"
             schoolColor={schoolColor}
           />
         </div>
