@@ -39,12 +39,9 @@ const Dashboard = () => {
       ? ['/api/schools', selectedSchool.id, 'courses'] 
       : ['/api/courses'],
     enabled: !selectedSchool || !!selectedSchool.id,
-    // Force refetch with stronger settings to ensure fresh data
-    refetchOnMount: 'always',
+    // Force refetch when navigating back to dashboard
+    refetchOnMount: true,
     refetchOnWindowFocus: true,
-    staleTime: 0,
-    gcTime: 0, // This was renamed from cacheTime in TanStack Query v5
-    refetchInterval: 2000 // Poll every 2 seconds while page is open
   });
   
   // Fetch instructors
@@ -66,15 +63,13 @@ const Dashboard = () => {
   });
   
   // Fetch students
-  const { data: students = [], isLoading: studentsLoading } = useQuery<Student[]>({
+  const { data: students = [] } = useQuery<Student[]>({
     queryKey: selectedSchool 
       ? ['/api/schools', selectedSchool.id, 'students'] 
       : ['/api/students'],
     enabled: !selectedSchool || !!selectedSchool.id,
-    refetchOnMount: 'always',
+    refetchOnMount: true,
     refetchOnWindowFocus: true,
-    staleTime: 0,
-    gcTime: 0, // This was renamed from cacheTime in TanStack Query v5
   });
 
   // Fetch test results
@@ -102,18 +97,31 @@ const Dashboard = () => {
     queryKey: ['/api/events'],
   });
   
-  // Hard-code statistics for now to simplify and fix the React hooks error
-  const statistics = {
-    totalStudents: students.length || courses.reduce((sum: number, course: any) => sum + course.studentCount, 0),
-    activeInstructors: instructors.length,
-    totalSchools: schools.length,
+  // Calculate statistics - using useEffect to properly calculate derived state
+  const [statistics, setStatistics] = useState({
+    totalStudents: 0,
+    activeInstructors: 0,
+    totalSchools: 0,
     totalCourses: 5, // Exact count as per requirements
-    activeCourses: courses.filter((c: any) => c.status === "In Progress").length,
-    completedCourses: courses.filter((c: any) => c.status === "Completed").length
-  };
+    activeCourses: 0,
+    completedCourses: 0
+  });
   
-  // Loading state - define this at the component level, not conditionally
-  const isLoading = coursesLoading || instructorsLoading || studentsLoading;
+  // Update statistics whenever any of the source data changes
+  useEffect(() => {
+    console.log("Updating dashboard statistics:");
+    console.log("- Courses:", courses.length, "courses loaded");
+    console.log("- Active courses:", courses.filter(c => c.status === "In Progress").length);
+    
+    setStatistics({
+      totalStudents: students.length || courses.reduce((sum, course) => sum + course.studentCount, 0),
+      activeInstructors: instructors.length,
+      totalSchools: schools.length,
+      totalCourses: 5, // Exact count as per requirements
+      activeCourses: courses.filter(c => c.status === "In Progress").length,
+      completedCourses: courses.filter(c => c.status === "Completed").length
+    });
+  }, [courses, students, instructors, schools]);
   
   // Staff nationality data for bar chart
   const nationalityData = [

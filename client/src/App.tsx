@@ -4,7 +4,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
-import DashboardSimple from "@/pages/DashboardSimple";
 import InstructorProfile from "@/pages/InstructorProfile";
 import Courses from "@/pages/Courses";
 import TestTracker from "@/pages/TestTracker";
@@ -60,7 +59,7 @@ function Router() {
           <Route path="/auth" component={AuthPage} />
           
           {/* Protected routes */}
-          <ProtectedRoute path="/" component={DashboardSimple} />
+          <ProtectedRoute path="/" component={Dashboard} />
           <ProtectedRoute path="/instructors" component={InstructorProfile} />
           <ProtectedRoute path="/instructors/:id" component={InstructorProfile} />
           <ProtectedRoute path="/courses" component={Courses} />
