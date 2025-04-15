@@ -29,13 +29,18 @@ export async function updateNfsWestImages() {
       const colorIndex = instructor.id % 5;
       const colorClass = ["blue", "green", "purple", "amber", "pink"][colorIndex];
       
-      // Update the instructor with image URL and fallback info
-      await db
-        .update(instructors)
-        .set({
-          imageUrl: null // Reset any existing URL so we start fresh with initials
-        })
-        .where(eq(instructors.id, instructor.id));
+      // Only update instructors that don't already have an image
+      const existingImage = instructor.imageUrl;
+      if (!existingImage) {
+        await db
+          .update(instructors)
+          .set({
+            imageUrl: null // Only set to null if no image exists
+          })
+          .where(eq(instructors.id, instructor.id));
+      } else {
+        console.log(`Preserving existing image for instructor ${instructor.id} (${instructor.name})`);
+      }
       
       console.log(`Updated image for instructor ${instructor.id} (${instructor.name})`);
     }

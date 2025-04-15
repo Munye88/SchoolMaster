@@ -252,7 +252,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
-      console.log("🚀 PATCH /api/instructors/:id - Request body:", req.body);
+      console.log("🚀 PATCH /api/instructors/:id - Request body: ", 
+        req.body.imageUrl ? 
+          `Contains imageUrl (length: ${req.body.imageUrl?.length || 0} chars)` : 
+          "No imageUrl provided");
       
       // Check for fields mismatch
       const { status, position, ...rest } = req.body;
@@ -262,13 +265,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...(position && { role: position }) // Only add if position exists
       };
       
-      console.log("🚀 Processed data before schema validation:", processedData);
+      // Handle image URL specifically - log details
+      if (processedData.imageUrl) {
+        const imgLength = processedData.imageUrl.length;
+        console.log(`📸 Image data received: ${imgLength.toLocaleString()} chars, starts with: ${processedData.imageUrl.substring(0, 50)}...`);
+        
+        // Keep base64 images exactly as provided - no special handling needed
+        // They'll be stored in the database directly which is fine for this application
+      }
+      
+      console.log("🚀 Processed data before schema validation:", {
+        ...processedData,
+        imageUrl: processedData.imageUrl ? `[BASE64 data - ${processedData.imageUrl.length.toLocaleString()} chars]` : null
+      });
       
       const updateData = insertInstructorSchema.partial().parse(processedData);
-      console.log("🚀 Validated update data:", updateData);
+      console.log("🚀 Validated update data:", {
+        ...updateData,
+        imageUrl: updateData.imageUrl ? `[BASE64 data - ${updateData.imageUrl.length.toLocaleString()} chars]` : null
+      });
       
       const updatedInstructor = await dbStorage.updateInstructor(id, updateData);
-      console.log("🚀 Updated instructor:", updatedInstructor);
+      console.log("🚀 Updated instructor:", {
+        ...updatedInstructor,
+        imageUrl: updatedInstructor.imageUrl ? `[Image data present - ${updatedInstructor.imageUrl.length.toLocaleString()} chars]` : null
+      });
       
       if (!updatedInstructor) {
         return res.status(404).json({ message: "Instructor not found" });
