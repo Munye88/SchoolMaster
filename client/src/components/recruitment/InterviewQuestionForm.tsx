@@ -1,15 +1,16 @@
-import { useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { insertInterviewQuestionSchema } from '@shared/schema';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { apiRequest } from '@/lib/queryClient';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { InsertInterviewQuestion } from "@shared/schema";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { X } from "lucide-react";
 
 interface InterviewQuestionFormProps {
   candidateId: number;
@@ -23,138 +24,178 @@ interface InterviewQuestionFormProps {
   isEditing?: boolean;
 }
 
-// Extend the schema for form validation
-const formSchema = insertInterviewQuestionSchema.pick({
-  question: true,
-  category: true,
-}).extend({
-  candidateId: z.number(),
+const formSchema = z.object({
+  question: z.string().min(5, "Question must be at least 5 characters"),
+  category: z.enum(['general', 'technical', 'curriculum', 'behavioral'])
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-const InterviewQuestionForm: React.FC<InterviewQuestionFormProps> = ({
-  candidateId,
-  onSuccess,
+export default function InterviewQuestionForm({ 
+  candidateId, 
+  onSuccess, 
   onCancel,
   initialData,
-  isEditing = false,
-}) => {
+  isEditing = false 
+}: InterviewQuestionFormProps) {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      question: initialData?.question || '',
-      category: initialData?.category || 'general',
-      candidateId,
-    },
+      question: initialData?.question || "",
+      category: initialData?.category || "general",
+    }
   });
 
-  const onSubmit = async (data: FormValues) => {
-    setIsSubmitting(true);
-    try {
-      if (isEditing && initialData) {
-        // Update existing question
-        await apiRequest('PATCH', `/api/interview-questions/${initialData.id}`, data);
-        toast({
-          title: 'Question Updated',
-          description: 'The interview question has been successfully updated.',
-        });
-      } else {
-        // Create new question
-        await apiRequest('POST', '/api/interview-questions', data);
-        toast({
-          title: 'Question Added',
-          description: 'The interview question has been successfully added.',
-        });
-      }
-      
-      onSuccess();
-    } catch (error) {
-      console.error('Error submitting question:', error);
+  const createMutation = useMutation({
+    mutationFn: async (data: InsertInterviewQuestion) => {
+      const response = await apiRequest(
+        "POST", 
+        "/api/interview-questions", 
+        data
+      );
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/candidates/${candidateId}/interview-questions`] });
       toast({
-        title: 'Error',
-        description: 'Failed to save interview question. Please try again.',
-        variant: 'destructive',
+        title: "Question created",
+        description: "The interview question has been saved successfully.",
       });
-    } finally {
-      setIsSubmitting(false);
+      onSuccess();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create interview question",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: Partial<InsertInterviewQuestion> & { id: number }) => {
+      const { id, ...updateData } = data;
+      const response = await apiRequest(
+        "PATCH", 
+        `/api/interview-questions/${id}`, 
+        updateData
+      );
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/candidates/${candidateId}/interview-questions`] });
+      toast({
+        title: "Question updated",
+        description: "The interview question has been updated successfully.",
+      });
+      onSuccess();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update interview question",
+        variant: "destructive",
+      });
+    }
+  });
+  
+  const onSubmit = async (data: FormValues) => {
+    if (isEditing && initialData) {
+      updateMutation.mutate({
+        id: initialData.id,
+        ...data,
+        candidateId
+      });
+    } else {
+      createMutation.mutate({
+        ...data,
+        candidateId,
+        createdDate: new Date(),
+      });
     }
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Category</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="general">General</SelectItem>
-                  <SelectItem value="technical">Technical</SelectItem>
-                  <SelectItem value="curriculum">Curriculum</SelectItem>
-                  <SelectItem value="behavioral">Behavioral</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="question"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Question</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Enter interview question..."
-                  className="min-h-[100px]"
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <div className="flex justify-end space-x-4 pt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {isEditing ? 'Updating...' : 'Adding...'}
-              </>
-            ) : (
-              <>{isEditing ? 'Update Question' : 'Add Question'}</>
+    <div className="border border-gray-200 rounded-md p-4 bg-white shadow-sm relative">
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="absolute right-2 top-2" 
+        onClick={onCancel}
+      >
+        <X className="h-4 w-4" />
+      </Button>
+      
+      <h3 className="text-lg font-medium mb-4">
+        {isEditing ? "Edit Interview Question" : "Add Interview Question"}
+      </h3>
+      
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="general">General</SelectItem>
+                    <SelectItem value="technical">Technical</SelectItem>
+                    <SelectItem value="curriculum">Curriculum</SelectItem>
+                    <SelectItem value="behavioral">Behavioral</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
             )}
-          </Button>
-        </div>
-      </form>
-    </Form>
+          />
+          
+          <FormField
+            control={form.control}
+            name="question"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Question</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Enter interview question..."
+                    rows={3}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <div className="flex justify-end gap-2">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onCancel}
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit"
+              disabled={createMutation.isPending || updateMutation.isPending}
+            >
+              {isEditing ? "Update" : "Save"} Question
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
-};
-
-export default InterviewQuestionForm;
+}

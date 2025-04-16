@@ -1,129 +1,142 @@
-import { useEffect, useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { queryClient } from '@/lib/queryClient';
+import { 
+  Tabs, 
+  TabsContent, 
+  TabsList, 
+  TabsTrigger 
+} from '@/components/ui/tabs';
 import { useSchoolContext } from '@/context/SchoolContext';
-import { Loader2, Plus, UserPlus, FileQuestion } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { Separator } from '@/components/ui/separator';
 import { Candidate } from '@shared/schema';
+import { UserPlus } from 'lucide-react';
 import CandidatesList from '@/components/recruitment/CandidatesList';
 import CandidateForm from '@/components/recruitment/CandidateForm';
 import InterviewQuestionsList from '@/components/recruitment/InterviewQuestionsList';
 import EmptyState from '@/components/common/EmptyState';
 
 export default function RecruitmentPage() {
-  const { toast } = useToast();
   const { selectedSchool } = useSchoolContext();
-  const [addingCandidate, setAddingCandidate] = useState(false);
-  const [activeTab, setActiveTab] = useState('candidates');
+  const [activeTab, setActiveTab] = useState<string>('candidates');
+  const [showCandidateForm, setShowCandidateForm] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
-  // Fetch candidates for the selected school
-  const { 
-    data: candidates, 
-    isLoading: candidatesLoading,
-    error: candidatesError
-  } = useQuery<Candidate[]>({
-    queryKey: ['/api/schools', selectedSchool?.id, 'candidates'],
-    queryFn: async () => {
-      if (!selectedSchool) return [];
-      const res = await fetch(`/api/schools/${selectedSchool.id}/candidates`);
-      if (!res.ok) throw new Error('Failed to fetch candidates');
-      return res.json();
-    },
-    enabled: !!selectedSchool,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
-  });
-
-  const handleCandidateCreated = () => {
-    setAddingCandidate(false);
-    queryClient.invalidateQueries({ queryKey: ['/api/schools', selectedSchool?.id, 'candidates'] });
-    toast({
-      title: 'Candidate Added',
-      description: 'The candidate has been successfully added.',
-    });
-  };
-
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-  };
-
-  // If there's an error, show it
-  useEffect(() => {
-    if (candidatesError) {
-      toast({
-        title: 'Error',
-        description: 'Failed to load candidates. Please try again.',
-        variant: 'destructive',
-      });
+  const handleSelectCandidate = (candidate: Candidate) => {
+    setSelectedCandidate(candidate);
+    if (activeTab === 'candidates') {
+      setActiveTab('details');
     }
-  }, [candidatesError, toast]);
+  };
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex justify-between items-center">
+    <div className="container mx-auto py-6 max-w-7xl">
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Recruitment</h1>
-          <p className="text-muted-foreground mt-2">
-            Manage recruitment for {selectedSchool?.name || 'All Schools'}
+          <h1 className="text-2xl font-bold text-gray-900">Recruitment Management</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Manage ELT instructor candidates and recruitment process
           </p>
         </div>
-        {!addingCandidate && activeTab === 'candidates' && (
-          <Button onClick={() => setAddingCandidate(true)} className="flex items-center gap-2">
-            <UserPlus size={16} />
-            <span>Add Candidate</span>
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {!showCandidateForm && activeTab === 'candidates' && (
+            <Button onClick={() => setShowCandidateForm(true)} className="gap-2">
+              <UserPlus className="h-4 w-4" />
+              Add Candidate
+            </Button>
+          )}
+        </div>
       </div>
 
-      {addingCandidate ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Add New Candidate</CardTitle>
-            <CardDescription>
-              Enter the candidate's information below
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+      <Separator className="my-6" />
+
+      <Tabs 
+        value={activeTab} 
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
+        <TabsList className="grid w-full grid-cols-3 mb-4">
+          <TabsTrigger value="candidates">All Candidates</TabsTrigger>
+          <TabsTrigger 
+            value="details" 
+            disabled={!selectedCandidate}
+          >
+            Candidate Details
+          </TabsTrigger>
+          <TabsTrigger 
+            value="questions" 
+            disabled={!selectedCandidate}
+          >
+            Interview Questions
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="candidates" className="space-y-4">
+          {showCandidateForm ? (
             <CandidateForm 
-              onCancel={() => setAddingCandidate(false)} 
-              onSuccess={handleCandidateCreated}
+              onSuccess={() => setShowCandidateForm(false)}
+              onCancel={() => setShowCandidateForm(false)}
               schoolId={selectedSchool?.id}
             />
-          </CardContent>
-        </Card>
-      ) : (
-        <Tabs defaultValue="candidates" onValueChange={handleTabChange}>
-          <TabsList className="grid w-full md:w-[400px] grid-cols-2">
-            <TabsTrigger value="candidates">Candidates</TabsTrigger>
-            <TabsTrigger value="questions">Interview Questions</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="candidates" className="mt-4">
-            {candidatesLoading ? (
-              <div className="flex justify-center p-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          ) : (
+            <CandidatesList 
+              onSelectCandidate={handleSelectCandidate} 
+              schoolId={selectedSchool?.id}
+            />
+          )}
+        </TabsContent>
+
+        <TabsContent value="details" className="space-y-4">
+          {selectedCandidate ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">
+                  Candidate: {selectedCandidate.name}
+                </h2>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setActiveTab('candidates')}
+                >
+                  Back to List
+                </Button>
               </div>
-            ) : candidates && candidates.length > 0 ? (
-              <CandidatesList candidates={candidates} schoolId={selectedSchool?.id} />
-            ) : (
-              <EmptyState 
-                title="No Candidates"
-                description="There are no candidates for this school yet."
-                icon={<UserPlus size={50} />}
-                actionLabel="Add Candidate"
-                onAction={() => setAddingCandidate(true)}
-              />
-            )}
-          </TabsContent>
-          
-          <TabsContent value="questions" className="mt-4">
-            <InterviewQuestionsList schoolId={selectedSchool?.id} />
-          </TabsContent>
-        </Tabs>
-      )}
+              {/* Candidate details will be shown here by the CandidateDetails component */}
+            </div>
+          ) : (
+            <EmptyState
+              title="No candidate selected"
+              description="Please select a candidate from the list to view details"
+              actionLabel="View Candidates"
+              onAction={() => setActiveTab('candidates')}
+            />
+          )}
+        </TabsContent>
+
+        <TabsContent value="questions" className="space-y-4">
+          {selectedCandidate ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">
+                  Interview Questions for {selectedCandidate.name}
+                </h2>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setActiveTab('candidates')}
+                >
+                  Back to List
+                </Button>
+              </div>
+              <InterviewQuestionsList candidateId={selectedCandidate.id} />
+            </div>
+          ) : (
+            <EmptyState
+              title="No candidate selected"
+              description="Please select a candidate from the list to manage interview questions"
+              actionLabel="View Candidates"
+              onAction={() => setActiveTab('candidates')}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

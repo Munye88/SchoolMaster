@@ -1,250 +1,310 @@
-import { useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { insertCandidateSchema, InsertCandidate } from '@shared/schema';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { apiRequest } from '@/lib/queryClient';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2, UploadCloud } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { InsertCandidate } from "@shared/schema";
+import { X, Upload } from "lucide-react";
+import { useState } from "react";
 
 interface CandidateFormProps {
   onSuccess: () => void;
   onCancel: () => void;
   schoolId?: number;
-  initialData?: InsertCandidate;
+  initialData?: Partial<InsertCandidate>;
   isEditing?: boolean;
 }
 
-// Extend the schema for form validation
-const formSchema = insertCandidateSchema.extend({
-  resume: z.instanceof(FileList).optional(),
-}).omit({ resumeUrl: true, uploadDate: true, aiAnalysis: true, reviewDate: true });
+const formSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().optional(),
+  resumeUrl: z.string().min(1, "Resume is required"),
+  nativeEnglishSpeaker: z.boolean().optional(),
+  degree: z.string().optional(),
+  degreeField: z.string().optional(),
+  yearsExperience: z.number().min(0).optional(),
+  hasCertifications: z.boolean().optional(),
+  certifications: z.string().optional(),
+  classroomManagement: z.number().min(0).max(10).optional(),
+  militaryExperience: z.boolean().optional(),
+  grammarProficiency: z.number().min(0).max(10).optional(),
+  vocabularyProficiency: z.number().min(0).max(10).optional(),
+  notes: z.string().optional(),
+  schoolId: z.number().optional(),
+  status: z.enum(["new", "reviewed", "shortlisted", "interviewed", "hired", "rejected"]).default("new"),
+});
 
 type FormValues = z.infer<typeof formSchema>;
 
-const CandidateForm: React.FC<CandidateFormProps> = ({
-  onSuccess,
-  onCancel,
+export default function CandidateForm({ 
+  onSuccess, 
+  onCancel, 
   schoolId,
   initialData,
-  isEditing = false,
-}) => {
+  isEditing = false 
+}: CandidateFormProps) {
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
-
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: initialData?.name || '',
-      email: initialData?.email || '',
-      phone: initialData?.phone || '',
-      nationality: initialData?.nationality || '',
-      yearsOfExperience: initialData?.yearsOfExperience || 0,
-      education: initialData?.education || '',
-      englishLevel: initialData?.englishLevel || '',
-      teachingExperience: initialData?.teachingExperience || '',
-      status: initialData?.status || 'new',
-      schoolId: schoolId || initialData?.schoolId || null,
-      notes: initialData?.notes || '',
-      resume: undefined,
+      name: initialData?.name || "",
+      email: initialData?.email || "",
+      phone: initialData?.phone || "",
+      resumeUrl: initialData?.resumeUrl || "",
+      nativeEnglishSpeaker: initialData?.nativeEnglishSpeaker || false,
+      degree: initialData?.degree || "",
+      degreeField: initialData?.degreeField || "",
+      yearsExperience: initialData?.yearsExperience || 0,
+      hasCertifications: initialData?.hasCertifications || false,
+      certifications: initialData?.certifications || "",
+      classroomManagement: initialData?.classroomManagement || 0,
+      militaryExperience: initialData?.militaryExperience || false,
+      grammarProficiency: initialData?.grammarProficiency || 0,
+      vocabularyProficiency: initialData?.vocabularyProficiency || 0,
+      notes: initialData?.notes || "",
+      schoolId: schoolId || initialData?.schoolId || undefined,
+      status: initialData?.status || "new",
     },
   });
 
-  const onSubmit = async (data: FormValues) => {
-    setIsSubmitting(true);
-    try {
+  const uploadResumeMutation = useMutation({
+    mutationFn: async (file: File) => {
       const formData = new FormData();
+      formData.append("file", file);
       
-      // Add all form fields to formData
-      Object.entries(data).forEach(([key, value]) => {
-        if (key !== 'resume') {
-          if (value !== null && value !== undefined) {
-            formData.append(key, value.toString());
-          }
-        }
+      const response = await fetch("/api/upload/resume", {
+        method: "POST",
+        body: formData,
       });
       
-      // Add the resume file if it exists
-      if (data.resume && data.resume.length > 0) {
-        formData.append('resume', data.resume[0]);
+      if (!response.ok) {
+        throw new Error("Failed to upload resume");
       }
       
-      if (isEditing && initialData?.id) {
-        // Update existing candidate
-        await apiRequest('PATCH', `/api/candidates/${initialData.id}`, formData, true);
-        toast({
-          title: 'Candidate Updated',
-          description: 'The candidate has been successfully updated.',
-        });
-      } else {
-        // Create new candidate
-        await apiRequest('POST', '/api/candidates', formData, true);
-        toast({
-          title: 'Candidate Added',
-          description: 'The candidate has been successfully added.',
-        });
-      }
-      
-      onSuccess();
-    } catch (error) {
-      console.error('Error submitting candidate:', error);
+      const data = await response.json();
+      return data.url;
+    }
+  });
+
+  const createCandidateMutation = useMutation({
+    mutationFn: async (data: InsertCandidate) => {
+      const response = await apiRequest("POST", "/api/candidates", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/candidates'] });
       toast({
-        title: 'Error',
-        description: 'Failed to save candidate. Please try again.',
-        variant: 'destructive',
+        title: "Success",
+        description: "Candidate has been created successfully.",
       });
-    } finally {
-      setIsSubmitting(false);
+      onSuccess();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create candidate",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const updateCandidateMutation = useMutation({
+    mutationFn: async (data: Partial<InsertCandidate> & { id: number }) => {
+      const { id, ...updateData } = data;
+      const response = await apiRequest("PATCH", `/api/candidates/${id}`, updateData);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/candidates'] });
+      toast({
+        title: "Success",
+        description: "Candidate has been updated successfully.",
+      });
+      onSuccess();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update candidate",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleResumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setResumeFile(e.target.files[0]);
     }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      setSelectedFileName(files[0].name);
-      form.setValue('resume', files as unknown as FileList);
-    } else {
-      setSelectedFileName(null);
+  const onSubmit = async (data: FormValues) => {
+    try {
+      // If there's a new resume file, upload it first
+      let resumeUrl = data.resumeUrl;
+      if (resumeFile) {
+        try {
+          resumeUrl = await uploadResumeMutation.mutateAsync(resumeFile);
+        } catch (error) {
+          toast({
+            title: "Error",
+            description: "Failed to upload resume. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
+      const candidateData = {
+        ...data,
+        resumeUrl,
+        uploadDate: new Date(),
+      };
+
+      if (isEditing && initialData?.id) {
+        await updateCandidateMutation.mutateAsync({
+          id: initialData.id,
+          ...candidateData,
+        });
+      } else {
+        await createCandidateMutation.mutateAsync(candidateData as InsertCandidate);
+      }
+    } catch (error) {
+      console.error("Form submission error:", error);
     }
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Basic Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Personal Information</h3>
-            
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name *</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John Doe" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email *</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="example@email.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone</FormLabel>
-                  <FormControl>
-                    <Input placeholder="+1 234 567 8901" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="nationality"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nationality</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. American" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          
-          {/* Professional Information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Professional Information</h3>
-            
-            <FormField
-              control={form.control}
-              name="yearsOfExperience"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Years of Experience</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="number" 
-                      min="0" 
-                      {...field} 
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="education"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Education</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Bachelor's in English" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="englishLevel"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>English Level</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+    <Card className="border rounded-md shadow">
+      <CardHeader className="pb-3 relative">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="absolute right-2 top-2" 
+          onClick={onCancel}
+        >
+          <X className="h-4 w-4" />
+        </Button>
+        <CardTitle className="text-lg font-medium">
+          {isEditing ? "Edit Candidate" : "Add New Candidate"}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name*</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select English Level" />
-                      </SelectTrigger>
+                      <Input placeholder="Enter candidate's full name" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Native">Native</SelectItem>
-                      <SelectItem value="Fluent">Fluent</SelectItem>
-                      <SelectItem value="Advanced">Advanced</SelectItem>
-                      <SelectItem value="Intermediate">Intermediate</SelectItem>
-                      <SelectItem value="Basic">Basic</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <div className="pt-2">
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address*</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter email address" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter phone number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="degree"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Highest Degree</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select highest degree" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="High School">High School</SelectItem>
+                        <SelectItem value="Bachelor">Bachelor's</SelectItem>
+                        <SelectItem value="Master">Master's</SelectItem>
+                        <SelectItem value="PhD">PhD</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="degreeField"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Field of Study</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., English, Education, etc." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="yearsExperience"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Years of Experience</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        min="0"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
               <FormField
                 control={form.control}
                 name="status"
@@ -257,7 +317,7 @@ const CandidateForm: React.FC<CandidateFormProps> = ({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select Status" />
+                          <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -274,108 +334,170 @@ const CandidateForm: React.FC<CandidateFormProps> = ({
                 )}
               />
             </div>
-          </div>
-        </div>
-        
-        {/* Additional Information that spans full width */}
-        <div className="space-y-4">
-          <FormField
-            control={form.control}
-            name="teachingExperience"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Teaching Experience</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Describe previous teaching experience"
-                    className="min-h-[100px]"
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="notes"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Additional Notes</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="Any additional information about the candidate"
-                    className="min-h-[100px]"
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          {/* Resume Upload */}
-          <div className="space-y-2">
-            <FormLabel>Resume/CV</FormLabel>
-            <div className="border rounded-md p-4 flex flex-col items-center justify-center bg-muted/20">
-              <label htmlFor="resume-upload" className="cursor-pointer text-center w-full">
-                <div className="flex flex-col items-center space-y-2 py-4">
-                  <UploadCloud className="h-10 w-10 text-muted-foreground" />
-                  <div className="text-sm text-muted-foreground">
-                    {selectedFileName ? (
-                      <span className="font-medium">{selectedFileName}</span>
-                    ) : (
-                      <span>
-                        <span className="font-medium">Click to upload</span> or drag and drop
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    PDF, DOC, DOCX up to 10MB
-                  </div>
-                </div>
-                <input
-                  id="resume-upload"
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-              </label>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="nativeEnglishSpeaker"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Native English Speaker</FormLabel>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="hasCertifications"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Has TEFL/TESOL Certifications</FormLabel>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="militaryExperience"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Military Experience</FormLabel>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </div>
-            {form.formState.errors.resume && (
-              <p className="text-sm font-medium text-destructive">
-                {form.formState.errors.resume.message?.toString()}
-              </p>
-            )}
-          </div>
-        </div>
-        
-        {/* Form Actions */}
-        <div className="flex justify-end space-x-4 pt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {isEditing ? 'Updating...' : 'Saving...'}
-              </>
-            ) : (
-              <>{isEditing ? 'Update Candidate' : 'Add Candidate'}</>
-            )}
-          </Button>
-        </div>
-      </form>
-    </Form>
+            
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="certifications"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Certifications</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., TEFL, CELTA, etc." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notes</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Add notes about the candidate..."
+                        rows={3}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="resumeUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Resume/CV</FormLabel>
+                    <div className="space-y-2">
+                      {resumeFile ? (
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="font-medium">Selected file:</span> 
+                          {resumeFile.name}
+                        </div>
+                      ) : field.value ? (
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="font-medium">Current resume:</span> 
+                          <a 
+                            href={field.value} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            View Resume
+                          </a>
+                        </div>
+                      ) : null}
+                      
+                      <div className="mt-2">
+                        <label 
+                          htmlFor="resume-upload" 
+                          className="flex items-center gap-2 justify-center p-2 border border-dashed rounded-md cursor-pointer hover:bg-gray-50"
+                        >
+                          <Upload className="h-4 w-4" />
+                          <span className="text-sm font-medium">
+                            {field.value ? "Upload new resume" : "Upload resume (PDF or DOC)"}
+                          </span>
+                          <input
+                            id="resume-upload"
+                            type="file"
+                            accept=".pdf,.doc,.docx"
+                            className="hidden"
+                            onChange={handleResumeChange}
+                          />
+                        </label>
+                      </div>
+                      
+                      <FormMessage />
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
+            
+            <div className="flex justify-end gap-2">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={onCancel}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit"
+                disabled={
+                  createCandidateMutation.isPending || 
+                  updateCandidateMutation.isPending || 
+                  uploadResumeMutation.isPending
+                }
+              >
+                {isEditing ? "Update" : "Add"} Candidate
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
-};
-
-export default CandidateForm;
+}

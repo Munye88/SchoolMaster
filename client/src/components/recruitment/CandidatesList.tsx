@@ -1,269 +1,178 @@
-import { useState } from 'react';
+import { Button } from "@/components/ui/button";
 import { 
   Card, 
   CardContent, 
-  CardDescription, 
-  CardFooter, 
   CardHeader, 
   CardTitle 
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useToast } from '@/hooks/use-toast';
-import { queryClient, apiRequest } from '@/lib/queryClient';
-import { Candidate } from '@shared/schema';
-import { Eye, FileText, MoreVertical, Pencil, Trash2, UserCheck, Award, AlertCircle } from 'lucide-react';
-import CandidateForm from './CandidateForm';
-import CandidateDetails from './CandidateDetails';
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import EmptyState from "@/components/common/EmptyState";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Candidate } from "@shared/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Check, Search, Trash2, UserPlus } from "lucide-react";
+import { useState } from "react";
 
 interface CandidatesListProps {
-  candidates: Candidate[];
+  onSelectCandidate: (candidate: Candidate) => void;
   schoolId?: number;
 }
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'new':
-      return 'bg-blue-100 text-blue-800 hover:bg-blue-100';
-    case 'reviewed':
-      return 'bg-purple-100 text-purple-800 hover:bg-purple-100';
-    case 'shortlisted':
-      return 'bg-amber-100 text-amber-800 hover:bg-amber-100';
-    case 'interviewed':
-      return 'bg-cyan-100 text-cyan-800 hover:bg-cyan-100';
-    case 'hired':
-      return 'bg-green-100 text-green-800 hover:bg-green-100';
-    case 'rejected':
-      return 'bg-red-100 text-red-800 hover:bg-red-100';
-    default:
-      return 'bg-gray-100 text-gray-800 hover:bg-gray-100';
-  }
-};
-
-const formatDate = (dateString?: Date | string | null) => {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  }).format(date);
-};
-
-const CandidatesList: React.FC<CandidatesListProps> = ({ candidates, schoolId }) => {
+export default function CandidatesList({ onSelectCandidate, schoolId }: CandidatesListProps) {
+  const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
-  const [viewCandidate, setViewCandidate] = useState<Candidate | null>(null);
-  const [editCandidate, setEditCandidate] = useState<Candidate | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState<Candidate | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDeleteCandidate = async () => {
-    if (!confirmDelete) return;
-    
-    setIsDeleting(true);
-    try {
-      await apiRequest('DELETE', `/api/candidates/${confirmDelete.id}`);
-      
-      toast({
-        title: 'Candidate Deleted',
-        description: `${confirmDelete.name} has been removed from candidates.`,
-      });
-      
-      // Refresh the candidates list
-      queryClient.invalidateQueries({ queryKey: ['/api/schools', schoolId, 'candidates'] });
-      
-      // Close the dialog
-      setConfirmDelete(null);
-    } catch (error) {
-      console.error('Error deleting candidate:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete candidate. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsDeleting(false);
+  const { data: candidates = [], isLoading, error } = useQuery<Candidate[]>({
+    queryKey: ['/api/candidates', schoolId],
+    queryFn: async () => {
+      const url = schoolId 
+        ? `/api/candidates?schoolId=${schoolId}` 
+        : '/api/candidates';
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Failed to fetch candidates');
+      }
+      return response.json();
     }
-  };
+  });
 
-  const handleEditSuccess = () => {
-    setEditCandidate(null);
-    queryClient.invalidateQueries({ queryKey: ['/api/schools', schoolId, 'candidates'] });
-    toast({
-      title: 'Candidate Updated',
-      description: 'The candidate has been successfully updated.',
-    });
-  };
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("DELETE", `/api/candidates/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/candidates'] });
+      toast({
+        title: "Candidate deleted",
+        description: "The candidate has been removed successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete candidate",
+        variant: "destructive",
+      });
+    }
+  });
 
-  const getStatusIcon = (status: string) => {
+  const filteredCandidates = candidates.filter(candidate => 
+    candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    candidate.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'new':
-        return <FileText className="h-4 w-4" />;
+        return 'bg-blue-100 text-blue-800';
       case 'reviewed':
-        return <Eye className="h-4 w-4" />;
+        return 'bg-purple-100 text-purple-800';
       case 'shortlisted':
-        return <UserCheck className="h-4 w-4" />;
+        return 'bg-green-100 text-green-800';
       case 'interviewed':
-        return <UserCheck className="h-4 w-4" />;
+        return 'bg-yellow-100 text-yellow-800';
       case 'hired':
-        return <Award className="h-4 w-4" />;
+        return 'bg-emerald-100 text-emerald-800';
       case 'rejected':
-        return <AlertCircle className="h-4 w-4" />;
+        return 'bg-red-100 text-red-800';
       default:
-        return <FileText className="h-4 w-4" />;
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
+  if (isLoading) {
+    return <div className="p-4 text-center">Loading candidates...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 text-center text-red-500">
+        Error loading candidates: {error.message}
+      </div>
+    );
+  }
+
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Candidates</CardTitle>
-          <CardDescription>
-            Manage recruitment candidates for ELT instructor positions
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Experience</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Applied On</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {candidates.map((candidate) => (
-                  <TableRow key={candidate.id}>
-                    <TableCell className="font-medium">{candidate.name}</TableCell>
-                    <TableCell>{candidate.email}</TableCell>
-                    <TableCell>{candidate.yearsOfExperience} years</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={getStatusColor(candidate.status)}>
-                        <span className="flex items-center gap-1">
-                          {getStatusIcon(candidate.status)}
-                          {candidate.status.charAt(0).toUpperCase() + candidate.status.slice(1)}
-                        </span>
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{formatDate(candidate.uploadDate)}</TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreVertical className="h-4 w-4" />
-                            <span className="sr-only">Open menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => setViewCandidate(candidate)}>
-                            <Eye className="mr-2 h-4 w-4" />
-                            View Details
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setEditCandidate(candidate)}>
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem 
-                            onClick={() => setConfirmDelete(candidate)}
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-        <CardFooter className="text-sm text-muted-foreground">
-          Total Candidates: {candidates.length}
-        </CardFooter>
-      </Card>
+    <div className="space-y-4">
+      <div className="relative">
+        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+        <Input
+          type="search"
+          placeholder="Search candidates by name or email..."
+          className="pl-9"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
 
-      {/* View Candidate Dialog */}
-      {viewCandidate && (
-        <Dialog open={!!viewCandidate} onOpenChange={() => setViewCandidate(null)}>
-          <DialogContent className="max-w-4xl max-h-screen overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Candidate Details</DialogTitle>
-              <DialogDescription>
-                Detailed information about {viewCandidate.name}
-              </DialogDescription>
-            </DialogHeader>
-            <CandidateDetails candidate={viewCandidate} />
-          </DialogContent>
-        </Dialog>
+      {candidates.length === 0 ? (
+        <EmptyState
+          title="No candidates yet"
+          description="Start by adding your first candidate to the recruitment system."
+          icon={<UserPlus className="h-10 w-10 text-gray-500" />}
+        />
+      ) : filteredCandidates.length === 0 ? (
+        <EmptyState
+          title="No results found"
+          description={`No candidates match "${searchTerm}". Try a different search term.`}
+          icon={<Search className="h-10 w-10 text-gray-500" />}
+        />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredCandidates.map((candidate) => (
+            <Card 
+              key={candidate.id} 
+              className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => onSelectCandidate(candidate)}
+            >
+              <CardHeader className="p-4 pb-2 flex flex-row justify-between items-start">
+                <div>
+                  <CardTitle className="text-base font-medium line-clamp-1">{candidate.name}</CardTitle>
+                  <p className="text-sm text-gray-500 mt-1 line-clamp-1">{candidate.email}</p>
+                </div>
+                <Badge variant="outline" className={getStatusColor(candidate.status)}>
+                  {candidate.status.charAt(0).toUpperCase() + candidate.status.slice(1)}
+                </Badge>
+              </CardHeader>
+              <CardContent className="p-4 pt-2">
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <p className="text-gray-500">Experience</p>
+                    <p className="font-medium">{candidate.yearsExperience || 0} years</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500">Overall Score</p>
+                    <p className="font-medium">{candidate.overallScore || 'N/A'}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-sm mt-2">
+                  <div>
+                    <p className="text-gray-500">Submitted</p>
+                    <p className="font-medium">
+                      {new Date(candidate.uploadDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex justify-end items-center">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-red-600 hover:text-red-800"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteMutation.mutate(candidate.id);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
-
-      {/* Edit Candidate Dialog */}
-      {editCandidate && (
-        <Dialog open={!!editCandidate} onOpenChange={() => setEditCandidate(null)}>
-          <DialogContent className="max-w-4xl max-h-screen overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Edit Candidate</DialogTitle>
-              <DialogDescription>
-                Update information for {editCandidate.name}
-              </DialogDescription>
-            </DialogHeader>
-            <CandidateForm
-              initialData={editCandidate}
-              onSuccess={handleEditSuccess}
-              onCancel={() => setEditCandidate(null)}
-              isEditing={true}
-              schoolId={schoolId}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
-
-      {/* Confirm Delete Dialog */}
-      {confirmDelete && (
-        <Dialog open={!!confirmDelete} onOpenChange={() => setConfirmDelete(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Confirm Deletion</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to delete {confirmDelete.name}? This action cannot be undone.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex justify-end space-x-4 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setConfirmDelete(null)}
-                disabled={isDeleting}
-              >
-                Cancel
-              </Button>
-              <Button 
-                variant="destructive"
-                onClick={handleDeleteCandidate}
-                disabled={isDeleting}
-              >
-                {isDeleting ? 'Deleting...' : 'Delete'}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+    </div>
   );
-};
-
-export default CandidatesList;
+}
