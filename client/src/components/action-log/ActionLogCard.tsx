@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { Clock, Calendar, Check, CheckCircle2, AlertCircle, MoreHorizontal, Printer } from 'lucide-react';
+import { Clock, Calendar, Check, CheckCircle2, AlertCircle, MoreHorizontal, Printer, Share2 } from 'lucide-react';
 import { 
   Card, 
   CardContent, 
@@ -16,8 +16,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ActionLog } from '@shared/schema';
+import { toast } from '@/hooks/use-toast';
 
 interface ActionLogCardProps {
   log: ActionLog;
@@ -118,6 +122,46 @@ export function ActionLogCard({ log, onEdit, onDelete, onStatusChange, onPrint }
                 <Printer className="h-4 w-4 mr-2" />
                 Print
               </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem onClick={() => {
+                    const text = `Action Item: ${log.title}\nStatus: ${getStatusText(log.status)}\nRequested by: ${log.requesterName}\nDescription: ${log.description}`;
+                    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                    window.open(url, '_blank');
+                  }}>
+                    WhatsApp
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    const subject = `Action Item: ${log.title}`;
+                    const body = `Status: ${getStatusText(log.status)}\nRequested by: ${log.requesterName}\nDescription: ${log.description}`;
+                    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                  }}>
+                    Email
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    const text = `Action Item: ${log.title}\nStatus: ${getStatusText(log.status)}\nRequested by: ${log.requesterName}\nDescription: ${log.description}`;
+                    navigator.clipboard.writeText(text);
+                    toast({
+                      title: "Copied to clipboard",
+                      description: "Action item details have been copied to clipboard",
+                      duration: 3000,
+                    });
+                  }}>
+                    Copy to Clipboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    const text = `Action Item: ${log.title} - Status: ${getStatusText(log.status)}`;
+                    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+                    window.open(url, '_blank');
+                  }}>
+                    Twitter
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={onDelete}>
                 Delete
