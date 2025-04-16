@@ -74,6 +74,7 @@ export default function CandidateForm({
   const { toast } = useToast();
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [isParsingResume, setIsParsingResume] = useState(false);
+  const [generatedQuestions, setGeneratedQuestions] = useState<GeneratedQuestion[]>([]);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -155,10 +156,20 @@ export default function CandidateForm({
             form.setValue("militaryExperience", parsedData.militaryExperience);
           }
           
-          toast({
-            title: "Resume Analyzed",
-            description: "Resume has been parsed and form fields have been filled automatically.",
-          });
+          // Store generated interview questions if available
+          if (parsedData.generatedQuestions && parsedData.generatedQuestions.length > 0) {
+            setGeneratedQuestions(parsedData.generatedQuestions);
+            
+            toast({
+              title: "Resume Analyzed",
+              description: "Resume has been parsed and form fields have been filled automatically. Interview questions were also generated.",
+            });
+          } else {
+            toast({
+              title: "Resume Analyzed",
+              description: "Resume has been parsed and form fields have been filled automatically.",
+            });
+          }
         } catch (error) {
           console.error("Error parsing resume data:", error);
         }
@@ -243,14 +254,42 @@ export default function CandidateForm({
         uploadDate: new Date(),
       };
 
+      let candidateId: number;
+
       if (isEditing && initialData && 'id' in initialData) {
         const id = initialData.id as number;
+        candidateId = id;
         await updateCandidateMutation.mutateAsync({
           id,
           ...candidateData,
         });
       } else {
-        await createCandidateMutation.mutateAsync(candidateData as InsertCandidate);
+        // Create the candidate first
+        const newCandidate = await createCandidateMutation.mutateAsync(candidateData as InsertCandidate);
+        candidateId = newCandidate.id;
+      }
+      
+      // If we have generated questions, save them for this candidate
+      if (generatedQuestions.length > 0 && candidateId) {
+        try {
+          // Create a mutation request for each question
+          const savePromises = generatedQuestions.map(question => 
+            apiRequest("POST", "/api/interview-questions", {
+              candidateId,
+              category: question.category,
+              question: question.question,
+              createdDate: new Date(),
+              createdBy: null // This could be the current user's ID if needed
+            })
+          );
+          
+          // Wait for all questions to be saved
+          await Promise.all(savePromises);
+          
+          console.log(`Saved ${generatedQuestions.length} interview questions for candidate ${candidateId}`);
+        } catch (questionError) {
+          console.error("Error saving interview questions:", questionError);
+        }
       }
     } catch (error) {
       console.error("Form submission error:", error);
@@ -562,6 +601,66 @@ export default function CandidateForm({
                 )}
               />
             </div>
+            
+            {/* Display generated interview questions if available */}
+            {generatedQuestions.length > 0 && (
+              <div className="space-y-4 mt-4 p-4 border rounded-md bg-blue-50">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-md font-medium">AI-Generated Interview Questions</h3>
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      // Save questions to database when a candidate is created
+                      if (form.getValues('name')) {
+                        toast({
+                          title: "Questions Saved",
+                          description: "These questions will be associated with the candidate after submission."
+                        });
+                      } else {
+                        toast({
+                          description: "Please fill in candidate details first"
+                        });
+                      }
+                    }}
+                  >
+                    Use Questions
+                  </Button>
+                </div>
+                
+                <div className="space-y-3">
+                  {generatedQuestions.map((q, idx) => (
+                    <div key={idx} className="p-3 bg-white rounded border">
+                      <div className="flex gap-2 items-start">
+                        <div className="inline-block px-2 py-1 text-xs rounded-full capitalize" 
+                          style={{
+                            backgroundColor: 
+                              q.category === 'technical' ? 'rgba(59, 130, 246, 0.2)' : 
+                              q.category === 'curriculum' ? 'rgba(16, 185, 129, 0.2)' : 
+                              q.category === 'behavioral' ? 'rgba(245, 158, 11, 0.2)' :
+                              'rgba(99, 102, 241, 0.2)',
+                            color:
+                              q.category === 'technical' ? 'rgb(30, 64, 175)' : 
+                              q.category === 'curriculum' ? 'rgb(6, 95, 70)' : 
+                              q.category === 'behavioral' ? 'rgb(180, 83, 9)' :
+                              'rgb(67, 56, 202)'
+                          }}
+                        >
+                          {q.category}
+                        </div>
+                        <p className="text-sm flex-1">{q.question}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <p className="text-xs text-gray-500">
+                  These questions were automatically generated based on the uploaded resume.
+                  They will be saved with the candidate record for use during interviews.
+                </p>
+              </div>
+            )}
             
             <div className="flex justify-end gap-2">
               <Button 
