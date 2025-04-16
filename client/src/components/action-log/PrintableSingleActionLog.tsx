@@ -25,11 +25,12 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
 
   // Open new window and trigger print on component mount
   useEffect(() => {
-    // Directly embedded logo as SVG
+    // Logo as an emoji with circular container
     const printContent = `
       <!DOCTYPE html>
       <html>
       <head>
+        <meta charset="UTF-8">
         <title>Action Item - ${log.title}</title>
         <style>
           body {
@@ -43,8 +44,15 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
             align-items: center;
           }
           .logo-container {
-            width: 220px;
+            display: flex;
+            align-items: center;
             margin-right: 20px;
+          }
+          .logo-text {
+            font-weight: bold;
+            font-size: 24px;
+            color: #1c355e;
+            letter-spacing: 1px;
           }
           .header-content {
             flex-grow: 1;
@@ -127,33 +135,20 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
             font-size: 12px;
             color: #666;
           }
-          .govcio-svg {
-            width: 100%;
-            height: auto;
+          .blue-text {
+            color: #1c355e;
+          }
+          .cyan-text {
+            color: #00aeef;
           }
         </style>
       </head>
       <body>
         <div class="header">
           <div class="logo-container">
-            <svg class="govcio-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 80">
-              <g>
-                <path d="M65,40c0-13.81-11.19-25-25-25S15,26.19,15,40s11.19,25,25,25c6.4,0,12.25-2.41,16.67-6.38" fill="#1c355e"/>
-                <path d="M64.17,58.62C67.59,54.2,70,48.35,70,42c0-16.57-13.43-30-30-30S10,25.43,10,42s13.43,30,30,30" fill="#1c355e"/>
-                <path d="M40,59c-9.37,0-17-7.63-17-17s7.63-17,17-17,17,7.63,17,17c0,4.3-1.61,8.23-4.24,11.24" fill="#1c355e"/>
-                <path d="M52.76,53.24C55.39,50.23,57,46.3,57,42c0-9.37-7.63-17-17-17s-17,7.63-17,17,7.63,17,17,17" fill="#1c355e"/>
-                <path d="M90,30H77v4h4v26h5V34h4V30z" fill="#1c355e"/>
-                <path d="M110,40c0-5.5-4.5-10-10-10s-10,4.5-10,10,4.5,10,10,10,10-4.5,10-10" fill="#1c355e"/>
-                <path d="M134,30v18c0,5.5-4.5,10-10,10s-10-4.5-10-10V30h5v18c0,2.75,2.25,5,5,5s5-2.25,5-5V30H134z" fill="#1c355e"/>
-                <path d="M161,43.5c0,7-5.82,12.5-13,12.5s-13-5.5-13-12.5v-20h5v20c0,4.14,3.58,7.5,8,7.5s8-3.36,8-7.5v-20h5V43.5z" fill="#1c355e"/>
-                <path d="M185,55c-2.93,2.46-6.7,4-10.87,4C165.53,59,158,51.94,158,43.5S165.53,28,174.13,28c4.17,0,7.94,1.54,10.87,4" fill="#00aeef"/>
-                <path d="M184,45h-18v-5h18V45z" fill="#00aeef"/>
-                <path d="M210,30v30h-5V48h-10v12h-5V30h5v13h10V30H210z" fill="#00aeef"/>
-                <path d="M235,40c0-5.5-4.5-10-10-10s-10,4.5-10,10,4.5,10,10,10,10-4.5,10-10" fill="#00aeef"/>
-                <path fill="#00aeef" d="M40 30A10 10 0 1 0 40 50A10 10 0 1 0 40 30Z"/>
-              </g>
-              <text x="20" y="75" font-size="10" fill="#1c355e">SALIENT ARABIA FOR MILITARY SUPPORT</text>
-            </svg>
+            <div class="logo-text">
+              <span class="blue-text">Gov</span><span class="cyan-text">CIO</span>
+            </div>
           </div>
           <div class="header-content">
             <h1 class="title">Action Item Details</h1>
