@@ -89,7 +89,7 @@ interface StaffLeave {
   returnDate: string;
   ptodays: number;
   rrdays: number;
-  leaveType: string;
+  leaveType: "PTO" | "R&R" | "Emergency" | "Paternity" | "Bereavement" | "Other";
   destination: string;
   status: string;
   comments?: string;
@@ -119,7 +119,7 @@ const leaveFormSchema = z.object({
     required_error: "R&R days are required", 
     invalid_type_error: "R&R days must be a number",
   }).min(0, "R&R days must be a positive number"),
-  leaveType: z.enum(["PTO", "R&R", "Emergency", "Other"], {
+  leaveType: z.enum(["PTO", "R&R", "Emergency", "Paternity", "Bereavement", "Other"], {
     required_error: "Leave type is required",
     invalid_type_error: "Invalid leave type selection",
   }),
@@ -662,12 +662,12 @@ export default function StaffLeaveTracker() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="PTO">PTO</SelectItem>
-                            <SelectItem value="R&R">R&R</SelectItem>
-                            <SelectItem value="PTO and R&R">PTO and R&R</SelectItem>
-                            <SelectItem value="Paternity">Paternity</SelectItem>
-                            <SelectItem value="Bereavement">Bereavement</SelectItem>
-                            <SelectItem value="Negative PTO">Negative PTO</SelectItem>
+                            <SelectItem value="PTO">PTO (Paid Time Off)</SelectItem>
+                            <SelectItem value="R&R">R&R (Rest & Recuperation)</SelectItem>
+                            <SelectItem value="Emergency">Emergency Leave</SelectItem>
+                            <SelectItem value="Paternity">Paternity Leave</SelectItem>
+                            <SelectItem value="Bereavement">Bereavement Leave</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
