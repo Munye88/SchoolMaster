@@ -48,7 +48,7 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useState, useEffect, useRef } from 'react';
-import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer } from 'lucide-react';
+import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer, Search } from 'lucide-react';
 import { useSchool } from '@/hooks/useSchool';
 import { format, addDays, differenceInCalendarDays } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -937,6 +937,72 @@ export default function StaffLeaveTracker() {
                           <Paperclip className="h-4 w-4 mr-1" />
                           Attachment
                         </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedLeave(leave);
+                            // Reset the edit form with the selected leave's data
+                            editForm.reset({
+                              instructorId: leave.instructorId,
+                              employeeId: leave.employeeId || '',
+                              startDate: format(new Date(leave.startDate), 'yyyy-MM-dd'),
+                              endDate: format(new Date(leave.endDate), 'yyyy-MM-dd'),
+                              returnDate: format(new Date(leave.returnDate), 'yyyy-MM-dd'),
+                              ptodays: leave.ptodays,
+                              rrdays: leave.rrdays,
+                              leaveType: leave.leaveType,
+                              destination: leave.destination,
+                              status: leave.status,
+                              comments: leave.comments || '',
+                              attachmentUrl: leave.attachmentUrl || '',
+                            });
+                            setEditDialogOpen(true);
+                          }}
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-800">
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              Delete
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete this leave record? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction 
+                                onClick={async () => {
+                                  try {
+                                    await deleteLeaveMutation.mutateAsync(leave.id);
+                                    toast({
+                                      title: "Success",
+                                      description: "Leave record deleted successfully",
+                                    });
+                                  } catch (error) {
+                                    console.error("Error deleting leave record:", error);
+                                    toast({
+                                      title: "Error",
+                                      description: "Failed to delete leave record",
+                                      variant: "destructive",
+                                    });
+                                  }
+                                }}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </TableCell>
                   </TableRow>
