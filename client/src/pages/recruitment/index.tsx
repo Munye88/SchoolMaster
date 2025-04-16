@@ -11,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { Candidate } from '@shared/schema';
 import { UserPlus } from 'lucide-react';
 import CandidatesList from '@/components/recruitment/CandidatesList';
-import CandidateForm from '@/components/recruitment/CandidateForm';
+import CandidateFormNew from '@/components/recruitment/CandidateFormNew';
 import InterviewQuestionsList from '@/components/recruitment/InterviewQuestionsList';
 import EmptyState from '@/components/common/EmptyState';
 
@@ -72,7 +72,7 @@ export default function RecruitmentPage() {
 
         <TabsContent value="candidates" className="space-y-4">
           {showCandidateForm ? (
-            <CandidateForm 
+            <CandidateFormNew 
               onSuccess={() => setShowCandidateForm(false)}
               onCancel={() => setShowCandidateForm(false)}
               schoolId={selectedSchool?.id}
