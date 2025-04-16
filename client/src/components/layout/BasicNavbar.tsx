@@ -385,6 +385,17 @@ const BasicNavbar = () => {
                 <span>Action Log</span>
               </Link>
               
+              <Link 
+                href="/recruitment"
+                className={cn(
+                  "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                  isActive("/recruitment") && "text-[#0A2463] bg-gray-100 font-medium"
+                )}
+              >
+                <Users className="h-4 w-4 mr-2" />
+                <span>Recruitment</span>
+              </Link>
+              
               <div className="relative">
                 <button
                   onClick={() => {
