@@ -1700,6 +1700,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
       } catch (aiError) {
         console.error("Error parsing resume with AI:", aiError);
+        
+        // If OpenAI API is rate limited or fails, use fallback questions
+        const errorMessage = aiError instanceof Error ? aiError.message : String(aiError);
+        if (errorMessage.includes("429") || errorMessage.includes("rate limit")) {
+          console.log("OpenAI API rate limited, using fallback interview questions");
+          
+          // Fallback questions based on ELT instructor needs
+          const fallbackQuestions = [
+            { 
+              category: "technical", 
+              question: "How would you explain the difference between the present perfect and past perfect to students?" 
+            },
+            { 
+              category: "technical", 
+              question: "What strategies do you use to teach complex grammar structures?" 
+            },
+            { 
+              category: "curriculum", 
+              question: "How do you support cadets or officers preparing for the ALCPT (American Language Course Placement Test)?" 
+            },
+            { 
+              category: "behavioral", 
+              question: "Describe a time when you had to handle a classroom discipline issue. What happened and how did you resolve it?" 
+            },
+            { 
+              category: "general", 
+              question: "What inspired you to become an English Language Instructor?" 
+            }
+          ];
+          
+          // Add fallback questions to the parsed data
+          parsedData = {
+            ...parsedData,
+            generatedQuestions: fallbackQuestions
+          };
+        }
         // Continue even if AI parsing fails
       }
 

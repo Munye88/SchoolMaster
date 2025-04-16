@@ -606,7 +606,7 @@ export default function CandidateForm({
             {generatedQuestions.length > 0 && (
               <div className="space-y-4 mt-4 p-4 border rounded-md bg-blue-50">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-md font-medium">AI-Generated Interview Questions</h3>
+                  <h3 className="text-md font-medium">Interview Questions</h3>
                   <Button 
                     type="button"
                     variant="outline"
@@ -629,34 +629,79 @@ export default function CandidateForm({
                   </Button>
                 </div>
                 
-                <div className="space-y-3">
-                  {generatedQuestions.map((q, idx) => (
-                    <div key={idx} className="p-3 bg-white rounded border">
-                      <div className="flex gap-2 items-start">
-                        <div className="inline-block px-2 py-1 text-xs rounded-full capitalize" 
-                          style={{
-                            backgroundColor: 
-                              q.category === 'technical' ? 'rgba(59, 130, 246, 0.2)' : 
-                              q.category === 'curriculum' ? 'rgba(16, 185, 129, 0.2)' : 
-                              q.category === 'behavioral' ? 'rgba(245, 158, 11, 0.2)' :
-                              'rgba(99, 102, 241, 0.2)',
-                            color:
-                              q.category === 'technical' ? 'rgb(30, 64, 175)' : 
-                              q.category === 'curriculum' ? 'rgb(6, 95, 70)' : 
-                              q.category === 'behavioral' ? 'rgb(180, 83, 9)' :
-                              'rgb(67, 56, 202)'
-                          }}
-                        >
-                          {q.category}
-                        </div>
-                        <p className="text-sm flex-1">{q.question}</p>
+                {/* Group questions by category */}
+                <div className="space-y-4">
+                  {/* Technical Questions */}
+                  {generatedQuestions.filter(q => q.category === 'technical').length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium mb-2 text-blue-700">Technical Questions</h4>
+                      <div className="space-y-2">
+                        {generatedQuestions
+                          .filter(q => q.category === 'technical')
+                          .map((q, idx) => (
+                            <div key={`tech-${idx}`} className="p-3 bg-white rounded border border-blue-200">
+                              <p className="text-sm">{q.question}</p>
+                            </div>
+                          ))
+                        }
                       </div>
                     </div>
-                  ))}
+                  )}
+                  
+                  {/* Curriculum Questions */}
+                  {generatedQuestions.filter(q => q.category === 'curriculum').length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium mb-2 text-emerald-700">Curriculum Questions</h4>
+                      <div className="space-y-2">
+                        {generatedQuestions
+                          .filter(q => q.category === 'curriculum')
+                          .map((q, idx) => (
+                            <div key={`curr-${idx}`} className="p-3 bg-white rounded border border-emerald-200">
+                              <p className="text-sm">{q.question}</p>
+                            </div>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Behavioral Questions */}
+                  {generatedQuestions.filter(q => q.category === 'behavioral').length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium mb-2 text-amber-700">Behavioral Questions</h4>
+                      <div className="space-y-2">
+                        {generatedQuestions
+                          .filter(q => q.category === 'behavioral')
+                          .map((q, idx) => (
+                            <div key={`behave-${idx}`} className="p-3 bg-white rounded border border-amber-200">
+                              <p className="text-sm">{q.question}</p>
+                            </div>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* General Questions */}
+                  {generatedQuestions.filter(q => q.category === 'general').length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium mb-2 text-indigo-700">General Questions</h4>
+                      <div className="space-y-2">
+                        {generatedQuestions
+                          .filter(q => q.category === 'general')
+                          .map((q, idx) => (
+                            <div key={`gen-${idx}`} className="p-3 bg-white rounded border border-indigo-200">
+                              <p className="text-sm">{q.question}</p>
+                            </div>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 <p className="text-xs text-gray-500">
-                  These questions were automatically generated based on the uploaded resume.
+                  These questions were automatically generated for this candidate.
                   They will be saved with the candidate record for use during interviews.
                 </p>
               </div>
