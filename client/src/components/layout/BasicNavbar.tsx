@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 import { 
   Home, School, BookOpen, GraduationCap, ListChecks, BarChart2, Settings, Search, Bell,
   LogOut, LogIn, UserCircle, BookText, BriefcaseBusiness, MessageSquare, AlertTriangle, 
-  BrainCircuit, Users, Lightbulb, FileText, Award, LayoutDashboard, ClipboardList
+  BrainCircuit, Users, Lightbulb, FileText, Award, LayoutDashboard, ClipboardList,
+  Building2, UserCheck, BookMarked, GraduationCap as StudentIcon
 } from "lucide-react";
 import govcioLogo from "../../assets/images/govcio-logo-updated.png";
 
@@ -436,14 +437,14 @@ const BasicNavbar = () => {
                     <Link 
                       href="/administration/performance-policy"
                       onClick={() => setShowAdminLinks(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Performance Evaluation Policy
                     </Link>
                     <Link 
                       href="/administration/classroom-evaluation"
                       onClick={() => setShowAdminLinks(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Training Guide Classroom Evaluation
                     </Link>
@@ -463,28 +464,29 @@ const BasicNavbar = () => {
                     <Link 
                       href="/management/schools"
                       onClick={() => setShowAdminLinks(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
+                      <Building2 className="h-4 w-4 mr-2 text-purple-600" />
                       Manage Schools
                     </Link>
                     <Link 
                       href="/management/instructors"
                       onClick={() => setShowAdminLinks(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Manage Instructors
                     </Link>
                     <Link 
                       href="/management/courses"
                       onClick={() => setShowAdminLinks(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Manage Courses
                     </Link>
                     <Link 
                       href="/management/students"
                       onClick={() => setShowAdminLinks(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Manage Students
                     </Link>
