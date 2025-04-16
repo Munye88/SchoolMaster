@@ -1604,6 +1604,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Resume upload endpoint with AI parsing
+  app.post("/api/upload/resume", upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No resume file uploaded" });
+      }
+
+      // Create directory for resumes if it doesn't exist
+      const dirPath = path.join("uploads", "resumes");
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
+
+      // Move the file to the resumes directory with a unique filename
+      const fileName = `${Date.now()}-${req.file.originalname}`;
+      const filePath = path.join(dirPath, fileName);
+      fs.renameSync(req.file.path, filePath);
+
+      // Extract text from PDF or read text file
+      let resumeText = '';
+      const fullPath = path.join(process.cwd(), filePath);
+      
+      if (req.file.mimetype === 'application/pdf') {
+        // For PDFs, we'd ideally use a PDF parsing library
+        // For simplicity, we'll just read the file as a buffer
+        const fileBuffer = fs.readFileSync(fullPath);
+        resumeText = fileBuffer.toString('utf8');
+      } else {
+        // For text files, docx, etc.
+        resumeText = fs.readFileSync(fullPath, 'utf8');
+      }
+
+      // Parse resume with OpenAI
+      let parsedData = {};
+      
+      try {
+        // Import OpenAI
+        const OpenAI = require('openai');
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+        
+        // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        const response = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system", 
+              content: "You are a resume parsing expert. Extract the following information from the resume text: name, email, phone, degree, degreeField (the field of study), yearsExperience (as a number), certifications, nativeEnglishSpeaker (true/false), and militaryExperience (true/false). Return the information in JSON format only."
+            },
+            {
+              role: "user",
+              content: resumeText
+            }
+          ],
+          response_format: { type: "json_object" }
+        });
+        
+        const content = response.choices[0].message.content;
+        parsedData = JSON.parse(content);
+        
+        console.log("Resume parsed successfully:", parsedData);
+      } catch (aiError) {
+        console.error("Error parsing resume with AI:", aiError);
+        // Continue even if AI parsing fails
+      }
+
+      // Return the file path and parsed data
+      const resumeUrl = `/uploads/resumes/${fileName}`;
+      
+      res.status(201).json({
+        url: resumeUrl,
+        parsedData,
+        message: "Resume uploaded and parsed successfully",
+      });
+    }
+    catch (error) {
+      console.error("Error uploading resume:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      res.status(500).json({ message: "Failed to upload resume", error: errorMessage });
+    }
+  });
+  
   // Serve uploaded files statically
   app.use('/uploads', express.static(uploadDir));
 

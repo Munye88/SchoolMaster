@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { InsertCandidate } from "@shared/schema";
 import { X, Upload } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface CandidateFormProps {
   onSuccess: () => void;
@@ -21,6 +21,18 @@ interface CandidateFormProps {
   schoolId?: number;
   initialData?: Partial<InsertCandidate>;
   isEditing?: boolean;
+}
+
+interface ParsedResumeData {
+  name?: string;
+  email?: string;
+  phone?: string;
+  degree?: string;
+  degreeField?: string;
+  yearsExperience?: number;
+  certifications?: string;
+  nativeEnglishSpeaker?: boolean;
+  militaryExperience?: boolean;
 }
 
 const formSchema = z.object({
