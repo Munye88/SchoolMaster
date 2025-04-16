@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { ActionLog } from '@shared/schema';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface PrintableSingleActionLogProps {
   log: ActionLog | null;
@@ -8,7 +8,34 @@ interface PrintableSingleActionLogProps {
 }
 
 export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleActionLogProps) => {
+  const [logoBase64, setLogoBase64] = useState<string | null>(null);
+  
   if (!log) return null;
+  
+  // Load logo on component mount
+  useEffect(() => {
+    const loadLogo = async () => {
+      try {
+        const response = await fetch('/govcio_logo_base64.txt');
+        if (!response.ok) throw new Error('Failed to load logo');
+        const base64Data = await response.text();
+        setLogoBase64(base64Data);
+      } catch (error) {
+        console.error('Error loading logo:', error);
+        // Continue with printing even if logo fails to load
+        printDocument(null);
+      }
+    };
+    
+    loadLogo();
+  }, []);
+  
+  // Effect to trigger printing when logo is loaded
+  useEffect(() => {
+    if (logoBase64 !== null) {
+      printDocument(logoBase64);
+    }
+  }, [logoBase64]);
   
   const getStatusText = (status: string): string => {
     switch (status) {
@@ -23,13 +50,8 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
     }
   };
   
-  // Open new window and trigger print on component mount
-  useEffect(() => {
-    printDocument();
-  }, []);
-  
   // Function to generate and print the document
-  const printDocument = () => {
+  const printDocument = (logoData: string | null) => {
     // HTML content for print window
     const printContent = `
       <!DOCTYPE html>
@@ -38,6 +60,15 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
         <meta charset="UTF-8">
         <title>Action Item - ${log.title}</title>
         <style>
+          @media print {
+            img.logo {
+              display: block !important; 
+              visibility: visible !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              max-width: 200px !important;
+            }
+          }
           body {
             font-family: Arial, sans-serif;
             margin: 40px;
@@ -153,7 +184,10 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
       <body>
         <div class="header">
           <div class="logo-container">
-            <img src="/govcio_logo.png" alt="GOVCIO Logo" class="logo">
+            ${logoData ? 
+              `<img src="data:image/png;base64,${logoData}" alt="GOVCIO Logo" class="logo" style="display: block;">` : 
+              `<div class="fallback-logo"><span class="blue-text">Gov</span><span class="cyan-text">CIO</span></div>`
+            }
           </div>
           <div class="header-content">
             <h1 class="title">Action Item Details</h1>
