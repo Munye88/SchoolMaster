@@ -105,13 +105,13 @@ const BasicNavbar = () => {
       {/* Main navigation */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-screen-xl mx-auto px-4">
-          <div className="flex items-center justify-between h-12">
+          <div className="flex items-center justify-between h-14">
             {/* Main nav links */}
-            <nav className="flex space-x-4">
+            <nav className="flex items-center space-x-1">
               <Link 
                 href="/"
                 className={cn(
-                  "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                  "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                   isActive("/") && "text-[#0A2463] bg-gray-100 font-medium"
                 )}
               >
@@ -123,7 +123,7 @@ const BasicNavbar = () => {
                 <button
                   onClick={() => setShowSchoolLinks(showSchoolLinks ? null : 'main')}
                   className={cn(
-                    "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                    "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                     (isActive("/schools") || showSchoolLinks) && "text-[#0A2463] bg-gray-100 font-medium"
                   )}
                 >
