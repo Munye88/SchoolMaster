@@ -740,47 +740,7 @@ export default function ActionLogPage() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={editForm.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category (Optional)</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={editForm.control}
-                name="schoolId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>School (Optional)</FormLabel>
-                    <Select
-                      onValueChange={(value) => field.onChange(value === "none" ? null : Number(value))}
-                      value={field.value?.toString() || "none"}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select school" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="none">None</SelectItem>
-                        {schools.map((school: any) => (
-                          <SelectItem key={school.id} value={school.id.toString()}>
-                            {school.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
               <DialogFooter>
                 <Button
                   type="submit"
