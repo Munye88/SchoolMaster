@@ -277,11 +277,11 @@ export default function StaffLeaveApproval() {
     
     switch (status.toLowerCase()) {
       case 'approved':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Approved</Badge>;
+        return <Badge className="px-3 py-1 bg-green-100 text-green-800 border-green-300 font-medium">Approved</Badge>;
       case 'rejected':
-        return <Badge className="bg-red-100 text-red-800 border-red-200">Rejected</Badge>;
+        return <Badge className="px-3 py-1 bg-red-100 text-red-800 border-red-300 font-medium">Rejected</Badge>;
       case 'pending':
-        return <Badge className="bg-orange-100 text-orange-800 border-orange-200">Pending</Badge>;
+        return <Badge className="px-3 py-1 bg-amber-100 text-amber-800 border-amber-300 font-medium">Pending</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -293,17 +293,17 @@ export default function StaffLeaveApproval() {
     
     switch (type.toLowerCase()) {
       case 'annual leave':
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Annual Leave</Badge>;
+        return <Badge className="px-3 py-1 bg-blue-100 text-blue-800 border-blue-300 font-medium">Annual Leave</Badge>;
       case 'sick leave':
-        return <Badge className="bg-purple-100 text-purple-800 border-purple-200">Sick Leave</Badge>;
+        return <Badge className="px-3 py-1 bg-purple-100 text-purple-800 border-purple-300 font-medium">Sick Leave</Badge>;
       case 'emergency leave':
-        return <Badge className="bg-red-100 text-red-800 border-red-200">Emergency</Badge>;
+        return <Badge className="px-3 py-1 bg-red-100 text-red-800 border-red-300 font-medium">Emergency</Badge>;
       case 'pto':
-        return <Badge className="bg-cyan-100 text-cyan-800 border-cyan-200">PTO</Badge>;
+        return <Badge className="px-3 py-1 bg-cyan-100 text-cyan-800 border-cyan-300 font-medium">PTO</Badge>;
       case 'r&r':
-        return <Badge className="bg-green-100 text-green-800 border-green-200">R&R</Badge>;
+        return <Badge className="px-3 py-1 bg-green-100 text-green-800 border-green-300 font-medium">R&R</Badge>;
       default:
-        return <Badge variant="outline">{type}</Badge>;
+        return <Badge className="px-3 py-1 font-medium" variant="outline">{type}</Badge>;
     }
   };
   
@@ -314,12 +314,12 @@ export default function StaffLeaveApproval() {
     if (!school) return null;
     
     const schoolColors: Record<string, string> = {
-      'NFS_EAST': 'bg-blue-50 text-blue-700 border-blue-200',
-      'NFS_WEST': 'bg-green-50 text-green-700 border-green-200',
-      'KFNA': 'bg-indigo-50 text-indigo-700 border-indigo-200',
+      'NFS_EAST': 'px-3 py-1 bg-blue-50 text-blue-700 border-blue-300 font-medium',
+      'NFS_WEST': 'px-3 py-1 bg-green-50 text-green-700 border-green-300 font-medium',
+      'KFNA': 'px-3 py-1 bg-indigo-50 text-indigo-700 border-indigo-300 font-medium',
     };
     
-    const colorClass = schoolColors[school.code] || 'bg-gray-50 text-gray-700 border-gray-200';
+    const colorClass = schoolColors[school.code] || 'px-3 py-1 bg-gray-50 text-gray-700 border-gray-300 font-medium';
     
     return <Badge variant="outline" className={colorClass}>{school.name}</Badge>;
   };
@@ -508,6 +508,12 @@ export default function StaffLeaveApproval() {
                     ? `${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`
                     : 'Invalid date range';
                   
+                  // Calculate duration for tooltip
+                  const durationDays = isValidStart && isValidEnd
+                    ? Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1
+                    : 0;
+                  const durationText = durationDays > 0 ? `${durationDays} day${durationDays !== 1 ? 's' : ''}` : '';
+                  
                   return (
                     <TableRow key={leave.id}>
                       <TableCell>
@@ -518,9 +524,14 @@ export default function StaffLeaveApproval() {
                       </TableCell>
                       <TableCell>{getTypeBadge(leave.type)}</TableCell>
                       <TableCell>
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-1 text-gray-400" />
-                          <span>{formattedDateRange}</span>
+                        <div className="flex flex-col">
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-1 text-gray-400" />
+                            <span className="font-medium">{formattedDateRange}</span>
+                          </div>
+                          {durationDays > 0 && (
+                            <span className="text-xs text-gray-500 mt-1">{durationText}</span>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>{getSchoolBadge(leave.schoolId)}</TableCell>
@@ -576,12 +587,20 @@ export default function StaffLeaveApproval() {
                 <div className="col-span-3">{getTypeBadge(selectedLeave.type)}</div>
               </div>
               
-              <div className="grid grid-cols-4 items-center gap-4">
+              <div className="grid grid-cols-4 items-start gap-4">
                 <div className="font-medium">Date Range:</div>
                 <div className="col-span-3">
                   {selectedLeave.startDate && selectedLeave.endDate ? (
                     <>
-                      {format(parseISO(selectedLeave.startDate), 'MMM d, yyyy')} - {format(parseISO(selectedLeave.endDate), 'MMM d, yyyy')}
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-1 text-gray-400" />
+                        <span className="font-medium">
+                          {format(parseISO(selectedLeave.startDate), 'MMM d, yyyy')} - {format(parseISO(selectedLeave.endDate), 'MMM d, yyyy')}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-500 mt-1">
+                        {Math.round((parseISO(selectedLeave.endDate).getTime() - parseISO(selectedLeave.startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1} days
+                      </div>
                     </>
                   ) : (
                     'Invalid date range'
