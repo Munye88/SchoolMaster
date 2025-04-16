@@ -608,42 +608,55 @@ export default function StaffLeaveTracker() {
                     />
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="ptodays"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>PTO Days</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              {...field} 
-                              onChange={(e) => field.onChange(parseInt(e.target.value))}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  {/* Conditional days fields based on leave type */}
+                  <div className="grid grid-cols-1 gap-4">
+                    {/* Show PTO days field only when leave type is PTO or not yet selected */}
+                    {(form.watch('leaveType') === 'PTO' || !form.watch('leaveType')) && (
+                      <FormField
+                        control={form.control}
+                        name="ptodays"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>PTO Days</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="number" 
+                                {...field} 
+                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Number of days for Paid Time Off
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
                     
-                    <FormField
-                      control={form.control}
-                      name="rrdays"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>R&R Days</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              {...field} 
-                              onChange={(e) => field.onChange(parseInt(e.target.value))}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    {/* Show R&R days field only when leave type is R&R */}
+                    {form.watch('leaveType') === 'R&R' && (
+                      <FormField
+                        control={form.control}
+                        name="rrdays"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>R&R Days</FormLabel>
+                            <FormControl>
+                              <Input 
+                                type="number" 
+                                {...field} 
+                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Number of days for Rest & Recuperation
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
                   </div>
                   
                   <FormField
@@ -1356,42 +1369,55 @@ export default function StaffLeaveTracker() {
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={editForm.control}
-                  name="ptodays"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>PTO Days</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          {...field} 
-                          onChange={(e) => field.onChange(parseInt(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              {/* Conditional days fields based on leave type - for edit form */}
+              <div className="grid grid-cols-1 gap-4">
+                {/* Show PTO days field only when leave type is PTO or not yet selected */}
+                {(editForm.watch('leaveType') === 'PTO' || !editForm.watch('leaveType')) && (
+                  <FormField
+                    control={editForm.control}
+                    name="ptodays"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>PTO Days</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            {...field} 
+                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Number of days for Paid Time Off
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
                 
-                <FormField
-                  control={editForm.control}
-                  name="rrdays"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>R&R Days</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          {...field} 
-                          onChange={(e) => field.onChange(parseInt(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* Show R&R days field only when leave type is R&R */}
+                {editForm.watch('leaveType') === 'R&R' && (
+                  <FormField
+                    control={editForm.control}
+                    name="rrdays"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>R&R Days</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            {...field} 
+                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Number of days for Rest & Recuperation
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
               
               <FormField
@@ -1410,12 +1436,12 @@ export default function StaffLeaveTracker() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="PTO">PTO</SelectItem>
-                        <SelectItem value="R&R">R&R</SelectItem>
-                        <SelectItem value="PTO and R&R">PTO and R&R</SelectItem>
-                        <SelectItem value="Paternity">Paternity</SelectItem>
-                        <SelectItem value="Bereavement">Bereavement</SelectItem>
-                        <SelectItem value="Negative PTO">Negative PTO</SelectItem>
+                        <SelectItem value="PTO">PTO (Paid Time Off)</SelectItem>
+                        <SelectItem value="R&R">R&R (Rest & Recuperation)</SelectItem>
+                        <SelectItem value="Emergency">Emergency Leave</SelectItem>
+                        <SelectItem value="Paternity">Paternity Leave</SelectItem>
+                        <SelectItem value="Bereavement">Bereavement Leave</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
