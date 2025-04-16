@@ -1,0 +1,100 @@
+ Project Purpose
+To automate and enhance the recruitment process for English Language Training (ELT) instructors by integrating an AI-powered module on the school management website. This tool will:
+
+Analyze CVs/resumes
+
+Shortlist top 5 candidates
+
+Generate tailored interview questions
+
+Ensure alignment with military-focused ELT program needs
+
+🛠️ Core Features
+✅ 1. CV Upload & Parsing
+Users (recruiters/admins) can upload CVs in PDF or Word format.
+
+The AI parses the CV to extract:
+
+Educational background
+
+ESL/EFL certifications
+
+Years of teaching experience
+
+Grammar/vocabulary proficiency
+
+Native English speaker status
+
+Classroom management experience (especially in structured/military environments)
+
+✅ 2. Automated Candidate Screening
+AI evaluates each CV based on weighted criteria:
+
+✔️ Bachelor’s Degree (English/ESL preferred)
+
+✔️ Native English speaker
+
+✔️ 0–2 years of experience or 3+ years if no degree in ESL
+
+✔️ Classroom management skills
+
+✔️ Familiarity with ALC/DLI curriculum (optional but preferred)
+
+✔️ Experience in military settings or disciplined environments
+
+Scores candidates and outputs the Top 5 Recommended Profiles, with reasoning.
+
+✅ 3. Interview Question Generator
+For each shortlisted candidate, AI generates:
+
+General questions (e.g., Tell me about your ESL teaching background)
+
+Technical questions (e.g., Explain how you teach complex grammar structures)
+
+Curriculum-specific questions (e.g., What strategies would you use to teach ALC vocabulary?)
+
+Behavioral questions (e.g., How would you manage discipline with officer cadets?)
+
+🔄 Workflow Overview
+Admin logs into the site
+
+Navigates to the "Recruitment" section
+
+Uploads one or more CVs
+
+AI processes and evaluates the resumes
+
+Displays a ranked shortlist with downloadable or viewable candidate profiles
+
+Admin selects a candidate to view tailored interview questions
+
+Admin downloads/export interview question set (optional PDF or Word format)
+
+🔧 Technical Requirements for Developer
+Frontend:
+
+Upload form with drag-and-drop or file picker
+
+Table or card layout to display top candidates
+
+Button to view/download AI-generated interview questions
+
+Backend:
+
+Python backend (Flask/FastAPI recommended) using NLP libraries (spaCy, transformers)
+
+Integration with OpenAI API (for question generation + CV interpretation)
+
+Resume parser (like PyMuPDF, pdfminer, or docx2txt)
+
+Database (Optional but recommended):
+
+Store past applicants, scores, and notes
+
+Allow exporting reports or interview packets
+
+Security:
+
+Authentication (admin-only access)
+
+Secure file handling and storage

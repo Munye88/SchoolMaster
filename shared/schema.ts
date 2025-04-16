@@ -189,14 +189,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
 });
 
-// Relations
-export const schoolsRelations = relations(schools, ({ many }) => ({
-  instructors: many(instructors),
-  courses: many(courses),
-  students: many(students),
-  documents: many(documents),
-  events: many(events),
-}));
+// Relations will be defined after all table definitions
 
 export const instructorsRelations = relations(instructors, ({ one, many }) => ({
   school: one(schools, {
@@ -451,3 +444,114 @@ export const actionLogsRelations = relations(actionLogs, ({ one }) => ({
 
 export type ActionLog = typeof actionLogs.$inferSelect;
 export type InsertActionLog = z.infer<typeof insertActionLogSchema>;
+
+// Recruitment System
+export const candidates = pgTable("candidates", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  nativeEnglishSpeaker: boolean("native_english_speaker").default(false),
+  degree: text("degree"), // "Bachelor", "Master", "PhD", etc.
+  degreeField: text("degree_field"), // "English", "ESL", "Education", etc.
+  yearsExperience: integer("years_experience").default(0),
+  hasCertifications: boolean("has_certifications").default(false),
+  certifications: text("certifications"), // CELTA, TEFL, TESOL, etc.
+  classroomManagement: integer("classroom_management").default(0), // Score 1-10
+  militaryExperience: boolean("military_experience").default(false),
+  grammarProficiency: integer("grammar_proficiency").default(0), // Score 1-10
+  vocabularyProficiency: integer("vocabulary_proficiency").default(0), // Score 1-10
+  overallScore: integer("overall_score").default(0), // Calculated score 
+  resumeUrl: text("resume_url").notNull(), // URL to uploaded resume
+  status: text("status", { 
+    enum: ["new", "reviewed", "shortlisted", "interviewed", "hired", "rejected"] 
+  }).notNull().default("new"),
+  notes: text("notes"),
+  uploadDate: timestamp("upload_date").notNull().defaultNow(),
+  reviewedBy: integer("reviewed_by").references(() => users.id),
+  reviewDate: timestamp("review_date"),
+  schoolId: integer("school_id").references(() => schools.id)
+});
+
+export const insertCandidateSchema = createInsertSchema(candidates).pick({
+  name: true,
+  email: true,
+  phone: true,
+  nativeEnglishSpeaker: true,
+  degree: true,
+  degreeField: true,
+  yearsExperience: true,
+  hasCertifications: true,
+  certifications: true,
+  classroomManagement: true,
+  militaryExperience: true,
+  grammarProficiency: true,
+  vocabularyProficiency: true,
+  overallScore: true,
+  resumeUrl: true,
+  status: true,
+  notes: true,
+  uploadDate: true,
+  reviewedBy: true,
+  reviewDate: true,
+  schoolId: true
+});
+
+export const interviewQuestions = pgTable("interview_questions", {
+  id: serial("id").primaryKey(),
+  candidateId: integer("candidate_id").notNull().references(() => candidates.id),
+  question: text("question").notNull(),
+  category: text("category", { 
+    enum: ["general", "technical", "curriculum", "behavioral"] 
+  }).notNull(),
+  createdBy: integer("created_by").references(() => users.id),
+  createdDate: timestamp("created_date").notNull().defaultNow()
+});
+
+export const insertInterviewQuestionSchema = createInsertSchema(interviewQuestions).pick({
+  candidateId: true,
+  question: true,
+  category: true,
+  createdBy: true,
+  createdDate: true
+});
+
+// Relations
+export const candidatesRelations = relations(candidates, ({ one, many }) => ({
+  reviewer: one(users, {
+    fields: [candidates.reviewedBy],
+    references: [users.id]
+  }),
+  school: one(schools, {
+    fields: [candidates.schoolId],
+    references: [schools.id]
+  }),
+  interviewQuestions: many(interviewQuestions)
+}));
+
+export const interviewQuestionsRelations = relations(interviewQuestions, ({ one }) => ({
+  candidate: one(candidates, {
+    fields: [interviewQuestions.candidateId],
+    references: [candidates.id]
+  }),
+  creator: one(users, {
+    fields: [interviewQuestions.createdBy],
+    references: [users.id]
+  })
+}));
+
+// Define comprehensive school relations
+export const schoolsRelations = relations(schools, ({ many }) => ({
+  instructors: many(instructors),
+  courses: many(courses),
+  students: many(students),
+  documents: many(documents),
+  events: many(events),
+  candidates: many(candidates),
+}));
+
+export type Candidate = typeof candidates.$inferSelect;
+export type InsertCandidate = z.infer<typeof insertCandidateSchema>;
+
+export type InterviewQuestion = typeof interviewQuestions.$inferSelect;
+export type InsertInterviewQuestion = z.infer<typeof insertInterviewQuestionSchema>;
