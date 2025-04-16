@@ -21,11 +21,15 @@ import {
   insertStaffAttendanceSchema,
   insertStaffLeaveSchema,
   insertActionLogSchema,
+  insertCandidateSchema,
+  insertInterviewQuestionSchema,
   evaluations,
   courses,
   staffLeave,
   instructors,
-  actionLogs
+  actionLogs,
+  candidates,
+  interviewQuestions
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";

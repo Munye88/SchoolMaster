@@ -9,7 +9,11 @@ import {
   type Document, type InsertDocument, documents,
   type Activity, type InsertActivity, activities,
   type Event, type InsertEvent, events,
-  type StaffAttendance, type InsertStaffAttendance, staffAttendance
+  type StaffAttendance, type InsertStaffAttendance, staffAttendance,
+  type StaffLeave, type InsertStaffLeave, staffLeave,
+  type ActionLog, type InsertActionLog, actionLogs,
+  type Candidate, type InsertCandidate, candidates,
+  type InterviewQuestion, type InsertInterviewQuestion, interviewQuestions
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, lt, gt, and, isNull, or } from "drizzle-orm";
@@ -92,6 +96,23 @@ export interface IStorage {
   createStaffAttendance(attendance: InsertStaffAttendance): Promise<StaffAttendance>;
   updateStaffAttendance(id: number, attendance: Partial<InsertStaffAttendance>): Promise<StaffAttendance | undefined>;
   deleteStaffAttendance(id: number): Promise<void>;
+  
+  // Recruitment methods
+  getCandidates(): Promise<Candidate[]>;
+  getCandidate(id: number): Promise<Candidate | undefined>;
+  getCandidatesBySchool(schoolId: number): Promise<Candidate[]>;
+  getCandidatesByStatus(status: string): Promise<Candidate[]>;
+  createCandidate(candidate: InsertCandidate): Promise<Candidate>;
+  updateCandidate(id: number, candidate: Partial<InsertCandidate>): Promise<Candidate | undefined>;
+  deleteCandidate(id: number): Promise<void>;
+  
+  // Interview Question methods
+  getInterviewQuestions(): Promise<InterviewQuestion[]>;
+  getInterviewQuestion(id: number): Promise<InterviewQuestion | undefined>;
+  getInterviewQuestionsByCandidate(candidateId: number): Promise<InterviewQuestion[]>;
+  createInterviewQuestion(question: InsertInterviewQuestion): Promise<InterviewQuestion>;
+  updateInterviewQuestion(id: number, question: Partial<InsertInterviewQuestion>): Promise<InterviewQuestion | undefined>;
+  deleteInterviewQuestion(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -106,6 +127,8 @@ export class MemStorage implements IStorage {
   private activities: Map<number, Activity>;
   private events: Map<number, Event>;
   private staffAttendances: Map<number, StaffAttendance>;
+  private candidates: Map<number, Candidate>;
+  private interviewQuestions: Map<number, InterviewQuestion>;
   
   private currentIds: {
     user: number;
@@ -119,6 +142,8 @@ export class MemStorage implements IStorage {
     activity: number;
     event: number;
     staffAttendance: number;
+    candidate: number;
+    interviewQuestion: number;
   };
 
   constructor() {
@@ -133,6 +158,8 @@ export class MemStorage implements IStorage {
     this.activities = new Map();
     this.events = new Map();
     this.staffAttendances = new Map();
+    this.candidates = new Map();
+    this.interviewQuestions = new Map();
     
     this.currentIds = {
       user: 1,
@@ -145,7 +172,9 @@ export class MemStorage implements IStorage {
       document: 1,
       activity: 1,
       event: 1,
-      staffAttendance: 1
+      staffAttendance: 1,
+      candidate: 1,
+      interviewQuestion: 1
     };
     
     // Initialize with sample data
