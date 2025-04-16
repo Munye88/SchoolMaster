@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { ActionLog } from '@shared/schema';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface PrintableSingleActionLogProps {
   log: ActionLog | null;
@@ -8,6 +8,8 @@ interface PrintableSingleActionLogProps {
 }
 
 export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleActionLogProps) => {
+  const [logoData, setLogoData] = useState<string | null>(null);
+  
   if (!log) return null;
   
   const getStatusText = (status: string): string => {
@@ -22,10 +24,35 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
         return status;
     }
   };
-
-  // Open new window and trigger print on component mount
+  
+  // Load logo on component mount
   useEffect(() => {
-    // Logo as an emoji with circular container
+    const loadLogo = async () => {
+      try {
+        const response = await fetch('/govcio_logo_base64.txt');
+        if (!response.ok) throw new Error('Failed to load logo');
+        const base64Data = await response.text();
+        setLogoData(base64Data);
+      } catch (error) {
+        console.error('Error loading logo:', error);
+        // Continue with printing even if logo fails to load
+        printDocument('');
+      }
+    };
+    
+    loadLogo();
+  }, []);
+  
+  // Effect to trigger printing when logo is loaded
+  useEffect(() => {
+    if (logoData !== null) {
+      printDocument(logoData);
+    }
+  }, [logoData]);
+  
+  // Function to generate and print the document
+  const printDocument = (logoBase64: string) => {
+    // HTML content for print window
     const printContent = `
       <!DOCTYPE html>
       <html>
@@ -44,15 +71,12 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
             align-items: center;
           }
           .logo-container {
-            display: flex;
-            align-items: center;
+            width: 200px;
             margin-right: 20px;
           }
-          .logo-text {
-            font-weight: bold;
-            font-size: 24px;
-            color: #1c355e;
-            letter-spacing: 1px;
+          .logo {
+            max-width: 100%;
+            height: auto;
           }
           .header-content {
             flex-grow: 1;
@@ -135,6 +159,11 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
             font-size: 12px;
             color: #666;
           }
+          .fallback-logo {
+            font-weight: bold;
+            font-size: 24px;
+            padding: 15px 0;
+          }
           .blue-text {
             color: #1c355e;
           }
@@ -146,9 +175,11 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
       <body>
         <div class="header">
           <div class="logo-container">
-            <div class="logo-text">
-              <span class="blue-text">Gov</span><span class="cyan-text">CIO</span>
-            </div>
+            ${
+              logoBase64 ? 
+              `<img src="data:image/png;base64,${logoBase64}" alt="GOVCIO Logo" class="logo">` : 
+              `<div class="fallback-logo"><span class="blue-text">Gov</span><span class="cyan-text">CIO</span></div>`
+            }
           </div>
           <div class="header-content">
             <h1 class="title">Action Item Details</h1>
@@ -212,7 +243,7 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
         onClose();
       }, 500);
     }
-  }, [log, onClose]);
+  };
   
   // Return null as we're using a separate window for printing
   return null;
