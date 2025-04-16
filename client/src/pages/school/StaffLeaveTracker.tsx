@@ -119,7 +119,10 @@ const leaveFormSchema = z.object({
     required_error: "R&R days are required", 
     invalid_type_error: "R&R days must be a number",
   }).min(0, "R&R days must be a positive number"),
-  leaveType: z.string().min(1, "Leave type is required"),
+  leaveType: z.enum(["PTO", "R&R", "Emergency", "Other"], {
+    required_error: "Leave type is required",
+    invalid_type_error: "Invalid leave type selection",
+  }),
   destination: z.string().min(1, "Destination is required"),
   status: z.string().min(1, "Status is required"),
   comments: z.string().optional(),
