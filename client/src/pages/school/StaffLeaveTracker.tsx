@@ -177,6 +177,9 @@ export default function StaffLeaveTracker() {
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(new Date());
   
+  // For the employee ID search
+  const [employeeIdSearch, setEmployeeIdSearch] = useState<string>('');
+  
   // Fetch staff leave data from API
   const { 
     data: leaveRecords = [], 
@@ -201,10 +204,13 @@ export default function StaffLeaveTracker() {
     ? instructors.filter((instructor) => instructor.schoolId === currentSchool.id)
     : [];
   
-  // Filter leave records by selected school
+  // Filter leave records by selected school and employee ID (if provided)
   const schoolLeaveRecords = currentSchool 
-    ? leaveRecords.filter(record => record.schoolId === currentSchool.id)
-    : leaveRecords;
+    ? leaveRecords
+        .filter(record => record.schoolId === currentSchool.id)
+        .filter(record => employeeIdSearch === '' || 
+                (record.employeeId && record.employeeId.toLowerCase().includes(employeeIdSearch.toLowerCase())))
+    : [];
     
   // Initialize the form
   const form = useForm<LeaveFormValues>({
@@ -788,6 +794,20 @@ export default function StaffLeaveTracker() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Search by Employee ID */}
+          <div className="flex mb-4">
+            <div className="relative w-full max-w-sm">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+              <Input
+                type="search"
+                placeholder="Search by Employee ID..."
+                className="w-full rounded-md border border-input bg-background pl-8 py-2 text-sm ring-offset-background"
+                value={employeeIdSearch}
+                onChange={(e) => setEmployeeIdSearch(e.target.value)}
+              />
+            </div>
+          </div>
+          
           <Table>
             <TableHeader>
               <TableRow>
