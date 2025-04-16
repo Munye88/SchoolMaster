@@ -165,7 +165,7 @@ const Dashboard = () => {
           <img src={govcioLogo} alt="GovCIO Logo" className="h-12" />
           <div>
             <p className="text-sm text-gray-600 italic">
-              "Education is the most powerful weapon which you can use to change the world." — Nelson Mandela
+              "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
             </p>
           </div>
         </div>

@@ -373,10 +373,10 @@ const BasicNavbar = () => {
                       <LayoutDashboard className="h-4 w-4 mr-2 text-red-600" />
                       Manage Events
                     </Link>
-                    <Link href="/administration/staff-leave" onClick={() => setShowAdminLinks(false)}
+                    <Link href="/administration/manage-dashboard" onClick={() => setShowAdminLinks(false)}
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50">
-                      <GraduationCap className="h-4 w-4 mr-2 text-indigo-600" />
-                      Staff Leave Approval
+                      <LayoutDashboard className="h-4 w-4 mr-2 text-indigo-600" />
+                      Manage Dashboard
                     </Link>
                     <Link href="/administration/users" onClick={() => setShowAdminLinks(false)}
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 border-t border-gray-100">

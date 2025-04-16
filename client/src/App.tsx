@@ -86,7 +86,7 @@ function Router() {
           <ProtectedRoute path="/administration/performance-policy" component={Administration} />
           <ProtectedRoute path="/administration/classroom-evaluation" component={Administration} />
           <ProtectedRoute path="/administration/instructor-recognition" component={InstructorRecognition} />
-          <ProtectedRoute path="/administration/staff-leave" component={StaffLeaveApproval} />
+          <ProtectedRoute path="/administration/manage-dashboard" component={StaffLeaveApproval} />
           <ProtectedRoute path="/administration/users" component={UserManagement} />
           <ProtectedRoute path="/events" component={EventsPage} />
           
