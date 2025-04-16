@@ -368,17 +368,17 @@ const BasicNavbar = () => {
                       <BookMarked className="h-4 w-4 mr-2 text-amber-600" />
                       Manage Courses
                     </Link>
-                    <Link href="/management/events" onClick={() => setShowAdminLinks(false)}
+                    <Link href="/events" onClick={() => setShowAdminLinks(false)}
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50">
                       <LayoutDashboard className="h-4 w-4 mr-2 text-red-600" />
                       Manage Events
                     </Link>
-                    <Link href="/management/staff-leave" onClick={() => setShowAdminLinks(false)}
+                    <Link href="/administration/staff-leave" onClick={() => setShowAdminLinks(false)}
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50">
                       <GraduationCap className="h-4 w-4 mr-2 text-indigo-600" />
                       Staff Leave Approval
                     </Link>
-                    <Link href="/management/users" onClick={() => setShowAdminLinks(false)}
+                    <Link href="/administration/users" onClick={() => setShowAdminLinks(false)}
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 border-t border-gray-100">
                       <Users className="h-4 w-4 mr-2 text-gray-600" />
                       Manage Users
