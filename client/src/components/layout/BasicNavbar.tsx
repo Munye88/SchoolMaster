@@ -474,6 +474,7 @@ const BasicNavbar = () => {
                       onClick={() => setShowAdminLinks(false)}
                       className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
+                      <UserCheck className="h-4 w-4 mr-2 text-green-600" />
                       Manage Instructors
                     </Link>
                     <Link 
@@ -481,6 +482,7 @@ const BasicNavbar = () => {
                       onClick={() => setShowAdminLinks(false)}
                       className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
+                      <BookMarked className="h-4 w-4 mr-2 text-amber-600" />
                       Manage Courses
                     </Link>
                     <Link 
@@ -488,6 +490,7 @@ const BasicNavbar = () => {
                       onClick={() => setShowAdminLinks(false)}
                       className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
+                      <StudentIcon className="h-4 w-4 mr-2 text-indigo-600" />
                       Manage Students
                     </Link>
                     <Link 
