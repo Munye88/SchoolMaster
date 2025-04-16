@@ -585,6 +585,82 @@ export class MemStorage implements IStorage {
   async deleteStaffAttendance(id: number): Promise<void> {
     this.staffAttendances.delete(id);
   }
+  
+  // Candidate methods
+  async getCandidates(): Promise<Candidate[]> {
+    return Array.from(this.candidates.values());
+  }
+  
+  async getCandidate(id: number): Promise<Candidate | undefined> {
+    return this.candidates.get(id);
+  }
+  
+  async getCandidatesBySchool(schoolId: number): Promise<Candidate[]> {
+    return Array.from(this.candidates.values()).filter(
+      (candidate) => candidate.schoolId === schoolId
+    );
+  }
+  
+  async getCandidatesByStatus(status: string): Promise<Candidate[]> {
+    return Array.from(this.candidates.values()).filter(
+      (candidate) => candidate.status === status
+    );
+  }
+  
+  async createCandidate(insertCandidate: InsertCandidate): Promise<Candidate> {
+    const id = this.currentIds.candidate++;
+    const candidate: Candidate = { ...insertCandidate, id };
+    this.candidates.set(id, candidate);
+    return candidate;
+  }
+  
+  async updateCandidate(id: number, candidate: Partial<InsertCandidate>): Promise<Candidate | undefined> {
+    const existing = await this.getCandidate(id);
+    if (!existing) return undefined;
+    
+    const updated = { ...existing, ...candidate };
+    this.candidates.set(id, updated);
+    return updated;
+  }
+  
+  async deleteCandidate(id: number): Promise<void> {
+    this.candidates.delete(id);
+  }
+  
+  // Interview Question methods
+  async getInterviewQuestions(): Promise<InterviewQuestion[]> {
+    return Array.from(this.interviewQuestions.values());
+  }
+  
+  async getInterviewQuestion(id: number): Promise<InterviewQuestion | undefined> {
+    return this.interviewQuestions.get(id);
+  }
+  
+  async getInterviewQuestionsByCandidate(candidateId: number): Promise<InterviewQuestion[]> {
+    return Array.from(this.interviewQuestions.values()).filter(
+      (question) => question.candidateId === candidateId
+    );
+  }
+  
+  async createInterviewQuestion(insertQuestion: InsertInterviewQuestion): Promise<InterviewQuestion> {
+    const id = this.currentIds.interviewQuestion++;
+    const question: InterviewQuestion = { ...insertQuestion, id };
+    this.interviewQuestions.set(id, question);
+    return question;
+  }
+  
+  async updateInterviewQuestion(id: number, question: Partial<InsertInterviewQuestion>): Promise<InterviewQuestion | undefined> {
+    const existing = await this.getInterviewQuestion(id);
+    if (!existing) return undefined;
+    
+    const updated = { ...existing, ...question };
+    this.interviewQuestions.set(id, updated);
+    return updated;
+  }
+  
+  async deleteInterviewQuestion(id: number): Promise<void> {
+    this.interviewQuestions.delete(id);
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -879,6 +955,74 @@ export class DatabaseStorage implements IStorage {
   
   async deleteStaffAttendance(id: number): Promise<void> {
     await db.delete(staffAttendance).where(eq(staffAttendance.id, id));
+  }
+  
+  // Candidate methods
+  async getCandidates(): Promise<Candidate[]> {
+    return db.select().from(candidates);
+  }
+  
+  async getCandidate(id: number): Promise<Candidate | undefined> {
+    const [candidate] = await db.select().from(candidates).where(eq(candidates.id, id));
+    return candidate;
+  }
+  
+  async getCandidatesBySchool(schoolId: number): Promise<Candidate[]> {
+    return db.select().from(candidates).where(eq(candidates.schoolId, schoolId));
+  }
+  
+  async getCandidatesByStatus(status: string): Promise<Candidate[]> {
+    return db.select().from(candidates).where(eq(candidates.status, status));
+  }
+  
+  async createCandidate(insertCandidate: InsertCandidate): Promise<Candidate> {
+    const [candidate] = await db.insert(candidates).values(insertCandidate).returning();
+    return candidate;
+  }
+  
+  async updateCandidate(id: number, candidate: Partial<InsertCandidate>): Promise<Candidate | undefined> {
+    const [updated] = await db
+      .update(candidates)
+      .set(candidate)
+      .where(eq(candidates.id, id))
+      .returning();
+    return updated;
+  }
+  
+  async deleteCandidate(id: number): Promise<void> {
+    await db.delete(candidates).where(eq(candidates.id, id));
+  }
+  
+  // Interview Question methods
+  async getInterviewQuestions(): Promise<InterviewQuestion[]> {
+    return db.select().from(interviewQuestions);
+  }
+  
+  async getInterviewQuestion(id: number): Promise<InterviewQuestion | undefined> {
+    const [question] = await db.select().from(interviewQuestions).where(eq(interviewQuestions.id, id));
+    return question;
+  }
+  
+  async getInterviewQuestionsByCandidate(candidateId: number): Promise<InterviewQuestion[]> {
+    return db.select().from(interviewQuestions).where(eq(interviewQuestions.candidateId, candidateId));
+  }
+  
+  async createInterviewQuestion(insertQuestion: InsertInterviewQuestion): Promise<InterviewQuestion> {
+    const [question] = await db.insert(interviewQuestions).values(insertQuestion).returning();
+    return question;
+  }
+  
+  async updateInterviewQuestion(id: number, question: Partial<InsertInterviewQuestion>): Promise<InterviewQuestion | undefined> {
+    const [updated] = await db
+      .update(interviewQuestions)
+      .set(question)
+      .where(eq(interviewQuestions.id, id))
+      .returning();
+    return updated;
+  }
+  
+  async deleteInterviewQuestion(id: number): Promise<void> {
+    await db.delete(interviewQuestions).where(eq(interviewQuestions.id, id));
   }
 }
 

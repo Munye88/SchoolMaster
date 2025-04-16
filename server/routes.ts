@@ -980,6 +980,284 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Recruitment Module API Routes
+  
+  // Candidates
+  app.get("/api/candidates", async (req, res) => {
+    const candidates = await dbStorage.getCandidates();
+    res.json(candidates);
+  });
+  
+  app.get("/api/candidates/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid candidate ID" });
+    }
+    
+    const candidate = await dbStorage.getCandidate(id);
+    if (!candidate) {
+      return res.status(404).json({ message: "Candidate not found" });
+    }
+    
+    res.json(candidate);
+  });
+  
+  app.get("/api/schools/:schoolId/candidates", async (req, res) => {
+    const schoolId = parseInt(req.params.schoolId);
+    if (isNaN(schoolId)) {
+      return res.status(400).json({ message: "Invalid school ID" });
+    }
+    
+    const candidates = await dbStorage.getCandidatesBySchool(schoolId);
+    res.json(candidates);
+  });
+  
+  app.get("/api/candidates/status/:status", async (req, res) => {
+    const status = req.params.status;
+    const candidates = await dbStorage.getCandidatesByStatus(status);
+    res.json(candidates);
+  });
+  
+  app.post("/api/candidates", upload.single('resume'), async (req, res) => {
+    try {
+      let resumeUrl = null;
+      const formData = req.body;
+      
+      // If file was uploaded, get the file path
+      if (req.file) {
+        resumeUrl = `/uploads/${req.file.filename}`;
+      }
+      
+      // Prepare candidate data with file path if exists
+      const candidateData = {
+        ...formData,
+        resumeUrl: resumeUrl || formData.resumeUrl,
+        uploadDate: new Date(),
+      };
+      
+      const parsedData = insertCandidateSchema.parse(candidateData);
+      const candidate = await dbStorage.createCandidate(parsedData);
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "candidate_added",
+        description: `New candidate "${candidate.name}" added`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(201).json(candidate);
+    } catch (error) {
+      console.error("Error creating candidate:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid candidate data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create candidate", error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+  
+  app.patch("/api/candidates/:id", upload.single('resume'), async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid candidate ID" });
+    }
+    
+    try {
+      let resumeUrl = null;
+      const formData = req.body;
+      
+      // If file was uploaded, get the file path
+      if (req.file) {
+        resumeUrl = `/uploads/${req.file.filename}`;
+      }
+      
+      // Prepare candidate data with file path if exists
+      const candidateData = {
+        ...formData,
+        ...(req.file && { resumeUrl }),
+      };
+      
+      const parsedData = insertCandidateSchema.partial().parse(candidateData);
+      const updatedCandidate = await dbStorage.updateCandidate(id, parsedData);
+      
+      if (!updatedCandidate) {
+        return res.status(404).json({ message: "Candidate not found" });
+      }
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "candidate_updated",
+        description: `Candidate "${updatedCandidate.name}" updated`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(updatedCandidate);
+    } catch (error) {
+      console.error("Error updating candidate:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid candidate data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update candidate", error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+  
+  app.delete("/api/candidates/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid candidate ID" });
+    }
+    
+    try {
+      // Get the candidate before deleting for the activity log
+      const candidate = await dbStorage.getCandidate(id);
+      if (!candidate) {
+        return res.status(404).json({ message: "Candidate not found" });
+      }
+      
+      // Delete related interview questions first
+      const questions = await dbStorage.getInterviewQuestionsByCandidate(id);
+      for (const question of questions) {
+        await dbStorage.deleteInterviewQuestion(question.id);
+      }
+      
+      // Now delete the candidate
+      await dbStorage.deleteCandidate(id);
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "candidate_deleted",
+        description: `Candidate "${candidate.name}" deleted`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting candidate:", error);
+      res.status(500).json({ message: "Failed to delete candidate", error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+  
+  // Interview Questions
+  app.get("/api/interview-questions", async (req, res) => {
+    const questions = await dbStorage.getInterviewQuestions();
+    res.json(questions);
+  });
+  
+  app.get("/api/interview-questions/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid question ID" });
+    }
+    
+    const question = await dbStorage.getInterviewQuestion(id);
+    if (!question) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+    
+    res.json(question);
+  });
+  
+  app.get("/api/candidates/:candidateId/interview-questions", async (req, res) => {
+    const candidateId = parseInt(req.params.candidateId);
+    if (isNaN(candidateId)) {
+      return res.status(400).json({ message: "Invalid candidate ID" });
+    }
+    
+    const questions = await dbStorage.getInterviewQuestionsByCandidate(candidateId);
+    res.json(questions);
+  });
+  
+  app.post("/api/interview-questions", async (req, res) => {
+    try {
+      const questionData = insertInterviewQuestionSchema.parse({
+        ...req.body,
+        createdDate: new Date(),
+      });
+      
+      const question = await dbStorage.createInterviewQuestion(questionData);
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "question_added",
+        description: `New interview question added for candidate ID ${question.candidateId}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(201).json(question);
+    } catch (error) {
+      console.error("Error creating interview question:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid question data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create interview question", error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+  
+  app.patch("/api/interview-questions/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid question ID" });
+    }
+    
+    try {
+      const updateData = insertInterviewQuestionSchema.partial().parse(req.body);
+      const updatedQuestion = await dbStorage.updateInterviewQuestion(id, updateData);
+      
+      if (!updatedQuestion) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "question_updated",
+        description: `Interview question updated for candidate ID ${updatedQuestion.candidateId}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(updatedQuestion);
+    } catch (error) {
+      console.error("Error updating interview question:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid question data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update interview question", error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+  
+  app.delete("/api/interview-questions/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid question ID" });
+    }
+    
+    try {
+      // Get the question before deleting for the activity log
+      const question = await dbStorage.getInterviewQuestion(id);
+      if (!question) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+      
+      await dbStorage.deleteInterviewQuestion(id);
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "question_deleted",
+        description: `Interview question deleted for candidate ID ${question.candidateId}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting interview question:", error);
+      res.status(500).json({ message: "Failed to delete interview question", error: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
   // Staff Attendance
   app.get("/api/staff-attendance", async (req, res) => {
     try {
