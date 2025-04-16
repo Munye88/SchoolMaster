@@ -1,0 +1,87 @@
+. Auto-Fill Form Fields From Uploaded CV
+To extract fields like Full Name, Email, Phone, Degree, Field of Study, Years of Experience, Certifications, etc. when a resume is uploaded:
+
+Use an AI Resume Parser API:
+Popular APIs:
+
+Affinda (https://affinda.com)
+
+Rchilli (https://www.rchilli.com)
+
+HireEZ
+
+Sovren
+
+ResumeParser by Restpack
+
+These APIs can:
+
+Take a PDF or DOC resume.
+
+Extract structured data (JSON format).
+
+You can then map this data to your form fields.
+
+Example Flow:
+User uploads CV.
+
+Send the file to the Resume Parser API.
+
+Receive JSON response with extracted fields.
+
+Auto-fill the form fields with the returned values using JavaScript.
+
+✅ 2. View and Store Candidate Details
+Once parsed, you can:
+
+Save the structured data in a database (like Firebase, Supabase, MongoDB, etc.).
+
+Show the parsed details in a "Candidate Details" view.
+
+✅ 3. AI CV Review & Interview Questions
+To take it further:
+
+For Reviewing CVs:
+Use OpenAI API (GPT-4) to analyze resumes.
+
+Example prompt:
+
+"Review this candidate’s resume. Summarize key qualifications, strengths, and red flags. Score them out of 10 for a Senior ELT Instructor role."
+
+For Interview Questions:
+Prompt GPT-4 to generate customized questions based on:
+
+The role requirements
+
+The candidate’s background
+
+Example prompt:
+
+"Generate 5 technical and 3 behavioral interview questions for a candidate with this resume applying for an ELT Supervisor position."
+
+🛠️ Technical Implementation (In Replit)
+If you're using Replit with a web front-end, here's what you'd typically do:
+
+Frontend (React or HTML/JS):
+
+Use a file upload component.
+
+On upload, trigger an API call to your backend.
+
+Backend (Node.js / Python / Flask / Express):
+
+Receive the resume file.
+
+Send it to the resume parser API.
+
+Return the parsed data to the frontend.
+
+Frontend (again):
+
+Auto-fill the form fields with parsed data.
+
+Save everything to your database.
+
+Review & Interview:
+
+Integrate OpenAI API to run CV review and generate interview questions based on parsed resume info.

@@ -1,0 +1,94 @@
+import React, { useState } from "react";
+import axios from "axios";
+
+export default function CandidateForm() {
+  const [file, setFile] = useState(null);
+  const [candidate, setCandidate] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    degree: "",
+    field: "",
+    experience: "",
+    certifications: "",
+  });
+
+  const handleUpload = async () => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      // Replace with your actual Resume Parser API endpoint and key
+      const response = await axios.post("https://api.affinda.com/v2/resume", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Authorization": "Bearer YOUR_API_KEY_HERE",
+        },
+      });
+
+      const data = response.data.data;
+
+      setCandidate({
+        fullName: data.name?.raw || "",
+        email: data.emails?.[0] || "",
+        phone: data.phoneNumbers?.[0] || "",
+        degree: data.education?.[0]?.accreditation || "",
+        field: data.education?.[0]?.fieldOfStudy || "",
+        experience: data.totalYearsExperience || "",
+        certifications: data.certifications?.map(cert => cert.name).join(", ") || "",
+      });
+    } catch (err) {
+      console.error("Error uploading file:", err);
+    }
+  };
+
+  const generateInterviewQuestions = async () => {
+    try {
+      const prompt = `Generate interview questions for the following candidate:\nName: ${candidate.fullName}\nEmail: ${candidate.email}\nExperience: ${candidate.experience} years\nField: ${candidate.field}\nCertifications: ${candidate.certifications}`;
+
+      const response = await axios.post("https://api.openai.com/v1/chat/completions", {
+        model: "gpt-4",
+        messages: [{ role: "user", content: prompt }],
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer YOUR_OPENAI_API_KEY",
+        },
+      });
+
+      alert(response.data.choices[0].message.content);
+    } catch (err) {
+      console.error("Error generating questions:", err);
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-xl mx-auto">
+      <h2 className="text-xl font-bold mb-4">Upload Candidate Resume</h2>
+
+      <input
+        type="file"
+        accept=".pdf,.doc,.docx"
+        onChange={(e) => setFile(e.target.files[0])}
+        className="mb-4"
+      />
+      <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 rounded mb-6">
+        Parse Resume
+      </button>
+
+      <div className="space-y-4">
+        <div><strong>Full Name:</strong> {candidate.fullName}</div>
+        <div><strong>Email:</strong> {candidate.email}</div>
+        <div><strong>Phone:</strong> {candidate.phone}</div>
+        <div><strong>Degree:</strong> {candidate.degree}</div>
+        <div><strong>Field of Study:</strong> {candidate.field}</div>
+        <div><strong>Years of Experience:</strong> {candidate.experience}</div>
+        <div><strong>Certifications:</strong> {candidate.certifications}</div>
+      </div>
+
+      <button onClick={generateInterviewQuestions} className="mt-6 bg-green-500 text-white px-4 py-2 rounded">
+        Generate Interview Questions
+      </button>
+    </div>
+  );
+}

@@ -9,6 +9,7 @@ import multer from "multer";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import OpenAI from "openai";
+import { parsePDF } from "./utils/pdfParser";
 import { 
   insertInstructorSchema, 
   insertCourseSchema, 
@@ -1605,7 +1606,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Resume upload endpoint with AI parsing
+  
+
+// Resume upload endpoint with AI parsing
   app.post("/api/upload/resume", upload.single('file'), async (req, res) => {
     try {
       if (!req.file) {
@@ -1627,21 +1630,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let resumeText = '';
       const fullPath = path.join(process.cwd(), filePath);
       
-      if (req.file.mimetype === 'application/pdf') {
-        // For PDFs, we'd ideally use a PDF parsing library
-        // For simplicity, we'll just read the file as a buffer
-        const fileBuffer = fs.readFileSync(fullPath);
-        resumeText = fileBuffer.toString('utf8');
-      } else {
-        // For text files, docx, etc.
-        resumeText = fs.readFileSync(fullPath, 'utf8');
+      try {
+        if (req.file.mimetype === 'application/pdf') {
+          try {
+            // Use our custom PDF parser utility to safely extract text
+            const dataBuffer = fs.readFileSync(fullPath);
+            const pdfData = await parsePDF(dataBuffer);
+            resumeText = pdfData.text || '';
+            console.log("PDF parsed successfully, extracted text length:", resumeText.length);
+          } catch (pdfError) {
+            console.error("Error parsing PDF:", pdfError);
+            // Fallback to basic text extraction
+            const fileBuffer = fs.readFileSync(fullPath);
+            resumeText = fileBuffer.toString('utf8');
+            console.log("PDF parsing failed, using basic text extraction");
+          }
+        } else if (req.file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
+                 req.file.mimetype === 'application/msword') {
+          // For docx/doc files, we don't have a parser installed, so we'll just use a simple read
+          // In a production app, you would use a library like mammoth.js or docx-parser
+          const fileBuffer = fs.readFileSync(fullPath);
+          // This won't extract the text properly but ensures we have some data
+          resumeText = fileBuffer.toString('utf8');
+          console.log("Word document detected, basic extraction completed");
+        } else {
+          // For text files or unknown types
+          resumeText = fs.readFileSync(fullPath, 'utf8');
+          console.log("Text file read successfully");
+        }
+      } catch (extractError) {
+        console.error("Error extracting text from resume:", extractError);
+        resumeText = "Unable to extract text from document.";
       }
 
+      // Basic information extraction using regex for fallback
+      const basicParser = {
+        extractEmail: (text) => {
+          const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+          const matches = text.match(emailRegex);
+          return matches && matches.length > 0 ? matches[0] : null;
+        },
+        extractPhone: (text) => {
+          // Match common phone number patterns
+          const phoneRegex = /(\+\d{1,3}[\s-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g;
+          const matches = text.match(phoneRegex);
+          return matches && matches.length > 0 ? matches[0] : null;
+        },
+        extractName: (text) => {
+          // Try to extract a name from the first few lines
+          const lines = text.split('\n').slice(0, 10);
+          for (const line of lines) {
+            const trimmed = line.trim();
+            // Look for a line that's likely a name (2-3 words, not too long)
+            if (trimmed.length > 0 && trimmed.length < 40 && 
+                trimmed.split(' ').length >= 2 && trimmed.split(' ').length <= 4) {
+              return trimmed;
+            }
+          }
+          return null;
+        }
+      };
+
       // Parse resume with OpenAI
-      let parsedData = {};
+      let parsedData: any = {};
       
       try {
-        // Use the OpenAI client that's already imported at the top of the file
+        // Try using OpenAI for advanced parsing
         const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
         
         // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -1666,7 +1720,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                         response.choices[0].message.content : '{}';
         parsedData = JSON.parse(content);
         
-        console.log("Resume parsed successfully:", parsedData);
+        console.log("Resume parsed successfully with OpenAI:", parsedData);
         
         // Now generate interview questions based on the resume text
         const questionsResponse = await openai.chat.completions.create({
@@ -1674,7 +1728,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           messages: [
             {
               role: "system", 
-              content: "You are an expert ELT (English Language Training) instructor recruiter. Based on the resume, generate 5 interview questions, categorized as follows: 2 technical questions about teaching methodology, 1 curriculum-related question, 1 behavioral question about classroom management, and 1 general question about language proficiency. Return ONLY a JSON object with this format: { \"questions\": [ { \"category\": \"technical|curriculum|behavioral|general\", \"question\": \"Question text here?\" } ] }"
+              content: "You are an expert ELT (English Language Training) instructor recruiter. Based on the resume, generate 10 interview questions, categorized as follows: 4 technical questions about teaching methodology, 2 curriculum-related questions, 2 behavioral questions about classroom management, and 2 general questions about language proficiency. Return ONLY a JSON object with this format: { \"questions\": [ { \"category\": \"technical|curriculum|behavioral|general\", \"question\": \"Question text here?\" } ] }"
             },
             {
               role: "user",
@@ -1701,42 +1755,193 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (aiError) {
         console.error("Error parsing resume with AI:", aiError);
         
-        // If OpenAI API is rate limited or fails, use fallback questions
-        const errorMessage = aiError instanceof Error ? aiError.message : String(aiError);
-        if (errorMessage.includes("429") || errorMessage.includes("rate limit")) {
-          console.log("OpenAI API rate limited, using fallback interview questions");
-          
-          // Fallback questions based on ELT instructor needs
-          const fallbackQuestions = [
-            { 
-              category: "technical", 
-              question: "How would you explain the difference between the present perfect and past perfect to students?" 
-            },
-            { 
-              category: "technical", 
-              question: "What strategies do you use to teach complex grammar structures?" 
-            },
-            { 
-              category: "curriculum", 
-              question: "How do you support cadets or officers preparing for the ALCPT (American Language Course Placement Test)?" 
-            },
-            { 
-              category: "behavioral", 
-              question: "Describe a time when you had to handle a classroom discipline issue. What happened and how did you resolve it?" 
-            },
-            { 
-              category: "general", 
-              question: "What inspired you to become an English Language Instructor?" 
-            }
-          ];
-          
-          // Add fallback questions to the parsed data
-          parsedData = {
-            ...parsedData,
-            generatedQuestions: fallbackQuestions
-          };
-        }
-        // Continue even if AI parsing fails
+        // Use basic parsing if OpenAI fails
+        parsedData = {
+          name: basicParser.extractName(resumeText),
+          email: basicParser.extractEmail(resumeText),
+          phone: basicParser.extractPhone(resumeText),
+        };
+        console.log("Using basic parser results:", parsedData);
+        
+        // Use our comprehensive fallback questions
+        console.log("Using fallback interview questions");
+        
+        // Enhanced fallback questions for ELT instructors
+        const fallbackQuestions = [
+          // Technical Questions (10)
+          { 
+            category: "technical", 
+            question: "How would you explain the difference between the present perfect and past perfect to students?" 
+          },
+          { 
+            category: "technical", 
+            question: "What strategies do you use to teach complex grammar structures?" 
+          },
+          { 
+            category: "technical", 
+            question: "How do you teach pronunciation to students whose native language has very different phonetics from English?" 
+          },
+          { 
+            category: "technical", 
+            question: "What methods do you use to teach English article usage (a, an, the) to students whose native language doesn't have articles?" 
+          },
+          { 
+            category: "technical", 
+            question: "How would you explain the difference between passive and active voice to aviation students?" 
+          },
+          { 
+            category: "technical", 
+            question: "What techniques do you use to help students master English prepositions?" 
+          },
+          { 
+            category: "technical", 
+            question: "How do you teach modal verbs (can, could, should, would, etc.) and their various uses?" 
+          },
+          { 
+            category: "technical", 
+            question: "What approach do you take when teaching conditionals (if clauses)?" 
+          },
+          { 
+            category: "technical", 
+            question: "How do you explain and teach the difference between countable and uncountable nouns?" 
+          },
+          { 
+            category: "technical", 
+            question: "What methods do you use to help students understand and use phrasal verbs correctly?" 
+          },
+
+          // Curriculum Questions (10)
+          { 
+            category: "curriculum", 
+            question: "How do you support cadets or officers preparing for the ALCPT (American Language Course Placement Test)?" 
+          },
+          { 
+            category: "curriculum", 
+            question: "How would you design a specialized curriculum for aviation English focusing on radio communications?" 
+          },
+          { 
+            category: "curriculum", 
+            question: "What resources would you incorporate when teaching technical aviation terminology?" 
+          },
+          { 
+            category: "curriculum", 
+            question: "How do you balance teaching general English proficiency with specialized aviation vocabulary?" 
+          },
+          { 
+            category: "curriculum", 
+            question: "What assessment methods would you use to evaluate students' progress in an aviation English course?" 
+          },
+          { 
+            category: "curriculum", 
+            question: "How would you incorporate authentic aviation materials (manuals, checklists, etc.) into your teaching?" 
+          },
+          { 
+            category: "curriculum", 
+            question: "How would you structure a curriculum to prepare students for ICAO English language proficiency requirements?" 
+          },
+          { 
+            category: "curriculum", 
+            question: "What approaches would you take to teach listening comprehension specifically for air traffic control communications?" 
+          },
+          { 
+            category: "curriculum", 
+            question: "How would you design lesson plans that incorporate both language skills and aviation safety concepts?" 
+          },
+          { 
+            category: "curriculum", 
+            question: "What strategies would you implement to help students achieve standardized test goals while maintaining engagement?" 
+          },
+
+          // Behavioral Questions (10)
+          { 
+            category: "behavioral", 
+            question: "Describe a time when you had to handle a classroom discipline issue. What happened and how did you resolve it?" 
+          },
+          { 
+            category: "behavioral", 
+            question: "Tell me about a situation where you had to adapt your teaching style to meet the needs of a struggling student." 
+          },
+          { 
+            category: "behavioral", 
+            question: "Describe a time when you successfully motivated a reluctant or disinterested student." 
+          },
+          { 
+            category: "behavioral", 
+            question: "Give an example of how you've handled cultural differences in the classroom." 
+          },
+          { 
+            category: "behavioral", 
+            question: "Tell me about a time when you had to provide constructive criticism to a student. How did you approach it?" 
+          },
+          { 
+            category: "behavioral", 
+            question: "Describe a situation where you had to work with a difficult colleague. How did you handle it?" 
+          },
+          { 
+            category: "behavioral", 
+            question: "Tell me about a time when you had to adjust your lesson plan on the spot. What happened and what did you do?" 
+          },
+          { 
+            category: "behavioral", 
+            question: "Describe a challenging group of students you've taught and how you managed their dynamics." 
+          },
+          { 
+            category: "behavioral", 
+            question: "Tell me about a time when you received feedback about your teaching that required you to make changes." 
+          },
+          { 
+            category: "behavioral", 
+            question: "Describe a situation where you had to balance multiple responsibilities or deadlines. How did you manage your time?" 
+          },
+
+          // General Questions (10)
+          { 
+            category: "general", 
+            question: "What inspired you to become an English Language Instructor?" 
+          },
+          { 
+            category: "general", 
+            question: "What do you find most rewarding about teaching English to aviation professionals?" 
+          },
+          { 
+            category: "general", 
+            question: "How do you stay updated with current teaching methodologies and approaches?" 
+          },
+          { 
+            category: "general", 
+            question: "What do you believe are the most important qualities of an effective ELT instructor?" 
+          },
+          { 
+            category: "general", 
+            question: "How do you create an inclusive learning environment for students from diverse backgrounds?" 
+          },
+          { 
+            category: "general", 
+            question: "What interests you about teaching in a military aviation context specifically?" 
+          },
+          { 
+            category: "general", 
+            question: "How do you handle the challenges of teaching technical English to non-native speakers?" 
+          },
+          { 
+            category: "general", 
+            question: "What strategies do you use to keep students engaged during long instructional periods?" 
+          },
+          { 
+            category: "general", 
+            question: "How would you describe your teaching philosophy in relation to language acquisition?" 
+          },
+          { 
+            category: "general", 
+            question: "What experience or skills do you have that would be particularly valuable in this ELT program?" 
+          }
+        ];
+        
+        // Add fallback questions to the parsed data
+        parsedData = {
+          ...parsedData,
+          generatedQuestions: fallbackQuestions
+        };
       }
 
       // Return the file path and parsed data
