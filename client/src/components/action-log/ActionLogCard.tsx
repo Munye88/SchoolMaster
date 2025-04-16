@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { Clock, Calendar, Check, CheckCircle2, AlertCircle, MoreHorizontal, Printer, Share2 } from 'lucide-react';
+import { Clock, Calendar, Check, CheckCircle2, AlertCircle, MoreHorizontal, Printer, Share2, Download, Mail, Twitter, ClipboardCopy } from 'lucide-react';
 import { 
   Card, 
   CardContent, 
@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ActionLog } from '@shared/schema';
 import { toast } from '@/hooks/use-toast';
+import { shareActionLogAsPdf } from './ActionLogPdfGenerator';
 
 interface ActionLogCardProps {
   log: ActionLog;
@@ -125,40 +126,108 @@ export function ActionLogCard({ log, onEdit, onDelete, onStatusChange, onPrint }
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
                   <Share2 className="h-4 w-4 mr-2" />
-                  Share
+                  Share as PDF
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
-                  <DropdownMenuItem onClick={() => {
-                    const text = `Action Item: ${log.title}\nStatus: ${getStatusText(log.status)}\nRequested by: ${log.requesterName}\nDescription: ${log.description}`;
-                    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-                    window.open(url, '_blank');
+                  <DropdownMenuItem onClick={async () => {
+                    try {
+                      await shareActionLogAsPdf(log, 'download');
+                      toast({
+                        title: "PDF downloaded",
+                        description: "Action item PDF has been downloaded",
+                        duration: 3000,
+                      });
+                    } catch (error) {
+                      toast({
+                        title: "Error",
+                        description: "Failed to download PDF",
+                        variant: "destructive",
+                        duration: 3000,
+                      });
+                    }
                   }}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Download PDF
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={async () => {
+                    try {
+                      await shareActionLogAsPdf(log, 'whatsapp');
+                      toast({
+                        title: "WhatsApp Share",
+                        description: "PDF has been downloaded and WhatsApp opened",
+                        duration: 3000,
+                      });
+                    } catch (error) {
+                      toast({
+                        title: "Error",
+                        description: "Failed to share via WhatsApp",
+                        variant: "destructive",
+                        duration: 3000,
+                      });
+                    }
+                  }}>
+                    <span className="h-4 w-4 mr-2 text-green-500 font-bold">W</span>
                     WhatsApp
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => {
-                    const subject = `Action Item: ${log.title}`;
-                    const body = `Status: ${getStatusText(log.status)}\nRequested by: ${log.requesterName}\nDescription: ${log.description}`;
-                    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                  <DropdownMenuItem onClick={async () => {
+                    try {
+                      await shareActionLogAsPdf(log, 'email');
+                      toast({
+                        title: "Email Share",
+                        description: "PDF has been downloaded and email client opened",
+                        duration: 3000,
+                      });
+                    } catch (error) {
+                      toast({
+                        title: "Error",
+                        description: "Failed to share via Email",
+                        variant: "destructive",
+                        duration: 3000,
+                      });
+                    }
                   }}>
+                    <Mail className="h-4 w-4 mr-2" />
                     Email
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => {
-                    const text = `Action Item: ${log.title}\nStatus: ${getStatusText(log.status)}\nRequested by: ${log.requesterName}\nDescription: ${log.description}`;
-                    navigator.clipboard.writeText(text);
-                    toast({
-                      title: "Copied to clipboard",
-                      description: "Action item details have been copied to clipboard",
-                      duration: 3000,
-                    });
+                  <DropdownMenuItem onClick={async () => {
+                    try {
+                      await shareActionLogAsPdf(log, 'twitter');
+                      toast({
+                        title: "Twitter Share",
+                        description: "PDF has been downloaded and Twitter opened",
+                        duration: 3000,
+                      });
+                    } catch (error) {
+                      toast({
+                        title: "Error",
+                        description: "Failed to share via Twitter",
+                        variant: "destructive",
+                        duration: 3000,
+                      });
+                    }
                   }}>
-                    Copy to Clipboard
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => {
-                    const text = `Action Item: ${log.title} - Status: ${getStatusText(log.status)}`;
-                    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-                    window.open(url, '_blank');
-                  }}>
+                    <Twitter className="h-4 w-4 mr-2" />
                     Twitter
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={async () => {
+                    try {
+                      await shareActionLogAsPdf(log, 'copy');
+                      toast({
+                        title: "PDF Downloaded",
+                        description: "Action item PDF has been downloaded",
+                        duration: 3000,
+                      });
+                    } catch (error) {
+                      toast({
+                        title: "Error",
+                        description: "Failed to download PDF",
+                        variant: "destructive",
+                        duration: 3000,
+                      });
+                    }
+                  }}>
+                    <ClipboardCopy className="h-4 w-4 mr-2" />
+                    Download & Copy Link
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
