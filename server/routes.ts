@@ -984,58 +984,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Candidates
   app.get("/api/candidates", async (req, res) => {
-    const candidates = await dbStorage.getCandidates();
-    res.json(candidates);
-  });
-  
-  app.get("/api/candidates/:id", async (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid candidate ID" });
+    try {
+      const schoolId = req.query.schoolId ? Number(req.query.schoolId) : undefined;
+      const status = req.query.status as string | undefined;
+      
+      let candidates;
+      if (status) {
+        candidates = await dbStorage.getCandidatesByStatus(status);
+      } else if (schoolId) {
+        candidates = await dbStorage.getCandidatesBySchool(schoolId);
+      } else {
+        candidates = await dbStorage.getCandidates();
+      }
+      
+      res.json(candidates);
+    } catch (error) {
+      console.error("Error getting candidates:", error);
+      res.status(500).json({ error: "Failed to fetch candidates" });
     }
-    
-    const candidate = await dbStorage.getCandidate(id);
-    if (!candidate) {
-      return res.status(404).json({ message: "Candidate not found" });
-    }
-    
-    res.json(candidate);
   });
   
   app.get("/api/schools/:schoolId/candidates", async (req, res) => {
-    const schoolId = parseInt(req.params.schoolId);
-    if (isNaN(schoolId)) {
-      return res.status(400).json({ message: "Invalid school ID" });
+    try {
+      const schoolId = parseInt(req.params.schoolId);
+      if (isNaN(schoolId)) {
+        return res.status(400).json({ message: "Invalid school ID" });
+      }
+      
+      const candidates = await dbStorage.getCandidatesBySchool(schoolId);
+      res.json(candidates);
+    } catch (error) {
+      console.error("Error getting candidates for school:", error);
+      res.status(500).json({ error: "Failed to fetch candidates" });
     }
-    
-    const candidates = await dbStorage.getCandidatesBySchool(schoolId);
-    res.json(candidates);
   });
   
   app.get("/api/candidates/status/:status", async (req, res) => {
-    const status = req.params.status;
-    const candidates = await dbStorage.getCandidatesByStatus(status);
-    res.json(candidates);
+    try {
+      const status = req.params.status;
+      const candidates = await dbStorage.getCandidatesByStatus(status);
+      res.json(candidates);
+    } catch (error) {
+      console.error("Error getting candidates by status:", error);
+      res.status(500).json({ error: "Failed to fetch candidates" });
+    }
+  });
+  
+  app.get("/api/candidates/:id", async (req, res) => {
+    try {
+      const candidateId = Number(req.params.id);
+      if (isNaN(candidateId)) {
+        return res.status(400).json({ message: "Invalid candidate ID" });
+      }
+      
+      const candidate = await dbStorage.getCandidate(candidateId);
+      if (!candidate) {
+        return res.status(404).json({ error: "Candidate not found" });
+      }
+      res.json(candidate);
+    } catch (error) {
+      console.error("Error getting candidate:", error);
+      res.status(500).json({ error: "Failed to fetch candidate" });
+    }
   });
   
   app.post("/api/candidates", upload.single('resume'), async (req, res) => {
     try {
       let resumeUrl = null;
-      const formData = req.body;
+      let candidateData;
       
-      // If file was uploaded, get the file path
-      if (req.file) {
-        resumeUrl = `/uploads/${req.file.filename}`;
+      // Handle different formats of form data
+      if (req.body.candidateData) {
+        // JSON format from multipart form
+        candidateData = JSON.parse(req.body.candidateData);
+      } else {
+        // Regular form data
+        candidateData = req.body;
       }
       
-      // Prepare candidate data with file path if exists
-      const candidateData = {
-        ...formData,
-        resumeUrl: resumeUrl || formData.resumeUrl,
+      // Handle file upload
+      if (req.file) {
+        const fileName = `${Date.now()}-${req.file.originalname}`;
+        const dirPath = path.join("uploads", "resumes");
+        const filePath = path.join(dirPath, fileName);
+        
+        // Create directory if it doesn't exist
+        if (!fs.existsSync(dirPath)) {
+          fs.mkdirSync(dirPath, { recursive: true });
+        }
+        
+        // Write file to disk
+        fs.writeFileSync(filePath, req.file.buffer);
+        resumeUrl = `/uploads/resumes/${fileName}`;
+      }
+      
+      // Prepare candidate data with file path
+      const finalCandidateData = {
+        ...candidateData,
+        resumeUrl: resumeUrl || candidateData.resumeUrl,
+        status: candidateData.status || "new",
         uploadDate: new Date(),
       };
       
-      const parsedData = insertCandidateSchema.parse(candidateData);
+      const parsedData = insertCandidateSchema.parse(finalCandidateData);
       const candidate = await dbStorage.createCandidate(parsedData);
       
       // Log activity
@@ -1057,28 +1108,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.patch("/api/candidates/:id", upload.single('resume'), async (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid candidate ID" });
-    }
-    
     try {
+      const candidateId = Number(req.params.id);
+      if (isNaN(candidateId)) {
+        return res.status(400).json({ message: "Invalid candidate ID" });
+      }
+      
       let resumeUrl = null;
-      const formData = req.body;
+      let updateData;
+      
+      // Handle different formats of form data
+      if (req.body.candidateData) {
+        // JSON format from multipart form
+        updateData = JSON.parse(req.body.candidateData);
+      } else {
+        // Regular form data
+        updateData = req.body;
+      }
       
       // If file was uploaded, get the file path
       if (req.file) {
-        resumeUrl = `/uploads/${req.file.filename}`;
+        const fileName = `${Date.now()}-${req.file.originalname}`;
+        const dirPath = path.join("uploads", "resumes");
+        const filePath = path.join(dirPath, fileName);
+        
+        // Create directory if it doesn't exist
+        if (!fs.existsSync(dirPath)) {
+          fs.mkdirSync(dirPath, { recursive: true });
+        }
+        
+        // Write file to disk
+        fs.writeFileSync(filePath, req.file.buffer);
+        resumeUrl = `/uploads/resumes/${fileName}`;
+        
+        // Add resumeUrl to update data
+        updateData = {
+          ...updateData,
+          resumeUrl
+        };
       }
       
-      // Prepare candidate data with file path if exists
-      const candidateData = {
-        ...formData,
-        ...(req.file && { resumeUrl }),
-      };
-      
-      const parsedData = insertCandidateSchema.partial().parse(candidateData);
-      const updatedCandidate = await dbStorage.updateCandidate(id, parsedData);
+      const parsedData = insertCandidateSchema.partial().parse(updateData);
+      const updatedCandidate = await dbStorage.updateCandidate(candidateId, parsedData);
       
       if (!updatedCandidate) {
         return res.status(404).json({ message: "Candidate not found" });
@@ -1103,26 +1174,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.delete("/api/candidates/:id", async (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid candidate ID" });
-    }
-    
     try {
+      const candidateId = Number(req.params.id);
+      if (isNaN(candidateId)) {
+        return res.status(400).json({ message: "Invalid candidate ID" });
+      }
+      
       // Get the candidate before deleting for the activity log
-      const candidate = await dbStorage.getCandidate(id);
+      const candidate = await dbStorage.getCandidate(candidateId);
       if (!candidate) {
         return res.status(404).json({ message: "Candidate not found" });
       }
       
       // Delete related interview questions first
-      const questions = await dbStorage.getInterviewQuestionsByCandidate(id);
+      const questions = await dbStorage.getInterviewQuestionsByCandidate(candidateId);
       for (const question of questions) {
         await dbStorage.deleteInterviewQuestion(question.id);
       }
       
       // Now delete the candidate
-      await dbStorage.deleteCandidate(id);
+      await dbStorage.deleteCandidate(candidateId);
       
       // Log activity
       await dbStorage.createActivity({
@@ -1141,32 +1212,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Interview Questions
   app.get("/api/interview-questions", async (req, res) => {
-    const questions = await dbStorage.getInterviewQuestions();
-    res.json(questions);
-  });
-  
-  app.get("/api/interview-questions/:id", async (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid question ID" });
+    try {
+      const candidateId = req.query.candidateId ? Number(req.query.candidateId) : undefined;
+      const questions = candidateId 
+        ? await dbStorage.getInterviewQuestionsByCandidate(candidateId)
+        : await dbStorage.getInterviewQuestions();
+      res.json(questions);
+    } catch (error) {
+      console.error("Error getting interview questions:", error);
+      res.status(500).json({ error: "Failed to fetch interview questions" });
     }
-    
-    const question = await dbStorage.getInterviewQuestion(id);
-    if (!question) {
-      return res.status(404).json({ message: "Question not found" });
-    }
-    
-    res.json(question);
   });
   
   app.get("/api/candidates/:candidateId/interview-questions", async (req, res) => {
-    const candidateId = parseInt(req.params.candidateId);
-    if (isNaN(candidateId)) {
-      return res.status(400).json({ message: "Invalid candidate ID" });
+    try {
+      const candidateId = parseInt(req.params.candidateId);
+      if (isNaN(candidateId)) {
+        return res.status(400).json({ message: "Invalid candidate ID" });
+      }
+      
+      const questions = await dbStorage.getInterviewQuestionsByCandidate(candidateId);
+      res.json(questions);
+    } catch (error) {
+      console.error("Error getting interview questions for candidate:", error);
+      res.status(500).json({ error: "Failed to fetch interview questions" });
     }
-    
-    const questions = await dbStorage.getInterviewQuestionsByCandidate(candidateId);
-    res.json(questions);
+  });
+  
+  app.get("/api/interview-questions/:id", async (req, res) => {
+    try {
+      const questionId = Number(req.params.id);
+      if (isNaN(questionId)) {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+      
+      const question = await dbStorage.getInterviewQuestion(questionId);
+      if (!question) {
+        return res.status(404).json({ error: "Interview question not found" });
+      }
+      res.json(question);
+    } catch (error) {
+      console.error("Error getting interview question:", error);
+      res.status(500).json({ error: "Failed to fetch interview question" });
+    }
   });
   
   app.post("/api/interview-questions", async (req, res) => {
@@ -1174,6 +1262,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const questionData = insertInterviewQuestionSchema.parse({
         ...req.body,
         createdDate: new Date(),
+        createdBy: req.isAuthenticated() ? req.user.id : null
       });
       
       const question = await dbStorage.createInterviewQuestion(questionData);
@@ -1197,14 +1286,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.patch("/api/interview-questions/:id", async (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid question ID" });
-    }
-    
     try {
+      const questionId = Number(req.params.id);
+      if (isNaN(questionId)) {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+      
       const updateData = insertInterviewQuestionSchema.partial().parse(req.body);
-      const updatedQuestion = await dbStorage.updateInterviewQuestion(id, updateData);
+      const updatedQuestion = await dbStorage.updateInterviewQuestion(questionId, updateData);
       
       if (!updatedQuestion) {
         return res.status(404).json({ message: "Question not found" });
@@ -1229,19 +1318,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.delete("/api/interview-questions/:id", async (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid question ID" });
-    }
-    
     try {
+      const questionId = Number(req.params.id);
+      if (isNaN(questionId)) {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+      
       // Get the question before deleting for the activity log
-      const question = await dbStorage.getInterviewQuestion(id);
+      const question = await dbStorage.getInterviewQuestion(questionId);
       if (!question) {
         return res.status(404).json({ message: "Question not found" });
       }
       
-      await dbStorage.deleteInterviewQuestion(id);
+      await dbStorage.deleteInterviewQuestion(questionId);
       
       // Log activity
       await dbStorage.createActivity({
