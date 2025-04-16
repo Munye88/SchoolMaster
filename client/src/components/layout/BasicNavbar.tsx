@@ -108,7 +108,7 @@ const BasicNavbar = () => {
         <div className="max-w-screen-xl mx-auto px-4">
           <div className="flex items-center justify-between h-14">
             {/* Main nav links */}
-            <nav className="flex items-center space-x-1">
+            <nav className="flex items-center space-x-1 relative">
               <Link 
                 href="/"
                 className={cn(
@@ -122,7 +122,12 @@ const BasicNavbar = () => {
               
               <div className="relative">
                 <button
-                  onClick={() => setShowSchoolLinks(showSchoolLinks ? null : 'main')}
+                  onClick={() => {
+                    setShowSchoolLinks(showSchoolLinks ? null : 'main');
+                    setShowDLILinks(false);
+                    setShowTrainingLinks(false);
+                    setShowAdminLinks(false);
+                  }}
                   className={cn(
                     "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                     (isActive("/schools") || showSchoolLinks) && "text-[#0A2463] bg-gray-100 font-medium"
@@ -315,6 +320,7 @@ const BasicNavbar = () => {
                     // Close other links if open
                     if (showSchoolLinks) setShowSchoolLinks(null);
                     if (showAdminLinks) setShowAdminLinks(false);
+                    if (showDLILinks) setShowDLILinks(false);
                   }}
                   className={cn(
                     "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
@@ -401,9 +407,10 @@ const BasicNavbar = () => {
                 <button
                   onClick={() => {
                     setShowAdminLinks(!showAdminLinks); 
-                    // Close school links if open, to avoid having multiple dropdowns open
+                    // Close other dropdowns if open, to avoid having multiple dropdowns open
                     if (showSchoolLinks) setShowSchoolLinks(null);
                     if (showTrainingLinks) setShowTrainingLinks(false);
+                    if (showDLILinks) setShowDLILinks(false);
                   }}
                   className={cn(
                     "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
