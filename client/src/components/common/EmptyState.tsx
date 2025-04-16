@@ -1,33 +1,35 @@
 import { Button } from "@/components/ui/button";
-import { ReactNode } from "react";
-import { Inbox, Plus } from "lucide-react";
+import { FolderSearch } from "lucide-react";
+import React from "react";
 
 interface EmptyStateProps {
   title: string;
   description: string;
-  icon?: ReactNode;
   actionLabel?: string;
   onAction?: () => void;
+  icon?: React.FC<React.SVGProps<SVGSVGElement>>;
 }
 
 export default function EmptyState({
   title,
   description,
-  icon,
   actionLabel,
   onAction,
+  icon: Icon = FolderSearch,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center p-8 text-center h-[400px] border border-dashed rounded-lg">
-      <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-        {icon || <Inbox className="h-10 w-10 text-gray-500" />}
+    <div className="flex flex-col items-center justify-center text-center p-8 space-y-4">
+      <div className="bg-gray-100 p-4 rounded-full">
+        <Icon className="h-10 w-10 text-gray-500" />
       </div>
-      <h3 className="text-lg font-medium text-gray-900 mb-1">{title}</h3>
-      <p className="text-sm text-gray-500 max-w-md mb-6">{description}</p>
-      
+      <h3 className="font-medium text-lg text-gray-900">{title}</h3>
+      <p className="text-gray-500 max-w-md">{description}</p>
       {actionLabel && onAction && (
-        <Button onClick={onAction} className="gap-2">
-          <Plus className="h-4 w-4" />
+        <Button 
+          variant="outline" 
+          className="mt-2"
+          onClick={onAction}
+        >
           {actionLabel}
         </Button>
       )}

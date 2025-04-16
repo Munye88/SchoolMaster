@@ -1,50 +1,56 @@
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import EmptyState from "@/components/common/EmptyState";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { InterviewQuestion } from "@shared/schema";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Edit, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Plus, Edit, Trash2, FileQuestion } from "lucide-react";
 import InterviewQuestionForm from "./InterviewQuestionForm";
-import { Badge } from "@/components/ui/badge";
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import EmptyState from "@/components/common/EmptyState";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface InterviewQuestionsListProps {
   candidateId?: number;
 }
 
 export default function InterviewQuestionsList({ candidateId }: InterviewQuestionsListProps) {
-  const [showForm, setShowForm] = useState(false);
-  const [editingQuestion, setEditingQuestion] = useState<InterviewQuestion | null>(null);
-  const [deletingQuestionId, setDeletingQuestionId] = useState<number | null>(null);
   const { toast } = useToast();
+  const [showQuestionForm, setShowQuestionForm] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState<InterviewQuestion | null>(null);
+  const [deleteQuestionId, setDeleteQuestionId] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
-  const { data: questions = [], isLoading, error } = useQuery<InterviewQuestion[]>({
-    queryKey: candidateId ? [`/api/candidates/${candidateId}/interview-questions`] : ['/api/interview-questions'],
-    enabled: !!candidateId,
+  // Fetch interview questions for the candidate
+  const { data: questions = [], isLoading } = useQuery<InterviewQuestion[]>({
+    queryKey: ['/api/interview-questions', candidateId],
+    queryFn: async () => {
+      if (!candidateId) return [];
+      const response = await fetch(`/api/interview-questions?candidateId=${candidateId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch interview questions');
+      }
+      return response.json();
+    },
+    enabled: !!candidateId
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      await apiRequest("DELETE", `/api/interview-questions/${id}`);
+  const deleteQuestionMutation = useMutation({
+    mutationFn: async (questionId: number) => {
+      const response = await apiRequest("DELETE", `/api/interview-questions/${questionId}`);
+      return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/candidates/${candidateId}/interview-questions`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/interview-questions', candidateId] });
       toast({
-        title: "Question deleted",
-        description: "The interview question has been deleted successfully.",
+        title: "Success",
+        description: "Interview question has been deleted",
       });
+      setDeleteQuestionId(null);
     },
     onError: (error) => {
       toast({
@@ -55,146 +61,192 @@ export default function InterviewQuestionsList({ candidateId }: InterviewQuestio
     }
   });
 
-  const handleAddQuestion = () => {
-    setEditingQuestion(null);
-    setShowForm(true);
-  };
-
   const handleEditQuestion = (question: InterviewQuestion) => {
     setEditingQuestion(question);
-    setShowForm(true);
+    setShowQuestionForm(true);
   };
 
-  const handleDeleteQuestion = (id: number) => {
-    setDeletingQuestionId(id);
+  const handleDeleteQuestion = (questionId: number) => {
+    setDeleteQuestionId(questionId);
   };
 
-  const confirmDelete = () => {
-    if (deletingQuestionId) {
-      deleteMutation.mutate(deletingQuestionId);
-      setDeletingQuestionId(null);
+  const confirmDeleteQuestion = () => {
+    if (deleteQuestionId) {
+      deleteQuestionMutation.mutate(deleteQuestionId);
     }
   };
 
-  const closeDeleteDialog = () => {
-    setDeletingQuestionId(null);
-  };
-  
+  const filteredQuestions = questions.filter(question => {
+    const matchesSearch = question.question.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === "all" || question.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'general':
-        return 'bg-blue-100 text-blue-800';
-      case 'technical':
-        return 'bg-purple-100 text-purple-800';
-      case 'curriculum':
-        return 'bg-green-100 text-green-800';
-      case 'behavioral':
-        return 'bg-orange-100 text-orange-800';
+      case "general":
+        return "bg-blue-100 text-blue-800";
+      case "technical":
+        return "bg-purple-100 text-purple-800";
+      case "curriculum":
+        return "bg-green-100 text-green-800";
+      case "behavioral":
+        return "bg-amber-100 text-amber-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
+  };
+
+  const categoryLabels = {
+    general: "General",
+    technical: "Technical",
+    curriculum: "Curriculum",
+    behavioral: "Behavioral"
   };
 
   if (!candidateId) {
     return (
       <EmptyState
         title="No candidate selected"
-        description="Please select a candidate to manage their interview questions."
-      />
-    );
-  }
-
-  if (isLoading) {
-    return <div className="p-4 text-center">Loading questions...</div>;
-  }
-
-  if (error) {
-    return <div className="p-4 text-center text-red-500">Error loading questions: {error.message}</div>;
-  }
-
-  if (showForm) {
-    return (
-      <InterviewQuestionForm
-        candidateId={candidateId}
-        onSuccess={() => setShowForm(false)}
-        onCancel={() => {
-          setShowForm(false);
-          setEditingQuestion(null);
-        }}
-        initialData={editingQuestion || undefined}
-        isEditing={!!editingQuestion}
+        description="Please select a candidate first to manage interview questions"
+        icon={FileQuestion}
       />
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Interview Questions</h3>
-        <Button onClick={handleAddQuestion} size="sm" className="gap-1">
-          <Plus className="h-4 w-4" />
-          Add Question
-        </Button>
-      </div>
-      
-      {questions.length === 0 ? (
-        <EmptyState
-          title="No questions yet"
-          description="Add interview questions for this candidate to prepare for the interview process."
-          actionLabel="Add Question"
-          onAction={handleAddQuestion}
+      {showQuestionForm ? (
+        <InterviewQuestionForm
+          candidateId={candidateId}
+          onSuccess={() => {
+            setShowQuestionForm(false);
+            setEditingQuestion(null);
+          }}
+          onCancel={() => {
+            setShowQuestionForm(false);
+            setEditingQuestion(null);
+          }}
+          initialData={editingQuestion || undefined}
+          isEditing={!!editingQuestion}
         />
       ) : (
-        <div className="grid gap-4">
-          {questions.map((question) => (
-            <Card key={question.id} className="overflow-hidden">
-              <CardHeader className="py-3 px-4 flex flex-row justify-between items-center bg-gray-50">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className={getCategoryColor(question.category)}>
-                    {question.category.charAt(0).toUpperCase() + question.category.slice(1)}
-                  </Badge>
-                  <CardTitle className="text-sm font-medium">
-                    Question #{question.id}
-                  </CardTitle>
-                </div>
-                <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => handleEditQuestion(question)}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-medium">Interview Questions</CardTitle>
+              <Button
+                onClick={() => setShowQuestionForm(true)}
+                size="sm"
+                className="h-8"
+              >
+                <Plus className="h-4 w-4 mr-1" /> Add Question
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-4 space-y-2">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Search questions..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="max-w-md"
+                />
+                <Select
+                  value={categoryFilter}
+                  onValueChange={setCategoryFilter}
+                >
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Filter by category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="general">General</SelectItem>
+                    <SelectItem value="technical">Technical</SelectItem>
+                    <SelectItem value="curriculum">Curriculum</SelectItem>
+                    <SelectItem value="behavioral">Behavioral</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {isLoading ? (
+              <div className="flex justify-center p-6">
+                <div className="animate-pulse text-gray-400">Loading questions...</div>
+              </div>
+            ) : filteredQuestions.length === 0 ? (
+              <EmptyState
+                title="No interview questions found"
+                description={
+                  searchTerm || categoryFilter !== "all"
+                    ? "Try adjusting your search or filters"
+                    : "Add questions for the interview process"
+                }
+                actionLabel="Add Question"
+                onAction={() => setShowQuestionForm(true)}
+                icon={FileQuestion}
+              />
+            ) : (
+              <div className="space-y-3">
+                {filteredQuestions.map((question) => (
+                  <div 
+                    key={question.id} 
+                    className="p-3 border rounded-lg bg-white hover:bg-gray-50 transition-colors"
                   >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-red-600"
-                    onClick={() => handleDeleteQuestion(question.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="p-4">
-                <p className="text-sm">{question.question}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                    <div className="flex justify-between items-start">
+                      <div className="space-y-1 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge className={getCategoryColor(question.category)}>
+                            {categoryLabels[question.category as keyof typeof categoryLabels]}
+                          </Badge>
+                          {question.createdDate && (
+                            <span className="text-xs text-gray-500">
+                              Added {new Date(question.createdDate).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-gray-800">{question.question}</p>
+                      </div>
+                      <div className="flex gap-1 ml-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEditQuestion(question)}
+                        >
+                          <Edit className="h-4 w-4 text-gray-500" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteQuestion(question.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       )}
-      
-      <AlertDialog open={!!deletingQuestionId} onOpenChange={(open) => !open && closeDeleteDialog()}>
+
+      <AlertDialog open={!!deleteQuestionId} onOpenChange={(open) => !open && setDeleteQuestionId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this interview question. This action cannot be undone.
+              This action cannot be undone. This will permanently delete the interview question.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 text-white hover:bg-red-700">
+            <AlertDialogAction
+              onClick={confirmDeleteQuestion}
+              className="bg-red-600 hover:bg-red-700"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
