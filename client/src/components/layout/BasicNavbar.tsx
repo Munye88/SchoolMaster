@@ -333,7 +333,7 @@ const BasicNavbar = () => {
                     <Link 
                       href="/training-development/leadership-skills"
                       onClick={() => setShowTrainingLinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
                     >
                       <BriefcaseBusiness className="h-4 w-4 mr-2 text-blue-600" />
                       Leadership Skills
@@ -341,7 +341,7 @@ const BasicNavbar = () => {
                     <Link 
                       href="/training-development/communication-techniques"
                       onClick={() => setShowTrainingLinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
                     >
                       <MessageSquare className="h-4 w-4 mr-2 text-blue-600" />
                       Communication Techniques
@@ -349,7 +349,7 @@ const BasicNavbar = () => {
                     <Link 
                       href="/training-development/conflict-resolution"
                       onClick={() => setShowTrainingLinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
                     >
                       <AlertTriangle className="h-4 w-4 mr-2 text-blue-600" />
                       Conflict Resolution
@@ -357,7 +357,7 @@ const BasicNavbar = () => {
                     <Link 
                       href="/training-development/decision-making"
                       onClick={() => setShowTrainingLinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
                     >
                       <BrainCircuit className="h-4 w-4 mr-2 text-blue-600" />
                       Decision Making
@@ -365,7 +365,7 @@ const BasicNavbar = () => {
                     <Link 
                       href="/training-development/team-building"
                       onClick={() => setShowTrainingLinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
                     >
                       <Users className="h-4 w-4 mr-2 text-blue-600" />
                       Team Building
@@ -422,14 +422,14 @@ const BasicNavbar = () => {
                     <Link 
                       href="/administration/evaluation-guideline"
                       onClick={() => setShowAdminLinks(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Instructor Evaluation Guideline
                     </Link>
                     <Link 
                       href="/administration/employee-handbook"
                       onClick={() => setShowAdminLinks(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       Employee Handbook
                     </Link>
@@ -451,7 +451,7 @@ const BasicNavbar = () => {
                     <Link 
                       href="/administration/instructor-recognition"
                       onClick={() => setShowAdminLinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       <Award className="h-4 w-4 mr-2 text-amber-600" />
                       Instructor Recognition
@@ -491,7 +491,7 @@ const BasicNavbar = () => {
                     <Link 
                       href="/management/dashboard"
                       onClick={() => setShowAdminLinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
+                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100"
                     >
                       <LayoutDashboard className="h-4 w-4 mr-2 text-blue-600" />
                       Manage Dashboard
