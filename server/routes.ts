@@ -1667,6 +1667,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         parsedData = JSON.parse(content);
         
         console.log("Resume parsed successfully:", parsedData);
+        
+        // Now generate interview questions based on the resume text
+        const questionsResponse = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system", 
+              content: "You are an expert ELT (English Language Training) instructor recruiter. Based on the resume, generate 5 interview questions, categorized as follows: 2 technical questions about teaching methodology, 1 curriculum-related question, 1 behavioral question about classroom management, and 1 general question about language proficiency. Return ONLY a JSON object with this format: { \"questions\": [ { \"category\": \"technical|curriculum|behavioral|general\", \"question\": \"Question text here?\" } ] }"
+            },
+            {
+              role: "user",
+              content: resumeText
+            }
+          ],
+          response_format: { type: "json_object" }
+        });
+        
+        // Process questions
+        const questionsContent = typeof questionsResponse.choices[0].message.content === 'string' && 
+                              questionsResponse.choices[0].message.content.trim() !== '' ? 
+                              questionsResponse.choices[0].message.content : '{"questions":[]}';
+        
+        const questionsData = JSON.parse(questionsContent);
+        console.log("Generated interview questions:", questionsData);
+        
+        // Add generated questions to the parsed data
+        parsedData = {
+          ...parsedData,
+          generatedQuestions: questionsData.questions || []
+        };
+        
       } catch (aiError) {
         console.error("Error parsing resume with AI:", aiError);
         // Continue even if AI parsing fails

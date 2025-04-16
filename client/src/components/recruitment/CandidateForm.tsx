@@ -23,6 +23,11 @@ interface CandidateFormProps {
   isEditing?: boolean;
 }
 
+interface GeneratedQuestion {
+  category: 'technical' | 'curriculum' | 'behavioral' | 'general';
+  question: string;
+}
+
 interface ParsedResumeData {
   name?: string;
   email?: string;
@@ -34,6 +39,7 @@ interface ParsedResumeData {
   hasCertifications?: boolean;
   nativeEnglishSpeaker?: boolean;
   militaryExperience?: boolean;
+  generatedQuestions?: GeneratedQuestion[];
 }
 
 const formSchema = z.object({
