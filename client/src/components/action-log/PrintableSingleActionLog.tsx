@@ -153,7 +153,7 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
       <body>
         <div class="header">
           <div class="logo-container">
-            <img src="/images/govcio_logo.png" alt="GOVCIO Logo" class="logo">
+            <img src="/govcio_logo.png" alt="GOVCIO Logo" class="logo">
           </div>
           <div class="header-content">
             <h1 class="title">Action Item Details</h1>
