@@ -229,7 +229,7 @@ const BasicNavbar = () => {
               <Link 
                 href="/courses"
                 className={cn(
-                  "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                  "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                   isActive("/courses") && "text-[#0A2463] bg-gray-100 font-medium"
                 )}
               >
@@ -247,7 +247,7 @@ const BasicNavbar = () => {
                     if (showTrainingLinks) setShowTrainingLinks(false);
                   }}
                   className={cn(
-                    "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                    "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                     (isActive("/dli") || showDLILinks) && "text-[#0A2463] bg-gray-100 font-medium"
                   )}
                 >
@@ -288,7 +288,7 @@ const BasicNavbar = () => {
               <Link 
                 href="/test-tracker"
                 className={cn(
-                  "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                  "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                   isActive("/test-tracker") && "text-[#0A2463] bg-gray-100 font-medium"
                 )}
               >
@@ -299,7 +299,7 @@ const BasicNavbar = () => {
               <Link 
                 href="/reports"
                 className={cn(
-                  "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                  "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                   isActive("/reports") && "text-[#0A2463] bg-gray-100 font-medium"
                 )}
               >
@@ -316,7 +316,7 @@ const BasicNavbar = () => {
                     if (showAdminLinks) setShowAdminLinks(false);
                   }}
                   className={cn(
-                    "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                    "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                     (isActive("/training-development") || showTrainingLinks) && "text-[#0A2463] bg-gray-100 font-medium"
                   )}
                 >
@@ -377,7 +377,7 @@ const BasicNavbar = () => {
               <Link 
                 href="/action-log"
                 className={cn(
-                  "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                  "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                   isActive("/action-log") && "text-[#0A2463] bg-gray-100 font-medium"
                 )}
               >
@@ -388,7 +388,7 @@ const BasicNavbar = () => {
               <Link 
                 href="/recruitment"
                 className={cn(
-                  "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                  "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                   isActive("/recruitment") && "text-[#0A2463] bg-gray-100 font-medium"
                 )}
               >
@@ -405,7 +405,7 @@ const BasicNavbar = () => {
                     if (showTrainingLinks) setShowTrainingLinks(false);
                   }}
                   className={cn(
-                    "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                    "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                     (isActive("/administration") || showAdminLinks) && "text-[#0A2463] bg-gray-100 font-medium"
                   )}
                 >
