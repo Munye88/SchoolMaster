@@ -35,6 +35,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { AIChatbot } from "@/components/ai/AIChatbot";
 import { SchoolProvider } from "@/hooks/useSchool";
 
+// Admin pages
+import StaffLeaveApproval from "./pages/administration/staff-leave";
+import UserManagement from "./pages/administration/users";
+import EventsPage from "./pages/events";
+
 // Management pages
 import ManageSchools from "./pages/management/ManageSchools";
 import ManageInstructors from "./pages/management/ManageInstructorsNew";
@@ -81,6 +86,9 @@ function Router() {
           <ProtectedRoute path="/administration/performance-policy" component={Administration} />
           <ProtectedRoute path="/administration/classroom-evaluation" component={Administration} />
           <ProtectedRoute path="/administration/instructor-recognition" component={InstructorRecognition} />
+          <ProtectedRoute path="/administration/staff-leave" component={StaffLeaveApproval} />
+          <ProtectedRoute path="/administration/users" component={UserManagement} />
+          <ProtectedRoute path="/events" component={EventsPage} />
           
           {/* Training & Development routes */}
           <ProtectedRoute path="/training-development" component={TrainingDevelopment} />
