@@ -114,19 +114,19 @@ export default function StaffLeaveApproval() {
   // Filter leave requests
   const filteredLeaves = leaveRequests.filter(leave => {
     const matchesSearch = !searchTerm || 
-      leave.instructorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      leave.empId.toLowerCase().includes(searchTerm.toLowerCase());
+      (leave.instructorName && leave.instructorName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (leave.empId && leave.empId.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesType = filterType === 'all' || leave.type === filterType;
-    const matchesStatus = filterStatus === 'all' || leave.status === filterStatus;
+    const matchesType = filterType === 'all' || (leave.type && leave.type === filterType);
+    const matchesStatus = filterStatus === 'all' || (leave.status && leave.status === filterStatus);
     const matchesSchool = filterSchool === 'all' || leave.schoolId === filterSchool;
     
     // Filter by selected month
-    const startDate = parseISO(leave.startDate);
-    const endDate = parseISO(leave.endDate);
+    const startDate = leave.startDate ? parseISO(leave.startDate) : null;
+    const endDate = leave.endDate ? parseISO(leave.endDate) : null;
     const isInSelectedMonth = 
-      (isValid(startDate) && isSameMonth(startDate, selectedMonth)) || 
-      (isValid(endDate) && isSameMonth(endDate, selectedMonth));
+      (startDate && isValid(startDate) && isSameMonth(startDate, selectedMonth)) || 
+      (endDate && isValid(endDate) && isSameMonth(endDate, selectedMonth));
     
     return matchesSearch && matchesType && matchesStatus && matchesSchool && isInSelectedMonth;
   });
@@ -273,6 +273,8 @@ export default function StaffLeaveApproval() {
   
   // Get status badge
   const getStatusBadge = (status: string) => {
+    if (!status) return <Badge variant="outline">Unknown</Badge>;
+    
     switch (status.toLowerCase()) {
       case 'approved':
         return <Badge className="bg-green-100 text-green-800 border-green-200">Approved</Badge>;
@@ -287,6 +289,8 @@ export default function StaffLeaveApproval() {
   
   // Get leave type badge
   const getTypeBadge = (type: string) => {
+    if (!type) return <Badge variant="outline">Unknown</Badge>;
+    
     switch (type.toLowerCase()) {
       case 'annual leave':
         return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Annual Leave</Badge>;
@@ -496,10 +500,10 @@ export default function StaffLeaveApproval() {
               </TableHeader>
               <TableBody>
                 {filteredLeaves.map((leave) => {
-                  const startDate = parseISO(leave.startDate);
-                  const endDate = parseISO(leave.endDate);
-                  const isValidStart = isValid(startDate);
-                  const isValidEnd = isValid(endDate);
+                  const startDate = leave.startDate ? parseISO(leave.startDate) : null;
+                  const endDate = leave.endDate ? parseISO(leave.endDate) : null;
+                  const isValidStart = startDate && isValid(startDate);
+                  const isValidEnd = endDate && isValid(endDate);
                   const formattedDateRange = isValidStart && isValidEnd
                     ? `${format(startDate, 'MMM d')} - ${format(endDate, 'MMM d, yyyy')}`
                     : 'Invalid date range';
@@ -575,7 +579,13 @@ export default function StaffLeaveApproval() {
               <div className="grid grid-cols-4 items-center gap-4">
                 <div className="font-medium">Date Range:</div>
                 <div className="col-span-3">
-                  {format(parseISO(selectedLeave.startDate), 'MMM d, yyyy')} - {format(parseISO(selectedLeave.endDate), 'MMM d, yyyy')}
+                  {selectedLeave.startDate && selectedLeave.endDate ? (
+                    <>
+                      {format(parseISO(selectedLeave.startDate), 'MMM d, yyyy')} - {format(parseISO(selectedLeave.endDate), 'MMM d, yyyy')}
+                    </>
+                  ) : (
+                    'Invalid date range'
+                  )}
                 </div>
               </div>
               
