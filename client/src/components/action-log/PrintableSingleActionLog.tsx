@@ -48,13 +48,14 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
             display: flex;
             align-items: center;
           }
-          .logo-container {
-            width: 200px;
-            margin-right: 20px;
+          .title-with-brand {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
           }
-          .logo {
-            max-width: 100%;
-            height: auto;
+          .title-text {
+            font-size: 20px;
+            font-weight: bold;
           }
           .header-content {
             flex-grow: 1;
@@ -152,11 +153,10 @@ export const PrintableSingleActionLog = ({ log, onClose }: PrintableSingleAction
       </head>
       <body>
         <div class="header">
-          <div class="logo-container">
-            <img src="/images/govcio_logo.png" alt="GOVCIO Logo" class="logo">
-          </div>
           <div class="header-content">
-            <h1 class="title">Action Item Details</h1>
+            <div class="title-with-brand">
+              <span class="blue-text">Gov</span><span class="cyan-text">CIO</span> - <span class="title-text">Action Item Details</span>
+            </div>
             <p class="date">Printed: ${format(new Date(), 'MMMM d, yyyy')}</p>
           </div>
         </div>
