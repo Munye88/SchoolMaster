@@ -104,6 +104,7 @@ export default function CandidateFormNew({
   // Load sample interview questions for testing
   const loadSampleQuestions = () => {
     const sampleQuestions: GeneratedQuestion[] = [
+      // Technical Questions (10)
       { 
         category: "technical", 
         question: "How would you explain the difference between the present perfect and past perfect to students?" 
@@ -113,16 +114,162 @@ export default function CandidateFormNew({
         question: "What strategies do you use to teach complex grammar structures?" 
       },
       { 
+        category: "technical", 
+        question: "How do you teach pronunciation to students whose native language has very different phonetics from English?" 
+      },
+      { 
+        category: "technical", 
+        question: "What methods do you use to teach English article usage (a, an, the) to students whose native language doesn't have articles?" 
+      },
+      { 
+        category: "technical", 
+        question: "How would you explain the difference between passive and active voice to aviation students?" 
+      },
+      { 
+        category: "technical", 
+        question: "What techniques do you use to help students master English prepositions?" 
+      },
+      { 
+        category: "technical", 
+        question: "How do you teach modal verbs (can, could, should, would, etc.) and their various uses?" 
+      },
+      { 
+        category: "technical", 
+        question: "What approach do you take when teaching conditionals (if clauses)?" 
+      },
+      { 
+        category: "technical", 
+        question: "How do you explain and teach the difference between countable and uncountable nouns?" 
+      },
+      { 
+        category: "technical", 
+        question: "What methods do you use to help students understand and use phrasal verbs correctly?" 
+      },
+
+      // Curriculum Questions (10)
+      { 
         category: "curriculum", 
         question: "How do you support cadets or officers preparing for the ALCPT (American Language Course Placement Test)?" 
       },
+      { 
+        category: "curriculum", 
+        question: "How would you design a specialized curriculum for aviation English focusing on radio communications?" 
+      },
+      { 
+        category: "curriculum", 
+        question: "What resources would you incorporate when teaching technical aviation terminology?" 
+      },
+      { 
+        category: "curriculum", 
+        question: "How do you balance teaching general English proficiency with specialized aviation vocabulary?" 
+      },
+      { 
+        category: "curriculum", 
+        question: "What assessment methods would you use to evaluate students' progress in an aviation English course?" 
+      },
+      { 
+        category: "curriculum", 
+        question: "How would you incorporate authentic aviation materials (manuals, checklists, etc.) into your teaching?" 
+      },
+      { 
+        category: "curriculum", 
+        question: "How would you structure a curriculum to prepare students for ICAO English language proficiency requirements?" 
+      },
+      { 
+        category: "curriculum", 
+        question: "What approaches would you take to teach listening comprehension specifically for air traffic control communications?" 
+      },
+      { 
+        category: "curriculum", 
+        question: "How would you design lesson plans that incorporate both language skills and aviation safety concepts?" 
+      },
+      { 
+        category: "curriculum", 
+        question: "What strategies would you implement to help students achieve standardized test goals while maintaining engagement?" 
+      },
+
+      // Behavioral Questions (10)
       { 
         category: "behavioral", 
         question: "Describe a time when you had to handle a classroom discipline issue. What happened and how did you resolve it?" 
       },
       { 
+        category: "behavioral", 
+        question: "Tell me about a situation where you had to adapt your teaching style to meet the needs of a struggling student." 
+      },
+      { 
+        category: "behavioral", 
+        question: "Describe a time when you successfully motivated a reluctant or disinterested student." 
+      },
+      { 
+        category: "behavioral", 
+        question: "Give an example of how you've handled cultural differences in the classroom." 
+      },
+      { 
+        category: "behavioral", 
+        question: "Tell me about a time when you had to provide constructive criticism to a student. How did you approach it?" 
+      },
+      { 
+        category: "behavioral", 
+        question: "Describe a situation where you had to work with a difficult colleague. How did you handle it?" 
+      },
+      { 
+        category: "behavioral", 
+        question: "Tell me about a time when you had to adjust your lesson plan on the spot. What happened and what did you do?" 
+      },
+      { 
+        category: "behavioral", 
+        question: "Describe a challenging group of students you've taught and how you managed their dynamics." 
+      },
+      { 
+        category: "behavioral", 
+        question: "Tell me about a time when you received feedback about your teaching that required you to make changes." 
+      },
+      { 
+        category: "behavioral", 
+        question: "Describe a situation where you had to balance multiple responsibilities or deadlines. How did you manage your time?" 
+      },
+
+      // General Questions (10)
+      { 
         category: "general", 
         question: "What inspired you to become an English Language Instructor?" 
+      },
+      { 
+        category: "general", 
+        question: "What do you find most rewarding about teaching English to aviation professionals?" 
+      },
+      { 
+        category: "general", 
+        question: "How do you stay updated with current teaching methodologies and approaches?" 
+      },
+      { 
+        category: "general", 
+        question: "What do you believe are the most important qualities of an effective ELT instructor?" 
+      },
+      { 
+        category: "general", 
+        question: "How do you create an inclusive learning environment for students from diverse backgrounds?" 
+      },
+      { 
+        category: "general", 
+        question: "What interests you about teaching in a military aviation context specifically?" 
+      },
+      { 
+        category: "general", 
+        question: "How do you handle the challenges of teaching technical English to non-native speakers?" 
+      },
+      { 
+        category: "general", 
+        question: "What strategies do you use to keep students engaged during long instructional periods?" 
+      },
+      { 
+        category: "general", 
+        question: "How would you describe your teaching philosophy in relation to language acquisition?" 
+      },
+      { 
+        category: "general", 
+        question: "What experience or skills do you have that would be particularly valuable in this ELT program?" 
       }
     ];
     
@@ -202,8 +349,10 @@ export default function CandidateFormNew({
               description: "Resume has been parsed and form fields have been filled automatically. Interview questions were also generated.",
             });
           } else {
-            // If no questions were generated by the API, use fallback questions
+            // If no questions were generated by the API, use our comprehensive fallback questions
+            // The same set of questions we use in loadSampleQuestions()
             const fallbackQuestions: GeneratedQuestion[] = [
+              // Technical Questions (selection of 5)
               { 
                 category: "technical", 
                 question: "How would you explain the difference between the present perfect and past perfect to students?" 
@@ -213,16 +362,82 @@ export default function CandidateFormNew({
                 question: "What strategies do you use to teach complex grammar structures?" 
               },
               { 
+                category: "technical", 
+                question: "How do you teach pronunciation to students whose native language has very different phonetics from English?" 
+              },
+              { 
+                category: "technical", 
+                question: "What methods do you use to teach English article usage (a, an, the) to students whose native language doesn't have articles?" 
+              },
+              { 
+                category: "technical", 
+                question: "How would you explain the difference between passive and active voice to aviation students?" 
+              },
+              
+              // Curriculum Questions (selection of 5)
+              { 
                 category: "curriculum", 
                 question: "How do you support cadets or officers preparing for the ALCPT (American Language Course Placement Test)?" 
               },
+              { 
+                category: "curriculum", 
+                question: "How would you design a specialized curriculum for aviation English focusing on radio communications?" 
+              },
+              { 
+                category: "curriculum", 
+                question: "What resources would you incorporate when teaching technical aviation terminology?" 
+              },
+              { 
+                category: "curriculum", 
+                question: "How do you balance teaching general English proficiency with specialized aviation vocabulary?" 
+              },
+              { 
+                category: "curriculum", 
+                question: "What assessment methods would you use to evaluate students' progress in an aviation English course?" 
+              },
+              
+              // Behavioral Questions (selection of 5)
               { 
                 category: "behavioral", 
                 question: "Describe a time when you had to handle a classroom discipline issue. What happened and how did you resolve it?" 
               },
               { 
+                category: "behavioral", 
+                question: "Tell me about a situation where you had to adapt your teaching style to meet the needs of a struggling student." 
+              },
+              { 
+                category: "behavioral", 
+                question: "Describe a time when you successfully motivated a reluctant or disinterested student." 
+              },
+              { 
+                category: "behavioral", 
+                question: "Give an example of how you've handled cultural differences in the classroom." 
+              },
+              { 
+                category: "behavioral", 
+                question: "Tell me about a time when you had to provide constructive criticism to a student. How did you approach it?" 
+              },
+              
+              // General Questions (selection of 5)
+              { 
                 category: "general", 
                 question: "What inspired you to become an English Language Instructor?" 
+              },
+              { 
+                category: "general", 
+                question: "What do you find most rewarding about teaching English to aviation professionals?" 
+              },
+              { 
+                category: "general", 
+                question: "How do you stay updated with current teaching methodologies and approaches?" 
+              },
+              { 
+                category: "general", 
+                question: "What do you believe are the most important qualities of an effective ELT instructor?" 
+              },
+              { 
+                category: "general", 
+                question: "How do you create an inclusive learning environment for students from diverse backgrounds?" 
               }
             ];
             
