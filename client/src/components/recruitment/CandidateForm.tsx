@@ -479,6 +479,51 @@ export default function CandidateForm({
               />
             </div>
             
+            {/* Add a button to load sample questions for testing */}
+            <div className="flex justify-between items-center mb-4">
+              <div className="text-sm text-gray-500">Candidate details</div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="text-xs"
+                onClick={() => {
+                  // Load sample interview questions with appropriate types
+                  const sampleQuestions: GeneratedQuestion[] = [
+                    { 
+                      category: "technical", 
+                      question: "How would you explain the difference between the present perfect and past perfect to students?" 
+                    },
+                    { 
+                      category: "technical", 
+                      question: "What strategies do you use to teach complex grammar structures?" 
+                    },
+                    { 
+                      category: "curriculum", 
+                      question: "How do you support cadets or officers preparing for the ALCPT (American Language Course Placement Test)?" 
+                    },
+                    { 
+                      category: "behavioral", 
+                      question: "Describe a time when you had to handle a classroom discipline issue. What happened and how did you resolve it?" 
+                    },
+                    { 
+                      category: "general", 
+                      question: "What inspired you to become an English Language Instructor?" 
+                    }
+                  ];
+                  
+                  setGeneratedQuestions(sampleQuestions);
+                  
+                  toast({
+                    title: "Questions Loaded",
+                    description: "Sample interview questions have been loaded.",
+                  });
+                }}
+              >
+                Load Sample Questions
+              </Button>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
