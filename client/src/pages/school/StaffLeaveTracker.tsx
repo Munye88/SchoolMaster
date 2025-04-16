@@ -50,7 +50,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useState, useEffect, useRef } from 'react';
 import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer } from 'lucide-react';
 import { useSchool } from '@/hooks/useSchool';
-import { format, addDays } from 'date-fns';
+import { format, addDays, differenceInCalendarDays } from 'date-fns';
+import { cn } from '@/lib/utils';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -774,13 +775,11 @@ export default function StaffLeaveTracker() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>NAME</TableHead>
-                <TableHead>EMPLOYEE ID</TableHead>
+                <TableHead>INSTRUCTOR</TableHead>
                 <TableHead>LEAVE TYPE</TableHead>
-                <TableHead>PTO</TableHead>
-                <TableHead>R&R</TableHead>
-                <TableHead>DESTINATION</TableHead>
-                <TableHead>RETURN</TableHead>
+                <TableHead>PERIOD</TableHead>
+                <TableHead>STATUS</TableHead>
+                <TableHead>SCHOOL</TableHead>
                 <TableHead>ACTIONS</TableHead>
               </TableRow>
             </TableHeader>
@@ -802,18 +801,77 @@ export default function StaffLeaveTracker() {
                 </TableRow>
               ) : (
                 schoolLeaveRecords.map((leave) => (
-                  <TableRow key={leave.id}>
-                    <TableCell className="font-medium">{leave.instructorName}</TableCell>
-                    <TableCell>{leave.employeeId || `INST-${leave.instructorId.toString().padStart(4, '0')}`}</TableCell>
-                    <TableCell>{leave.leaveType || 'PTO'}</TableCell>
-                    <TableCell>{leave.ptodays} days</TableCell>
-                    <TableCell>{leave.rrdays} days</TableCell>
-                    <TableCell>{leave.destination}</TableCell>
-                    <TableCell>{format(new Date(leave.returnDate), 'yyyy-MM-dd')}</TableCell>
+                  <TableRow key={leave.id} className="hover:bg-slate-50">
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{leave.instructorName}</span>
+                        <span className="text-xs text-gray-500">ID: {leave.employeeId || `INST-${leave.instructorId.toString().padStart(4, '0')}`}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className={cn(
+                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+                        leave.leaveType === "PTO" 
+                          ? "bg-blue-100 text-blue-800" 
+                          : leave.leaveType === "R&R" 
+                            ? "bg-green-100 text-green-800"
+                            : "bg-purple-100 text-purple-800"
+                      )}>
+                        {leave.leaveType || 'PTO'}
+                      </div>
+                      {leave.ptodays > 0 && (
+                        <div className="mt-1 text-xs text-gray-500">
+                          PTO: {leave.ptodays} days
+                        </div>
+                      )}
+                      {leave.rrdays > 0 && (
+                        <div className="mt-1 text-xs text-gray-500">
+                          R&R: {leave.rrdays} days
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <div className="text-sm font-medium">
+                          {leave.startDate && format(new Date(leave.startDate), 'MMM d, yyyy')} - {leave.endDate && format(new Date(leave.endDate), 'MMM d, yyyy')}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Return: {leave.returnDate ? format(new Date(leave.returnDate), 'MMM d, yyyy') : 'N/A'}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {leave.startDate && leave.endDate && 
+                            `Duration: ${differenceInCalendarDays(new Date(leave.endDate), new Date(leave.startDate)) + 1} days`
+                          }
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className={cn(
+                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+                        leave.status === "Pending" 
+                          ? "bg-yellow-100 text-yellow-800" 
+                          : leave.status === "Approved" 
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                      )}>
+                        {leave.status}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className={cn(
+                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+                        "bg-indigo-100 text-indigo-800"
+                      )}>
+                        {currentSchool?.name || "Unknown"}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {leave.destination && <span>To: {leave.destination}</span>}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         <Button 
-                          variant="outline" 
+                          variant="ghost" 
                           size="sm"
                           onClick={() => {
                             setSelectedLeave(leave);
@@ -822,32 +880,6 @@ export default function StaffLeaveTracker() {
                         >
                           <Eye className="h-4 w-4 mr-1" />
                           View
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => {
-                            setSelectedLeave(leave);
-                            // Populate form with selected leave data
-                            editForm.reset({
-                              instructorId: leave.instructorId,
-                              employeeId: leave.employeeId || '',
-                              startDate: format(new Date(leave.startDate), 'yyyy-MM-dd'),
-                              endDate: format(new Date(leave.endDate), 'yyyy-MM-dd'),
-                              returnDate: format(new Date(leave.returnDate), 'yyyy-MM-dd'),
-                              ptodays: leave.ptodays,
-                              rrdays: leave.rrdays,
-                              leaveType: leave.leaveType || 'PTO',
-                              destination: leave.destination,
-                              status: leave.status,
-                              comments: leave.comments || '',
-                              attachmentUrl: leave.attachmentUrl || '',
-                            });
-                            setEditDialogOpen(true);
-                          }}
-                        >
-                          <Edit className="h-4 w-4 mr-1" />
-                          Edit
                         </Button>
                         <Button 
                           variant="outline" 
