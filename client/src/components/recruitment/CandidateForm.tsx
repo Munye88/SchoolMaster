@@ -31,6 +31,7 @@ interface ParsedResumeData {
   degreeField?: string;
   yearsExperience?: number;
   certifications?: string;
+  hasCertifications?: boolean;
   nativeEnglishSpeaker?: boolean;
   militaryExperience?: boolean;
 }
@@ -66,6 +67,7 @@ export default function CandidateForm({
 }: CandidateFormProps) {
   const { toast } = useToast();
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [isParsingResume, setIsParsingResume] = useState(false);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -92,6 +94,7 @@ export default function CandidateForm({
 
   const uploadResumeMutation = useMutation({
     mutationFn: async (file: File) => {
+      setIsParsingResume(true);
       const formData = new FormData();
       formData.append("file", file);
       
@@ -105,6 +108,57 @@ export default function CandidateForm({
       }
       
       const data = await response.json();
+      
+      // If we have parsed data from the AI, autofill the form
+      if (data.parsedData) {
+        try {
+          const parsedData = data.parsedData as ParsedResumeData;
+          
+          // Update form fields with parsed data
+          form.setValue("name", parsedData.name || form.getValues("name"));
+          form.setValue("email", parsedData.email || form.getValues("email"));
+          form.setValue("phone", parsedData.phone || form.getValues("phone"));
+          
+          if (parsedData.degree) {
+            const degreeValue = parsedData.degree.toLowerCase().includes("bachelor") ? "Bachelor" :
+                        parsedData.degree.toLowerCase().includes("master") ? "Master" :
+                        parsedData.degree.toLowerCase().includes("phd") ? "PhD" :
+                        parsedData.degree.toLowerCase().includes("high school") ? "High School" :
+                        form.getValues("degree");
+            
+            form.setValue("degree", degreeValue);
+          }
+          
+          form.setValue("degreeField", parsedData.degreeField || form.getValues("degreeField"));
+          
+          if (parsedData.yearsExperience !== undefined) {
+            form.setValue("yearsExperience", parsedData.yearsExperience);
+          }
+          
+          form.setValue("certifications", parsedData.certifications || form.getValues("certifications"));
+          
+          if (parsedData.hasCertifications !== undefined) {
+            form.setValue("hasCertifications", !!parsedData.certifications || form.getValues("hasCertifications"));
+          }
+          
+          if (parsedData.nativeEnglishSpeaker !== undefined) {
+            form.setValue("nativeEnglishSpeaker", parsedData.nativeEnglishSpeaker);
+          }
+          
+          if (parsedData.militaryExperience !== undefined) {
+            form.setValue("militaryExperience", parsedData.militaryExperience);
+          }
+          
+          toast({
+            title: "Resume Analyzed",
+            description: "Resume has been parsed and form fields have been filled automatically.",
+          });
+        } catch (error) {
+          console.error("Error parsing resume data:", error);
+        }
+      }
+      
+      setIsParsingResume(false);
       return data.url;
     }
   });
@@ -154,38 +208,39 @@ export default function CandidateForm({
     }
   });
 
-  const handleResumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleResumeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setResumeFile(e.target.files[0]);
+      const file = e.target.files[0];
+      setResumeFile(file);
+      
+      try {
+        // Upload and parse immediately
+        const resumeUrl = await uploadResumeMutation.mutateAsync(file);
+        form.setValue("resumeUrl", resumeUrl);
+      } catch (error) {
+        console.error("Error uploading resume:", error);
+        toast({
+          title: "Error",
+          description: "Failed to upload resume. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
   const onSubmit = async (data: FormValues) => {
     try {
-      // If there's a new resume file, upload it first
-      let resumeUrl = data.resumeUrl;
-      if (resumeFile) {
-        try {
-          resumeUrl = await uploadResumeMutation.mutateAsync(resumeFile);
-        } catch (error) {
-          toast({
-            title: "Error",
-            description: "Failed to upload resume. Please try again.",
-            variant: "destructive",
-          });
-          return;
-        }
-      }
-
+      // Resume should already be uploaded at this point
+      // since we do it immediately when a file is selected
       const candidateData = {
         ...data,
-        resumeUrl,
         uploadDate: new Date(),
       };
 
-      if (isEditing && initialData?.id) {
+      if (isEditing && initialData && 'id' in initialData) {
+        const id = initialData.id as number;
         await updateCandidateMutation.mutateAsync({
-          id: initialData.id,
+          id,
           ...candidateData,
         });
       } else {
@@ -193,6 +248,11 @@ export default function CandidateForm({
       }
     } catch (error) {
       console.error("Form submission error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit candidate data. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -463,22 +523,31 @@ export default function CandidateForm({
                       ) : null}
                       
                       <div className="mt-2">
-                        <label 
-                          htmlFor="resume-upload" 
-                          className="flex items-center gap-2 justify-center p-2 border border-dashed rounded-md cursor-pointer hover:bg-gray-50"
-                        >
-                          <Upload className="h-4 w-4" />
-                          <span className="text-sm font-medium">
-                            {field.value ? "Upload new resume" : "Upload resume (PDF or DOC)"}
-                          </span>
-                          <input
-                            id="resume-upload"
-                            type="file"
-                            accept=".pdf,.doc,.docx"
-                            className="hidden"
-                            onChange={handleResumeChange}
-                          />
-                        </label>
+                        {isParsingResume ? (
+                          <div className="flex items-center justify-center p-2 border border-dashed rounded-md">
+                            <div className="flex items-center gap-2">
+                              <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+                              <span className="text-sm">Analyzing resume with AI...</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <label 
+                            htmlFor="resume-upload" 
+                            className="flex items-center gap-2 justify-center p-2 border border-dashed rounded-md cursor-pointer hover:bg-gray-50"
+                          >
+                            <Upload className="h-4 w-4" />
+                            <span className="text-sm font-medium">
+                              {field.value ? "Upload new resume" : "Upload resume (PDF or DOC)"}
+                            </span>
+                            <input
+                              id="resume-upload"
+                              type="file"
+                              accept=".pdf,.doc,.docx"
+                              className="hidden"
+                              onChange={handleResumeChange}
+                            />
+                          </label>
+                        )}
                       </div>
                       
                       <FormMessage />
