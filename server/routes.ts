@@ -8,6 +8,7 @@ import path from "path";
 import multer from "multer";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
+import OpenAI from "openai";
 import { 
   insertInstructorSchema, 
   insertCourseSchema, 
@@ -1640,8 +1641,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let parsedData = {};
       
       try {
-        // Import OpenAI
-        const OpenAI = require('openai');
+        // Use the OpenAI client that's already imported at the top of the file
         const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
         
         // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -1660,7 +1660,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           response_format: { type: "json_object" }
         });
         
-        const content = response.choices[0].message.content;
+        // Check if content exists and is a non-empty string
+        const content = typeof response.choices[0].message.content === 'string' && 
+                        response.choices[0].message.content.trim() !== '' ? 
+                        response.choices[0].message.content : '{}';
         parsedData = JSON.parse(content);
         
         console.log("Resume parsed successfully:", parsedData);
