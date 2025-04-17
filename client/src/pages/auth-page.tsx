@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader2, User, Lock } from "lucide-react";
+import logoImage from '@assets/Updated logo.png';
 
 export default function AuthPage() {
   const { user, loginMutation } = useAuth();
@@ -36,49 +37,46 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen" 
-      style={{
-        background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
-      }}>
-      {/* Glass-morphism card */}
-      <div className="relative w-full max-w-5xl mx-auto overflow-hidden rounded-3xl shadow-2xl flex flex-col md:flex-row bg-white/10 backdrop-blur-md">
+    <div className="flex items-center justify-center min-h-screen bg-white">
+      {/* Main content container */}
+      <div className="w-full max-w-5xl mx-auto flex flex-col md:flex-row shadow-xl rounded-2xl overflow-hidden">
         {/* Left side with image */}
         <div className="hidden md:block md:w-1/2 relative">
           <div 
             className="h-full w-full bg-cover bg-center"
             style={{ 
-              backgroundImage: "url('https://images.pexels.com/photos/5212704/pexels-photo-5212704.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')"
+              backgroundImage: "url('https://images.pexels.com/photos/3769714/pexels-photo-3769714.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')"
             }}
           >
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/40 to-blue-600/10"></div>
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-[#17387c]/50"></div>
             
             {/* Blue edge accent */}
-            <div className="absolute right-0 top-0 bottom-0 w-16"
+            <div className="absolute right-0 top-0 bottom-0 w-12"
                 style={{
-                  background: 'linear-gradient(to left, rgba(59, 130, 246, 0.5), transparent)',
-                  clipPath: 'polygon(100% 0, 100% 100%, 0 100%, 60% 0)'
+                  background: '#17387c',
+                  clipPath: 'polygon(0 0, 100% 0, 100% 100%, 70% 100%)'
                 }}
             ></div>
           </div>
         </div>
 
         {/* Right side with form */}
-        <div className="w-full md:w-1/2 px-8 py-12 md:py-16 md:px-12">
+        <div className="w-full md:w-1/2 px-8 py-12 md:py-16 md:px-16 bg-white">
           <div className="max-w-md mx-auto">
             {/* Logo */}
-            <div className="flex justify-center mb-12">
+            <div className="flex justify-center mb-10">
               <img 
-                src="/Updated logo.png" 
+                src={logoImage} 
                 alt="GOVCIO Logo" 
-                className="h-14 object-contain drop-shadow-lg"
+                className="h-14 object-contain"
               />
             </div>
 
             {/* Welcome text */}
             <div className="text-center mb-10">
-              <h1 className="text-3xl font-bold text-white mb-3">Welcome Back</h1>
-              <p className="text-blue-100/80">Continue transforming learning outcomes.</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+              <p className="text-gray-600">Continue transforming learning outcomes.</p>
             </div>
             
             {/* Form */}
@@ -92,21 +90,21 @@ export default function AuthPage() {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white font-medium">Username</FormLabel>
+                      <FormLabel className="text-gray-700">Username</FormLabel>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                          <User className="h-5 w-5 text-blue-300" />
+                          <User className="h-5 w-5 text-[#17387c]" />
                         </div>
                         <FormControl>
                           <Input
                             placeholder="Enter your username"
                             autoComplete="username"
-                            className="pl-10 py-6 bg-white/10 border-blue-300/30 text-white placeholder:text-blue-200/50 rounded-lg focus-visible:ring-blue-400 focus-visible:border-blue-400"
+                            className="pl-10 py-6 bg-[#e8f0fe] border-0 text-gray-800 rounded-md focus-visible:ring-[#17387c]"
                             {...field}
                           />
                         </FormControl>
                       </div>
-                      <FormMessage className="text-red-300" />
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -115,28 +113,28 @@ export default function AuthPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white font-medium">Password</FormLabel>
+                      <FormLabel className="text-gray-700">Password</FormLabel>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                          <Lock className="h-5 w-5 text-blue-300" />
+                          <Lock className="h-5 w-5 text-[#17387c]" />
                         </div>
                         <FormControl>
                           <Input
                             type="password"
-                            placeholder="Enter your password"
+                            placeholder="••••••••"
                             autoComplete="current-password"
-                            className="pl-10 py-6 bg-white/10 border-blue-300/30 text-white placeholder:text-blue-200/50 rounded-lg focus-visible:ring-blue-400 focus-visible:border-blue-400"
+                            className="pl-10 py-6 bg-[#e8f0fe] border-0 text-gray-800 rounded-md focus-visible:ring-[#17387c]"
                             {...field}
                           />
                         </FormControl>
                       </div>
-                      <FormMessage className="text-red-300" />
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
                 <Button
                   type="submit"
-                  className="w-full py-6 mt-4 bg-gradient-to-r from-blue-800 to-blue-600 hover:from-blue-700 hover:to-blue-500 text-white font-medium rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1"
+                  className="w-full py-6 mt-4 bg-[#17387c] hover:bg-[#0f2654] text-white font-medium rounded-md shadow-md transition-colors"
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending ? (
@@ -152,8 +150,8 @@ export default function AuthPage() {
             </Form>
             
             {/* Forgot Password */}
-            <div className="mt-6 text-right">
-              <a href="#" className="text-sm text-blue-200 hover:text-white hover:underline transition-colors">
+            <div className="mt-4 text-right">
+              <a href="#" className="text-sm text-[#17387c] hover:text-[#0f2654] hover:underline transition-colors">
                 Forgot Password?
               </a>
             </div>
@@ -162,7 +160,7 @@ export default function AuthPage() {
       </div>
       
       {/* Footer */}
-      <div className="absolute bottom-4 text-center w-full text-xs text-blue-200/70">
+      <div className="absolute bottom-4 text-center w-full text-xs text-gray-500">
         SALIENT ARABIA FOR MILITARY SUPPORT
       </div>
     </div>
