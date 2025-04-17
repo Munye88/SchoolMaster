@@ -37,6 +37,7 @@ import { SchoolProvider } from "@/hooks/useSchool";
 
 // Admin pages
 import StaffLeaveApproval from "./pages/administration/staff-leave";
+import ManageDashboard from "./pages/administration/manage-dashboard";
 import UserManagement from "./pages/administration/users";
 import EventsPage from "./pages/events";
 
@@ -86,7 +87,7 @@ function Router() {
           <ProtectedRoute path="/administration/performance-policy" component={Administration} />
           <ProtectedRoute path="/administration/classroom-evaluation" component={Administration} />
           <ProtectedRoute path="/administration/instructor-recognition" component={InstructorRecognition} />
-          <ProtectedRoute path="/administration/manage-dashboard" component={StaffLeaveApproval} />
+          <ProtectedRoute path="/administration/manage-dashboard" component={ManageDashboard} />
           <ProtectedRoute path="/administration/users" component={UserManagement} />
           <ProtectedRoute path="/events" component={EventsPage} />
           
