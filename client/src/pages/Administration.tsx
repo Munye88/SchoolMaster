@@ -70,7 +70,7 @@ const Administration = () => {
 
   // Special case for Instructor Evaluation Guideline
   const isEvaluationGuideline = documentType === "evaluation-guideline";
-  const evaluationGuidelinePdfUrl = "/pdf/instructor-evaluation-guideline.pdf";
+  const evaluationGuidelinePdfUrl = "/documents/Instructor_Evaluation_Guideline.pdf";
 
   if (isLoading) {
     return (
