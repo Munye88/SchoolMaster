@@ -50,7 +50,7 @@ export default function AuthPage() {
           <div className="relative hidden lg:block">
             <div 
               className="h-full w-full bg-cover bg-center"
-              style={{ backgroundImage: "url('https://images.pexels.com/photos/5940721/pexels-photo-5940721.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')" }}
+              style={{ backgroundImage: "url('https://images.pexels.com/photos/2041540/pexels-photo-2041540.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')" }}
             ></div>
             
             {/* Overlay and Accents */}
