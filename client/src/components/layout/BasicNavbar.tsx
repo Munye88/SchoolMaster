@@ -132,7 +132,7 @@ const BasicNavbar = () => {
                 )}
                 
                 {showSchoolLinks && showSchoolLinks !== 'main' && (
-                  <div className="absolute left-0 top-full mt-1 bg-white border rounded shadow-lg z-50">
+                  <div className="absolute left-0 top-full mt-1 bg-white border rounded shadow-lg z-50 w-64">
                     <div className="px-4 py-2 bg-gray-50 border-b font-medium">
                       {schools.find(s => s.code === showSchoolLinks)?.name} Documents
                     </div>
@@ -170,7 +170,7 @@ const BasicNavbar = () => {
                         Book Inventory
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/staff-leave-tracker`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100">
+                        className="block px-4 py-2 text-sm hover:bg-gray-100 font-medium text-[#0A2463]">
                         Staff Leave Tracker
                       </Link>
                     </div>
