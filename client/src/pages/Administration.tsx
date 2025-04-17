@@ -455,6 +455,21 @@ const Administration = () => {
                   title={activeDocument.title}
                 />
               </div>
+              
+              {documentType === "employee-handbook" && (
+                <div className="mt-4 flex justify-end">
+                  <a 
+                    href={activeDocument.fileUrl}
+                    download="SAMS_Employee_Handbook.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center rounded-md bg-[#0A2463] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Handbook
+                  </a>
+                </div>
+              )}
             </CardContent>
           </Card>
         ) : (
