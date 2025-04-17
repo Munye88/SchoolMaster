@@ -66,7 +66,7 @@ export default function AuthPage() {
             {/* Logo */}
             <div className="flex justify-center mb-10">
               <img 
-                src="/Updated logo.png" 
+                src="/images/govcio-updated-logo.png" 
                 alt="GOVCIO Logo" 
                 className="h-14 object-contain"
               />
