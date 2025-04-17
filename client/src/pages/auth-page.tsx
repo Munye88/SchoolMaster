@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader2, User, Lock } from "lucide-react";
-// Import the logo directly from public folder
+import logoImage from '@assets/Updated logo.png';
 
 export default function AuthPage() {
   const { user, loginMutation } = useAuth();
@@ -45,7 +45,7 @@ export default function AuthPage() {
           <div 
             className="h-full w-full bg-cover bg-center"
             style={{ 
-              backgroundImage: "url('https://img.freepik.com/free-photo/teacher-showing-something-tablet-students_23-2148204419.jpg?w=900&t=st=1713428520~exp=1713429120~hmac=5f31ee7fb73156c05762c34b8dc5af6e128aa5c8a7dba5d30c45b6dc67e18ccb')"
+              backgroundImage: "url('https://images.pexels.com/photos/3769714/pexels-photo-3769714.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')"
             }}
           >
             {/* Overlay */}
@@ -67,7 +67,7 @@ export default function AuthPage() {
             {/* Logo */}
             <div className="flex justify-center mb-10">
               <img 
-                src="/Updated logo.png" 
+                src={logoImage} 
                 alt="GOVCIO Logo" 
                 className="h-14 object-contain"
               />
