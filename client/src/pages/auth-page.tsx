@@ -44,7 +44,7 @@ export default function AuthPage() {
           <div 
             className="h-full w-full bg-cover bg-center"
             style={{ 
-              backgroundImage: "url('https://images.pexels.com/photos/3769714/pexels-photo-3769714.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')"
+              backgroundImage: "url('https://images.pexels.com/photos/301926/pexels-photo-301926.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')"
             }}
           >
             {/* Overlay */}
