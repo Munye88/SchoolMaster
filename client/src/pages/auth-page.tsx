@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader2, User, Lock } from "lucide-react";
-import logoImage from '@assets/Updated logo.png';
 
 export default function AuthPage() {
   const { user, loginMutation } = useAuth();
@@ -67,7 +66,7 @@ export default function AuthPage() {
             {/* Logo */}
             <div className="flex justify-center mb-10">
               <img 
-                src={logoImage} 
+                src="/Updated logo.png" 
                 alt="GOVCIO Logo" 
                 className="h-14 object-contain"
               />
