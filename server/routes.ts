@@ -54,6 +54,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Serve static files from the uploads directory
   app.use('/uploads', express.static(uploadDir));
   
+  // Serve documents from public/documents directory
+  const documentsDir = path.join(process.cwd(), 'public/documents');
+  if (!fs.existsSync(documentsDir)) {
+    fs.mkdirSync(documentsDir, { recursive: true });
+  }
+  app.use('/documents', express.static(documentsDir));
+  
   // Configure multer storage
   const storage = multer.diskStorage({
     destination: function(req, file, cb) {
