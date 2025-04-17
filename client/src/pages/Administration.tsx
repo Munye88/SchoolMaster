@@ -2,7 +2,7 @@ import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { FileText, Download, BookOpen, ClipboardList, CheckSquare, Award, Users } from "lucide-react";
+import { FileText, Download, BookOpen, ClipboardList, CheckSquare, Award, Users, Info } from "lucide-react";
 import { useSchool } from "@/hooks/useSchool";
 import { Document } from "@shared/schema";
 import { Button } from "@/components/ui/button";
@@ -451,26 +451,62 @@ const Administration = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="aspect-video rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
-                <iframe 
-                  src={activeDocument.fileUrl} 
-                  className="w-full h-full border-0"
-                  title={activeDocument.title}
-                />
-              </div>
-              
-              {documentType === "employee-handbook" && (
-                <div className="mt-4 flex justify-end">
-                  <a 
-                    href={activeDocument.fileUrl}
-                    download="SAMS_Employee_Handbook.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-md bg-[#0A2463] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    Download Handbook
-                  </a>
+              {documentType === "employee-handbook" ? (
+                <div className="space-y-4">
+                  <div className="aspect-video rounded-md overflow-hidden bg-gray-100 border border-gray-200">
+                    <object
+                      data={activeDocument.fileUrl}
+                      type="application/pdf"
+                      className="w-full h-full"
+                    >
+                      <div className="flex items-center justify-center h-full p-6 text-center">
+                        <div>
+                          <p className="mb-4 text-gray-600">Unable to display PDF document.</p>
+                          <a 
+                            href={activeDocument.fileUrl}
+                            className="text-blue-600 hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Click here to open the PDF
+                          </a>
+                        </div>
+                      </div>
+                    </object>
+                  </div>
+                  
+                  <div className="flex justify-end">
+                    <a 
+                      href={activeDocument.fileUrl}
+                      download="SAMS_Employee_Handbook.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center rounded-md bg-[#0A2463] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Download Handbook
+                    </a>
+                  </div>
+                  
+                  <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
+                    <h3 className="text-blue-800 font-medium mb-2 flex items-center">
+                      <Info className="h-4 w-4 mr-2 text-blue-600" />
+                      About the SAMS Employee Handbook
+                    </h3>
+                    <p className="text-gray-700 text-sm">
+                      This handbook contains important information about policies, procedures, and expectations for all 
+                      Aviation English Language Training (ELT) employees. All staff members should thoroughly review this 
+                      document. For any questions, please contact the administration.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="aspect-video rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
+                  <iframe 
+                    src={activeDocument.fileUrl} 
+                    className="w-full h-full border-0"
+                    title={activeDocument.title}
+                  />
                 </div>
               )}
             </CardContent>
