@@ -13,8 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2, User, Lock } from "lucide-react";
-import govcioLogo from "@assets/Govcio_logo-removebg-preview.png";
+import { Loader2 } from "lucide-react";
 
 export default function AuthPage() {
   const { user, loginMutation } = useAuth();
@@ -37,22 +36,42 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F5F7FA]">
-      <div className="flex-1 flex flex-col items-center justify-center p-8">
-        <div className="w-full max-w-md mb-8 flex justify-center">
-          <img 
-            src={govcioLogo} 
-            alt="GOVCIO Logo" 
-            className="h-16 object-contain"
-          />
+    <div className="flex min-h-screen bg-[#0F1E45] rounded-lg overflow-hidden">
+      {/* Left side with image */}
+      <div className="hidden md:block md:w-[45%] relative overflow-hidden rounded-r-3xl">
+        <div 
+          className="h-full w-full bg-cover bg-center relative"
+          style={{ 
+            backgroundImage: "url('https://img.freepik.com/free-photo/diverse-group-students-learning-classroom_53876-138094.jpg')",
+            backgroundPosition: "center"
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a1e4b]/10 to-[#0a1e4b]/60"></div>
+          {/* Blue vertical accent */}
+          <div className="absolute right-0 top-0 bottom-0 w-4 bg-[#0066CC]"></div>
         </div>
-        
-        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-          <div className="mb-8 text-center">
-            <h1 className="text-2xl font-bold text-[#1A3A6E] mb-2">Welcome Back</h1>
-            <p className="text-gray-600">Sign in to GOVCIO/SAMS ELT Program</p>
+      </div>
+
+      {/* Right side with form */}
+      <div className="flex-1 flex flex-col justify-center px-8 md:px-12 lg:px-16">
+        <div className="max-w-md w-full mx-auto">
+          {/* Logo */}
+          <div className="mb-10">
+            <img 
+              src="/Govcio_logo-removebg-preview.png" 
+              alt="GOVCIO Logo" 
+              className="h-16 object-contain"
+            />
+            <p className="text-xs text-white/70 mt-1">SALIENT ARABIA FOR MILITARY SUPPORT</p>
+          </div>
+
+          {/* Welcome text */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+            <p className="text-white/70">Continue transforming learning outcomes.</p>
           </div>
           
+          {/* Form */}
           <Form {...loginForm}>
             <form
               onSubmit={loginForm.handleSubmit(onLoginSubmit)}
@@ -63,20 +82,15 @@ export default function AuthPage() {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#1A3A6E] font-medium">Username</FormLabel>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <User className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter your username"
-                          autoComplete="username"
-                          className="pl-10 py-6 border-gray-300 bg-gray-50 focus:ring-[#00A6ED] focus:border-[#00A6ED]"
-                          {...field}
-                        />
-                      </FormControl>
-                    </div>
+                    <FormLabel className="text-white/90">Username</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your username"
+                        autoComplete="username"
+                        className="py-6 bg-white/10 text-white border-0 focus-visible:ring-1 focus-visible:ring-white/30"
+                        {...field}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -86,28 +100,23 @@ export default function AuthPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[#1A3A6E] font-medium">Password</FormLabel>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <Lock className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="Enter your password"
-                          autoComplete="current-password"
-                          className="pl-10 py-6 border-gray-300 bg-gray-50 focus:ring-[#00A6ED] focus:border-[#00A6ED]"
-                          {...field}
-                        />
-                      </FormControl>
-                    </div>
+                    <FormLabel className="text-white/90">Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Enter your password"
+                        autoComplete="current-password"
+                        className="py-6 bg-white/10 text-white border-0 focus-visible:ring-1 focus-visible:ring-white/30"
+                        {...field}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <Button
                 type="submit"
-                className="w-full py-6 bg-gradient-to-r from-[#0A2463] to-[#00A6ED] hover:from-[#071A4A] hover:to-[#0095D8] text-white font-medium rounded-md shadow-md"
+                className="w-full py-7 bg-[#0A366C] hover:bg-[#0A366C]/90 text-white font-medium rounded-md"
                 disabled={loginMutation.isPending}
               >
                 {loginMutation.isPending ? (
@@ -122,8 +131,11 @@ export default function AuthPage() {
             </form>
           </Form>
           
-          <div className="mt-8 text-center text-sm text-gray-500">
-            <p>SALIENT ARABIA FOR MILITARY SUPPORT</p>
+          {/* Forgot Password */}
+          <div className="mt-4 text-right">
+            <a href="#" className="text-sm text-white/70 hover:text-white">
+              Forgot Password?
+            </a>
           </div>
         </div>
       </div>
