@@ -215,7 +215,7 @@ const Sidebar = () => {
                       "flex items-center py-2 text-sm text-white hover:text-blue-200 transition-colors duration-200",
                       isActive("/administration/employee-handbook") && "text-blue-200"
                     )}>
-                      Employee Handbook
+                      SAMS Employee Handbook
                     </Link>
                   </li>
                   <li className="mb-1">

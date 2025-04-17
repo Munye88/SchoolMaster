@@ -35,15 +35,18 @@ const Administration = () => {
       if (selectedSchool === 'all') {
         return data;
       }
-      return data.filter(doc => 
-        !doc.schoolId || 
-        doc.schoolId === null || 
-        doc.schoolId === (
-          selectedSchool ? 
-          parseInt(selectedSchool.replace(/[^\d]/g, '')) : 
-          null
-        )
-      );
+      
+      // If selectedSchool is an object with an id
+      if (selectedSchool && typeof selectedSchool === 'object' && 'id' in selectedSchool) {
+        return data.filter(doc => 
+          !doc.schoolId || 
+          doc.schoolId === null || 
+          doc.schoolId === selectedSchool.id
+        );
+      }
+      
+      // Default case, no filtering by school
+      return data;
     }
   });
 

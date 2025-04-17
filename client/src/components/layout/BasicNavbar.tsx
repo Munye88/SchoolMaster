@@ -339,10 +339,10 @@ const BasicNavbar = () => {
                       <FileText className="h-4 w-4 mr-2 text-blue-600" />
                       SOP Guidelines
                     </Link>
-                    <Link href="/administration/instructor-handbook" onClick={() => setShowAdminLinks(false)}
+                    <Link href="/administration/employee-handbook" onClick={() => setShowAdminLinks(false)}
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50">
                       <BookOpen className="h-4 w-4 mr-2 text-blue-600" />
-                      Instructor Handbook
+                      SAMS Employee Handbook
                     </Link>
                     <Link href="/administration/instructor-recognition" onClick={() => setShowAdminLinks(false)}
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50">
