@@ -17,7 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip, Cell } from 'recharts';
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import govcioLogo from "../assets/images/govcio-logo-updated.png";
+// Import removed and replaced with direct URL reference
 
 const Dashboard = () => {
   const { selectedSchool } = useSchool();
@@ -40,8 +40,9 @@ const Dashboard = () => {
       : ['/api/courses'],
     enabled: !selectedSchool || !!selectedSchool.id,
     // Force refetch when navigating back to dashboard
-    refetchOnMount: true,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: true,
+    staleTime: 0, // Always consider data stale
   });
   
   // Fetch instructors
@@ -51,15 +52,17 @@ const Dashboard = () => {
       : ['/api/instructors'],
     enabled: !selectedSchool || !!selectedSchool.id,
     // Force refetch when navigating back to dashboard
-    refetchOnMount: true,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: true,
+    staleTime: 0, // Always consider data stale
   });
 
   // Fetch schools
   const { data: schools = [] } = useQuery<School[]>({
     queryKey: ['/api/schools'],
-    refetchOnMount: true,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: true,
+    staleTime: 0, // Always consider data stale
   });
   
   // Fetch students
@@ -68,8 +71,9 @@ const Dashboard = () => {
       ? ['/api/schools', selectedSchool.id, 'students'] 
       : ['/api/students'],
     enabled: !selectedSchool || !!selectedSchool.id,
-    refetchOnMount: true,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: true,
+    staleTime: 0, // Always consider data stale
   });
 
   // Fetch test results
@@ -97,31 +101,26 @@ const Dashboard = () => {
     queryKey: ['/api/events'],
   });
   
-  // Calculate statistics - using useEffect to properly calculate derived state
-  const [statistics, setStatistics] = useState({
-    totalStudents: 0,
-    activeInstructors: 0,
-    totalSchools: 0,
+  // Calculate statistics using derived values instead of state
+  // This ensures values are always up-to-date with the latest data
+  const statistics = {
+    totalStudents: students.length || courses.reduce((sum, course) => sum + course.studentCount, 0),
+    activeInstructors: instructors.length,
+    totalSchools: schools.length,
     totalCourses: 5, // Exact count as per requirements
-    activeCourses: 0,
-    completedCourses: 0
-  });
+    activeCourses: courses.filter(c => c.status === "In Progress").length,
+    completedCourses: courses.filter(c => c.status === "Completed").length
+  };
   
-  // Update statistics whenever any of the source data changes
+  // Log statistics updates for debugging
   useEffect(() => {
-    console.log("Updating dashboard statistics:");
-    console.log("- Courses:", courses.length, "courses loaded");
-    console.log("- Active courses:", courses.filter(c => c.status === "In Progress").length);
-    
-    setStatistics({
-      totalStudents: students.length || courses.reduce((sum, course) => sum + course.studentCount, 0),
-      activeInstructors: instructors.length,
-      totalSchools: schools.length,
-      totalCourses: 5, // Exact count as per requirements
-      activeCourses: courses.filter(c => c.status === "In Progress").length,
-      completedCourses: courses.filter(c => c.status === "Completed").length
-    });
-  }, [courses, students, instructors, schools]);
+    console.log("Dashboard statistics updated:");
+    console.log("- Students:", statistics.totalStudents);
+    console.log("- Instructors:", statistics.activeInstructors);
+    console.log("- Schools:", statistics.totalSchools);
+    console.log("- Courses:", statistics.totalCourses);
+    console.log("- Active courses:", statistics.activeCourses);
+  }, [statistics.totalStudents, statistics.activeInstructors, statistics.totalSchools, statistics.activeCourses]);
   
   // Staff nationality data for bar chart
   const nationalityData = [
@@ -162,7 +161,7 @@ const Dashboard = () => {
       {/* Dashboard Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <img src={govcioLogo} alt="GovCIO Logo" className="h-12" />
+          <img src="/images/govcio-updated-logo.png" alt="GovCIO Logo" className="h-12" />
           <div>
             <p className="text-sm text-gray-600 italic">
               "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
