@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Loader2, User, Lock } from "lucide-react";
 
 export default function AuthPage() {
   const { user, loginMutation } = useAuth();
@@ -36,71 +36,77 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#3668c9] p-4">
-      <div className="w-full max-w-5xl mx-auto bg-white rounded-2xl overflow-hidden shadow-xl flex">
+    <div className="flex items-center justify-center min-h-screen" 
+      style={{
+        background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+      }}>
+      {/* Glass-morphism card */}
+      <div className="relative w-full max-w-5xl mx-auto overflow-hidden rounded-3xl shadow-2xl flex flex-col md:flex-row bg-white/10 backdrop-blur-md">
         {/* Left side with image */}
-        <div className="hidden md:block w-1/2 relative">
+        <div className="hidden md:block md:w-1/2 relative">
           <div 
             className="h-full w-full bg-cover bg-center"
             style={{ 
-              backgroundImage: "url('https://img.freepik.com/free-photo/teacher-showing-something-tablet-students_23-2148204419.jpg?w=900&t=st=1713428520~exp=1713429120~hmac=5f31ee7fb73156c05762c34b8dc5af6e128aa5c8a7dba5d30c45b6dc67e18ccb')"
+              backgroundImage: "url('https://images.pexels.com/photos/5212704/pexels-photo-5212704.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')"
             }}
           >
-            {/* Blue diagonal overlay */}
-            <div className="absolute inset-0 bg-[#3668c9] opacity-20"></div>
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/40 to-blue-600/10"></div>
             
             {/* Blue edge accent */}
-            <div 
-              className="absolute right-0 top-0 bottom-0" 
-              style={{
-                width: '40px',
-                background: '#3668c9',
-                clipPath: 'polygon(0 0, 100% 0, 100% 100%, 40% 100%)'
-              }}
+            <div className="absolute right-0 top-0 bottom-0 w-16"
+                style={{
+                  background: 'linear-gradient(to left, rgba(59, 130, 246, 0.5), transparent)',
+                  clipPath: 'polygon(100% 0, 100% 100%, 0 100%, 60% 0)'
+                }}
             ></div>
           </div>
         </div>
 
         {/* Right side with form */}
-        <div className="w-full md:w-1/2 px-8 py-12 md:px-12">
+        <div className="w-full md:w-1/2 px-8 py-12 md:py-16 md:px-12">
           <div className="max-w-md mx-auto">
             {/* Logo */}
-            <div className="flex justify-center mb-10">
+            <div className="flex justify-center mb-12">
               <img 
                 src="/Updated logo.png" 
                 alt="GOVCIO Logo" 
-                className="h-12 object-contain"
+                className="h-14 object-contain drop-shadow-lg"
               />
             </div>
 
             {/* Welcome text */}
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-              <p className="text-gray-600">Continue transforming learning outcomes.</p>
+            <div className="text-center mb-10">
+              <h1 className="text-3xl font-bold text-white mb-3">Welcome Back</h1>
+              <p className="text-blue-100/80">Continue transforming learning outcomes.</p>
             </div>
             
             {/* Form */}
             <Form {...loginForm}>
               <form
                 onSubmit={loginForm.handleSubmit(onLoginSubmit)}
-                className="space-y-5"
+                className="space-y-6"
               >
                 <FormField
                   control={loginForm.control}
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700">Username</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter your username"
-                          autoComplete="username"
-                          defaultValue="Moon2025"
-                          className="py-6 bg-[#e8f0fe] border-0 rounded-md"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
+                      <FormLabel className="text-white font-medium">Username</FormLabel>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                          <User className="h-5 w-5 text-blue-300" />
+                        </div>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your username"
+                            autoComplete="username"
+                            className="pl-10 py-6 bg-white/10 border-blue-300/30 text-white placeholder:text-blue-200/50 rounded-lg focus-visible:ring-blue-400 focus-visible:border-blue-400"
+                            {...field}
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="text-red-300" />
                     </FormItem>
                   )}
                 />
@@ -109,23 +115,28 @@ export default function AuthPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-700">Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="••••••••"
-                          autoComplete="current-password"
-                          className="py-6 bg-[#e8f0fe] border-0 rounded-md"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
+                      <FormLabel className="text-white font-medium">Password</FormLabel>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                          <Lock className="h-5 w-5 text-blue-300" />
+                        </div>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder="Enter your password"
+                            autoComplete="current-password"
+                            className="pl-10 py-6 bg-white/10 border-blue-300/30 text-white placeholder:text-blue-200/50 rounded-lg focus-visible:ring-blue-400 focus-visible:border-blue-400"
+                            {...field}
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="text-red-300" />
                     </FormItem>
                   )}
                 />
                 <Button
                   type="submit"
-                  className="w-full py-6 mt-2 bg-[#0a2366] hover:bg-[#071a4b] text-white font-medium rounded-md"
+                  className="w-full py-6 mt-4 bg-gradient-to-r from-blue-800 to-blue-600 hover:from-blue-700 hover:to-blue-500 text-white font-medium rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1"
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending ? (
@@ -141,13 +152,18 @@ export default function AuthPage() {
             </Form>
             
             {/* Forgot Password */}
-            <div className="mt-4 text-right">
-              <a href="#" className="text-sm text-[#3668c9] hover:underline">
+            <div className="mt-6 text-right">
+              <a href="#" className="text-sm text-blue-200 hover:text-white hover:underline transition-colors">
                 Forgot Password?
               </a>
             </div>
           </div>
         </div>
+      </div>
+      
+      {/* Footer */}
+      <div className="absolute bottom-4 text-center w-full text-xs text-blue-200/70">
+        SALIENT ARABIA FOR MILITARY SUPPORT
       </div>
     </div>
   );
