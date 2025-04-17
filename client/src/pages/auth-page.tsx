@@ -65,7 +65,11 @@ export default function AuthPage() {
           <div className="max-w-md mx-auto">
             {/* Logo */}
             <div className="flex justify-center mb-10">
-              <h1 className="text-4xl font-bold text-[#17387c]">GOVCIO</h1>
+              <img 
+                src="/images/govcio-updated-logo.png" 
+                alt="GOVCIO Logo" 
+                className="h-14 object-contain"
+              />
             </div>
 
             {/* Welcome text */}
