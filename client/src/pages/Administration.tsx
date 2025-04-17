@@ -366,23 +366,63 @@ const Administration = () => {
               <FileText className="h-6 w-6 text-blue-600 mr-3" />
               <div>
                 <h3 className="font-medium">Instructor Evaluation Guideline</h3>
-                <p className="text-sm text-gray-500">PDF Document • Created by Munye Sufi</p>
+                <p className="text-sm text-gray-500">PDF Document • Created by Munye Sufi & Abdibasid Barre</p>
               </div>
             </div>
             <Button variant="outline" asChild className="gap-2">
-              <a href={evaluationGuidelinePdfUrl} download="Instructor Evaluation Guideline.pdf">
+              <a href={evaluationGuidelinePdfUrl} download="Instructor_Evaluation_Guideline.pdf">
                 <Download className="h-4 w-4" />
                 <span>Download</span>
               </a>
             </Button>
           </div>
           
-          <div className="h-[800px] rounded-lg overflow-hidden border border-gray-200">
-            <iframe 
-              src={evaluationGuidelinePdfUrl} 
-              className="w-full h-full"
-              title="Instructor Evaluation Guideline"
-            />
+          <div className="aspect-video rounded-md overflow-hidden bg-gray-100 border border-gray-200">
+            <object
+              data={evaluationGuidelinePdfUrl}
+              type="application/pdf"
+              className="w-full h-[800px]"
+            >
+              <div className="flex items-center justify-center h-full p-6 text-center">
+                <div>
+                  <p className="mb-4 text-gray-600">Unable to display PDF document.</p>
+                  <a 
+                    href={evaluationGuidelinePdfUrl}
+                    className="text-blue-600 hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Click here to open the PDF
+                  </a>
+                </div>
+              </div>
+            </object>
+          </div>
+          
+          <div className="flex justify-end">
+            <a 
+              href={evaluationGuidelinePdfUrl}
+              download="Instructor_Evaluation_Guideline.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-md bg-[#0A2463] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Download Evaluation Guide
+            </a>
+          </div>
+          
+          <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
+            <h3 className="text-blue-800 font-medium mb-2 flex items-center">
+              <Info className="h-4 w-4 mr-2 text-blue-600" />
+              About the Instructor Evaluation Guideline
+            </h3>
+            <p className="text-gray-700 text-sm">
+              This guideline provides a comprehensive framework for evaluating ELT instructors, with an emphasis on 
+              continuous improvement and professional development. The document covers four key evaluation areas: 
+              Introduction, Presentation, Instructor-Student Interaction, and Summary. It offers practical examples 
+              and clear criteria to help instructors understand what constitutes effective teaching practice.
+            </p>
           </div>
         </div>
       )
