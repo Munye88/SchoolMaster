@@ -17,8 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip, Cell } from 'recharts';
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-// Using the transparent logo from the public directory
-const govcioLogo = "/govcio-logo-transparent.png";
+// Logo moved to the navbar, no longer needed here
 
 const Dashboard = () => {
   const { selectedSchool } = useSchool();
@@ -146,12 +145,6 @@ const Dashboard = () => {
       {/* Dashboard Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <img 
-            src={govcioLogo} 
-            alt="GovCIO Logo" 
-            className="h-12 object-contain bg-transparent" 
-            style={{ maxWidth: '240px' }}
-          />
           <div>
             <p className="text-sm text-gray-600 italic">
               "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
