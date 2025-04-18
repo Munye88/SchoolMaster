@@ -4,6 +4,7 @@ import { sql } from 'drizzle-orm';
 import { addColumnsToStaffLeave } from './migrations/add_columns_to_staff_leave';
 import { updateNfsEastInstructors } from './migrations/update_nfs_east_instructors';
 import { updateNfsEastImages } from './migrations/update_nfs_east_images';
+import { fixNfsEastImages } from './migrations/fix_nfs_east_images';
 import { updateKfnaInstructors } from './migrations/update_kfna_instructors';
 import { updateKfnaImages } from './migrations/update_kfna_images';
 import { updateNfsWestInstructors } from './migrations/update_nfs_west_instructors';
@@ -51,6 +52,9 @@ export async function initDatabase() {
     
     // Update NFS East instructor images
     await updateNfsEastImages();
+    
+    // Fix NFS East image associations
+    await fixNfsEastImages();
     
     // Update KFNA instructors (limit to exactly 20)
     await updateKfnaInstructors();
