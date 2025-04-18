@@ -67,14 +67,16 @@ const BasicNavbar = () => {
     <div className="flex flex-col">
       {/* Top bar with brand */}
       <div className="bg-[#0A2463] text-white h-16 flex items-center px-6">
-        <div className="flex-grow flex items-center justify-center gap-3">
+        <div className="flex items-center gap-3">
           <img 
-            src="/govcio-logo-transparent.png" 
+            src="/govcio-logo-transparent-fixed.png" 
             alt="GovCIO Logo" 
             className="h-10 object-contain"
           />
           <span className="font-bold text-xl tracking-wide ml-2">SAMS ELT PROGRAM MANAGEMENT</span>
         </div>
+        
+        <div className="flex-grow"></div>
         
         {/* User menu */}
         <div className="flex items-center space-x-4">
