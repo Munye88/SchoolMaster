@@ -145,7 +145,7 @@ const Dashboard = () => {
       {/* Dashboard Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <img src={govcioLogo} alt="GovCIO Logo" className="h-12" />
+          <img src="/images/govcio-updated-logo.png" alt="GovCIO Logo" className="h-12" />
           <div>
             <p className="text-sm text-gray-600 italic">
               "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
