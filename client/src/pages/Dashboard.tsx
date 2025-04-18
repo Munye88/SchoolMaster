@@ -18,7 +18,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 // Using the transparent logo from the public directory
-const govcioLogo = "/govcio-transparent.png";
+const govcioLogo = "/govcio-logo-transparent.png";
 
 const Dashboard = () => {
   const { selectedSchool } = useSchool();
@@ -143,25 +143,25 @@ const Dashboard = () => {
 
   return (
     <div className="flex-1 overflow-y-auto py-6 px-6 bg-gradient-to-b from-gray-50 to-white">
-      {/* Dashboard Header with GovCIO Logo */}
-      <div className="bg-[#1e407c] text-white -mx-6 px-6 py-3 mb-6">
+      {/* Professional Blue Dashboard Header */}
+      <div className="bg-[#0A2463] text-white mb-6 -mx-6 px-6 py-3">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <img 
-              src="/govcio-transparent.png" 
+              src={govcioLogo} 
               alt="GovCIO Logo" 
-              className="h-10 object-contain"
+              className="h-10 object-contain" 
             />
             <div className="border-l border-blue-300 pl-4">
               <h1 className="font-semibold text-lg">SAMS ELT PROGRAM MANAGEMENT</h1>
-              <p className="text-xs text-blue-100 italic">
+              <p className="text-xs text-blue-200 italic">
                 "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
               </p>
             </div>
           </div>
           <div className="flex space-x-2">
             <div className="bg-white/10 backdrop-blur-sm text-white px-3 py-2 rounded-md flex items-center">
-              <Calendar className="h-4 w-4 mr-2 text-blue-100" /> 
+              <Calendar className="h-4 w-4 mr-2 text-blue-200" /> 
               <span className="font-medium text-sm">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
             </div>
           </div>
