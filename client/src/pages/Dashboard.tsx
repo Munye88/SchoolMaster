@@ -143,18 +143,18 @@ const Dashboard = () => {
   return (
     <div className="flex-1 overflow-y-auto py-6 px-6 bg-gradient-to-b from-gray-50 to-white">
       {/* Dashboard Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-4">
-          <div className="bg-[#0A2463] text-white px-4 py-2 rounded-md shadow-sm">
+      <div className="bg-[#0A2463] text-white mb-6 rounded-md shadow-sm">
+        <div className="flex justify-between items-center px-4 py-3">
+          <div className="flex items-center gap-4">
             <p className="text-sm italic">
               "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
             </p>
           </div>
-        </div>
-        <div className="flex space-x-2">
-          <div className="bg-white text-gray-700 px-2 py-1.5 rounded-md shadow-sm border border-gray-200 flex items-center">
-            <Calendar className="h-3.5 w-3.5 mr-1.5 text-blue-600" /> 
-            <span className="font-medium text-xs">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
+          <div className="flex space-x-2">
+            <div className="bg-[#0A2463] text-white px-2 py-1.5 rounded-md flex items-center border border-white/20">
+              <Calendar className="h-3.5 w-3.5 mr-1.5 text-white" /> 
+              <span className="font-medium text-xs">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
+            </div>
           </div>
         </div>
       </div>
