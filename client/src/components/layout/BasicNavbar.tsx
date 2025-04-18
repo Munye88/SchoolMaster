@@ -66,16 +66,14 @@ const BasicNavbar = () => {
   return (
     <div className="flex flex-col">
       {/* Top bar with brand */}
-      <div className="bg-[#0A2463] text-white h-16 flex items-center px-6">
+      <div className="bg-gray-200 text-[#0A2463] h-16 flex items-center px-6">
         {/* Logo on left */}
         <div className="flex items-center">
-          <div className="bg-white rounded p-1">
-            <img 
-              src="/govcio-logo-transparent-fixed.png" 
-              alt="GovCIO Logo" 
-              className="h-8 object-contain"
-            />
-          </div>
+          <img 
+            src="/govcio-logo-transparent-fixed.png" 
+            alt="GovCIO Logo" 
+            className="h-10 object-contain"
+          />
         </div>
         
         {/* Text in center */}
@@ -85,7 +83,7 @@ const BasicNavbar = () => {
         
         {/* User menu */}
         <div className="flex items-center space-x-4">
-          <button onClick={() => setShowUserMenu(!showUserMenu)} className="text-white">
+          <button onClick={() => setShowUserMenu(!showUserMenu)} className="text-[#0A2463]">
             <UserCircle className="h-6 w-6" />
           </button>
           
