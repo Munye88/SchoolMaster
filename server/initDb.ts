@@ -5,6 +5,7 @@ import { addColumnsToStaffLeave } from './migrations/add_columns_to_staff_leave'
 import { updateNfsEastInstructors } from './migrations/update_nfs_east_instructors';
 import { updateNfsEastImages } from './migrations/update_nfs_east_images';
 import { fixNfsEastImages } from './migrations/fix_nfs_east_images';
+import { permanentFixNfsEastImages } from './migrations/permanent_fix_nfs_east_images';
 import { updateKfnaInstructors } from './migrations/update_kfna_instructors';
 import { updateKfnaImages } from './migrations/update_kfna_images';
 import { updateNfsWestInstructors } from './migrations/update_nfs_west_instructors';
@@ -47,14 +48,38 @@ export async function initDatabase() {
     // Run the staff leave table migration
     await addColumnsToStaffLeave();
     
-    // Update NFS East instructors
-    await updateNfsEastInstructors();
+    // Check if NFS East images have been permanently fixed
+    const settingsCheck = await db.execute(sql`
+      SELECT EXISTS (
+        SELECT FROM pg_tables
+        WHERE schemaname = 'public'
+        AND tablename = 'system_settings'
+      );
+    `);
     
-    // Update NFS East instructor images
-    await updateNfsEastImages();
+    let nfsEastFixed = false;
     
-    // Fix NFS East image associations
-    await fixNfsEastImages();
+    if (settingsCheck.rows[0].exists) {
+      const fixCheck = await db.execute(sql`
+        SELECT value FROM system_settings
+        WHERE key = 'nfs_east_images_fixed';
+      `);
+      
+      nfsEastFixed = fixCheck.rows.length > 0 && fixCheck.rows[0].value === 'true';
+    }
+    
+    // If not fixed yet, apply the updates and permanent fix
+    if (!nfsEastFixed) {
+      console.log("Applying NFS East instructor updates and permanent fix...");
+      
+      // Update NFS East instructors
+      await updateNfsEastInstructors();
+      
+      // Skip the normal update and apply the permanent fix directly
+      await permanentFixNfsEastImages();
+    } else {
+      console.log("NFS East images are already permanently fixed, skipping updates");
+    }
     
     // Update KFNA instructors (limit to exactly 20)
     await updateKfnaInstructors();
