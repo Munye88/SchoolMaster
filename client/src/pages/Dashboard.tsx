@@ -145,8 +145,8 @@ const Dashboard = () => {
       {/* Dashboard Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <div>
-            <p className="text-sm text-gray-600 italic">
+          <div className="bg-[#0A2463] text-white px-4 py-2 rounded-md shadow-sm">
+            <p className="text-sm italic">
               "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
             </p>
           </div>

@@ -515,7 +515,7 @@ export default function ManageDashboard() {
                   <Info className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
                   <div>
                     <h4 className="font-medium text-blue-800">Preview</h4>
-                    <div className="mt-2 p-4 bg-white rounded border border-blue-100 italic text-gray-700">
+                    <div className="mt-2 p-4 bg-[#0A2463] rounded shadow-sm italic text-white">
                       "{quote.text}"
                       <div className="text-right mt-2 font-medium">— {quote.author}</div>
                     </div>
