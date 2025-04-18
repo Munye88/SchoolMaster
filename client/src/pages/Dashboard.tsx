@@ -143,27 +143,25 @@ const Dashboard = () => {
 
   return (
     <div className="flex-1 overflow-y-auto py-6 px-6 bg-gradient-to-b from-gray-50 to-white">
-      {/* Professional Blue Dashboard Header */}
-      <div className="bg-[#0A2463] text-white mb-6 -mx-6 px-6 py-3">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <img 
-              src={govcioLogo} 
-              alt="GovCIO Logo" 
-              className="h-10 object-contain" 
-            />
-            <div className="border-l border-blue-300 pl-4">
-              <h1 className="font-semibold text-lg">SAMS ELT PROGRAM MANAGEMENT</h1>
-              <p className="text-xs text-blue-200 italic">
-                "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
-              </p>
-            </div>
+      {/* Dashboard Header */}
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center gap-4">
+          <img 
+            src={govcioLogo} 
+            alt="GovCIO Logo" 
+            className="h-12 object-contain bg-transparent" 
+            style={{ maxWidth: '240px' }}
+          />
+          <div>
+            <p className="text-sm text-gray-600 italic">
+              "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
+            </p>
           </div>
-          <div className="flex space-x-2">
-            <div className="bg-white/10 backdrop-blur-sm text-white px-3 py-2 rounded-md flex items-center">
-              <Calendar className="h-4 w-4 mr-2 text-blue-200" /> 
-              <span className="font-medium text-sm">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
-            </div>
+        </div>
+        <div className="flex space-x-2">
+          <div className="bg-white text-gray-700 px-2 py-1.5 rounded-md shadow-sm border border-gray-200 flex items-center">
+            <Calendar className="h-3.5 w-3.5 mr-1.5 text-blue-600" /> 
+            <span className="font-medium text-xs">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
           </div>
         </div>
       </div>
