@@ -8,8 +8,10 @@ import { fixNfsEastImages } from './migrations/fix_nfs_east_images';
 import { permanentFixNfsEastImages } from './migrations/permanent_fix_nfs_east_images';
 import { updateKfnaInstructors } from './migrations/update_kfna_instructors';
 import { updateKfnaImages } from './migrations/update_kfna_images';
+import { permanentFixKfnaImages } from './migrations/permanent_fix_kfna_images';
 import { updateNfsWestInstructors } from './migrations/update_nfs_west_instructors';
 import { updateNfsWestImages } from './migrations/update_nfs_west_images';
+import { permanentFixNfsWestImages } from './migrations/permanent_fix_nfs_west_images';
 import { addCompletedDateField } from './migrations/add_completed_date';
 
 export async function initDatabase() {
@@ -81,17 +83,57 @@ export async function initDatabase() {
       console.log("NFS East images are already permanently fixed, skipping updates");
     }
     
-    // Update KFNA instructors (limit to exactly 20)
-    await updateKfnaInstructors();
+    // Check if KFNA images have been permanently fixed
+    let kfnaFixed = false;
     
-    // Update KFNA instructor images
-    await updateKfnaImages();
+    if (settingsCheck.rows[0].exists) {
+      const kfnaFixCheck = await db.execute(sql`
+        SELECT value FROM system_settings
+        WHERE key = 'kfna_images_fixed';
+      `);
+      
+      kfnaFixed = kfnaFixCheck.rows.length > 0 && kfnaFixCheck.rows[0].value === 'true';
+    }
     
-    // Update NFS West instructors (set to exactly 27)
-    await updateNfsWestInstructors();
+    // If not fixed yet, apply the permanent fix only for KFNA
+    if (!kfnaFixed) {
+      console.log("Applying KFNA instructor permanent image fix...");
+      
+      // Skip the problematic instructor update and just apply the image fixes
+      try {
+        await permanentFixKfnaImages();
+      } catch (error) {
+        console.error("Error fixing KFNA images:", error);
+      }
+    } else {
+      console.log("KFNA images are already permanently fixed, skipping updates");
+    }
     
-    // Update NFS West instructor images
-    await updateNfsWestImages();
+    // Check if NFS West images have been permanently fixed
+    let nfsWestFixed = false;
+    
+    if (settingsCheck.rows[0].exists) {
+      const westFixCheck = await db.execute(sql`
+        SELECT value FROM system_settings
+        WHERE key = 'nfs_west_images_fixed';
+      `);
+      
+      nfsWestFixed = westFixCheck.rows.length > 0 && westFixCheck.rows[0].value === 'true';
+    }
+    
+    // If not fixed yet, apply the permanent fix only for NFS West
+    if (!nfsWestFixed) {
+      console.log("Applying NFS West instructor permanent image fix...");
+      
+      // Skip the problematic instructor update and just apply the image fixes
+      try {
+        await permanentFixNfsWestImages();
+      } catch (error) {
+        console.error("Error fixing NFS West images:", error);
+      }
+    } else {
+      console.log("NFS West images are already permanently fixed, skipping updates");
+    }
     
     // Add completed_date field to action_logs table
     await addCompletedDateField();
