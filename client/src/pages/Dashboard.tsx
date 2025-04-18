@@ -17,7 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip, Cell } from 'recharts';
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-// Import removed and replaced with direct URL reference
+// Import was causing issues - reverting to direct URL reference
 
 const Dashboard = () => {
   const { selectedSchool } = useSchool();
@@ -145,7 +145,7 @@ const Dashboard = () => {
       {/* Dashboard Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
-          <img src="/images/govcio-updated-logo.png" alt="GovCIO Logo" className="h-12" />
+          <img src={govcioLogo} alt="GovCIO Logo" className="h-12" />
           <div>
             <p className="text-sm text-gray-600 italic">
               "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
