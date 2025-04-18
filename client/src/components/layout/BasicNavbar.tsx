@@ -69,13 +69,12 @@ const BasicNavbar = () => {
       <div className="bg-[#0A2463] text-white h-16 flex items-center px-6">
         {/* Logo on left */}
         <div className="flex items-center">
-          <div className="bg-white rounded p-1">
-            <img 
-              src="/govcio-logo-transparent-fixed.png" 
-              alt="GovCIO Logo" 
-              className="h-8 object-contain"
-            />
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="GovCIO Logo" 
+            style={{ maxWidth: "180px" }}
+            className="object-contain"
+          />
         </div>
         
         {/* Text in center */}
