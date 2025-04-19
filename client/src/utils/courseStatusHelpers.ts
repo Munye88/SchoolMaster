@@ -9,28 +9,47 @@ import { Course } from '@shared/schema';
  * @returns The calculated status of the course
  */
 export function calculateCourseStatus(course: Course): string {
-  // Force dates to be compared as simple timestamps (YYYY-MM-DD)
+  // EXTRA DEBUGGING: Something is wrong with date comparisons
+  console.log(`DETAILED DEBUG - Course: ${course.name}`);
+  console.log(`Raw dates - Start: ${course.startDate}, Today's date: ${new Date().toISOString()}`);
+
+  // Get yyyy-mm-dd date strings for comparison
   const today = new Date().toISOString().split('T')[0];
   
-  // Get date part only from course dates 
-  const startDate = course.startDate.split('T')[0];
-  const endDate = course.endDate ? course.endDate.split('T')[0] : null;
+  // Format course dates (if in format yyyy-MM-dd, this still works)
+  // Handle both ISO dates and plain dates
+  const startDate = course.startDate.includes('T') 
+    ? course.startDate.split('T')[0] 
+    : course.startDate;
+  
+  const endDate = course.endDate 
+    ? (course.endDate.includes('T') ? course.endDate.split('T')[0] : course.endDate)
+    : null;
   
   // Debug logging 
-  console.log(`Course: ${course.name}, Start: ${startDate}, Today: ${today}`);
-  console.log(`Comparison result: ${today >= startDate ? 'In Progress/Completed' : 'Starting Soon'}`);
+  console.log(`Comparing - Today: ${today}, Start date: ${startDate}`);
+  console.log(`String comparison: ${today} >= ${startDate} = ${today >= startDate}`);
+
+  // Handle dates
+  const todayObj = new Date(today);
+  const startDateObj = new Date(startDate);
+  
+  console.log(`Date object comparison: ${todayObj.getTime()} >= ${startDateObj.getTime()} = ${todayObj.getTime() >= startDateObj.getTime()}`);
   
   // If course has ended
   if (endDate && today > endDate) {
+    console.log(`Course is COMPLETED`);
     return 'Completed';
   }
   
   // If course has started (today is on or after start date)
   if (today >= startDate) {
+    console.log(`Course is IN PROGRESS`);
     return 'In Progress';
   }
   
   // Course hasn't started yet
+  console.log(`Course is STARTING SOON`);
   return 'Starting Soon';
 }
 
