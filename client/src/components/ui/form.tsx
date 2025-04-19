@@ -42,15 +42,27 @@ const FormField = <
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext)
   const itemContext = React.useContext(FormItemContext)
-  const formContext = useFormContext()
   
-  if (!formContext) {
-    throw new Error("useFormField should be used within FormProvider")
+  if (!fieldContext) {
+    throw new Error("useFormField should be used within <FormField>")
   }
   
-  const { getFieldState, formState } = formContext
+  // Get form context safely
+  let formState: any = {}
+  let getFieldState: any = () => ({})
+  
+  try {
+    // This might fail if not within a form context
+    const formContext = useFormContext()
+    if (formContext) {
+      formState = formContext.formState
+      getFieldState = formContext.getFieldState
+    }
+  } catch (error) {
+    // Continue with defaults if outside form context
+  }
 
-  const fieldState = fieldContext ? getFieldState(fieldContext.name, formState) : null
+  const fieldState = getFieldState ? getFieldState(fieldContext.name, formState) : {}
 
   if (!fieldContext) {
     throw new Error("useFormField should be used within <FormField>")
