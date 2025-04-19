@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { getCourseStatus } from '@/utils/courseStatusHelpers';
+import { Course, School } from '@shared/schema';
 import {
   Card,
   CardContent,
@@ -70,23 +72,23 @@ export default function Courses() {
   const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
 
   // Get all courses
-  const { data: courses = [], isLoading: isLoadingCourses } = useQuery({
+  const { data: courses = [], isLoading: isLoadingCourses } = useQuery<Course[]>({
     queryKey: ["/api/courses"],
   });
 
   // Get schools for filtering
-  const { data: schools = [], isLoading: isLoadingSchools } = useQuery({
+  const { data: schools = [], isLoading: isLoadingSchools } = useQuery<School[]>({
     queryKey: ["/api/schools"],
   });
 
   // Filter courses by selected school
-  const filteredCourses = selectedSchool 
-    ? courses.filter(course => course.schoolId === selectedSchool)
+  const filteredCourses: Course[] = selectedSchool 
+    ? courses.filter((course: Course) => course.schoolId === selectedSchool)
     : courses;
 
   // Get school name by ID
-  const getSchoolName = (id: number) => {
-    const school = schools.find(s => s.id === id);
+  const getSchoolName = (id: number): string => {
+    const school = schools.find((s: School) => s.id === id);
     return school ? school.name : "Unknown";
   };
 
@@ -149,7 +151,7 @@ export default function Courses() {
               All Schools
             </button>
             
-            {schools.map((school) => (
+            {schools.map((school: School) => (
               <button
                 key={school.id}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
@@ -328,7 +330,7 @@ export default function Courses() {
                     <Badge 
                       className="bg-white bg-opacity-30 text-white font-medium border-none"
                     >
-                      {course.status}
+                      {getCourseStatus(course)}
                     </Badge>
                   </div>
                 </CardHeader>
