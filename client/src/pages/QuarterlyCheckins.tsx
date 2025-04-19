@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   CheckCircle,
   Users,
@@ -14,7 +14,10 @@ import {
   FileQuestion,
   Ban,
   Search,
-  UserCheck
+  UserCheck,
+  Printer,
+  Edit,
+  FilePlus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +31,7 @@ import { useSchool } from "@/hooks/useSchool";
 import { useQuery } from "@tanstack/react-query";
 import { Instructor } from "@shared/schema";
 import { toast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 // Define the structure for quarterly check-in data
 interface CheckinQuestion {
@@ -53,14 +57,27 @@ interface CheckinSession {
   answers: CheckinAnswer[];
 }
 
-// Initial set of questions (to be replaced with your actual questions)
+// Quarterly check-in questions organized by section
 const defaultQuestions: CheckinQuestion[] = [
-  // Will be populated with the questions provided by the user
-  { id: 1, question: "How has your quarter been overall?", category: "General" },
-  { id: 2, question: "What challenges have you faced?", category: "Challenges" },
-  { id: 3, question: "What accomplishments are you proud of?", category: "Achievements" },
-  { id: 4, question: "What areas would you like support in?", category: "Support" },
-  { id: 5, question: "What are your goals for next quarter?", category: "Planning" },
+  // Section 2: Performance & Leadership
+  { id: 1, question: "How do you feel about your performance this quarter as a Senior ELT?", category: "Performance & Leadership" },
+  { id: 2, question: "What tasks, initiatives, or contributions are you most proud of this quarter?", category: "Performance & Leadership" },
+  { id: 3, question: "Have you encountered any recurring challenges with your instructors or within the team?", category: "Performance & Leadership" },
+  { id: 4, question: "If yes, how have you addressed them?", category: "Performance & Leadership" },
+  { id: 5, question: "How are you supporting the instructors under your supervision in achieving their goals?", category: "Performance & Leadership" },
+  
+  // Section 3: Program Improvement
+  { id: 6, question: "What suggestions do you have to improve the English Language Training program (instructional, administrative, or operational)?", category: "Program Improvement" },
+  { id: 7, question: "Are there any SOPs, policies, or procedures that you believe should be revised or updated? Why?", category: "Program Improvement" },
+  { id: 8, question: "What feedback have you received from instructors or students that should be considered?", category: "Program Improvement" },
+  
+  // Section 4: Professional Development
+  { id: 9, question: "What professional development topics would you like to explore or receive training in?", category: "Professional Development" },
+  { id: 10, question: "Have you supported or mentored any instructor in their professional growth this quarter?", category: "Professional Development" },
+  { id: 11, question: "If yes, how?", category: "Professional Development" },
+  
+  // Section 5: Support & Feedback
+  { id: 12, question: "What support do you need from me to perform more effectively in your role?", category: "Support & Feedback" },
 ];
 
 // Sample initial data - will be replaced with actual data from API
@@ -183,13 +200,131 @@ const QuarterlyCheckins = () => {
     }
   };
   
-  // Export session as PDF
-  const exportSession = (session: CheckinSession) => {
-    // For now just show a toast - implementation will come later
-    toast({
-      title: "Export Feature Coming Soon",
-      description: "The ability to export check-ins as PDF will be available soon.",
+  // Reference for printable div
+  const printableRef = useRef<HTMLDivElement>(null);
+
+  // Print session
+  const printSession = (session: CheckinSession) => {
+    if (!printableRef.current) return;
+    
+    // Store the current content
+    const originalContent = document.body.innerHTML;
+    
+    // Create print-specific styles
+    const printStyles = `
+      <style>
+        @media print {
+          body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+          h1 { font-size: 20px; margin-bottom: 10px; color: #0A2463; }
+          h2 { font-size: 16px; margin-top: 20px; margin-bottom: 10px; color: #0A2463; }
+          h3 { font-size: 14px; margin-top: 15px; margin-bottom: 5px; }
+          .question { font-weight: bold; margin-top: 10px; }
+          .answer { margin-left: 20px; margin-bottom: 15px; min-height: 20px; }
+          .no-answer { font-style: italic; color: #777; }
+          .header { display: flex; justify-content: space-between; }
+          .section { margin-top: 20px; padding-top: 10px; border-top: 1px solid #eee; }
+          .notes { margin-top: 20px; padding-top: 10px; border-top: 1px solid #eee; }
+          .info-row { display: flex; margin-bottom: 5px; }
+          .info-label { font-weight: bold; width: 180px; }
+          .info-value { flex: 1; }
+          .print-container { padding: 20px; }
+        }
+      </style>
+    `;
+    
+    // Create print content
+    const printContent = `
+      ${printStyles}
+      <div class="print-container">
+        <h1>QUARTERLY CHECK-IN REPORT</h1>
+        
+        <div class="info-row">
+          <div class="info-label">Senior ELT:</div>
+          <div class="info-value">${session.instructorName}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Date:</div>
+          <div class="info-value">${formatDate(session.date)}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Quarter/Year:</div>
+          <div class="info-value">${session.quarter} ${session.year}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Status:</div>
+          <div class="info-value">${session.status === "completed" ? "Completed" : "Draft"}</div>
+        </div>
+        
+        ${getQuestionsGroupedByCategory().map(category => `
+          <div class="section">
+            <h2>🔹 ${category.name}</h2>
+            ${category.questions.map(question => {
+              const answer = session.answers.find(a => a.questionId === question.id);
+              const answerText = answer?.answer || '';
+              
+              return `
+                <div class="question">${question.question}</div>
+                <div class="answer">
+                  ${answerText ? answerText : '<span class="no-answer">No answer provided</span>'}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `).join('')}
+        
+        ${session.notes ? `
+          <div class="notes">
+            <h2>Additional Notes</h2>
+            <div>${session.notes}</div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+    
+    // Set print content and print
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.focus();
+      
+      // Print after a slight delay to ensure content is rendered
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 250);
+    } else {
+      // Fallback if popup is blocked
+      // Use current window to print
+      document.body.innerHTML = printContent;
+      window.print();
+      document.body.innerHTML = originalContent;
+      
+      toast({
+        title: "Print Preview Generated",
+        description: "If no print dialog appeared, please check your popup blocker settings.",
+      });
+    }
+  };
+  
+  // Function to get questions grouped by category
+  const getQuestionsGroupedByCategory = () => {
+    const categories: { name: string; questions: CheckinQuestion[] }[] = [];
+    
+    defaultQuestions.forEach(question => {
+      const existingCategory = categories.find(c => c.name === question.category);
+      
+      if (existingCategory) {
+        existingCategory.questions.push(question);
+      } else {
+        categories.push({
+          name: question.category,
+          questions: [question]
+        });
+      }
     });
+    
+    return categories;
   };
   
   // Format date for display
@@ -226,6 +361,15 @@ const QuarterlyCheckins = () => {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <CardTitle>Recent Check-ins</CardTitle>
                   <div className="flex items-center gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setActiveTab("edit")}
+                      className="mr-2"
+                    >
+                      <FilePlus className="h-4 w-4 mr-2" />
+                      New Check-in
+                    </Button>
                     <div className="relative">
                       <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
                       <Input
@@ -297,12 +441,28 @@ const QuarterlyCheckins = () => {
                               size="icon" 
                               onClick={(e) => {
                                 e.stopPropagation();
-                                exportSession(session);
+                                printSession(session);
                               }}
-                              title="Export as PDF"
+                              title="Print Report"
                             >
-                              <Download className="h-4 w-4 text-gray-500" />
+                              <Printer className="h-4 w-4 text-gray-500" />
                             </Button>
+                            
+                            {session.status === "draft" && (
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCurrentSession(session);
+                                  setActiveTab("edit");
+                                }}
+                                title="Edit Check-in"
+                              >
+                                <Edit className="h-4 w-4 text-gray-500" />
+                              </Button>
+                            )}
+                            
                             {expandedSession === session.id ? (
                               <ChevronUp className="h-5 w-5 text-gray-400" />
                             ) : (
@@ -313,17 +473,37 @@ const QuarterlyCheckins = () => {
                         
                         {expandedSession === session.id && (
                           <div className="p-4 border-t">
-                            <div className="grid gap-4 mb-4">
-                              {session.answers.map((answer) => {
-                                const question = defaultQuestions.find(q => q.id === answer.questionId);
-                                if (!question) return null;
+                            <div ref={printableRef} className="space-y-6">
+                              {getQuestionsGroupedByCategory().map((category) => {
+                                // Get answers for this category
+                                const categoryAnswers = session.answers.filter(answer => {
+                                  const question = defaultQuestions.find(q => q.id === answer.questionId);
+                                  return question && question.category === category.name;
+                                });
+                                
+                                // Skip categories with no answers
+                                if (categoryAnswers.length === 0) return null;
                                 
                                 return (
-                                  <div key={answer.questionId} className="space-y-1">
-                                    <h5 className="font-medium text-gray-900">{question.question}</h5>
-                                    <p className="text-gray-700 bg-gray-50 p-3 rounded-md">
-                                      {answer.answer || <span className="text-gray-400 italic">No answer provided</span>}
-                                    </p>
+                                  <div key={category.name} className="space-y-3">
+                                    <div className="flex items-center space-x-2 mb-2">
+                                      <h3 className="font-semibold text-blue-900">🔹 {category.name}</h3>
+                                      <Separator className="flex-grow" />
+                                    </div>
+                                    
+                                    {categoryAnswers.map((answer) => {
+                                      const question = defaultQuestions.find(q => q.id === answer.questionId);
+                                      if (!question) return null;
+                                      
+                                      return (
+                                        <div key={answer.questionId} className="space-y-1">
+                                          <h5 className="font-medium text-gray-900">{question.question}</h5>
+                                          <p className="text-gray-700 bg-gray-50 p-3 rounded-md">
+                                            {answer.answer || <span className="text-gray-400 italic">No answer provided</span>}
+                                          </p>
+                                        </div>
+                                      );
+                                    })}
                                   </div>
                                 );
                               })}
@@ -455,32 +635,36 @@ const QuarterlyCheckins = () => {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {/* Session questions */}
-                    <div className="space-y-4">
-                      {defaultQuestions.map((question) => {
-                        const answer = currentSession.answers.find(a => a.questionId === question.id);
-                        const answerText = answer ? answer.answer : "";
-                        
-                        return (
-                          <div key={question.id} className="space-y-2">
-                            <Label htmlFor={`question-${question.id}`}>
-                              {question.question}
-                              {question.category && (
-                                <span className="ml-2 text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">
-                                  {question.category}
-                                </span>
-                              )}
-                            </Label>
-                            <Textarea
-                              id={`question-${question.id}`}
-                              value={answerText}
-                              onChange={(e) => updateAnswer(question.id, e.target.value)}
-                              placeholder="Enter response..."
-                              className="min-h-[100px]"
-                            />
+                    {/* Session questions grouped by category */}
+                    <div className="space-y-8">
+                      {getQuestionsGroupedByCategory().map((category) => (
+                        <div key={category.name} className="space-y-4">
+                          <div className="flex items-center space-x-2">
+                            <h3 className="text-lg font-semibold text-blue-900">🔹 {category.name}</h3>
+                            <Separator className="flex-grow" />
                           </div>
-                        );
-                      })}
+                          
+                          {category.questions.map((question) => {
+                            const answer = currentSession.answers.find(a => a.questionId === question.id);
+                            const answerText = answer ? answer.answer : "";
+                            
+                            return (
+                              <div key={question.id} className="space-y-2">
+                                <Label htmlFor={`question-${question.id}`}>
+                                  {question.question}
+                                </Label>
+                                <Textarea
+                                  id={`question-${question.id}`}
+                                  value={answerText}
+                                  onChange={(e) => updateAnswer(question.id, e.target.value)}
+                                  placeholder="Enter response..."
+                                  className="min-h-[100px]"
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ))}
                     </div>
                     
                     {/* Additional notes */}
