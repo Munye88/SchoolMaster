@@ -22,6 +22,7 @@ const Sidebar = () => {
   const [showAdminLinks, setShowAdminLinks] = useState<boolean>(false);
   const [showTrainingLinks, setShowTrainingLinks] = useState<boolean>(false);
   const [showDLILinks, setShowDLILinks] = useState<boolean>(false);
+  const [showManageLinks, setShowManageLinks] = useState<boolean>(false);
   const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
   
   const isActive = (path: string) => {
@@ -39,6 +40,7 @@ const Sidebar = () => {
     setShowDLILinks(false);
     setShowTrainingLinks(false);
     setShowAdminLinks(false);
+    setShowManageLinks(false);
   };
   
   const handleToggleDLI = (e: React.MouseEvent) => {
@@ -47,6 +49,7 @@ const Sidebar = () => {
     setShowSchoolLinks(null);
     setShowTrainingLinks(false);
     setShowAdminLinks(false);
+    setShowManageLinks(false);
   };
   
   const handleToggleTraining = (e: React.MouseEvent) => {
@@ -55,6 +58,7 @@ const Sidebar = () => {
     setShowSchoolLinks(null);
     setShowDLILinks(false);
     setShowAdminLinks(false);
+    setShowManageLinks(false);
   };
   
   const handleToggleAdmin = (e: React.MouseEvent) => {
@@ -63,6 +67,16 @@ const Sidebar = () => {
     setShowSchoolLinks(null);
     setShowDLILinks(false);
     setShowTrainingLinks(false);
+    setShowManageLinks(false);
+  };
+  
+  const handleToggleManage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowManageLinks(!showManageLinks);
+    setShowSchoolLinks(null);
+    setShowDLILinks(false);
+    setShowTrainingLinks(false);
+    setShowAdminLinks(false);
   };
   
   const handleSelectSchool = (school: SchoolType) => {
