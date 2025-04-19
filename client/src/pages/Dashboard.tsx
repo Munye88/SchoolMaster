@@ -86,10 +86,23 @@ const Dashboard = () => {
     queryKey: ['/api/events'],
   });
   
-  // Use dynamic statistics based on real-time data
+  // Use dynamic statistics based on real-time data with caching
   const calculateStudentCount = (studentList: Student[], schoolId?: number) => {
-    if (isLoadingStudents || studentList.length === 0) {
-      return schoolId ? 0 : 0; // Return 0 instead of NaN when loading
+    // If data is missing, return cached value or placeholder to prevent NaN
+    if (studentList.length === 0) {
+      // Return cached data from localStorage if available
+      const cachedStats = localStorage.getItem('dashboard_student_stats');
+      if (cachedStats) {
+        const parsed = JSON.parse(cachedStats);
+        if (schoolId) {
+          if (schoolId === 349) return parsed.knfa || 0;
+          if (schoolId === 350) return parsed.nfsEast || 0;
+          if (schoolId === 351) return parsed.nfsWest || 0;
+          return 0;
+        }
+        return parsed.totalStudents || 0;
+      }
+      return 0; // Fallback if no cache
     }
     
     const filteredStudents = schoolId 
@@ -99,25 +112,52 @@ const Dashboard = () => {
     return filteredStudents.reduce((total, student) => 
       total + (student.numberOfStudents || 0), 0);
   };
+
+  // Determine if we should use real data or cached data
+  const shouldUseCache = isLoadingStudents || students.length === 0 || instructors.length === 0;
+  
+  // Get cached data if available
+  const getCachedData = (key: string, defaultValue: any) => {
+    const cached = localStorage.getItem(key);
+    return cached ? JSON.parse(cached) : defaultValue;
+  };
+  
+  // Student counts (will persist across navigation)
+  const studentCounts = {
+    totalStudents: calculateStudentCount(students),
+    knfa: calculateStudentCount(students, 349),
+    nfsEast: calculateStudentCount(students, 350),
+    nfsWest: calculateStudentCount(students, 351)
+  };
   
   // Use dynamic statistics based on real-time data
   const statistics = {
-    totalStudents: calculateStudentCount(students),
-    activeInstructors: instructors.length,
-    totalSchools: schools.length,
-    totalCourses: courses.length,
+    totalStudents: studentCounts.totalStudents,
+    activeInstructors: instructors.length || getCachedData('dashboard_instructor_count', 0),
+    totalSchools: schools.length || 3, // Always 3 schools
+    totalCourses: courses.length || getCachedData('dashboard_course_count', 5),
     activeCourses: courses.filter(course => course.status === 'active').length || 3,
     completedCourses: courses.filter(course => course.status === 'completed').length || 2,
     // Calculate student counts by school
     studentsBySchool: {
-      // Find students for KNFA (school.id === 349)
-      knfa: calculateStudentCount(students, 349),
-      // Find students for NFS East (school.id === 350)
-      nfsEast: calculateStudentCount(students, 350),
-      // Find students for NFS West (school.id === 351)
-      nfsWest: calculateStudentCount(students, 351)
+      knfa: studentCounts.knfa,
+      nfsEast: studentCounts.nfsEast,
+      nfsWest: studentCounts.nfsWest
     }
   };
+  
+  // Cache the statistics for consistency between page navigations
+  useEffect(() => {
+    if (!isLoadingStudents && students.length > 0) {
+      localStorage.setItem('dashboard_student_stats', JSON.stringify(studentCounts));
+    }
+    if (instructors.length > 0) {
+      localStorage.setItem('dashboard_instructor_count', JSON.stringify(instructors.length));
+    }
+    if (courses.length > 0) {
+      localStorage.setItem('dashboard_course_count', JSON.stringify(courses.length));
+    }
+  }, [students, instructors, courses, isLoadingStudents]);
   
   // Log when component mounts/unmounts for debugging
   useEffect(() => {
@@ -127,10 +167,45 @@ const Dashboard = () => {
     };
   }, [courses, instructors, schools, students]);
   
-  // Calculate instructor nationality counts from actual data
-  const americanInstructors = instructors.filter(i => i.nationality === 'American').length;
-  const britishInstructors = instructors.filter(i => i.nationality === 'British').length;
-  const canadianInstructors = instructors.filter(i => i.nationality === 'Canadian').length;
+  // Calculate instructor nationality counts from actual data with caching
+  // Get cached nationality counts or calculate from available data
+  const getCachedNationalityCounts = () => {
+    const cached = localStorage.getItem('dashboard_nationality_counts');
+    if (cached) {
+      return JSON.parse(cached);
+    }
+    return {
+      american: 0,
+      british: 0,
+      canadian: 0
+    };
+  };
+  
+  // Only calculate if we have instructor data
+  const cachedCounts = getCachedNationalityCounts();
+  const americanInstructors = instructors.length > 0 
+    ? instructors.filter(i => i.nationality === 'American').length
+    : cachedCounts.american;
+  
+  const britishInstructors = instructors.length > 0 
+    ? instructors.filter(i => i.nationality === 'British').length
+    : cachedCounts.british;
+  
+  const canadianInstructors = instructors.length > 0 
+    ? instructors.filter(i => i.nationality === 'Canadian').length
+    : cachedCounts.canadian;
+  
+  // Save nationality counts to cache whenever they change
+  useEffect(() => {
+    if (instructors.length > 0) {
+      const counts = {
+        american: instructors.filter(i => i.nationality === 'American').length,
+        british: instructors.filter(i => i.nationality === 'British').length,
+        canadian: instructors.filter(i => i.nationality === 'Canadian').length
+      };
+      localStorage.setItem('dashboard_nationality_counts', JSON.stringify(counts));
+    }
+  }, [instructors]);
   
   // Staff nationality data for bar chart with actual counts
   const nationalityData = [
