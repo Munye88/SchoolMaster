@@ -425,13 +425,6 @@ const Sidebar = () => {
                       Documentation
                     </li>
                     <li>
-                      <Link href="/administration/company-policy" onClick={() => setShowAdminLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <FileText className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
-                        Company Policy
-                      </Link>
-                    </li>
-                    <li>
                       <Link href="/administration/instructor-performance-policy" onClick={() => setShowAdminLinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
                         <ClipboardCheck className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
@@ -452,16 +445,30 @@ const Sidebar = () => {
                         Employee Handbook
                       </Link>
                     </li>
-                    <li>
-                      <Link href="/administration/classroom-evaluation" onClick={() => setShowAdminLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <Eye className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
-                        Classroom Observation
-                      </Link>
-                    </li>
                     
                     <li className="px-3 py-1 text-xs font-medium border-b border-blue-700/50 mt-2 mb-1">
                       Management
+                    </li>
+                    <li>
+                      <Link href="/management/schools" onClick={() => setShowAdminLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <Building2 className="h-4 w-4 mr-2 text-purple-300 group-hover:text-purple-200" />
+                        Manage Schools
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/management/instructors" onClick={() => setShowAdminLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <UserCheck className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
+                        Manage Instructors
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/management/courses" onClick={() => setShowAdminLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <BookMarked className="h-4 w-4 mr-2 text-amber-300 group-hover:text-amber-200" />
+                        Manage Courses
+                      </Link>
                     </li>
                     <li>
                       <Link href="/administration/instructor-recognition" onClick={() => setShowAdminLinks(false)}
@@ -471,10 +478,10 @@ const Sidebar = () => {
                       </Link>
                     </li>
                     <li>
-                      <Link href="/administration/manage-dashboard" onClick={() => setShowAdminLinks(false)}
+                      <Link href="/events" onClick={() => setShowAdminLinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <LayoutDashboard className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
-                        Manage Dashboard
+                        <CalendarDays className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        Event Calendar
                       </Link>
                     </li>
                     <li>
@@ -482,13 +489,6 @@ const Sidebar = () => {
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
                         <UserCog className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         User Management
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/events" onClick={() => setShowAdminLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <CalendarDays className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
-                        Event Calendar
                       </Link>
                     </li>
                   </ul>
