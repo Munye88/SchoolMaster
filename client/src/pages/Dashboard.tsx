@@ -17,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip, Cell } from 'recharts';
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
 // Logo moved to the navbar, no longer needed here
 
 const Dashboard = () => {
@@ -86,78 +87,43 @@ const Dashboard = () => {
     queryKey: ['/api/events'],
   });
   
-  // Use dynamic statistics based on real-time data with caching
-  const calculateStudentCount = (studentList: Student[], schoolId?: number) => {
-    // If data is missing, return cached value or placeholder to prevent NaN
-    if (studentList.length === 0) {
-      // Return cached data from localStorage if available
-      const cachedStats = localStorage.getItem('dashboard_student_stats');
-      if (cachedStats) {
-        const parsed = JSON.parse(cachedStats);
-        if (schoolId) {
-          if (schoolId === 349) return parsed.knfa || 0;
-          if (schoolId === 350) return parsed.nfsEast || 0;
-          if (schoolId === 351) return parsed.nfsWest || 0;
-          return 0;
-        }
-        return parsed.totalStudents || 0;
-      }
-      return 0; // Fallback if no cache
+  // Use our specialized hook for dashboard statistics
+  const dashboardStats = useDashboardStats();
+  
+  // Set up statistics object using our hook data
+  const statistics = {
+    totalStudents: dashboardStats.studentCounts.totalStudents,
+    activeInstructors: dashboardStats.instructorCount,
+    totalSchools: dashboardStats.schoolCount,
+    totalCourses: dashboardStats.totalCourses,
+    activeCourses: dashboardStats.activeCourses,
+    completedCourses: dashboardStats.completedCourses,
+    // Student counts by school
+    studentsBySchool: {
+      knfa: dashboardStats.studentCounts.knfa,
+      nfsEast: dashboardStats.studentCounts.nfsEast,
+      nfsWest: dashboardStats.studentCounts.nfsWest
     }
-    
-    const filteredStudents = schoolId 
-      ? studentList.filter(s => s.schoolId === schoolId)
-      : studentList;
-      
-    return filteredStudents.reduce((total, student) => 
-      total + (student.numberOfStudents || 0), 0);
   };
 
-  // Determine if we should use real data or cached data
-  const shouldUseCache = isLoadingStudents || students.length === 0 || instructors.length === 0;
-  
-  // Get cached data if available
-  const getCachedData = (key: string, defaultValue: any) => {
-    const cached = localStorage.getItem(key);
-    return cached ? JSON.parse(cached) : defaultValue;
-  };
-  
-  // Student counts (will persist across navigation)
-  const studentCounts = {
-    totalStudents: calculateStudentCount(students),
-    knfa: calculateStudentCount(students, 349),
-    nfsEast: calculateStudentCount(students, 350),
-    nfsWest: calculateStudentCount(students, 351)
-  };
-  
-  // Use dynamic statistics based on real-time data
-  const statistics = {
-    totalStudents: studentCounts.totalStudents,
-    activeInstructors: instructors.length || getCachedData('dashboard_instructor_count', 0),
-    totalSchools: schools.length || 3, // Always 3 schools
-    totalCourses: courses.length || getCachedData('dashboard_course_count', 5),
-    activeCourses: courses.filter(course => course.status === 'active').length || 3,
-    completedCourses: courses.filter(course => course.status === 'completed').length || 2,
-    // Calculate student counts by school
-    studentsBySchool: {
-      knfa: studentCounts.knfa,
-      nfsEast: studentCounts.nfsEast,
-      nfsWest: studentCounts.nfsWest
+  // Create nationality data for charts from our hook data
+  const nationalityData = [
+    { 
+      name: 'American', 
+      value: dashboardStats.nationalityCounts.american, 
+      color: '#4299E1' 
+    },
+    { 
+      name: 'British', 
+      value: dashboardStats.nationalityCounts.british, 
+      color: '#48BB78' 
+    },
+    { 
+      name: 'Canadian', 
+      value: dashboardStats.nationalityCounts.canadian, 
+      color: '#F6AD55' 
     }
-  };
-  
-  // Cache the statistics for consistency between page navigations
-  useEffect(() => {
-    if (!isLoadingStudents && students.length > 0) {
-      localStorage.setItem('dashboard_student_stats', JSON.stringify(studentCounts));
-    }
-    if (instructors.length > 0) {
-      localStorage.setItem('dashboard_instructor_count', JSON.stringify(instructors.length));
-    }
-    if (courses.length > 0) {
-      localStorage.setItem('dashboard_course_count', JSON.stringify(courses.length));
-    }
-  }, [students, instructors, courses, isLoadingStudents]);
+  ];
   
   // Log when component mounts/unmounts for debugging
   useEffect(() => {
@@ -165,54 +131,7 @@ const Dashboard = () => {
     return () => {
       console.log("Dashboard unmounted");
     };
-  }, [courses, instructors, schools, students]);
-  
-  // Calculate instructor nationality counts from actual data with caching
-  // Get cached nationality counts or calculate from available data
-  const getCachedNationalityCounts = () => {
-    const cached = localStorage.getItem('dashboard_nationality_counts');
-    if (cached) {
-      return JSON.parse(cached);
-    }
-    return {
-      american: 0,
-      british: 0,
-      canadian: 0
-    };
-  };
-  
-  // Only calculate if we have instructor data
-  const cachedCounts = getCachedNationalityCounts();
-  const americanInstructors = instructors.length > 0 
-    ? instructors.filter(i => i.nationality === 'American').length
-    : cachedCounts.american;
-  
-  const britishInstructors = instructors.length > 0 
-    ? instructors.filter(i => i.nationality === 'British').length
-    : cachedCounts.british;
-  
-  const canadianInstructors = instructors.length > 0 
-    ? instructors.filter(i => i.nationality === 'Canadian').length
-    : cachedCounts.canadian;
-  
-  // Save nationality counts to cache whenever they change
-  useEffect(() => {
-    if (instructors.length > 0) {
-      const counts = {
-        american: instructors.filter(i => i.nationality === 'American').length,
-        british: instructors.filter(i => i.nationality === 'British').length,
-        canadian: instructors.filter(i => i.nationality === 'Canadian').length
-      };
-      localStorage.setItem('dashboard_nationality_counts', JSON.stringify(counts));
-    }
-  }, [instructors]);
-  
-  // Staff nationality data for bar chart with actual counts
-  const nationalityData = [
-    { name: 'American', value: americanInstructors, color: '#4299E1' },  // blue
-    { name: 'British', value: britishInstructors, color: '#48BB78' },   // green
-    { name: 'Canadian', value: canadianInstructors, color: '#F6AD55' }   // orange
-  ];
+  }, []);
   
   const formatDate = (date: Date | string) => {
     return format(new Date(date), "MMM dd, yyyy");
@@ -275,7 +194,7 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-blue-700/70 font-medium mb-1">Total Students</p>
                 <h3 className="text-3xl font-bold text-blue-800 flex items-baseline">
-                  {isLoadingStudents ? (
+                  {dashboardStats.isLoadingStudents ? (
                     <span className="flex items-center">
                       <Loader2 className="h-5 w-5 mr-2 animate-spin text-blue-600" /> 
                       Loading...
@@ -527,18 +446,18 @@ const Dashboard = () => {
                             <h3 className="font-semibold text-blue-900">American</h3>
                           </div>
                           <div className="mt-3 flex items-baseline gap-1">
-                            <span className="text-3xl font-bold text-blue-700">{americanInstructors}</span>
+                            <span className="text-3xl font-bold text-blue-700">{dashboardStats.nationalityCounts.american}</span>
                             <span className="text-sm font-medium text-blue-600">Instructors</span>
                           </div>
                           <div className="mt-3">
                             <div className="flex items-center justify-between text-xs text-blue-700 mb-1">
                               <span>Distribution</span>
-                              <span>{(americanInstructors/statistics.activeInstructors*100).toFixed(1)}%</span>
+                              <span>{(dashboardStats.nationalityCounts.american/statistics.activeInstructors*100).toFixed(1)}%</span>
                             </div>
                             <div className="w-full bg-blue-200 rounded-full h-2 overflow-hidden">
                               <div 
                                 className="h-full bg-blue-600 rounded-full" 
-                                style={{ width: `${(americanInstructors/statistics.activeInstructors*100).toFixed(1)}%` }}
+                                style={{ width: `${(dashboardStats.nationalityCounts.american/statistics.activeInstructors*100).toFixed(1)}%` }}
                               ></div>
                             </div>
                           </div>
@@ -558,18 +477,18 @@ const Dashboard = () => {
                             <h3 className="font-semibold text-red-900">British</h3>
                           </div>
                           <div className="mt-3 flex items-baseline gap-1">
-                            <span className="text-3xl font-bold text-red-700">{britishInstructors}</span>
+                            <span className="text-3xl font-bold text-red-700">{dashboardStats.nationalityCounts.british}</span>
                             <span className="text-sm font-medium text-red-600">Instructors</span>
                           </div>
                           <div className="mt-3">
                             <div className="flex items-center justify-between text-xs text-red-700 mb-1">
                               <span>Distribution</span>
-                              <span>{(britishInstructors/statistics.activeInstructors*100).toFixed(1)}%</span>
+                              <span>{(dashboardStats.nationalityCounts.british/statistics.activeInstructors*100).toFixed(1)}%</span>
                             </div>
                             <div className="w-full bg-red-200 rounded-full h-2 overflow-hidden">
                               <div 
                                 className="h-full bg-red-600 rounded-full" 
-                                style={{ width: `${(britishInstructors/statistics.activeInstructors*100).toFixed(1)}%` }}
+                                style={{ width: `${(dashboardStats.nationalityCounts.british/statistics.activeInstructors*100).toFixed(1)}%` }}
                               ></div>
                             </div>
                           </div>
@@ -589,18 +508,18 @@ const Dashboard = () => {
                             <h3 className="font-semibold text-emerald-900">Canadian</h3>
                           </div>
                           <div className="mt-3 flex items-baseline gap-1">
-                            <span className="text-3xl font-bold text-emerald-700">{canadianInstructors}</span>
+                            <span className="text-3xl font-bold text-emerald-700">{dashboardStats.nationalityCounts.canadian}</span>
                             <span className="text-sm font-medium text-emerald-600">Instructors</span>
                           </div>
                           <div className="mt-3">
                             <div className="flex items-center justify-between text-xs text-emerald-700 mb-1">
                               <span>Distribution</span>
-                              <span>{(canadianInstructors/statistics.activeInstructors*100).toFixed(1)}%</span>
+                              <span>{(dashboardStats.nationalityCounts.canadian/statistics.activeInstructors*100).toFixed(1)}%</span>
                             </div>
                             <div className="w-full bg-emerald-200 rounded-full h-2 overflow-hidden">
                               <div 
                                 className="h-full bg-emerald-600 rounded-full" 
-                                style={{ width: `${(canadianInstructors/statistics.activeInstructors*100).toFixed(1)}%` }}
+                                style={{ width: `${(dashboardStats.nationalityCounts.canadian/statistics.activeInstructors*100).toFixed(1)}%` }}
                               ></div>
                             </div>
                           </div>
