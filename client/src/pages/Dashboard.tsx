@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { 
   GraduationCap, BookOpen, Users, Clock, Calendar, Check, X, ChevronRight,
-  User, UserCheck, Building, Activity, BarChart2, Trash2, Plus, UserPlus
+  User, UserCheck, Building, Activity, BarChart2, Trash2, Plus, UserPlus, Loader2
 } from "lucide-react";
 import { School as SchoolIcon } from "lucide-react";
 import { Course, Instructor, Student, TestResult, School, StaffAttendance, StaffLeave, Evaluation, Event } from "@shared/schema";
@@ -58,7 +58,7 @@ const Dashboard = () => {
     queryKey: ['/api/schools'],
   });
   
-  const { data: students = [] } = useQuery<Student[]>({
+  const { data: students = [], isLoading: isLoadingStudents } = useQuery<Student[]>({
     queryKey: selectedSchool 
       ? ['/api/schools', selectedSchool.id, 'students'] 
       : ['/api/students'],
@@ -87,8 +87,22 @@ const Dashboard = () => {
   });
   
   // Use dynamic statistics based on real-time data
+  const calculateStudentCount = (studentList: Student[], schoolId?: number) => {
+    if (isLoadingStudents || studentList.length === 0) {
+      return schoolId ? 0 : 0; // Return 0 instead of NaN when loading
+    }
+    
+    const filteredStudents = schoolId 
+      ? studentList.filter(s => s.schoolId === schoolId)
+      : studentList;
+      
+    return filteredStudents.reduce((total, student) => 
+      total + (student.numberOfStudents || 0), 0);
+  };
+  
+  // Use dynamic statistics based on real-time data
   const statistics = {
-    totalStudents: students.reduce((total, student) => total + student.numberOfStudents, 0),
+    totalStudents: calculateStudentCount(students),
     activeInstructors: instructors.length,
     totalSchools: schools.length,
     totalCourses: courses.length,
@@ -97,11 +111,11 @@ const Dashboard = () => {
     // Calculate student counts by school
     studentsBySchool: {
       // Find students for KNFA (school.id === 349)
-      knfa: students.filter(s => s.schoolId === 349).reduce((total, student) => total + student.numberOfStudents, 0),
+      knfa: calculateStudentCount(students, 349),
       // Find students for NFS East (school.id === 350)
-      nfsEast: students.filter(s => s.schoolId === 350).reduce((total, student) => total + student.numberOfStudents, 0),
+      nfsEast: calculateStudentCount(students, 350),
       // Find students for NFS West (school.id === 351)
-      nfsWest: students.filter(s => s.schoolId === 351).reduce((total, student) => total + student.numberOfStudents, 0)
+      nfsWest: calculateStudentCount(students, 351)
     }
   };
   
@@ -186,8 +200,17 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-blue-700/70 font-medium mb-1">Total Students</p>
                 <h3 className="text-3xl font-bold text-blue-800 flex items-baseline">
-                  {statistics.totalStudents}
-                  <span className="text-green-500 text-xs font-medium ml-2 bg-green-100 px-1.5 py-0.5 rounded-full">+3%</span>
+                  {isLoadingStudents ? (
+                    <span className="flex items-center">
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin text-blue-600" /> 
+                      Loading...
+                    </span>
+                  ) : (
+                    <>
+                      {statistics.totalStudents}
+                      <span className="text-green-500 text-xs font-medium ml-2 bg-green-100 px-1.5 py-0.5 rounded-full">+3%</span>
+                    </>
+                  )}
                 </h3>
               </div>
               <div className="bg-blue-500 bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
