@@ -6,6 +6,7 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { InsertCourse, Course, insertCourseSchema } from "@shared/schema";
+import { getCourseStatus } from "@/utils/courseStatusHelpers";
 
 import {
   Dialog,
@@ -280,7 +281,7 @@ export default function ManageCourses() {
               <CardHeader>
                 <div className="flex justify-between">
                   <CardTitle>{course.name}</CardTitle>
-                  <Badge>{course.status}</Badge>
+                  <Badge>{getCourseStatus(course)}</Badge>
                 </div>
                 <CardDescription>{getSchoolName(course.schoolId)}</CardDescription>
               </CardHeader>

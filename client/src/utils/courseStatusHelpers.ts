@@ -6,9 +6,23 @@ import { Course } from '@shared/schema';
  * @returns The calculated status of the course
  */
 export function calculateCourseStatus(course: Course): string {
+  // Get today's date at midnight for consistent comparison
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // Parse dates and set to midnight
   const startDate = new Date(course.startDate);
-  const endDate = course.endDate ? new Date(course.endDate) : null;
+  startDate.setHours(0, 0, 0, 0);
+  
+  let endDate = null;
+  if (course.endDate) {
+    endDate = new Date(course.endDate);
+    endDate.setHours(0, 0, 0, 0);
+  }
+  
+  // Debug logging
+  console.log(`Course: ${course.name}, Start: ${startDate.toISOString()}, Today: ${today.toISOString()}`);
+  console.log(`Comparison: today >= startDate = ${today >= startDate}`);
   
   // If course has ended
   if (endDate && today > endDate) {
