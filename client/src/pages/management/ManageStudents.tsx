@@ -77,7 +77,6 @@ export default function ManageStudents() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectedSchoolFilter, setSelectedSchoolFilter] = useState<string | null>(null);
   const [selectedCourseType, setSelectedCourseType] = useState<string | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
 
   // Get students data
   const { data: students = [], isLoading: isLoadingStudents } = useQuery<Student[]>({
@@ -526,7 +525,10 @@ export default function ManageStudents() {
                         min="1"
                         placeholder="Enter number of students" 
                         {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || '')}
+                        onChange={(e) => {
+                          const value = e.target.value !== "" ? parseInt(e.target.value) : undefined;
+                          field.onChange(value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -675,7 +677,10 @@ export default function ManageStudents() {
                         min="1"
                         placeholder="Enter number of students" 
                         {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || '')}
+                        onChange={(e) => {
+                          const value = e.target.value !== "" ? parseInt(e.target.value) : undefined;
+                          field.onChange(value);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
