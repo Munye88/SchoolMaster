@@ -146,17 +146,12 @@ const Dashboard = () => {
       <div className="bg-gradient-to-r from-[#0A2463] to-[#1e3a8a] text-white mb-6 rounded-lg shadow-md overflow-hidden relative">
         <div className="absolute inset-0 bg-grid-white/5 bg-[length:16px_16px]"></div>
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.1),_transparent)]"></div>
-        <div className="flex justify-between items-center px-6 py-5 relative z-10">
-          <div className="flex items-center gap-4">
-            <div className="w-1 h-16 bg-blue-400 rounded-full mr-3"></div>
-            <div>
-              <h1 className="text-xl font-bold text-white mb-1">Dashboard Overview</h1>
-              <p className="text-sm italic text-blue-100">
-                "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
-              </p>
-            </div>
-          </div>
-          <div className="flex space-x-2">
+        <div className="flex flex-col justify-center items-center text-center px-6 py-5 relative z-10">
+          <h1 className="text-2xl font-bold text-white mb-2">Dashboard Overview</h1>
+          <p className="text-sm italic text-blue-100 max-w-2xl">
+            "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
+          </p>
+          <div className="absolute right-6 top-1/2 transform -translate-y-1/2">
             <div className="bg-white/10 backdrop-blur-sm text-white px-3 py-2 rounded-lg flex items-center border border-white/20 shadow-inner">
               <Calendar className="h-4 w-4 mr-2 text-blue-300" /> 
               <span className="font-medium text-sm">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
