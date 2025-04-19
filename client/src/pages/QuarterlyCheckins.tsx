@@ -624,7 +624,10 @@ const QuarterlyCheckins = () => {
                           </div>
                           
                           <div className="pt-2">
-                            <Button onClick={startNewSession} disabled={!selectedInstructorId}>
+                            <Button 
+                              onClick={startNewSession} 
+                              disabled={selectedInstructorId === null}
+                            >
                               <Plus className="h-4 w-4 mr-2" />
                               Start Check-in
                             </Button>
