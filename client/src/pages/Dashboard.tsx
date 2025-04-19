@@ -142,84 +142,140 @@ const Dashboard = () => {
 
   return (
     <div className="flex-1 overflow-y-auto py-6 px-6 bg-gradient-to-b from-gray-50 to-white">
-      {/* Dashboard Header */}
-      <div className="bg-[#0A2463] text-white mb-6 rounded-md shadow-sm">
-        <div className="flex justify-between items-center px-4 py-3">
+      {/* Dashboard Header with Modern Design */}
+      <div className="bg-gradient-to-r from-[#0A2463] to-[#1e3a8a] text-white mb-6 rounded-lg shadow-md overflow-hidden relative">
+        <div className="absolute inset-0 bg-grid-white/5 bg-[length:16px_16px]"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.1),_transparent)]"></div>
+        <div className="flex justify-between items-center px-6 py-5 relative z-10">
           <div className="flex items-center gap-4">
-            <p className="text-sm italic">
-              "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
-            </p>
+            <div className="w-1 h-16 bg-blue-400 rounded-full mr-3"></div>
+            <div>
+              <h1 className="text-xl font-bold text-white mb-1">Dashboard Overview</h1>
+              <p className="text-sm italic text-blue-100">
+                "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
+              </p>
+            </div>
           </div>
           <div className="flex space-x-2">
-            <div className="bg-[#0A2463] text-white px-2 py-1.5 rounded-md flex items-center border border-white/20">
-              <Calendar className="h-3.5 w-3.5 mr-1.5 text-white" /> 
-              <span className="font-medium text-xs">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
+            <div className="bg-white/10 backdrop-blur-sm text-white px-3 py-2 rounded-lg flex items-center border border-white/20 shadow-inner">
+              <Calendar className="h-4 w-4 mr-2 text-blue-300" /> 
+              <span className="font-medium text-sm">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stats Overview */}
+      {/* Stats Overview - Modern Card Design */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6">
-        <Card className="shadow-sm">
-          <CardContent className="p-4">
+        {/* Students Card */}
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md overflow-hidden border border-blue-200 group hover:shadow-lg transition-all duration-300 relative">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full transform translate-x-8 -translate-y-8"></div>
+          <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Total Students</p>
-                <h3 className="text-2xl font-bold">{statistics.totalStudents}</h3>
-                <p className="text-xs text-green-600 mt-1">+3% this month</p>
+                <p className="text-sm text-blue-700/70 font-medium mb-1">Total Students</p>
+                <h3 className="text-3xl font-bold text-blue-800 flex items-baseline">
+                  {statistics.totalStudents}
+                  <span className="text-green-500 text-xs font-medium ml-2 bg-green-100 px-1.5 py-0.5 rounded-full">+3%</span>
+                </h3>
               </div>
-              <div className="bg-blue-100 p-2 rounded-lg">
+              <div className="bg-blue-500 bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
                 <GraduationCap className="h-6 w-6 text-blue-600" />
               </div>
             </div>
-          </CardContent>
-        </Card>
+            <div className="mt-3 h-1.5 w-full bg-blue-200 rounded-full overflow-hidden">
+              <div className="h-full bg-blue-500 rounded-full" style={{ width: "75%" }}></div>
+            </div>
+            <p className="text-xs text-blue-600 mt-2 flex items-center">
+              <ChevronRight className="h-3 w-3 mr-1" />
+              75% of target enrollment
+            </p>
+          </div>
+        </div>
 
-        <Card className="shadow-sm">
-          <CardContent className="p-4">
+        {/* Instructors Card */}
+        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md overflow-hidden border border-green-200 group hover:shadow-lg transition-all duration-300 relative">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full transform translate-x-8 -translate-y-8"></div>
+          <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Instructors</p>
-                <h3 className="text-2xl font-bold">{statistics.activeInstructors}</h3>
-                <p className="text-xs text-green-600 mt-1">Full Staff</p>
+                <p className="text-sm text-green-700/70 font-medium mb-1">Instructors</p>
+                <h3 className="text-3xl font-bold text-green-800 flex items-baseline">
+                  {statistics.activeInstructors}
+                  <span className="text-green-500 text-xs font-medium ml-2 bg-green-100 px-1.5 py-0.5 rounded-full">100%</span>
+                </h3>
               </div>
-              <div className="bg-green-100 p-2 rounded-lg">
+              <div className="bg-green-500 bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
                 <UserCheck className="h-6 w-6 text-green-600" />
               </div>
             </div>
-          </CardContent>
-        </Card>
+            <div className="mt-3 h-1.5 w-full bg-green-200 rounded-full overflow-hidden">
+              <div className="h-full bg-green-500 rounded-full" style={{ width: "100%" }}></div>
+            </div>
+            <p className="text-xs text-green-600 mt-2 flex items-center">
+              <ChevronRight className="h-3 w-3 mr-1" />
+              Full staff capacity
+            </p>
+          </div>
+        </div>
 
-        <Card className="shadow-sm">
-          <CardContent className="p-4">
+        {/* Schools Card */}
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-md overflow-hidden border border-purple-200 group hover:shadow-lg transition-all duration-300 relative">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full transform translate-x-8 -translate-y-8"></div>
+          <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Schools</p>
-                <h3 className="text-2xl font-bold">{statistics.totalSchools}</h3>
-                <p className="text-xs text-blue-600 mt-1">All Locations</p>
+                <p className="text-sm text-purple-700/70 font-medium mb-1">Schools</p>
+                <h3 className="text-3xl font-bold text-purple-800 flex items-baseline">
+                  {statistics.totalSchools}
+                  <span className="text-purple-500 text-xs font-medium ml-2 bg-purple-100 px-1.5 py-0.5 rounded-full">Active</span>
+                </h3>
               </div>
-              <div className="bg-purple-100 p-2 rounded-lg">
+              <div className="bg-purple-500 bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
                 <SchoolIcon className="h-6 w-6 text-purple-600" />
               </div>
             </div>
-          </CardContent>
-        </Card>
+            <div className="mt-3 grid grid-cols-3 gap-1">
+              <div className="h-1.5 bg-purple-600 rounded-full"></div>
+              <div className="h-1.5 bg-purple-400 rounded-full"></div>
+              <div className="h-1.5 bg-purple-300 rounded-full"></div>
+            </div>
+            <p className="text-xs text-purple-600 mt-2 flex items-center">
+              <ChevronRight className="h-3 w-3 mr-1" />
+              KFNA, NFS East, NFS West
+            </p>
+          </div>
+        </div>
 
-        <Card className="shadow-sm">
-          <CardContent className="p-4">
+        {/* Courses Card */}
+        <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl shadow-md overflow-hidden border border-amber-200 group hover:shadow-lg transition-all duration-300 relative">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full transform translate-x-8 -translate-y-8"></div>
+          <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Courses</p>
-                <h3 className="text-2xl font-bold">{statistics.totalCourses}</h3>
-                <p className="text-xs text-yellow-600 mt-1">{statistics.activeCourses} active</p>
+                <p className="text-sm text-amber-700/70 font-medium mb-1">Courses</p>
+                <h3 className="text-3xl font-bold text-amber-800 flex items-baseline">
+                  {statistics.totalCourses}
+                  <span className="text-amber-500 text-xs font-medium ml-2 bg-amber-100 px-1.5 py-0.5 rounded-full">{statistics.activeCourses} active</span>
+                </h3>
               </div>
-              <div className="bg-yellow-100 p-2 rounded-lg">
-                <BookOpen className="h-6 w-6 text-yellow-600" />
+              <div className="bg-amber-500 bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
+                <BookOpen className="h-6 w-6 text-amber-600" />
               </div>
             </div>
-          </CardContent>
-        </Card>
+            <div className="mt-3 flex space-x-1">
+              <div className="h-1.5 w-1/5 bg-amber-600 rounded-full"></div>
+              <div className="h-1.5 w-1/5 bg-amber-600 rounded-full"></div>
+              <div className="h-1.5 w-1/5 bg-amber-600 rounded-full"></div>
+              <div className="h-1.5 w-1/5 bg-amber-300 rounded-full"></div>
+              <div className="h-1.5 w-1/5 bg-amber-300 rounded-full"></div>
+            </div>
+            <p className="text-xs text-amber-600 mt-2 flex items-center">
+              <ChevronRight className="h-3 w-3 mr-1" />
+              {statistics.activeCourses} active, {statistics.completedCourses} completed
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Main content area */}

@@ -64,7 +64,7 @@ const Sidebar = () => {
     setShowTrainingLinks(false);
   };
   
-  const handleSelectSchool = (school: School) => {
+  const handleSelectSchool = (school: SchoolType) => {
     selectSchool(school);
     setShowSchoolLinks(school.code);
   };
@@ -151,7 +151,7 @@ const Sidebar = () => {
                   !isActive("/schools") && !showSchoolLinks && "text-gray-100"
                 )}>
                   <div className="flex items-center">
-                    <School className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                    <SchoolIcon className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
                     {!collapsed && <span>Schools</span>}
                   </div>
                   {!collapsed && <ChevronDown className={`w-4 h-4 ${showSchoolLinks ? 'transform rotate-180' : ''}`} />}
