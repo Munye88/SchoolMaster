@@ -23,6 +23,7 @@ const Sidebar = () => {
   const [showTrainingLinks, setShowTrainingLinks] = useState<boolean>(false);
   const [showDLILinks, setShowDLILinks] = useState<boolean>(false);
   const [showManageLinks, setShowManageLinks] = useState<boolean>(false);
+  const [showActivityLinks, setShowActivityLinks] = useState<boolean>(false);
   const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
   
   const isActive = (path: string) => {
@@ -73,6 +74,17 @@ const Sidebar = () => {
   const handleToggleManage = (e: React.MouseEvent) => {
     e.preventDefault();
     setShowManageLinks(!showManageLinks);
+    setShowSchoolLinks(null);
+    setShowDLILinks(false);
+    setShowTrainingLinks(false);
+    setShowAdminLinks(false);
+    setShowActivityLinks(false);
+  };
+  
+  const handleToggleActivity = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowActivityLinks(!showActivityLinks);
+    setShowManageLinks(false);
     setShowSchoolLinks(null);
     setShowDLILinks(false);
     setShowTrainingLinks(false);
@@ -395,16 +407,38 @@ const Sidebar = () => {
                 )}
               </li>
               
-              {/* Action Log */}
+              {/* Activity Log - dropdown */}
               <li>
-                <Link href="/action-log" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  isActive("/action-log") && "bg-blue-900 font-medium text-white",
-                  !isActive("/action-log") && "text-gray-100"
+                <a href="#" onClick={handleToggleActivity} className={cn(
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-800 group transition-all",
+                  (isActive("/activity") || isActive("/action-log") || isActive("/quarterly-checkins") || showActivityLinks) && "bg-blue-900 font-medium text-white",
+                  !isActive("/activity") && !isActive("/action-log") && !isActive("/quarterly-checkins") && !showActivityLinks && "text-gray-100"
                 )}>
-                  <ClipboardList className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
-                  {!collapsed && <span>Action Log</span>}
-                </Link>
+                  <div className="flex items-center">
+                    <Activity className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                    {!collapsed && <span>Activity Log</span>}
+                  </div>
+                  {!collapsed && <ChevronDown className={`w-4 h-4 ${showActivityLinks ? 'transform rotate-180' : ''}`} />}
+                </a>
+                
+                {showActivityLinks && !collapsed && (
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
+                    <li>
+                      <Link href="/action-log" onClick={() => setShowActivityLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <ClipboardList className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        Action Log
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/quarterly-checkins" onClick={() => setShowActivityLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <CheckSquare className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
+                        Quarterly Check-ins
+                      </Link>
+                    </li>
+                  </ul>
+                )}
               </li>
               
               {/* Recruitment */}
