@@ -84,8 +84,8 @@ const Sidebar = () => {
 
       {/* Header bar that's always visible */}
       <div className="fixed top-0 left-0 right-0 bg-white text-[#0A2463] h-16 flex items-center px-6 border-b shadow-sm z-30">
-        {/* Logo on left */}
-        <div className="lg:ml-64 transition-all duration-300 flex items-center">
+        {/* Logo on far left */}
+        <div className="flex items-center mr-6">
           <img 
             src="/govcio-logo-transparent-fixed.png" 
             alt="GovCIO Logo" 
