@@ -4,6 +4,7 @@ import { type Course, type Instructor } from "@shared/schema";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { Target, Calendar } from "lucide-react";
+import { getCourseStatus } from "@/utils/courseStatusHelpers";
 
 interface CourseCardProps {
   course: Course;
@@ -24,7 +25,7 @@ const CourseCard = ({ course }: CourseCardProps) => {
       <CardHeader className="bg-[#0A2463] p-4">
         <h3 className="text-white font-semibold text-lg">{course.name}</h3>
         <div className="flex justify-between items-center mt-2">
-          <span className="bg-[#1A3473] px-3 py-1 rounded-full text-white text-xs">{course.status}</span>
+          <span className="bg-[#1A3473] px-3 py-1 rounded-full text-white text-xs">{getCourseStatus(course)}</span>
           <span className="text-white text-sm">{course.studentCount} Officers</span>
         </div>
       </CardHeader>

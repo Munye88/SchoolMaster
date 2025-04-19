@@ -18,6 +18,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { getCourseStatus } from "@/utils/courseStatusHelpers";
 // Logo moved to the navbar, no longer needed here
 
 const Dashboard = () => {
@@ -335,7 +336,7 @@ const Dashboard = () => {
                 
                 {/* Course Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {courses.filter(c => c.status === "In Progress").slice(0, 3).map(course => {
+                  {courses.filter(c => getCourseStatus(c) === "In Progress").slice(0, 3).map(course => {
                     const school = schools.find(s => s.id === course.schoolId);
                     let fromColor = 'from-blue-50';
                     let toColor = 'to-blue-100';

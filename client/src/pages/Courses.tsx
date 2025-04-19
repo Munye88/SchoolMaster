@@ -263,7 +263,7 @@ export default function Courses() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCourses.map((course) => {
+          {filteredCourses.map((course: Course) => {
             // Get color scheme based on course name
             const getColorScheme = (courseName: string) => {
               const name = courseName.toLowerCase();

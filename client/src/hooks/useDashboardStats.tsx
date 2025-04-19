@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Course, Instructor, Student, School } from '@shared/schema';
+import { getCourseStatus } from "@/utils/courseStatusHelpers";
 
 interface NationalityCounts {
   american: number;
