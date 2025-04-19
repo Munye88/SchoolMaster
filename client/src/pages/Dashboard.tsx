@@ -93,7 +93,16 @@ const Dashboard = () => {
     totalSchools: schools.length,
     totalCourses: courses.length,
     activeCourses: courses.filter(course => course.status === 'active').length || 3,
-    completedCourses: courses.filter(course => course.status === 'completed').length || 2
+    completedCourses: courses.filter(course => course.status === 'completed').length || 2,
+    // Calculate student counts by school
+    studentsBySchool: {
+      // Find students for KNFA (school.id === 349)
+      knfa: students.filter(s => s.schoolId === 349).reduce((total, student) => total + student.numberOfStudents, 0),
+      // Find students for NFS East (school.id === 350)
+      nfsEast: students.filter(s => s.schoolId === 350).reduce((total, student) => total + student.numberOfStudents, 0),
+      // Find students for NFS West (school.id === 351)
+      nfsWest: students.filter(s => s.schoolId === 351).reduce((total, student) => total + student.numberOfStudents, 0)
+    }
   };
   
   // Log when component mounts/unmounts for debugging
@@ -514,7 +523,7 @@ const Dashboard = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="text-sm font-semibold opacity-90 uppercase tracking-wider">Total Students</h3>
-                      <p className="text-3xl font-bold mt-1">122</p>
+                      <p className="text-3xl font-bold mt-1">{statistics.totalStudents}</p>
                     </div>
                     <div className="bg-white/20 p-3 rounded-lg">
                       <GraduationCap className="w-8 h-8 text-white" />
