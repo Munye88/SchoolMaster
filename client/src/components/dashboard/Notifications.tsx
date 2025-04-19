@@ -15,6 +15,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Set a smaller height for the notification panel to match other dashboard components
 const NOTIFICATION_PANEL_HEIGHT = "h-[220px]";
 
+// New animation classes for notifications
+const NOTIFICATION_ANIMATION = "animate-in fade-in slide-in-from-right-3 duration-300";
+
 interface NotificationsProps {
   instructors: Instructor[];
   staffAttendance: StaffAttendance[];
@@ -226,16 +229,16 @@ const Notifications: React.FC<NotificationsProps> = ({
   // If no alerts, show a friendly message
   if (allAlerts.length === 0) {
     return (
-      <Card className="shadow-md border border-gray-200 overflow-hidden">
-        <CardHeader className="p-4 pb-3 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+      <Card className="shadow-xl border border-gray-200 overflow-hidden rounded-xl">
+        <CardHeader className="p-4 pb-3 border-b bg-gradient-to-r from-blue-500/10 to-indigo-500/10">
           <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
             <Bell className="h-5 w-5 mr-2 text-green-500" />
             Notifications
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4">
-          <div className="text-center p-6">
-            <div className="inline-flex items-center justify-center p-4 bg-gradient-to-r from-green-100 to-green-200 rounded-full mb-3">
+          <div className="text-center p-6 animate-in fade-in duration-500">
+            <div className="inline-flex items-center justify-center p-4 bg-gradient-to-r from-green-100 to-green-200 rounded-full mb-3 shadow-inner">
               <CheckCircle className="h-8 w-8 text-green-500" />
             </div>
             <p className="text-gray-700 font-medium">All systems running smoothly</p>
@@ -248,69 +251,103 @@ const Notifications: React.FC<NotificationsProps> = ({
 
   return (
     <div>
-      <div className="bg-gradient-to-r from-[#0A2463] to-[#1A3473] rounded-lg shadow-md p-4 text-white mb-4">
-        <div className="flex justify-between items-center">
+      <div className="bg-gradient-to-r from-[#0A2463] via-[#1A3473] to-[#0A2463] rounded-xl shadow-xl p-4 text-white mb-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzBoMnYyaC0yek0zMCAzMGgydjJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
+        <div className="absolute top-0 right-0 w-40 h-40 bg-blue-400/10 rounded-full transform translate-x-20 -translate-y-20 blur-2xl"></div>
+        <div className="relative z-10 flex justify-between items-center">
           <div>
-            <h3 className="text-sm font-semibold opacity-90 uppercase tracking-wider">Total Alerts</h3>
-            <p className="text-3xl font-bold mt-1">{allAlerts.length}</p>
+            <h3 className="text-sm font-semibold opacity-90 uppercase tracking-wider">Notifications</h3>
+            <p className="text-3xl font-bold mt-1 flex items-baseline">
+              {allAlerts.length}
+              <span className="ml-2 text-sm opacity-80">Active Alerts</span>
+            </p>
           </div>
-          <div className="bg-white/20 p-3 rounded-lg">
-            <Bell className="w-8 h-8 text-white" />
+          <div className="bg-white/20 p-3 rounded-lg backdrop-blur-sm shadow-inner border border-white/30 animate-pulse">
+            <Bell className="w-7 h-7 text-white" />
           </div>
         </div>
       </div>
       
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex gap-1.5">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex gap-2 bg-white/90 p-1 rounded-lg shadow-md border border-gray-200 backdrop-blur-sm">
           <Button 
-            variant="outline" 
+            variant={activeTab === "all" ? "default" : "ghost"}
             size="sm" 
-            className={`py-1 px-2 text-xs ${activeTab === "all" ? "bg-blue-50 border-blue-200" : ""}`}
+            className={`py-1 px-3 text-xs rounded-md ${
+              activeTab === "all" 
+                ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg" 
+                : "hover:bg-blue-100 text-gray-800"
+            }`}
             onClick={() => setActiveTab("all")}
           >
-            <Bookmark className="h-3 w-3 mr-1" />
-            All <span className="ml-1 text-xs opacity-70">({getCategoryCount("all")})</span>
+            <Bookmark className="h-3 w-3 mr-1.5" />
+            All <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${activeTab === "all" ? "bg-white/30" : "bg-gray-200"}`}>
+              {getCategoryCount("all")}
+            </span>
           </Button>
           <Button 
-            variant="outline" 
+            variant={activeTab === "staff" ? "default" : "ghost"}
             size="sm" 
-            className={`py-1 px-2 text-xs ${activeTab === "staff" ? "bg-blue-50 border-blue-200" : ""}`}
+            className={`py-1 px-3 text-xs rounded-md ${
+              activeTab === "staff" 
+                ? "bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg" 
+                : "hover:bg-green-100 text-gray-800"
+            }`}
             onClick={() => setActiveTab("staff")}
           >
-            <Users className="h-3 w-3 mr-1" />
-            Staff <span className="ml-1 text-xs opacity-70">({getCategoryCount("staff")})</span>
+            <Users className="h-3 w-3 mr-1.5" />
+            Staff <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${activeTab === "staff" ? "bg-white/30" : "bg-gray-200"}`}>
+              {getCategoryCount("staff")}
+            </span>
           </Button>
           <Button 
-            variant="outline" 
+            variant={activeTab === "students" ? "default" : "ghost"}
             size="sm" 
-            className={`py-1 px-2 text-xs ${activeTab === "students" ? "bg-blue-50 border-blue-200" : ""}`}
+            className={`py-1 px-3 text-xs rounded-md ${
+              activeTab === "students" 
+                ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg" 
+                : "hover:bg-purple-100 text-gray-800"
+            }`}
             onClick={() => setActiveTab("students")}
           >
-            <GraduationCap className="h-3 w-3 mr-1" />
-            Students <span className="ml-1 text-xs opacity-70">({getCategoryCount("students")})</span>
+            <GraduationCap className="h-3 w-3 mr-1.5" />
+            Students <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${activeTab === "students" ? "bg-white/30" : "bg-gray-200"}`}>
+              {getCategoryCount("students")}
+            </span>
           </Button>
           <Button 
-            variant="outline" 
+            variant={activeTab === "courses" ? "default" : "ghost"}
             size="sm" 
-            className={`py-1 px-2 text-xs ${activeTab === "courses" ? "bg-blue-50 border-blue-200" : ""}`}
+            className={`py-1 px-3 text-xs rounded-md ${
+              activeTab === "courses" 
+                ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-lg" 
+                : "hover:bg-amber-100 text-gray-800"
+            }`}
             onClick={() => setActiveTab("courses")}
           >
-            <BookOpen className="h-3 w-3 mr-1" />
-            Courses <span className="ml-1 text-xs opacity-70">({getCategoryCount("courses")})</span>
+            <BookOpen className="h-3 w-3 mr-1.5" />
+            Courses <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${activeTab === "courses" ? "bg-white/30" : "bg-gray-200"}`}>
+              {getCategoryCount("courses")}
+            </span>
           </Button>
         </div>
       </div>
       
-      <ScrollArea className="h-[200px] w-full mt-2">
-        <div className="space-y-2">
+      <ScrollArea className="h-[240px] w-full mt-2">
+        <div className="space-y-3">
           {filteredAlerts.length > 0 ? (
             filteredAlerts.map((alert, index) => (
               <NotificationCard key={`${alert.type}-${alert.id}-${index}`} alert={alert} />
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg text-gray-500">
-              <CheckCircle className="h-6 w-6 text-green-500 mb-2" />
-              <p className="text-sm">No notifications in this category</p>
+            <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-md text-gray-500 animate-in fade-in duration-300">
+              <div className="inline-flex items-center justify-center p-3 bg-white rounded-full shadow-sm border border-gray-100 mb-3">
+                <CheckCircle className="h-6 w-6 text-green-500" />
+              </div>
+              <p className="text-sm font-medium text-gray-800">No Active Alerts</p>
+              <p className="text-xs text-gray-500 mt-1 text-center max-w-[200px]">
+                There are no notifications in the {activeTab === "all" ? "system" : activeTab} category at this time
+              </p>
             </div>
           )}
         </div>
@@ -401,22 +438,27 @@ const NotificationCard: React.FC<{ alert: Notification }> = ({ alert }) => {
   
   return (
     <div 
-      className={`p-3 rounded-lg border shadow-sm hover:shadow-md transition-all ${bgColor} ${borderColor}`}
+      className={`p-3 rounded-xl border ${bgColor} ${borderColor} shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${NOTIFICATION_ANIMATION}`}
+      style={{
+        backgroundImage: 'radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.8), transparent 25%)'
+      }}
     >
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
           <div className="font-medium text-gray-800 flex items-center">
             {getPriorityIndicator()}
-            {alert.name}
+            <span className="font-semibold">{alert.name}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500">{getTimeDisplay()}</span>
-            <Badge className={`text-xs px-2 py-0.5 ${badgeColor}`}>
+            <span className="text-xs text-gray-600 bg-white/50 px-1.5 py-0.5 rounded-full border border-white/60 shadow-sm">
+              {getTimeDisplay()}
+            </span>
+            <Badge className={`text-xs font-medium px-2 py-0.5 shadow-sm ${badgeColor}`}>
               {label}
             </Badge>
           </div>
         </div>
-        <div className="flex items-center text-sm text-gray-600 mt-1">
+        <div className="flex items-center text-sm text-gray-700 mt-2 p-1.5 pl-2 bg-white/40 backdrop-blur-sm border border-white/60 rounded-lg">
           {alertIcon}
           <span>{alert.reason}</span>
         </div>
