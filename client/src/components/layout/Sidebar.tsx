@@ -522,15 +522,21 @@ const Sidebar = () => {
                         User Management
                       </Link>
                     </li>
-                    <li>
-                      <Link href="/administration/instructor-recognition" onClick={() => setShowManageLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <Award className="h-4 w-4 mr-2 text-yellow-300 group-hover:text-yellow-200" />
-                        Instructor Recognition
-                      </Link>
-                    </li>
+
                   </ul>
                 )}
+              </li>
+              
+              {/* Instructor Recognition - standalone tab */}
+              <li>
+                <Link href="/administration/instructor-recognition" className={cn(
+                  "flex items-center p-2 rounded-lg hover:bg-blue-800 group transition-all",
+                  isActive("/administration/instructor-recognition") && "bg-blue-900 font-medium text-white",
+                  !isActive("/administration/instructor-recognition") && "text-gray-100"
+                )}>
+                  <Award className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                  {!collapsed && <span>Instructor Recognition</span>}
+                </Link>
               </li>
             </ul>
           </div>
