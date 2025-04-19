@@ -485,6 +485,52 @@ const Administration = () => {
     );
   }
   
+  if (isClassroomEvaluation) {
+    return (
+      <div className="flex-1 overflow-auto p-6 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                Classroom Evaluation Training Guide
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Comprehensive training guide for classroom evaluation procedures and standards
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <a
+                href={classroomEvaluationPdfUrl}
+                download="Classroom_Evaluation_Training_Guide.pdf"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download PDF
+              </a>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-6 border-b border-gray-200">
+              <p className="text-gray-700">
+                This document provides detailed guidance for evaluating classroom instruction, outlining standards, 
+                procedures, and best practices for conducting effective classroom observations and evaluations.
+                Please review this document to understand the evaluation criteria and process.
+              </p>
+            </div>
+            <div className="aspect-auto h-[800px]">
+              <iframe 
+                src={classroomEvaluationPdfUrl} 
+                className="w-full h-full border-0" 
+                title="Classroom Evaluation Training Guide"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   if (isEvaluationGuideline) {
     return (
       <div className="flex-1 overflow-auto p-6 bg-gray-50">
