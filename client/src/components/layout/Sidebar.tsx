@@ -504,6 +504,13 @@ const Sidebar = () => {
                       </Link>
                     </li>
                     <li>
+                      <Link href="/management/students" onClick={() => setShowManageLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <GraduationCap className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        Manage Students
+                      </Link>
+                    </li>
+                    <li>
                       <Link href="/management/courses" onClick={() => setShowManageLinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
                         <BookMarked className="h-4 w-4 mr-2 text-amber-300 group-hover:text-amber-200" />
