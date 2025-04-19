@@ -15,7 +15,7 @@ import DLI from "@/pages/DLI";
 import InstructorRecognition from "@/pages/InstructorRecognition";
 import ActionLogPage from "@/pages/action-log";
 import RecruitmentPage from "@/pages/recruitment";
-import BasicNavbar from "@/components/layout/BasicNavbar";
+import Sidebar from "@/components/layout/Sidebar";
 import SchoolInstructorProfiles from "./pages/school/InstructorProfiles";
 import SchoolTimetable from "./pages/school/Timetable";
 import SchoolStudentDaySchedule from "./pages/school/StudentDaySchedule";
@@ -47,11 +47,11 @@ import ManageInstructors from "./pages/management/ManageInstructorsNew";
 import ManageStudents from "./pages/management/ManageStudents";
 import ManageCourses from "./pages/management/ManageCoursesFixed";
 
-function NavbarWithAuth() {
+function SidebarWithAuth() {
   const { user } = useAuth();
   
-  // Don't show navbar on the auth page
-  return user ? <BasicNavbar /> : null;
+  // Don't show sidebar on the auth page
+  return user ? <Sidebar /> : null;
 }
 
 function Router() {
@@ -59,8 +59,8 @@ function Router() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <NavbarWithAuth />
-      <div className="flex-1 overflow-auto">
+      <SidebarWithAuth />
+      <div className="flex-1 overflow-auto pl-0 lg:pl-64 pt-16">
         <Switch>
           {/* Auth route - public */}
           <Route path="/auth" component={AuthPage} />

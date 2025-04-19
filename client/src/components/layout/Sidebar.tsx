@@ -3,8 +3,9 @@ import { Link, useLocation } from "wouter";
 import { useSchool } from "@/hooks/useSchool";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { School as SchoolType } from "@shared/schema";
 import { 
-  Home, School, BookOpen, GraduationCap, ListChecks, BarChart2, Settings, LogOut, 
+  Home, School as SchoolIcon, BookOpen, GraduationCap, ListChecks, BarChart2, Settings, LogOut, 
   BookText, BriefcaseBusiness, MessageSquare, AlertTriangle, BrainCircuit, Users, 
   Lightbulb, FileText, Award, LayoutDashboard, ClipboardList, Building2, UserCheck, 
   BookMarked, ChevronDown, Menu, X, Activity, PanelRight
@@ -63,7 +64,7 @@ const Sidebar = () => {
     setShowTrainingLinks(false);
   };
   
-  const handleSelectSchool = (school: { id: number; name: string; code: string; location?: string | null }) => {
+  const handleSelectSchool = (school: School) => {
     selectSchool(school);
     setShowSchoolLinks(school.code);
   };
