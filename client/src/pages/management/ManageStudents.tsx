@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -53,6 +53,7 @@ import { format } from "date-fns";
 const studentSchema = insertStudentSchema.extend({
   schoolId: z.coerce.number().min(1, "Please select a school"),
   enrollmentDate: z.string().min(1, "Enrollment date is required"),
+  courseType: z.string().optional(),
 });
 
 type StudentFormValues = z.infer<typeof studentSchema>;
@@ -77,7 +78,7 @@ export default function ManageStudents() {
   const [showFilters, setShowFilters] = useState(false);
 
   // Get students data
-  const { data: students = [], isLoading: isLoadingStudents } = useQuery({
+  const { data: students = [], isLoading: isLoadingStudents } = useQuery<Student[]>({
     queryKey: ["/api/students"],
   });
 
@@ -99,6 +100,7 @@ export default function ManageStudents() {
       schoolId: undefined,
       rank: "",
       enrollmentDate: format(new Date(), "yyyy-MM-dd"),
+      courseType: "aviation",
     },
   });
 
@@ -110,6 +112,7 @@ export default function ManageStudents() {
       schoolId: undefined,
       rank: "",
       enrollmentDate: "",
+      courseType: "",
     },
   });
 
@@ -212,6 +215,7 @@ export default function ManageStudents() {
       schoolId: student.schoolId,
       rank: student.rank || "",
       enrollmentDate: student.enrollmentDate,
+      courseType: getStudentCourseType(student),
     });
     setIsEditDialogOpen(true);
   };
@@ -550,7 +554,7 @@ export default function ManageStudents() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {schools.map((school) => (
+                        {schools.map((school: any) => (
                           <SelectItem
                             key={school.id}
                             value={school.id.toString()}
@@ -574,6 +578,37 @@ export default function ManageStudents() {
                     <FormControl>
                       <Input placeholder="Rank (optional)" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={createForm.control}
+                name="courseType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Course Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select course type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {COURSE_TYPES.map((courseType) => (
+                          <SelectItem
+                            key={courseType.id}
+                            value={courseType.id}
+                          >
+                            {courseType.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -659,7 +694,7 @@ export default function ManageStudents() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {schools.map((school) => (
+                        {schools.map((school: any) => (
                           <SelectItem
                             key={school.id}
                             value={school.id.toString()}
@@ -683,6 +718,38 @@ export default function ManageStudents() {
                     <FormControl>
                       <Input placeholder="Rank (optional)" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="courseType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Course Type</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select course type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {COURSE_TYPES.map((courseType) => (
+                          <SelectItem
+                            key={courseType.id}
+                            value={courseType.id}
+                          >
+                            {courseType.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
