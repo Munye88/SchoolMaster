@@ -459,6 +459,14 @@ const Sidebar = () => {
                         Employee Handbook
                       </Link>
                     </li>
+                    
+                    <li>
+                      <Link href="/administration/classroom-evaluation-guide" onClick={() => setShowAdminLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <ClipboardCheck className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        Classroom Evaluation Guide
+                      </Link>
+                    </li>
 
 
                   </ul>

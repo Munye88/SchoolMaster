@@ -76,6 +76,9 @@ const Administration = () => {
   
   const isInstructorPerformancePolicy = documentType === "instructor-performance-policy";
   const instructorPerformancePolicyPdfUrl = "/documents/GovCIO_SAMS_Evaluation_Policy.pdf";
+  
+  const isClassroomEvaluation = documentType === "classroom-evaluation";
+  const classroomEvaluationPdfUrl = "/classroom-evaluation-guide.pdf";
 
   if (isLoading) {
     return (
