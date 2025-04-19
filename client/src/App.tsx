@@ -14,6 +14,7 @@ import TrainingDevelopment from "@/pages/TrainingDevelopment";
 import DLI from "@/pages/DLI";
 import InstructorRecognition from "@/pages/InstructorRecognition";
 import ActionLogPage from "@/pages/action-log";
+import QuarterlyCheckins from "@/pages/QuarterlyCheckins";
 import RecruitmentPage from "@/pages/recruitment";
 import Sidebar from "@/components/layout/Sidebar";
 import SchoolInstructorProfiles from "./pages/school/InstructorProfiles";
@@ -78,6 +79,7 @@ function Router() {
           <ProtectedRoute path="/reports" component={Reports} />
           <ProtectedRoute path="/documents" component={Documents} />
           <ProtectedRoute path="/action-log" component={ActionLogPage} />
+          <ProtectedRoute path="/quarterly-checkins" component={QuarterlyCheckins} />
           <ProtectedRoute path="/recruitment" component={RecruitmentPage} />
           
           {/* Administration routes */}
