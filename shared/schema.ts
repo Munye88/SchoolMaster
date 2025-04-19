@@ -70,17 +70,19 @@ export const insertCourseSchema = createInsertSchema(courses).pick({
 
 export const students = pgTable("students", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  rank: text("rank"),
+  numberOfStudents: integer("number_of_students").notNull(),
   schoolId: integer("school_id").notNull().references(() => schools.id),
-  enrollmentDate: date("enrollment_date").notNull(),
+  courseType: text("course_type").notNull(),
+  startDate: date("start_date").notNull(),
+  endDate: date("end_date").notNull(),
 });
 
 export const insertStudentSchema = createInsertSchema(students).pick({
-  name: true,
-  rank: true,
+  numberOfStudents: true,
   schoolId: true,
-  enrollmentDate: true,
+  courseType: true,
+  startDate: true,
+  endDate: true,
 });
 
 export const testResults = pgTable("test_results", {

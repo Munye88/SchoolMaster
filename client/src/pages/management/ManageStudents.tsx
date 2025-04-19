@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { InsertStudent, Student, insertStudentSchema } from "@shared/schema";
+import { Student, insertStudentSchema } from "@shared/schema";
+import { format } from "date-fns";
 
 import {
   Dialog,
@@ -15,7 +16,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,27 +44,30 @@ import {
 import {
   Card,
   CardContent,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle, Pencil, Trash2, Filter, Search, X } from "lucide-react";
-import { format } from "date-fns";
+
+// Define course types with their colors
+const COURSE_TYPES = [
+  { id: 'aviation', name: 'Aviation', color: 'bg-blue-100 text-blue-800 border-blue-300' },
+  { id: 'refresher', name: 'Refresher', color: 'bg-green-100 text-green-800 border-green-300' },
+  { id: 'mmsc', name: 'MMSC', color: 'bg-purple-100 text-purple-800 border-purple-300' },
+  { id: 'cadets', name: 'Cadets', color: 'bg-amber-100 text-amber-800 border-amber-300' },
+];
 
 // Form validation schema
 const studentSchema = insertStudentSchema.extend({
   schoolId: z.coerce.number().min(1, "Please select a school"),
-  enrollmentDate: z.string().min(1, "Enrollment date is required"),
-  courseType: z.string().optional(),
+  numberOfStudents: z.coerce.number().min(1, "Number of students must be at least 1"),
+  courseType: z.string().min(1, "Please select a course type"),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().min(1, "End date is required"),
 });
 
 type StudentFormValues = z.infer<typeof studentSchema>;
-
-// Define course types for filtering
-const COURSE_TYPES = [
-  { id: 'aviation', name: 'Aviation' },
-  { id: 'refresher', name: 'Refresher' },
-  { id: 'mmsc', name: 'MMSC' },
-  { id: 'cadets', name: 'Cadets' },
-];
 
 export default function ManageStudents() {
   const { toast } = useToast();
@@ -72,7 +75,6 @@ export default function ManageStudents() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedSchoolFilter, setSelectedSchoolFilter] = useState<string | null>(null);
   const [selectedCourseType, setSelectedCourseType] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -87,20 +89,15 @@ export default function ManageStudents() {
     queryKey: ["/api/schools"],
   });
   
-  // Get courses data
-  const { data: courses = [] } = useQuery({
-    queryKey: ["/api/courses"],
-  });
-
   // Create form
   const createForm = useForm<StudentFormValues>({
     resolver: zodResolver(studentSchema),
     defaultValues: {
-      name: "",
+      numberOfStudents: undefined,
       schoolId: undefined,
-      rank: "",
-      enrollmentDate: format(new Date(), "yyyy-MM-dd"),
-      courseType: "aviation",
+      courseType: "",
+      startDate: format(new Date(), "yyyy-MM-dd"),
+      endDate: format(new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"), // 90 days from now
     },
   });
 
@@ -108,11 +105,11 @@ export default function ManageStudents() {
   const editForm = useForm<StudentFormValues>({
     resolver: zodResolver(studentSchema),
     defaultValues: {
-      name: "",
+      numberOfStudents: undefined,
       schoolId: undefined,
-      rank: "",
-      enrollmentDate: "",
       courseType: "",
+      startDate: "",
+      endDate: "",
     },
   });
 
@@ -124,17 +121,26 @@ export default function ManageStudents() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/students"] });
+      // Also invalidate dashboard statistics
+      queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
+      
       toast({
         title: "Success",
-        description: "Student created successfully",
+        description: "Student group created successfully",
       });
       setIsCreateDialogOpen(false);
-      createForm.reset();
+      createForm.reset({
+        numberOfStudents: undefined,
+        schoolId: undefined,
+        courseType: "",
+        startDate: format(new Date(), "yyyy-MM-dd"),
+        endDate: format(new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), "yyyy-MM-dd"),
+      });
     },
     onError: (error) => {
       toast({
         title: "Error",
-        description: `Failed to create student: ${error.message}`,
+        description: `Failed to create student group: ${error.message}`,
         variant: "destructive",
       });
     },
@@ -148,9 +154,12 @@ export default function ManageStudents() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/students"] });
+      // Also invalidate dashboard statistics
+      queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
+      
       toast({
         title: "Success",
-        description: "Student updated successfully",
+        description: "Student group updated successfully",
       });
       setIsEditDialogOpen(false);
       setSelectedStudent(null);
@@ -158,7 +167,7 @@ export default function ManageStudents() {
     onError: (error) => {
       toast({
         title: "Error",
-        description: `Failed to update student: ${error.message}`,
+        description: `Failed to update student group: ${error.message}`,
         variant: "destructive",
       });
     },
@@ -171,9 +180,12 @@ export default function ManageStudents() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/students"] });
+      // Also invalidate dashboard statistics
+      queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
+      
       toast({
         title: "Success",
-        description: "Student deleted successfully",
+        description: "Student group deleted successfully",
       });
       setIsDeleteDialogOpen(false);
       setSelectedStudent(null);
@@ -181,7 +193,7 @@ export default function ManageStudents() {
     onError: (error) => {
       toast({
         title: "Error",
-        description: `Failed to delete student: ${error.message}`,
+        description: `Failed to delete student group: ${error.message}`,
         variant: "destructive",
       });
     },
@@ -211,11 +223,11 @@ export default function ManageStudents() {
   const handleEditStudent = (student: Student) => {
     setSelectedStudent(student);
     editForm.reset({
-      name: student.name,
+      numberOfStudents: student.numberOfStudents,
       schoolId: student.schoolId,
-      rank: student.rank || "",
-      enrollmentDate: student.enrollmentDate,
-      courseType: getStudentCourseType(student),
+      courseType: student.courseType,
+      startDate: student.startDate,
+      endDate: student.endDate,
     });
     setIsEditDialogOpen(true);
   };
@@ -231,42 +243,34 @@ export default function ManageStudents() {
     const school = schools.find((s: any) => s.id === id);
     return school ? school.name : "Unknown";
   };
-  
-  // Add courseType to student schema (extended field not in database)
-  const getStudentCourseType = (student: any) => {
-    // For now, assign course types based on patterns in student name or rank
-    // This is a simplified implementation - in a real system, this would be stored in the database
-    if (student.rank?.toLowerCase().includes('pilot') || student.name.toLowerCase().includes('pilot')) {
-      return 'aviation';
-    } else if (student.rank?.toLowerCase().includes('cadet') || student.name.toLowerCase().includes('cadet')) {
-      return 'cadets';
-    } else if (student.name.toLowerCase().includes('mmsc')) {
-      return 'mmsc';
-    } else {
-      return 'refresher'; // Default course type
-    }
+
+  // Get course type badge color
+  const getCourseTypeColor = (courseType: string) => {
+    const course = COURSE_TYPES.find(c => c.id === courseType);
+    return course ? course.color : 'bg-gray-100 text-gray-800 border-gray-300';
   };
 
+  // Get course type name 
+  const getCourseTypeName = (courseType: string) => {
+    const course = COURSE_TYPES.find(c => c.id === courseType);
+    return course ? course.name : courseType;
+  };
+  
   // Filter students based on selected filters
   const filteredStudents = useMemo(() => {
     return students.filter((student: any) => {
-      const matchesSearch = searchTerm === "" || 
-        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (student.rank && student.rank.toLowerCase().includes(searchTerm.toLowerCase()));
-      
       const matchesSchool = !selectedSchoolFilter || 
         student.schoolId.toString() === selectedSchoolFilter;
       
       const matchesCourseType = !selectedCourseType || 
-        getStudentCourseType(student) === selectedCourseType;
+        student.courseType === selectedCourseType;
       
-      return matchesSearch && matchesSchool && matchesCourseType;
+      return matchesSchool && matchesCourseType;
     });
-  }, [students, searchTerm, selectedSchoolFilter, selectedCourseType]);
+  }, [students, selectedSchoolFilter, selectedCourseType]);
   
   // Reset all filters
   const clearFilters = () => {
-    setSearchTerm("");
     setSelectedSchoolFilter(null);
     setSelectedCourseType(null);
   };
@@ -280,147 +284,71 @@ export default function ManageStudents() {
           className="flex items-center gap-2"
         >
           <PlusCircle className="h-5 w-5" />
-          Add Student
+          Add Student Group
         </Button>
       </div>
       
-      {/* Search and Filter Section */}
+      {/* Filter Section */}
       <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Search by name or rank..."
-                className="pl-9"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              {searchTerm && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0"
-                  onClick={() => setSearchTerm("")}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
+        <CardHeader className="pb-3">
+          <CardTitle>Filters</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* School Filter */}
+            <div>
+              <FormLabel className="mb-2 block">School</FormLabel>
+              <Select
+                value={selectedSchoolFilter || ""}
+                onValueChange={(value) => setSelectedSchoolFilter(value || null)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All Schools" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All Schools</SelectItem>
+                  {schools.map((school: any) => (
+                    <SelectItem key={school.id} value={school.id.toString()}>
+                      {school.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <Button
-              variant="outline"
-              className="flex items-center gap-2"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="h-4 w-4" />
-              {showFilters ? "Hide Filters" : "Show Filters"}
-            </Button>
+            
+            {/* Course Type Filter */}
+            <div>
+              <FormLabel className="mb-2 block">Course Type</FormLabel>
+              <Select
+                value={selectedCourseType || ""}
+                onValueChange={(value) => setSelectedCourseType(value || null)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="All Course Types" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">All Course Types</SelectItem>
+                  {COURSE_TYPES.map((courseType) => (
+                    <SelectItem key={courseType.id} value={courseType.id}>
+                      {courseType.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Clear Filters */}
+            <div className="flex items-end">
+              <Button 
+                variant="outline" 
+                className="mb-0.5"
+                onClick={clearFilters}
+                disabled={!selectedSchoolFilter && !selectedCourseType}
+              >
+                Clear All Filters
+              </Button>
+            </div>
           </div>
-          
-          {showFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* School Filter */}
-              <div>
-                <Label className="mb-2 block">School</Label>
-                <Select
-                  value={selectedSchoolFilter || ""}
-                  onValueChange={(value) => setSelectedSchoolFilter(value || null)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Schools" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">All Schools</SelectItem>
-                    {schools.map((school: any) => (
-                      <SelectItem key={school.id} value={school.id.toString()}>
-                        {school.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Course Type Filter */}
-              <div>
-                <Label className="mb-2 block">Course Type</Label>
-                <Select
-                  value={selectedCourseType || ""}
-                  onValueChange={(value) => setSelectedCourseType(value || null)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="All Course Types" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">All Course Types</SelectItem>
-                    {COURSE_TYPES.map((courseType) => (
-                      <SelectItem key={courseType.id} value={courseType.id}>
-                        {courseType.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Clear Filters */}
-              <div className="flex items-end">
-                <Button 
-                  variant="ghost" 
-                  className="mb-0.5"
-                  onClick={clearFilters}
-                  disabled={!searchTerm && !selectedSchoolFilter && !selectedCourseType}
-                >
-                  Clear All Filters
-                </Button>
-              </div>
-            </div>
-          )}
-          
-          {/* Active Filters */}
-          {(searchTerm || selectedSchoolFilter || selectedCourseType) && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {searchTerm && (
-                <Badge variant="outline" className="flex items-center gap-1">
-                  Search: {searchTerm}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-4 w-4 p-0 ml-1"
-                    onClick={() => setSearchTerm("")}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </Badge>
-              )}
-              
-              {selectedSchoolFilter && (
-                <Badge variant="outline" className="flex items-center gap-1">
-                  School: {getSchoolName(parseInt(selectedSchoolFilter))}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-4 w-4 p-0 ml-1"
-                    onClick={() => setSelectedSchoolFilter(null)}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </Badge>
-              )}
-              
-              {selectedCourseType && (
-                <Badge variant="outline" className="flex items-center gap-1">
-                  Course: {COURSE_TYPES.find(ct => ct.id === selectedCourseType)?.name}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-4 w-4 p-0 ml-1"
-                    onClick={() => setSelectedCourseType(null)}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </Badge>
-              )}
-            </div>
-          )}
         </CardContent>
       </Card>
 
@@ -430,23 +358,23 @@ export default function ManageStudents() {
         </div>
       ) : students.length === 0 ? (
         <div className="bg-muted rounded-lg p-8 text-center">
-          <h3 className="text-xl font-semibold mb-2">No Students</h3>
+          <h3 className="text-xl font-semibold mb-2">No Student Groups</h3>
           <p className="text-muted-foreground mb-4">
-            There are no students in the system yet. Add your first student to get started.
+            There are no student groups in the system yet. Add your first group to get started.
           </p>
           <Button
             onClick={() => setIsCreateDialogOpen(true)}
             className="flex items-center gap-2"
           >
             <PlusCircle className="h-5 w-5" />
-            Add Student
+            Add Student Group
           </Button>
         </div>
       ) : filteredStudents.length === 0 ? (
         <div className="bg-muted rounded-lg p-8 text-center">
-          <h3 className="text-xl font-semibold mb-2">No Matching Students</h3>
+          <h3 className="text-xl font-semibold mb-2">No Matching Student Groups</h3>
           <p className="text-muted-foreground mb-4">
-            No students match your current filter criteria. Try adjusting your filters.
+            No student groups match your current filter criteria. Try adjusting your filters.
           </p>
           <Button
             variant="outline"
@@ -462,26 +390,26 @@ export default function ManageStudents() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Name</TableHead>
                 <TableHead>School</TableHead>
-                <TableHead>Rank</TableHead>
                 <TableHead>Course Type</TableHead>
-                <TableHead>Enrollment Date</TableHead>
+                <TableHead>Number of Students</TableHead>
+                <TableHead>Start Date</TableHead>
+                <TableHead>End Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredStudents.map((student: any) => (
                 <TableRow key={student.id}>
-                  <TableCell>{student.id}</TableCell>
-                  <TableCell className="font-medium">{student.name}</TableCell>
                   <TableCell>{getSchoolName(student.schoolId)}</TableCell>
-                  <TableCell>{student.rank || "N/A"}</TableCell>
                   <TableCell>
-                    {COURSE_TYPES.find(ct => ct.id === getStudentCourseType(student))?.name || "Unknown"}
+                    <Badge className={`font-normal ${getCourseTypeColor(student.courseType)}`}>
+                      {getCourseTypeName(student.courseType)}
+                    </Badge>
                   </TableCell>
-                  <TableCell>{student.enrollmentDate}</TableCell>
+                  <TableCell>{student.numberOfStudents}</TableCell>
+                  <TableCell>{student.startDate}</TableCell>
+                  <TableCell>{student.endDate}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button
@@ -513,9 +441,9 @@ export default function ManageStudents() {
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Add New Student</DialogTitle>
+            <DialogTitle>Add New Student Group</DialogTitle>
             <DialogDescription>
-              Enter the details for the new student below
+              Enter the details for the new student group below
             </DialogDescription>
           </DialogHeader>
 
@@ -524,20 +452,6 @@ export default function ManageStudents() {
               onSubmit={createForm.handleSubmit(onCreateSubmit)}
               className="space-y-4"
             >
-              <FormField
-                control={createForm.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Student name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={createForm.control}
                 name="schoolId"
@@ -564,20 +478,6 @@ export default function ManageStudents() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={createForm.control}
-                name="rank"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Rank</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Rank (optional)" {...field} />
-                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -616,17 +516,53 @@ export default function ManageStudents() {
 
               <FormField
                 control={createForm.control}
-                name="enrollmentDate"
+                name="numberOfStudents"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Enrollment Date</FormLabel>
+                    <FormLabel>Number of Students</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} />
+                      <Input 
+                        type="number" 
+                        min="1"
+                        placeholder="Enter number of students" 
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || '')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={createForm.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={createForm.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Date</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <DialogFooter>
                 <Button
@@ -652,9 +588,9 @@ export default function ManageStudents() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Edit Student</DialogTitle>
+            <DialogTitle>Edit Student Group</DialogTitle>
             <DialogDescription>
-              Update the student information below
+              Update the student group information below
             </DialogDescription>
           </DialogHeader>
 
@@ -663,20 +599,6 @@ export default function ManageStudents() {
               onSubmit={editForm.handleSubmit(onEditSubmit)}
               className="space-y-4"
             >
-              <FormField
-                control={editForm.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Student name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={editForm.control}
                 name="schoolId"
@@ -704,20 +626,6 @@ export default function ManageStudents() {
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={editForm.control}
-                name="rank"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Rank</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Rank (optional)" {...field} />
-                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -757,17 +665,53 @@ export default function ManageStudents() {
 
               <FormField
                 control={editForm.control}
-                name="enrollmentDate"
+                name="numberOfStudents"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Enrollment Date</FormLabel>
+                    <FormLabel>Number of Students</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} />
+                      <Input 
+                        type="number" 
+                        min="1"
+                        placeholder="Enter number of students" 
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || '')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={editForm.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Date</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <DialogFooter>
                 <Button
@@ -795,7 +739,7 @@ export default function ManageStudents() {
           <DialogHeader>
             <DialogTitle>Confirm Delete</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the student "{selectedStudent?.name}"? This action cannot be undone.
+              Are you sure you want to delete this student group? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
