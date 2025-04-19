@@ -459,38 +459,6 @@ const Sidebar = () => {
                         Employee Handbook
                       </Link>
                     </li>
-                    
-                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-700/50 mt-2 mb-1">
-                      Management
-                    </li>
-                    <li>
-                      <Link href="/management/schools" onClick={() => setShowAdminLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <Building2 className="h-4 w-4 mr-2 text-purple-300 group-hover:text-purple-200" />
-                        Manage Schools
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/management/instructors" onClick={() => setShowAdminLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <UserCheck className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
-                        Manage Instructors
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/management/courses" onClick={() => setShowAdminLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <BookMarked className="h-4 w-4 mr-2 text-amber-300 group-hover:text-amber-200" />
-                        Manage Courses
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/administration/manage-dashboard" onClick={() => setShowAdminLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <LayoutDashboard className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
-                        Manage Dashboard
-                      </Link>
-                    </li>
                     <li>
                       <Link href="/administration/instructor-recognition" onClick={() => setShowAdminLinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
@@ -505,8 +473,56 @@ const Sidebar = () => {
                         Event Calendar
                       </Link>
                     </li>
+                  </ul>
+                )}
+              </li>
+              
+              {/* Manage - dropdown */}
+              <li>
+                <a href="#" onClick={handleToggleManage} className={cn(
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-800 group transition-all",
+                  (isActive("/management") || showManageLinks) && "bg-blue-900 font-medium text-white",
+                  !isActive("/management") && !showManageLinks && "text-gray-100"
+                )}>
+                  <div className="flex items-center">
+                    <Users className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                    {!collapsed && <span>Manage</span>}
+                  </div>
+                  {!collapsed && <ChevronDown className={`w-4 h-4 ${showManageLinks ? 'transform rotate-180' : ''}`} />}
+                </a>
+                
+                {showManageLinks && !collapsed && (
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
                     <li>
-                      <Link href="/administration/users" onClick={() => setShowAdminLinks(false)}
+                      <Link href="/management/schools" onClick={() => setShowManageLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <Building2 className="h-4 w-4 mr-2 text-purple-300 group-hover:text-purple-200" />
+                        Manage Schools
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/management/instructors" onClick={() => setShowManageLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <UserCheck className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
+                        Manage Instructors
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/management/courses" onClick={() => setShowManageLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <BookMarked className="h-4 w-4 mr-2 text-amber-300 group-hover:text-amber-200" />
+                        Manage Courses
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/administration/manage-dashboard" onClick={() => setShowManageLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <LayoutDashboard className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        Manage Dashboard
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/administration/users" onClick={() => setShowManageLinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
                         <UserCog className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         User Management
