@@ -264,7 +264,7 @@ export default function ManageStudents() {
   
   // Filter students based on selected filters
   const filteredStudents = useMemo(() => {
-    return students.filter((student: any) => {
+    return students.filter((student: Student) => {
       const matchesSchool = !selectedSchoolFilter || 
         student.schoolId.toString() === selectedSchoolFilter;
       
@@ -474,7 +474,7 @@ export default function ManageStudents() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {schools.map((school: any) => (
+                        {schools.map((school: School) => (
                           <SelectItem
                             key={school.id}
                             value={school.id.toString()}
@@ -625,7 +625,7 @@ export default function ManageStudents() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {schools.map((school: any) => (
+                        {schools.map((school: School) => (
                           <SelectItem
                             key={school.id}
                             value={school.id.toString()}
