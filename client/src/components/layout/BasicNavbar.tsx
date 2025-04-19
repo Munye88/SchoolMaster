@@ -344,10 +344,10 @@ const BasicNavbar = () => {
                       <ClipboardList className="h-4 w-4 mr-2 text-blue-600" />
                       Evaluation Guideline
                     </Link>
-                    <Link href="/administration/sop-guidelines" onClick={() => setShowAdminLinks(false)}
+                    <Link href="/administration/instructor-performance-policy" onClick={() => setShowAdminLinks(false)}
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50">
                       <FileText className="h-4 w-4 mr-2 text-blue-600" />
-                      SOP Guidelines
+                      Instructor Performance & Evaluation Policy
                     </Link>
                     <Link href="/administration/employee-handbook" onClick={() => setShowAdminLinks(false)}
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50">

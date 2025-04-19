@@ -25,7 +25,8 @@ const Administration = () => {
     "evaluation-guideline": "Instructor Evaluation Guideline",
     "employee-handbook": "Employee Handbook",
     "performance-policy": "Performance Evaluation Policy",
-    "classroom-evaluation": "Training Guide Classroom Evaluation"
+    "classroom-evaluation": "Training Guide Classroom Evaluation",
+    "instructor-performance-policy": "Instructor Performance & Evaluation Policy"
   };
 
   // Get documents
@@ -59,7 +60,8 @@ const Administration = () => {
         "evaluation-guideline": "evaluation",
         "employee-handbook": "handbook",
         "performance-policy": "performance",
-        "classroom-evaluation": "training"
+        "classroom-evaluation": "training",
+        "instructor-performance-policy": "instructor-policy"
       };
       
       const mappedType = documentTypeMap[documentType];
@@ -68,9 +70,12 @@ const Administration = () => {
     }
   }, [documents, documentType]);
 
-  // Special case for Instructor Evaluation Guideline
+  // Special cases for PDFs
   const isEvaluationGuideline = documentType === "evaluation-guideline";
   const evaluationGuidelinePdfUrl = "/documents/Instructor_Evaluation_Guideline.pdf";
+  
+  const isInstructorPerformancePolicy = documentType === "instructor-performance-policy";
+  const instructorPerformancePolicyPdfUrl = "/documents/GovCIO_SAMS_Evaluation_Policy.pdf";
 
   if (isLoading) {
     return (
