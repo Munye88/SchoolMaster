@@ -460,13 +460,7 @@ const Sidebar = () => {
                       </Link>
                     </li>
 
-                    <li>
-                      <Link href="/events" onClick={() => setShowAdminLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <CalendarDays className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
-                        Event Calendar
-                      </Link>
-                    </li>
+
                   </ul>
                 )}
               </li>
@@ -520,6 +514,13 @@ const Sidebar = () => {
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
                         <UserCog className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         User Management
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/events" onClick={() => setShowManageLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <CalendarDays className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        Event Calendar
                       </Link>
                     </li>
 
