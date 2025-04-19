@@ -136,12 +136,12 @@ export function useDashboardStats(): DashboardStats {
   useEffect(() => {
     if (courses.length > 0) {
       // Update cached course statistics using our helper function
-      // Count courses as active if they are "In Progress" or "Starting Soon"
+      // IMPORTANT: Count ONLY "In Progress" courses as active
       cachedCourseStats = {
         totalCourses: courses.length,
         activeCourses: courses.filter(course => {
           const status = getCourseStatus(course);
-          return status === 'In Progress' || status === 'Starting Soon';
+          return status === 'In Progress';
         }).length,
         completedCourses: courses.filter(course => {
           const status = getCourseStatus(course);

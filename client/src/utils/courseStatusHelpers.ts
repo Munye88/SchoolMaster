@@ -2,34 +2,30 @@ import { Course } from '@shared/schema';
 
 /**
  * Calculate the actual status of a course based on its dates
+ * IMPORTANT: This is a simpler implementation that converts dates to simple timestamps
+ * to ensure consistent comparison
+ * 
  * @param course The course object
  * @returns The calculated status of the course
  */
 export function calculateCourseStatus(course: Course): string {
-  // Get today's date at midnight for consistent comparison
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Force dates to be compared as simple timestamps (YYYY-MM-DD)
+  const today = new Date().toISOString().split('T')[0];
   
-  // Parse dates and set to midnight
-  const startDate = new Date(course.startDate);
-  startDate.setHours(0, 0, 0, 0);
+  // Get date part only from course dates 
+  const startDate = course.startDate.split('T')[0];
+  const endDate = course.endDate ? course.endDate.split('T')[0] : null;
   
-  let endDate = null;
-  if (course.endDate) {
-    endDate = new Date(course.endDate);
-    endDate.setHours(0, 0, 0, 0);
-  }
-  
-  // Debug logging
-  console.log(`Course: ${course.name}, Start: ${startDate.toISOString()}, Today: ${today.toISOString()}`);
-  console.log(`Comparison: today >= startDate = ${today >= startDate}`);
+  // Debug logging 
+  console.log(`Course: ${course.name}, Start: ${startDate}, Today: ${today}`);
+  console.log(`Comparison result: ${today >= startDate ? 'In Progress/Completed' : 'Starting Soon'}`);
   
   // If course has ended
   if (endDate && today > endDate) {
     return 'Completed';
   }
   
-  // If course has started
+  // If course has started (today is on or after start date)
   if (today >= startDate) {
     return 'In Progress';
   }
