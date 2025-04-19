@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import {
   CheckCircle,
   CalendarDays,
+  Calendar,
   Clock,
   Save,
   Plus,
@@ -12,7 +13,13 @@ import {
   Search,
   Printer,
   Edit,
-  FilePlus
+  FilePlus,
+  History,
+  School,
+  User,
+  ListTodo,
+  BookText,
+  Layout
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +33,7 @@ import { useSchool } from "@/hooks/useSchool";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 
 // Define the structure for quarterly check-in data
 interface CheckinQuestion {
@@ -81,7 +89,7 @@ const QuarterlyCheckins = () => {
   const { selectedSchool: userSelectedSchool } = useSchool();
   
   // State
-  const [activeTab, setActiveTab] = useState("view");
+  const [activeTab, setActiveTab] = useState("new");
   const [sessions, setSessions] = useState<CheckinSession[]>(initialSessions);
   const [filterTerm, setFilterTerm] = useState("");
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -330,404 +338,503 @@ const QuarterlyCheckins = () => {
     const date = new Date(dateString);
     return format(date, "MMMM d, yyyy");
   };
+
+  // Get icon for category
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "Performance & Leadership":
+        return <User className="h-5 w-5 text-blue-600" />;
+      case "Program Improvement":
+        return <Layout className="h-5 w-5 text-violet-600" />;
+      case "Professional Development":
+        return <BookText className="h-5 w-5 text-emerald-600" />;
+      case "Support & Feedback":
+        return <ListTodo className="h-5 w-5 text-amber-600" />;
+      default:
+        return <ListTodo className="h-5 w-5 text-gray-600" />;
+    }
+  };
   
   return (
     <div className="flex-1 overflow-y-auto py-6 px-6 bg-gradient-to-b from-gray-50 to-white">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Quarterly Check-ins</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Quarterly Check-ins</h1>
             <p className="text-gray-600 mt-1">
               Document and track quarterly check-in meetings with Senior ELT Instructors
             </p>
           </div>
-          
-          <div className="mt-4 sm:mt-0">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="view">View Check-ins</TabsTrigger>
-                <TabsTrigger value="edit">New Check-in</TabsTrigger>
-              </TabsList>
-              
-              <div className="space-y-6 mt-6">
-                <TabsContent value="view" className="mt-0">
-                  <Card>
-                    <CardHeader>
-                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <CardTitle>Recent Check-ins</CardTitle>
-                        <div className="flex items-center gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => setActiveTab("edit")}
-                            className="mr-2"
-                          >
-                            <FilePlus className="h-4 w-4 mr-2" />
-                            New Check-in
-                          </Button>
-                          <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-                            <Input
-                              type="search"
-                              placeholder="Search check-ins..." 
-                              className="pl-9 w-full sm:w-64"
-                              value={filterTerm}
-                              onChange={(e) => setFilterTerm(e.target.value)}
-                            />
-                          </div>
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => {
+                setActiveTab("new");
+                setCurrentSession(null);
+              }}
+              className="text-blue-600 border-blue-200 hover:bg-blue-50"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              New Check-in
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setActiveTab("view")}
+              className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+            >
+              <History className="h-4 w-4 mr-2" />
+              View History
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left side - Form/Edit Panel */}
+          <div className="lg:col-span-5 space-y-6">
+            {activeTab === "new" && (
+              <Card className="shadow-md border-blue-100">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100/50 border-b pb-4">
+                  <div className="flex items-center mb-1">
+                    <Calendar className="h-5 w-5 text-blue-700 mr-2" />
+                    <CardTitle className="text-blue-800">New Quarterly Check-in</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Create a new quarterly check-in for a Senior ELT Instructor
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <div className="space-y-5">
+                    <div className="space-y-3">
+                      <Label htmlFor="instructorName" className="text-sm font-medium">
+                        Instructor Name
+                      </Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                        <Input
+                          id="instructorName"
+                          value={instructorName}
+                          onChange={(e) => setInstructorName(e.target.value)}
+                          placeholder="Enter instructor name"
+                          className="pl-9"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label htmlFor="school" className="text-sm font-medium">
+                        School
+                      </Label>
+                      <div className="relative">
+                        <School className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                        <Select
+                          value={checkinSchool}
+                          onValueChange={setCheckinSchool}
+                        >
+                          <SelectTrigger id="school" className="pl-9">
+                            <SelectValue placeholder="Select school" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="KFNA">KFNA</SelectItem>
+                            <SelectItem value="NFS East">NFS East</SelectItem>
+                            <SelectItem value="NFS West">NFS West</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-3">
+                        <Label htmlFor="date" className="text-sm font-medium">
+                          Check-in Date
+                        </Label>
+                        <div className="relative">
+                          <CalendarDays className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="date"
+                            type="date"
+                            value={checkinDate}
+                            onChange={(e) => setCheckinDate(e.target.value)}
+                            className="pl-9"
+                          />
                         </div>
                       </div>
-                      <CardDescription>
-                        View and manage your quarterly check-in sessions
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      {filteredSessions.length === 0 ? (
-                        <div className="text-center py-10 px-6">
-                          <FileQuestion className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                          <h3 className="text-lg font-medium text-gray-900 mb-1">No check-ins found</h3>
-                          <p className="text-gray-500 mb-4">
-                            {filterTerm 
-                              ? "No check-ins match your search criteria." 
-                              : "You haven't created any check-in sessions yet."}
-                          </p>
-                          <Button onClick={() => setActiveTab("edit")}>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Start a New Check-in
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          {filteredSessions.map((session) => (
-                            <div key={session.id} className="border rounded-lg overflow-hidden">
-                              <div 
-                                className={`flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 ${
-                                  session.status === "completed" ? "bg-green-50 hover:bg-green-50/80" : "bg-amber-50 hover:bg-amber-50/80"
-                                }`}
-                                onClick={() => toggleSessionExpanded(session.id)}
-                              >
-                                <div className="flex items-center gap-3">
-                                  {session.status === "completed" ? (
-                                    <CheckCircle className="h-5 w-5 text-green-500" />
-                                  ) : (
-                                    <Clock className="h-5 w-5 text-amber-500" />
-                                  )}
-                                  <div>
-                                    <h4 className="font-medium text-gray-900">{session.instructorName}</h4>
-                                    <div className="flex items-center text-sm text-gray-500 gap-4">
-                                      <span className="flex items-center">
-                                        <CalendarDays className="h-3.5 w-3.5 mr-1 text-gray-400" />
-                                        {formatDate(session.date)}
-                                      </span>
-                                      <span>{session.quarter} {session.year}</span>
-                                      {session.school && <span>School: {session.school}</span>}
-                                      <span className={`px-2 py-0.5 text-xs rounded-full ${
-                                        session.status === "completed" 
-                                          ? "bg-green-100 text-green-700" 
-                                          : "bg-amber-100 text-amber-700"
-                                      }`}>
-                                        {session.status === "completed" ? "Completed" : "Draft"}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      printSession(session);
-                                    }}
-                                    title="Print Report"
-                                  >
-                                    <Printer className="h-4 w-4 text-gray-500" />
-                                  </Button>
-                                  
-                                  {session.status === "draft" && (
-                                    <Button 
-                                      variant="ghost" 
-                                      size="icon" 
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setCurrentSession(session);
-                                        setActiveTab("edit");
-                                      }}
-                                      title="Edit Check-in"
-                                    >
-                                      <Edit className="h-4 w-4 text-gray-500" />
-                                    </Button>
-                                  )}
-                                  
-                                  {expandedSession === session.id ? (
-                                    <ChevronUp className="h-5 w-5 text-gray-400" />
-                                  ) : (
-                                    <ChevronDown className="h-5 w-5 text-gray-400" />
-                                  )}
-                                </div>
-                              </div>
-                              
-                              {expandedSession === session.id && (
-                                <div className="p-4 border-t">
-                                  <div ref={printableRef} className="space-y-6">
-                                    {getQuestionsGroupedByCategory().map((category) => {
-                                      // Get answers for this category
-                                      const categoryAnswers = session.answers.filter(answer => {
-                                        const question = defaultQuestions.find(q => q.id === answer.questionId);
-                                        return question && question.category === category.name;
-                                      });
-                                      
-                                      // Skip categories with no answers
-                                      if (categoryAnswers.length === 0) return null;
-                                      
-                                      return (
-                                        <div key={category.name} className="space-y-3">
-                                          <div className="flex items-center space-x-2 mb-2">
-                                            <h3 className="font-semibold text-blue-900">🔹 {category.name}</h3>
-                                            <Separator className="flex-grow" />
-                                          </div>
-                                          
-                                          {categoryAnswers.map((answer) => {
-                                            const question = defaultQuestions.find(q => q.id === answer.questionId);
-                                            if (!question) return null;
-                                            
-                                            return (
-                                              <div key={answer.questionId} className="space-y-1">
-                                                <h5 className="font-medium text-gray-900">{question.question}</h5>
-                                                <p className="text-gray-700 bg-gray-50 p-3 rounded-md">
-                                                  {answer.answer || <span className="text-gray-400 italic">No answer provided</span>}
-                                                </p>
-                                              </div>
-                                            );
-                                          })}
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                  
-                                  {session.notes && (
-                                    <div className="mt-4 pt-4 border-t">
-                                      <h5 className="font-medium text-gray-900 mb-2">Additional Notes</h5>
-                                      <p className="text-gray-700 bg-gray-50 p-3 rounded-md whitespace-pre-wrap">
-                                        {session.notes}
-                                      </p>
-                                    </div>
-                                  )}
-                                  
-                                  {session.status === "draft" && (
-                                    <div className="mt-4 flex justify-end">
-                                      <Button 
-                                        variant="outline" 
-                                        className="mr-2"
-                                        onClick={() => {
-                                          setCurrentSession(session);
-                                          setActiveTab("edit");
-                                        }}
-                                      >
-                                        Continue Editing
-                                      </Button>
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-                
-                <TabsContent value="edit" className="mt-0">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>
-                        {currentSession ? `Editing Check-in: ${currentSession.instructorName}` : "New Quarterly Check-in"}
-                      </CardTitle>
-                      <CardDescription>
-                        {currentSession 
-                          ? `${currentSession.quarter} ${currentSession.year} check-in for ${currentSession.instructorName}`
-                          : "Create a new quarterly check-in for a Senior ELT Instructor"}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      {!currentSession ? (
-                        <div className="space-y-4">
-                          <div className="grid gap-4 sm:grid-cols-2">
-                            <div className="space-y-2">
-                              <Label htmlFor="instructorName">Instructor Name</Label>
-                              <Input
-                                id="instructorName"
-                                value={instructorName}
-                                onChange={(e) => setInstructorName(e.target.value)}
-                                placeholder="Enter instructor name"
-                              />
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label htmlFor="school">School</Label>
-                              <Select
-                                value={checkinSchool}
-                                onValueChange={setCheckinSchool}
-                              >
-                                <SelectTrigger id="school">
-                                  <SelectValue placeholder="Select school" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="KFNA">KFNA</SelectItem>
-                                  <SelectItem value="NFS East">NFS East</SelectItem>
-                                  <SelectItem value="NFS West">NFS West</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-
-                          <div className="grid gap-4 sm:grid-cols-3">
-                            <div className="space-y-2">
-                              <Label htmlFor="date">Date</Label>
-                              <Input
-                                id="date"
-                                type="date"
-                                value={checkinDate}
-                                onChange={(e) => setCheckinDate(e.target.value)}
-                              />
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <Label htmlFor="quarter">Quarter</Label>
-                              <Select
-                                value={currentQuarter}
-                                onValueChange={setCurrentQuarter}
-                              >
-                                <SelectTrigger id="quarter">
-                                  <SelectValue placeholder="Select quarter" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Q1">Q1</SelectItem>
-                                  <SelectItem value="Q2">Q2</SelectItem>
-                                  <SelectItem value="Q3">Q3</SelectItem>
-                                  <SelectItem value="Q4">Q4</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            
-                            <div className="space-y-2">
-                              <Label htmlFor="year">Year</Label>
-                              <Select
-                                value={currentYear.toString()}
-                                onValueChange={(value) => setCurrentYear(parseInt(value))}
-                              >
-                                <SelectTrigger id="year">
-                                  <SelectValue placeholder="Select year" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {[...Array(5)].map((_, i) => {
-                                    const year = new Date().getFullYear() - 2 + i;
-                                    return (
-                                      <SelectItem key={year} value={year.toString()}>
-                                        {year}
-                                      </SelectItem>
-                                    );
-                                  })}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                          
-                          <div className="pt-2">
-                            <Button 
-                              onClick={startNewSession}
-                              disabled={!instructorName.trim() || !checkinSchool}
-                            >
-                              <Plus className="h-4 w-4 mr-2" />
-                              Start Check-in
-                            </Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="space-y-6">
-                          {/* Session questions grouped by category */}
-                          <div className="space-y-8">
-                            {getQuestionsGroupedByCategory().map((category) => (
-                              <div key={category.name} className="space-y-4">
-                                <div className="flex items-center space-x-2">
-                                  <h3 className="text-lg font-semibold text-blue-900">🔹 {category.name}</h3>
-                                  <Separator className="flex-grow" />
-                                </div>
-                                
-                                {category.questions.map((question) => {
-                                  const answer = currentSession.answers.find(a => a.questionId === question.id);
-                                  const answerText = answer ? answer.answer : "";
-                                  
-                                  return (
-                                    <div key={question.id} className="space-y-2">
-                                      <Label htmlFor={`question-${question.id}`}>
-                                        {question.question}
-                                      </Label>
-                                      <Textarea
-                                        id={`question-${question.id}`}
-                                        value={answerText}
-                                        onChange={(e) => updateAnswer(question.id, e.target.value)}
-                                        placeholder="Enter response..."
-                                        className="min-h-[100px]"
-                                      />
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            ))}
-                          </div>
-                          
-                          {/* Additional notes */}
-                          <div className="space-y-2">
-                            <Label htmlFor="notes">Additional Notes</Label>
-                            <Textarea
-                              id="notes"
-                              value={currentSession.notes}
-                              onChange={(e) => setCurrentSession({...currentSession, notes: e.target.value})}
-                              placeholder="Enter any additional notes or follow-up items..."
-                              className="min-h-[150px]"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </CardContent>
+                      
+                      <div className="space-y-3">
+                        <Label htmlFor="quarter" className="text-sm font-medium">
+                          Quarter
+                        </Label>
+                        <Select
+                          value={currentQuarter}
+                          onValueChange={setCurrentQuarter}
+                        >
+                          <SelectTrigger id="quarter">
+                            <SelectValue placeholder="Select quarter" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Q1">Q1</SelectItem>
+                            <SelectItem value="Q2">Q2</SelectItem>
+                            <SelectItem value="Q3">Q3</SelectItem>
+                            <SelectItem value="Q4">Q4</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
                     
-                    {currentSession && (
-                      <CardFooter className="flex justify-between border-t px-6 py-4">
-                        <div className="flex items-center">
-                          <Button 
-                            variant="ghost" 
-                            onClick={() => {
-                              setActiveTab("view");
-                              setCurrentSession(null);
-                            }}
-                          >
-                            <Ban className="h-4 w-4 mr-2" />
-                            Cancel
-                          </Button>
+                    <div className="space-y-3">
+                      <Label htmlFor="year" className="text-sm font-medium">
+                        Year
+                      </Label>
+                      <Select
+                        value={currentYear.toString()}
+                        onValueChange={(value) => setCurrentYear(parseInt(value))}
+                      >
+                        <SelectTrigger id="year">
+                          <SelectValue placeholder="Select year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[...Array(5)].map((_, i) => {
+                            const year = new Date().getFullYear() - 2 + i;
+                            return (
+                              <SelectItem key={year} value={year.toString()}>
+                                {year}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-between border-t bg-gray-50/50 px-6 py-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setActiveTab("view");
+                      setInstructorName("");
+                      setCheckinSchool("");
+                    }}
+                    className="border-gray-300"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={startNewSession}
+                    disabled={!instructorName.trim() || !checkinSchool}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Start Check-in
+                  </Button>
+                </CardFooter>
+              </Card>
+            )}
+
+            {currentSession && activeTab === "edit" && (
+              <Card className="shadow-md border-amber-100">
+                <CardHeader className="bg-gradient-to-r from-amber-50 to-amber-100/50 border-b pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center mb-1">
+                      <Edit className="h-5 w-5 text-amber-700 mr-2" />
+                      <CardTitle className="text-amber-800">
+                        Editing Check-in: {currentSession.instructorName}
+                      </CardTitle>
+                    </div>
+                    <Badge variant="outline" className="bg-amber-100/50 text-amber-800 border-amber-200">
+                      {currentSession.quarter} {currentSession.year}
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    {currentSession.school && `School: ${currentSession.school} • `}
+                    {formatDate(currentSession.date)}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="max-h-[calc(100vh-300px)] overflow-y-auto p-6 divide-y divide-gray-100">
+                    {getQuestionsGroupedByCategory().map((category, index) => (
+                      <div key={category.name} className={`space-y-4 ${index > 0 ? 'pt-6' : ''}`}>
+                        <div className="flex items-center space-x-2">
+                          {getCategoryIcon(category.name)}
+                          <h3 className="text-lg font-semibold text-gray-800">{category.name}</h3>
                         </div>
-                        <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
-                            onClick={() => saveSession("draft")}
-                          >
-                            <Save className="h-4 w-4 mr-2" />
-                            Save Draft
-                          </Button>
-                          <Button 
-                            onClick={() => saveSession("completed")}
-                          >
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Complete Check-in
-                          </Button>
+                        
+                        {category.questions.map((question) => {
+                          const answer = currentSession.answers.find(a => a.questionId === question.id);
+                          const answerText = answer ? answer.answer : "";
+                          
+                          return (
+                            <div key={question.id} className="space-y-2">
+                              <Label 
+                                htmlFor={`question-${question.id}`}
+                                className="text-sm font-medium text-gray-700"
+                              >
+                                {question.question}
+                              </Label>
+                              <Textarea
+                                id={`question-${question.id}`}
+                                value={answerText}
+                                onChange={(e) => updateAnswer(question.id, e.target.value)}
+                                placeholder="Enter response..."
+                                className="min-h-[100px] border-gray-300 focus:border-blue-400"
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                    
+                    {/* Additional notes */}
+                    <div className="space-y-2 pt-6">
+                      <Label 
+                        htmlFor="notes" 
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Additional Notes
+                      </Label>
+                      <Textarea
+                        id="notes"
+                        value={currentSession.notes}
+                        onChange={(e) => setCurrentSession({...currentSession, notes: e.target.value})}
+                        placeholder="Enter any additional notes or follow-up items..."
+                        className="min-h-[120px] border-gray-300 focus:border-blue-400"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-between border-t bg-gray-50/50 px-6 py-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      setActiveTab("view");
+                      setCurrentSession(null);
+                    }}
+                    className="border-gray-300"
+                  >
+                    <Ban className="h-4 w-4 mr-2" />
+                    Cancel
+                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => saveSession("draft")}
+                      className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Draft
+                    </Button>
+                    <Button 
+                      onClick={() => saveSession("completed")}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Complete
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
+            )}
+          </div>
+
+          {/* Right side - View panel */}
+          <div className="lg:col-span-7">
+            <Card className="shadow-md">
+              <CardHeader className="bg-gradient-to-r from-indigo-50 to-indigo-100/30 border-b pb-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div className="flex items-center">
+                    <History className="h-5 w-5 text-indigo-700 mr-2" />
+                    <CardTitle className="text-indigo-800">Check-ins History</CardTitle>
+                  </div>
+                  <div className="relative w-full md:w-auto">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      type="search"
+                      placeholder="Search check-ins..." 
+                      className="pl-9 w-full md:w-64"
+                      value={filterTerm}
+                      onChange={(e) => setFilterTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <CardDescription>
+                  View and manage your quarterly check-in sessions
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                {filteredSessions.length === 0 ? (
+                  <div className="text-center py-16 px-6">
+                    <div className="bg-indigo-50 mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                      <FileQuestion className="h-8 w-8 text-indigo-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-1">No check-ins found</h3>
+                    <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                      {filterTerm 
+                        ? "No check-ins match your search criteria." 
+                        : "You haven't created any check-in sessions yet."}
+                    </p>
+                    <Button 
+                      onClick={() => setActiveTab("new")}
+                      className="bg-indigo-600 hover:bg-indigo-700"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Start a New Check-in
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-100 max-h-[calc(100vh-250px)] overflow-y-auto">
+                    {filteredSessions.map((session) => (
+                      <div key={session.id} className="border-l-4 border-r-0 hover:border-r-4 transition-all duration-200 border-l-transparent hover:border-l-blue-500 border-r-transparent hover:border-r-blue-500">
+                        <div 
+                          className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
+                          onClick={() => toggleSessionExpanded(session.id)}
+                        >
+                          <div className="flex items-center gap-3">
+                            {session.status === "completed" ? (
+                              <div className="bg-green-100 p-2 rounded-full">
+                                <CheckCircle className="h-5 w-5 text-green-600" />
+                              </div>
+                            ) : (
+                              <div className="bg-amber-100 p-2 rounded-full">
+                                <Clock className="h-5 w-5 text-amber-600" />
+                              </div>
+                            )}
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-medium text-gray-900">{session.instructorName}</h4>
+                                <Badge className={session.status === "completed" 
+                                  ? "bg-green-100 text-green-700 border-green-200" 
+                                  : "bg-amber-100 text-amber-700 border-amber-200"}>
+                                  {session.status === "completed" ? "Completed" : "Draft"}
+                                </Badge>
+                              </div>
+                              <div className="flex items-center text-sm text-gray-500 gap-3 mt-1">
+                                <span className="flex items-center">
+                                  <CalendarDays className="h-3.5 w-3.5 mr-1 text-gray-400" />
+                                  {formatDate(session.date)}
+                                </span>
+                                <span>{session.quarter} {session.year}</span>
+                                {session.school && (
+                                  <span className="flex items-center">
+                                    <School className="h-3.5 w-3.5 mr-1 text-gray-400" />
+                                    {session.school}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                printSession(session);
+                              }}
+                              title="Print Report"
+                              className="text-gray-500 hover:text-blue-600"
+                            >
+                              <Printer className="h-4 w-4" />
+                            </Button>
+                            
+                            {session.status === "draft" && (
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCurrentSession(session);
+                                  setActiveTab("edit");
+                                }}
+                                title="Edit Check-in"
+                                className="text-gray-500 hover:text-amber-600"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            )}
+                            
+                            {expandedSession === session.id ? (
+                              <ChevronUp className="h-5 w-5 text-gray-400" />
+                            ) : (
+                              <ChevronDown className="h-5 w-5 text-gray-400" />
+                            )}
+                          </div>
                         </div>
-                      </CardFooter>
-                    )}
-                  </Card>
-                </TabsContent>
-              </div>
-            </Tabs>
+                        
+                        {expandedSession === session.id && (
+                          <div className="p-4 bg-gray-50/80 border-t">
+                            <div ref={printableRef} className="space-y-6">
+                              {getQuestionsGroupedByCategory().map((category) => {
+                                // Get answers for this category
+                                const categoryAnswers = session.answers.filter(answer => {
+                                  const question = defaultQuestions.find(q => q.id === answer.questionId);
+                                  return question && question.category === category.name;
+                                });
+                                
+                                // Skip categories with no answers
+                                if (categoryAnswers.length === 0) return null;
+                                
+                                return (
+                                  <div key={category.name} className="rounded-md border border-gray-200 bg-white p-4 shadow-sm">
+                                    <div className="flex items-center space-x-2 mb-3">
+                                      {getCategoryIcon(category.name)}
+                                      <h3 className="font-semibold text-gray-800">{category.name}</h3>
+                                    </div>
+                                    
+                                    <div className="space-y-4">
+                                      {categoryAnswers.map((answer) => {
+                                        const question = defaultQuestions.find(q => q.id === answer.questionId);
+                                        if (!question) return null;
+                                        
+                                        return (
+                                          <div key={answer.questionId} className="space-y-1">
+                                            <h5 className="text-sm font-medium text-gray-700">{question.question}</h5>
+                                            <p className="text-gray-700 bg-gray-50 p-3 rounded-md text-sm">
+                                              {answer.answer || <span className="text-gray-400 italic">No answer provided</span>}
+                                            </p>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            
+                            {session.notes && (
+                              <div className="mt-4 rounded-md border border-gray-200 bg-white p-4 shadow-sm">
+                                <h5 className="font-medium text-gray-900 mb-2 flex items-center">
+                                  <MessageSquare className="h-4 w-4 mr-2 text-gray-500" />
+                                  Additional Notes
+                                </h5>
+                                <p className="text-gray-700 bg-gray-50 p-3 rounded-md whitespace-pre-wrap text-sm">
+                                  {session.notes}
+                                </p>
+                              </div>
+                            )}
+                            
+                            {session.status === "draft" && (
+                              <div className="mt-4 flex justify-end">
+                                <Button 
+                                  variant="outline" 
+                                  className="mr-2 border-amber-300 text-amber-700 hover:bg-amber-50"
+                                  onClick={() => {
+                                    setCurrentSession(session);
+                                    setActiveTab("edit");
+                                  }}
+                                >
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Continue Editing
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
