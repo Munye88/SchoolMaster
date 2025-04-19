@@ -266,9 +266,11 @@ export default function ManageStudents() {
   const filteredStudents = useMemo(() => {
     return students.filter((student: Student) => {
       const matchesSchool = !selectedSchoolFilter || 
+        selectedSchoolFilter === "all" || 
         student.schoolId.toString() === selectedSchoolFilter;
       
       const matchesCourseType = !selectedCourseType || 
+        selectedCourseType === "all" || 
         student.courseType === selectedCourseType;
       
       return matchesSchool && matchesCourseType;
@@ -305,14 +307,14 @@ export default function ManageStudents() {
             <div>
               <FormLabel className="mb-2 block">School</FormLabel>
               <Select
-                value={selectedSchoolFilter || ""}
-                onValueChange={(value) => setSelectedSchoolFilter(value || null)}
+                value={selectedSchoolFilter || "all"}
+                onValueChange={(value) => setSelectedSchoolFilter(value === "all" ? null : value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="All Schools" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Schools</SelectItem>
+                  <SelectItem value="all">All Schools</SelectItem>
                   {schools.map((school: School) => (
                     <SelectItem key={school.id} value={school.id.toString()}>
                       {school.name}
@@ -326,14 +328,14 @@ export default function ManageStudents() {
             <div>
               <FormLabel className="mb-2 block">Course Type</FormLabel>
               <Select
-                value={selectedCourseType || ""}
-                onValueChange={(value) => setSelectedCourseType(value || null)}
+                value={selectedCourseType || "all"}
+                onValueChange={(value) => setSelectedCourseType(value === "all" ? null : value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="All Course Types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Course Types</SelectItem>
+                  <SelectItem value="all">All Course Types</SelectItem>
                   {COURSE_TYPES.map((courseType) => (
                     <SelectItem key={courseType.id} value={courseType.id}>
                       {courseType.name}
