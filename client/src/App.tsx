@@ -60,7 +60,7 @@ function Router() {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <SidebarWithAuth />
-      <div className="flex-1 overflow-auto pl-0 lg:pl-64 pt-16">
+      <div className="flex-1 overflow-auto pl-0 lg:pl-56 pt-16">
         <Switch>
           {/* Auth route - public */}
           <Route path="/auth" component={AuthPage} />

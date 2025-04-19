@@ -8,7 +8,8 @@ import {
   Home, School as SchoolIcon, BookOpen, GraduationCap, ListChecks, BarChart2, Settings, LogOut, 
   BookText, BriefcaseBusiness, MessageSquare, AlertTriangle, BrainCircuit, Users, 
   Lightbulb, FileText, Award, LayoutDashboard, ClipboardList, Building2, UserCheck, 
-  BookMarked, ChevronDown, Menu, X, Activity, PanelRight
+  BookMarked, ChevronDown, Menu, X, Activity, PanelRight, Calendar, Clock, UserCog,
+  ClipboardCheck, CheckSquare, Eye, CalendarDays, CalendarX
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -115,7 +116,7 @@ const Sidebar = () => {
       <div 
         className={cn(
           "fixed left-0 top-0 bottom-0 z-40 transition-all duration-300 ease-in-out pt-16",
-          collapsed ? "w-20" : "w-64",
+          collapsed ? "w-16" : "w-56",
           showMobileMenu ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
@@ -158,13 +159,14 @@ const Sidebar = () => {
                 </a>
                 
                 {showSchoolLinks === 'main' && !collapsed && (
-                  <ul className="ml-6 mt-1 space-y-1">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
                     {schools.map(school => (
                       <li key={school.id}>
                         <button
                           onClick={() => handleSelectSchool(school)}
-                          className="w-full text-left px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200"
+                          className="w-full text-left px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white flex items-center transition-all group"
                         >
+                          <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mr-2 opacity-60 group-hover:opacity-100 group-hover:scale-125 transition-all"></div>
                           {school.name}
                         </button>
                       </li>
@@ -173,61 +175,70 @@ const Sidebar = () => {
                 )}
                 
                 {showSchoolLinks && showSchoolLinks !== 'main' && !collapsed && (
-                  <ul className="ml-6 mt-1 space-y-1">
-                    <li className="bg-blue-900/50 px-3 py-1 text-xs font-medium rounded-t-md">
-                      {schools.find(s => s.code === showSchoolLinks)?.name} Docs
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-700/50 mb-1">
+                      {schools.find(s => s.code === showSchoolLinks)?.name} Documents
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/instructor-profiles`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <Users className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         Instructor Profiles
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/timetable`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <CalendarDays className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         Timetable
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/student-day-schedule`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <Clock className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         Student Day Schedule
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/yearly-schedule`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <Calendar className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         Yearly Schedule
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/sop`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <FileText className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         SOP
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/staff-evaluations`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <ClipboardCheck className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
                         Staff Evaluations
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/staff-attendance`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <UserCheck className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
                         Staff Attendance
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/book-inventory`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <BookOpen className="h-4 w-4 mr-2 text-amber-300 group-hover:text-amber-200" />
                         Book Inventory
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/staff-leave-tracker`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200 font-medium">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <CalendarX className="h-4 w-4 mr-2 text-red-300 group-hover:text-red-200" />
                         Staff Leave Tracker
                       </Link>
                     </li>
@@ -262,25 +273,25 @@ const Sidebar = () => {
                 </a>
                 
                 {showDLILinks && !collapsed && (
-                  <ul className="ml-6 mt-1 space-y-1">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
                     <li>
                       <Link href="/dli/book-order" onClick={() => setShowDLILinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
-                        <BookOpen className="h-4 w-4 mr-2 text-blue-300" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <BookOpen className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         DLI Book Inventory
                       </Link>
                     </li>
                     <li>
                       <Link href="/dli/alcpt-order" onClick={() => setShowDLILinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
-                        <ListChecks className="h-4 w-4 mr-2 text-green-300" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <ListChecks className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
                         ALCPT Forms
                       </Link>
                     </li>
                     <li>
                       <Link href="/dli/answer-sheets" onClick={() => setShowDLILinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
-                        <FileText className="h-4 w-4 mr-2 text-purple-300" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <FileText className="h-4 w-4 mr-2 text-purple-300 group-hover:text-purple-200" />
                         Answer Sheets
                       </Link>
                     </li>
@@ -327,42 +338,42 @@ const Sidebar = () => {
                 </a>
                 
                 {showTrainingLinks && !collapsed && (
-                  <ul className="ml-6 mt-1 space-y-1">
-                    <li className="bg-indigo-800 px-3 py-1 text-xs font-medium rounded-t-md">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-indigo-800/80 to-indigo-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-indigo-700/50 mb-1">
                       Leadership Resources
                     </li>
                     <li>
                       <Link href="/training-development/leadership-skills" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
-                        <BriefcaseBusiness className="h-4 w-4 mr-2 text-indigo-300" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-indigo-700/50 text-gray-100 hover:text-white transition-all group">
+                        <BriefcaseBusiness className="h-4 w-4 mr-2 text-indigo-300 group-hover:text-indigo-200" />
                         Leadership Skills
                       </Link>
                     </li>
                     <li>
                       <Link href="/training-development/communication-techniques" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
-                        <MessageSquare className="h-4 w-4 mr-2 text-indigo-300" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-indigo-700/50 text-gray-100 hover:text-white transition-all group">
+                        <MessageSquare className="h-4 w-4 mr-2 text-indigo-300 group-hover:text-indigo-200" />
                         Communication
                       </Link>
                     </li>
                     <li>
                       <Link href="/training-development/conflict-resolution" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
-                        <AlertTriangle className="h-4 w-4 mr-2 text-indigo-300" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-indigo-700/50 text-gray-100 hover:text-white transition-all group">
+                        <AlertTriangle className="h-4 w-4 mr-2 text-indigo-300 group-hover:text-indigo-200" />
                         Conflict Resolution
                       </Link>
                     </li>
                     <li>
                       <Link href="/training-development/decision-making" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
-                        <BrainCircuit className="h-4 w-4 mr-2 text-indigo-300" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-indigo-700/50 text-gray-100 hover:text-white transition-all group">
+                        <BrainCircuit className="h-4 w-4 mr-2 text-indigo-300 group-hover:text-indigo-200" />
                         Decision Making
                       </Link>
                     </li>
                     <li>
                       <Link href="/training-development/team-building" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
-                        <Users className="h-4 w-4 mr-2 text-indigo-300" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-indigo-700/50 text-gray-100 hover:text-white transition-all group">
+                        <Users className="h-4 w-4 mr-2 text-indigo-300 group-hover:text-indigo-200" />
                         Team Building
                       </Link>
                     </li>
@@ -409,65 +420,74 @@ const Sidebar = () => {
                 </a>
                 
                 {showAdminLinks && !collapsed && (
-                  <ul className="ml-6 mt-1 space-y-1">
-                    <li className="bg-blue-900/50 px-3 py-1 text-xs font-medium rounded-t-md">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-700/50 mb-1">
                       Documentation
                     </li>
                     <li>
                       <Link href="/administration/company-policy" onClick={() => setShowAdminLinks(false)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <FileText className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         Company Policy
                       </Link>
                     </li>
                     <li>
                       <Link href="/administration/instructor-performance-policy" onClick={() => setShowAdminLinks(false)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <ClipboardCheck className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         Instructor Performance Policy
                       </Link>
                     </li>
                     <li>
                       <Link href="/administration/evaluation-guideline" onClick={() => setShowAdminLinks(false)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <CheckSquare className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         Evaluation Guidelines
                       </Link>
                     </li>
                     <li>
                       <Link href="/administration/employee-handbook" onClick={() => setShowAdminLinks(false)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <BookOpen className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         Employee Handbook
                       </Link>
                     </li>
                     <li>
                       <Link href="/administration/classroom-evaluation" onClick={() => setShowAdminLinks(false)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <Eye className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         Classroom Observation
                       </Link>
                     </li>
                     
-                    <li className="bg-blue-900/50 px-3 py-1 text-xs font-medium rounded-t-md mt-2">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-700/50 mt-2 mb-1">
                       Management
                     </li>
                     <li>
                       <Link href="/administration/instructor-recognition" onClick={() => setShowAdminLinks(false)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <Award className="h-4 w-4 mr-2 text-yellow-300 group-hover:text-yellow-200" />
                         Instructor Recognition
                       </Link>
                     </li>
                     <li>
                       <Link href="/administration/manage-dashboard" onClick={() => setShowAdminLinks(false)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <LayoutDashboard className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         Manage Dashboard
                       </Link>
                     </li>
                     <li>
                       <Link href="/administration/users" onClick={() => setShowAdminLinks(false)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <UserCog className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         User Management
                       </Link>
                     </li>
                     <li>
                       <Link href="/events" onClick={() => setShowAdminLinks(false)}
-                        className="block px-3 py-1.5 text-sm rounded-md hover:bg-blue-800 text-gray-200">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <CalendarDays className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         Event Calendar
                       </Link>
                     </li>
