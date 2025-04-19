@@ -19,7 +19,8 @@ import {
   User,
   ListTodo,
   BookText,
-  Layout
+  Layout,
+  MessageSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -408,7 +409,7 @@ const QuarterlyCheckins = () => {
                   <div className="space-y-5">
                     <div className="space-y-3">
                       <Label htmlFor="instructorName" className="text-sm font-medium">
-                        Instructor Name
+                        Name
                       </Label>
                       <div className="relative">
                         <User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
@@ -416,7 +417,7 @@ const QuarterlyCheckins = () => {
                           id="instructorName"
                           value={instructorName}
                           onChange={(e) => setInstructorName(e.target.value)}
-                          placeholder="Enter instructor name"
+                          placeholder="Enter name"
                           className="pl-9"
                         />
                       </div>
