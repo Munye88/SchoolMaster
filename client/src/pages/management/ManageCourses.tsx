@@ -58,7 +58,6 @@ import { format } from "date-fns";
 // Form validation schema
 const courseSchema = insertCourseSchema.extend({
   schoolId: z.coerce.number().min(1, "Please select a school"),
-  instructorId: z.coerce.number().min(1, "Please select an instructor"),
   studentCount: z.coerce.number().min(0, "Student count must be positive"),
   progress: z.coerce.number().min(0).max(100, "Progress must be between 0 and 100"),
   startDate: z.string().min(1, "Start date is required"),
@@ -213,7 +212,6 @@ export default function ManageCourses() {
     editForm.reset({
       name: course.name,
       schoolId: course.schoolId,
-      instructorId: course.instructorId,
       status: course.status,
       startDate: course.startDate,
       endDate: course.endDate || "",
@@ -413,7 +411,7 @@ export default function ManageCourses() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div>
                 <FormField
                   control={createForm.control}
                   name="schoolId"
@@ -436,37 +434,6 @@ export default function ManageCourses() {
                               value={school.id.toString()}
                             >
                               {school.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={createForm.control}
-                  name="instructorId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Instructor</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(parseInt(value))}
-                        defaultValue={field.value?.toString()}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an instructor" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {instructors.map((instructor) => (
-                            <SelectItem
-                              key={instructor.id}
-                              value={instructor.id.toString()}
-                            >
-                              {instructor.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -653,7 +620,7 @@ export default function ManageCourses() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div>
                 <FormField
                   control={editForm.control}
                   name="schoolId"
@@ -676,37 +643,6 @@ export default function ManageCourses() {
                               value={school.id.toString()}
                             >
                               {school.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={editForm.control}
-                  name="instructorId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Instructor</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(parseInt(value))}
-                        value={field.value?.toString()}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an instructor" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {instructors.map((instructor) => (
-                            <SelectItem
-                              key={instructor.id}
-                              value={instructor.id.toString()}
-                            >
-                              {instructor.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
