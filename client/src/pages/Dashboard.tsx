@@ -550,7 +550,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                       <div className="mt-3 flex items-baseline gap-1">
-                        <span className="text-3xl font-bold">37</span>
+                        <span className="text-3xl font-bold">{statistics.studentsBySchool.knfa}</span>
                         <span className="text-sm font-medium">Cadets</span>
                       </div>
                       <div className="mt-3">
@@ -586,7 +586,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                       <div className="mt-3 flex items-baseline gap-1">
-                        <span className="text-3xl font-bold">48</span>
+                        <span className="text-3xl font-bold">{statistics.studentsBySchool.nfsEast}</span>
                         <span className="text-sm font-medium">Students</span>
                       </div>
                       <div className="mt-3">
@@ -635,7 +635,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                       <div className="mt-3 flex items-baseline gap-1">
-                        <span className="text-3xl font-bold">37</span>
+                        <span className="text-3xl font-bold">{statistics.studentsBySchool.nfsWest}</span>
                         <span className="text-sm font-medium">Students</span>
                       </div>
                       <div className="mt-3">
