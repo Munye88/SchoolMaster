@@ -203,6 +203,26 @@ const QuarterlyCheckins = () => {
   // Reference for printable div
   const printableRef = useRef<HTMLDivElement>(null);
 
+  // Function to get questions grouped by category
+  const getQuestionsGroupedByCategory = () => {
+    const categories: { name: string; questions: CheckinQuestion[] }[] = [];
+    
+    defaultQuestions.forEach(question => {
+      const existingCategory = categories.find(c => c.name === question.category);
+      
+      if (existingCategory) {
+        existingCategory.questions.push(question);
+      } else {
+        categories.push({
+          name: question.category,
+          questions: [question]
+        });
+      }
+    });
+    
+    return categories;
+  };
+  
   // Print session
   const printSession = (session: CheckinSession) => {
     if (!printableRef.current) return;
@@ -307,26 +327,6 @@ const QuarterlyCheckins = () => {
     }
   };
   
-  // Function to get questions grouped by category
-  const getQuestionsGroupedByCategory = () => {
-    const categories: { name: string; questions: CheckinQuestion[] }[] = [];
-    
-    defaultQuestions.forEach(question => {
-      const existingCategory = categories.find(c => c.name === question.category);
-      
-      if (existingCategory) {
-        existingCategory.questions.push(question);
-      } else {
-        categories.push({
-          name: question.category,
-          questions: [question]
-        });
-      }
-    });
-    
-    return categories;
-  };
-  
   // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -350,371 +350,371 @@ const QuarterlyCheckins = () => {
                 <TabsTrigger value="view">View Check-ins</TabsTrigger>
                 <TabsTrigger value="edit">New Check-in</TabsTrigger>
               </TabsList>
-            </Tabs>
-          </div>
-        </div>
-        
-        <div className="space-y-6">
-          <TabsContent value="view" className="mt-0">
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <CardTitle>Recent Check-ins</CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setActiveTab("edit")}
-                      className="mr-2"
-                    >
-                      <FilePlus className="h-4 w-4 mr-2" />
-                      New Check-in
-                    </Button>
-                    <div className="relative">
-                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-                      <Input
-                        type="search"
-                        placeholder="Search check-ins..." 
-                        className="pl-9 w-full sm:w-64"
-                        value={filterTerm}
-                        onChange={(e) => setFilterTerm(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <CardDescription>
-                  View and manage your quarterly check-in sessions
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {filteredSessions.length === 0 ? (
-                  <div className="text-center py-10 px-6">
-                    <FileQuestion className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-1">No check-ins found</h3>
-                    <p className="text-gray-500 mb-4">
-                      {filterTerm 
-                        ? "No check-ins match your search criteria." 
-                        : "You haven't created any check-in sessions yet."}
-                    </p>
-                    <Button onClick={() => setActiveTab("edit")}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Start a New Check-in
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {filteredSessions.map((session) => (
-                      <div key={session.id} className="border rounded-lg overflow-hidden">
-                        <div 
-                          className={`flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 ${
-                            session.status === "completed" ? "bg-green-50 hover:bg-green-50/80" : "bg-amber-50 hover:bg-amber-50/80"
-                          }`}
-                          onClick={() => toggleSessionExpanded(session.id)}
-                        >
-                          <div className="flex items-center gap-3">
-                            {session.status === "completed" ? (
-                              <CheckCircle className="h-5 w-5 text-green-500" />
-                            ) : (
-                              <Clock className="h-5 w-5 text-amber-500" />
-                            )}
-                            <div>
-                              <h4 className="font-medium text-gray-900">{session.instructorName}</h4>
-                              <div className="flex items-center text-sm text-gray-500 gap-4">
-                                <span className="flex items-center">
-                                  <CalendarDays className="h-3.5 w-3.5 mr-1 text-gray-400" />
-                                  {formatDate(session.date)}
-                                </span>
-                                <span>{session.quarter} {session.year}</span>
-                                <span className={`px-2 py-0.5 text-xs rounded-full ${
-                                  session.status === "completed" 
-                                    ? "bg-green-100 text-green-700" 
-                                    : "bg-amber-100 text-amber-700"
-                                }`}>
-                                  {session.status === "completed" ? "Completed" : "Draft"}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                printSession(session);
-                              }}
-                              title="Print Report"
-                            >
-                              <Printer className="h-4 w-4 text-gray-500" />
-                            </Button>
-                            
-                            {session.status === "draft" && (
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setCurrentSession(session);
-                                  setActiveTab("edit");
-                                }}
-                                title="Edit Check-in"
-                              >
-                                <Edit className="h-4 w-4 text-gray-500" />
-                              </Button>
-                            )}
-                            
-                            {expandedSession === session.id ? (
-                              <ChevronUp className="h-5 w-5 text-gray-400" />
-                            ) : (
-                              <ChevronDown className="h-5 w-5 text-gray-400" />
-                            )}
+              
+              <div className="space-y-6 mt-6">
+                <TabsContent value="view" className="mt-0">
+                  <Card>
+                    <CardHeader>
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <CardTitle>Recent Check-ins</CardTitle>
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setActiveTab("edit")}
+                            className="mr-2"
+                          >
+                            <FilePlus className="h-4 w-4 mr-2" />
+                            New Check-in
+                          </Button>
+                          <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                            <Input
+                              type="search"
+                              placeholder="Search check-ins..." 
+                              className="pl-9 w-full sm:w-64"
+                              value={filterTerm}
+                              onChange={(e) => setFilterTerm(e.target.value)}
+                            />
                           </div>
                         </div>
-                        
-                        {expandedSession === session.id && (
-                          <div className="p-4 border-t">
-                            <div ref={printableRef} className="space-y-6">
-                              {getQuestionsGroupedByCategory().map((category) => {
-                                // Get answers for this category
-                                const categoryAnswers = session.answers.filter(answer => {
-                                  const question = defaultQuestions.find(q => q.id === answer.questionId);
-                                  return question && question.category === category.name;
-                                });
-                                
-                                // Skip categories with no answers
-                                if (categoryAnswers.length === 0) return null;
-                                
-                                return (
-                                  <div key={category.name} className="space-y-3">
-                                    <div className="flex items-center space-x-2 mb-2">
-                                      <h3 className="font-semibold text-blue-900">🔹 {category.name}</h3>
-                                      <Separator className="flex-grow" />
+                      </div>
+                      <CardDescription>
+                        View and manage your quarterly check-in sessions
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {filteredSessions.length === 0 ? (
+                        <div className="text-center py-10 px-6">
+                          <FileQuestion className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium text-gray-900 mb-1">No check-ins found</h3>
+                          <p className="text-gray-500 mb-4">
+                            {filterTerm 
+                              ? "No check-ins match your search criteria." 
+                              : "You haven't created any check-in sessions yet."}
+                          </p>
+                          <Button onClick={() => setActiveTab("edit")}>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Start a New Check-in
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {filteredSessions.map((session) => (
+                            <div key={session.id} className="border rounded-lg overflow-hidden">
+                              <div 
+                                className={`flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 ${
+                                  session.status === "completed" ? "bg-green-50 hover:bg-green-50/80" : "bg-amber-50 hover:bg-amber-50/80"
+                                }`}
+                                onClick={() => toggleSessionExpanded(session.id)}
+                              >
+                                <div className="flex items-center gap-3">
+                                  {session.status === "completed" ? (
+                                    <CheckCircle className="h-5 w-5 text-green-500" />
+                                  ) : (
+                                    <Clock className="h-5 w-5 text-amber-500" />
+                                  )}
+                                  <div>
+                                    <h4 className="font-medium text-gray-900">{session.instructorName}</h4>
+                                    <div className="flex items-center text-sm text-gray-500 gap-4">
+                                      <span className="flex items-center">
+                                        <CalendarDays className="h-3.5 w-3.5 mr-1 text-gray-400" />
+                                        {formatDate(session.date)}
+                                      </span>
+                                      <span>{session.quarter} {session.year}</span>
+                                      <span className={`px-2 py-0.5 text-xs rounded-full ${
+                                        session.status === "completed" 
+                                          ? "bg-green-100 text-green-700" 
+                                          : "bg-amber-100 text-amber-700"
+                                      }`}>
+                                        {session.status === "completed" ? "Completed" : "Draft"}
+                                      </span>
                                     </div>
-                                    
-                                    {categoryAnswers.map((answer) => {
-                                      const question = defaultQuestions.find(q => q.id === answer.questionId);
-                                      if (!question) return null;
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      printSession(session);
+                                    }}
+                                    title="Print Report"
+                                  >
+                                    <Printer className="h-4 w-4 text-gray-500" />
+                                  </Button>
+                                  
+                                  {session.status === "draft" && (
+                                    <Button 
+                                      variant="ghost" 
+                                      size="icon" 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setCurrentSession(session);
+                                        setActiveTab("edit");
+                                      }}
+                                      title="Edit Check-in"
+                                    >
+                                      <Edit className="h-4 w-4 text-gray-500" />
+                                    </Button>
+                                  )}
+                                  
+                                  {expandedSession === session.id ? (
+                                    <ChevronUp className="h-5 w-5 text-gray-400" />
+                                  ) : (
+                                    <ChevronDown className="h-5 w-5 text-gray-400" />
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {expandedSession === session.id && (
+                                <div className="p-4 border-t">
+                                  <div ref={printableRef} className="space-y-6">
+                                    {getQuestionsGroupedByCategory().map((category) => {
+                                      // Get answers for this category
+                                      const categoryAnswers = session.answers.filter(answer => {
+                                        const question = defaultQuestions.find(q => q.id === answer.questionId);
+                                        return question && question.category === category.name;
+                                      });
+                                      
+                                      // Skip categories with no answers
+                                      if (categoryAnswers.length === 0) return null;
                                       
                                       return (
-                                        <div key={answer.questionId} className="space-y-1">
-                                          <h5 className="font-medium text-gray-900">{question.question}</h5>
-                                          <p className="text-gray-700 bg-gray-50 p-3 rounded-md">
-                                            {answer.answer || <span className="text-gray-400 italic">No answer provided</span>}
-                                          </p>
+                                        <div key={category.name} className="space-y-3">
+                                          <div className="flex items-center space-x-2 mb-2">
+                                            <h3 className="font-semibold text-blue-900">🔹 {category.name}</h3>
+                                            <Separator className="flex-grow" />
+                                          </div>
+                                          
+                                          {categoryAnswers.map((answer) => {
+                                            const question = defaultQuestions.find(q => q.id === answer.questionId);
+                                            if (!question) return null;
+                                            
+                                            return (
+                                              <div key={answer.questionId} className="space-y-1">
+                                                <h5 className="font-medium text-gray-900">{question.question}</h5>
+                                                <p className="text-gray-700 bg-gray-50 p-3 rounded-md">
+                                                  {answer.answer || <span className="text-gray-400 italic">No answer provided</span>}
+                                                </p>
+                                              </div>
+                                            );
+                                          })}
                                         </div>
                                       );
                                     })}
                                   </div>
-                                );
-                              })}
+                                  
+                                  {session.notes && (
+                                    <div className="mt-4 pt-4 border-t">
+                                      <h5 className="font-medium text-gray-900 mb-2">Additional Notes</h5>
+                                      <p className="text-gray-700 bg-gray-50 p-3 rounded-md whitespace-pre-wrap">
+                                        {session.notes}
+                                      </p>
+                                    </div>
+                                  )}
+                                  
+                                  {session.status === "draft" && (
+                                    <div className="mt-4 flex justify-end">
+                                      <Button 
+                                        variant="outline" 
+                                        className="mr-2"
+                                        onClick={() => {
+                                          setCurrentSession(session);
+                                          setActiveTab("edit");
+                                        }}
+                                      >
+                                        Continue Editing
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                
+                <TabsContent value="edit" className="mt-0">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>
+                        {currentSession ? `Editing Check-in: ${currentSession.instructorName}` : "New Quarterly Check-in"}
+                      </CardTitle>
+                      <CardDescription>
+                        {currentSession 
+                          ? `${currentSession.quarter} ${currentSession.year} check-in for ${currentSession.instructorName}`
+                          : "Create a new quarterly check-in for a Senior ELT Instructor"}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {!currentSession ? (
+                        <div className="space-y-4">
+                          <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                              <Label htmlFor="instructor">Instructor</Label>
+                              <Select
+                                value={selectedInstructorId?.toString() || ""}
+                                onValueChange={(value) => setSelectedInstructorId(parseInt(value))}
+                              >
+                                <SelectTrigger id="instructor">
+                                  <SelectValue placeholder="Select an instructor" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {seniorInstructors.length === 0 ? (
+                                    <SelectItem value="no-instructors" disabled>
+                                      No senior instructors found
+                                    </SelectItem>
+                                  ) : (
+                                    seniorInstructors.map((instructor) => (
+                                      <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                                        {instructor.name}
+                                      </SelectItem>
+                                    ))
+                                  )}
+                                </SelectContent>
+                              </Select>
                             </div>
                             
-                            {session.notes && (
-                              <div className="mt-4 pt-4 border-t">
-                                <h5 className="font-medium text-gray-900 mb-2">Additional Notes</h5>
-                                <p className="text-gray-700 bg-gray-50 p-3 rounded-md whitespace-pre-wrap">
-                                  {session.notes}
-                                </p>
-                              </div>
-                            )}
-                            
-                            {session.status === "draft" && (
-                              <div className="mt-4 flex justify-end">
-                                <Button 
-                                  variant="outline" 
-                                  className="mr-2"
-                                  onClick={() => {
-                                    setCurrentSession(session);
-                                    setActiveTab("edit");
-                                  }}
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label htmlFor="quarter">Quarter</Label>
+                                <Select
+                                  value={currentQuarter}
+                                  onValueChange={setCurrentQuarter}
                                 >
-                                  Continue Editing
-                                </Button>
+                                  <SelectTrigger id="quarter">
+                                    <SelectValue placeholder="Select quarter" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Q1">Q1</SelectItem>
+                                    <SelectItem value="Q2">Q2</SelectItem>
+                                    <SelectItem value="Q3">Q3</SelectItem>
+                                    <SelectItem value="Q4">Q4</SelectItem>
+                                  </SelectContent>
+                                </Select>
                               </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="edit" className="mt-0">
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {currentSession ? `Editing Check-in: ${currentSession.instructorName}` : "New Quarterly Check-in"}
-                </CardTitle>
-                <CardDescription>
-                  {currentSession 
-                    ? `${currentSession.quarter} ${currentSession.year} check-in for ${currentSession.instructorName}`
-                    : "Create a new quarterly check-in for a Senior ELT Instructor"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {!currentSession ? (
-                  <div className="space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="instructor">Instructor</Label>
-                        <Select
-                          value={selectedInstructorId?.toString() || ""}
-                          onValueChange={(value) => setSelectedInstructorId(parseInt(value))}
-                        >
-                          <SelectTrigger id="instructor">
-                            <SelectValue placeholder="Select an instructor" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {seniorInstructors.length === 0 ? (
-                              <SelectItem value="no-instructors" disabled>
-                                No senior instructors found
-                              </SelectItem>
-                            ) : (
-                              seniorInstructors.map((instructor) => (
-                                <SelectItem key={instructor.id} value={instructor.id.toString()}>
-                                  {instructor.name}
-                                </SelectItem>
-                              ))
-                            )}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="quarter">Quarter</Label>
-                          <Select
-                            value={currentQuarter}
-                            onValueChange={setCurrentQuarter}
-                          >
-                            <SelectTrigger id="quarter">
-                              <SelectValue placeholder="Select quarter" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Q1">Q1</SelectItem>
-                              <SelectItem value="Q2">Q2</SelectItem>
-                              <SelectItem value="Q3">Q3</SelectItem>
-                              <SelectItem value="Q4">Q4</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="year">Year</Label>
-                          <Select
-                            value={currentYear.toString()}
-                            onValueChange={(value) => setCurrentYear(parseInt(value))}
-                          >
-                            <SelectTrigger id="year">
-                              <SelectValue placeholder="Select year" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {[...Array(5)].map((_, i) => {
-                                const year = new Date().getFullYear() - 2 + i;
-                                return (
-                                  <SelectItem key={year} value={year.toString()}>
-                                    {year}
-                                  </SelectItem>
-                                );
-                              })}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="pt-2">
-                      <Button onClick={startNewSession} disabled={!selectedInstructorId}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Start Check-in
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {/* Session questions grouped by category */}
-                    <div className="space-y-8">
-                      {getQuestionsGroupedByCategory().map((category) => (
-                        <div key={category.name} className="space-y-4">
-                          <div className="flex items-center space-x-2">
-                            <h3 className="text-lg font-semibold text-blue-900">🔹 {category.name}</h3>
-                            <Separator className="flex-grow" />
+                              
+                              <div className="space-y-2">
+                                <Label htmlFor="year">Year</Label>
+                                <Select
+                                  value={currentYear.toString()}
+                                  onValueChange={(value) => setCurrentYear(parseInt(value))}
+                                >
+                                  <SelectTrigger id="year">
+                                    <SelectValue placeholder="Select year" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {[...Array(5)].map((_, i) => {
+                                      const year = new Date().getFullYear() - 2 + i;
+                                      return (
+                                        <SelectItem key={year} value={year.toString()}>
+                                          {year}
+                                        </SelectItem>
+                                      );
+                                    })}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
                           </div>
                           
-                          {category.questions.map((question) => {
-                            const answer = currentSession.answers.find(a => a.questionId === question.id);
-                            const answerText = answer ? answer.answer : "";
-                            
-                            return (
-                              <div key={question.id} className="space-y-2">
-                                <Label htmlFor={`question-${question.id}`}>
-                                  {question.question}
-                                </Label>
-                                <Textarea
-                                  id={`question-${question.id}`}
-                                  value={answerText}
-                                  onChange={(e) => updateAnswer(question.id, e.target.value)}
-                                  placeholder="Enter response..."
-                                  className="min-h-[100px]"
-                                />
-                              </div>
-                            );
-                          })}
+                          <div className="pt-2">
+                            <Button onClick={startNewSession} disabled={!selectedInstructorId}>
+                              <Plus className="h-4 w-4 mr-2" />
+                              Start Check-in
+                            </Button>
+                          </div>
                         </div>
-                      ))}
-                    </div>
+                      ) : (
+                        <div className="space-y-6">
+                          {/* Session questions grouped by category */}
+                          <div className="space-y-8">
+                            {getQuestionsGroupedByCategory().map((category) => (
+                              <div key={category.name} className="space-y-4">
+                                <div className="flex items-center space-x-2">
+                                  <h3 className="text-lg font-semibold text-blue-900">🔹 {category.name}</h3>
+                                  <Separator className="flex-grow" />
+                                </div>
+                                
+                                {category.questions.map((question) => {
+                                  const answer = currentSession.answers.find(a => a.questionId === question.id);
+                                  const answerText = answer ? answer.answer : "";
+                                  
+                                  return (
+                                    <div key={question.id} className="space-y-2">
+                                      <Label htmlFor={`question-${question.id}`}>
+                                        {question.question}
+                                      </Label>
+                                      <Textarea
+                                        id={`question-${question.id}`}
+                                        value={answerText}
+                                        onChange={(e) => updateAnswer(question.id, e.target.value)}
+                                        placeholder="Enter response..."
+                                        className="min-h-[100px]"
+                                      />
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {/* Additional notes */}
+                          <div className="space-y-2">
+                            <Label htmlFor="notes">Additional Notes</Label>
+                            <Textarea
+                              id="notes"
+                              value={currentSession.notes}
+                              onChange={(e) => setCurrentSession({...currentSession, notes: e.target.value})}
+                              placeholder="Enter any additional notes or follow-up items..."
+                              className="min-h-[150px]"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
                     
-                    {/* Additional notes */}
-                    <div className="space-y-2">
-                      <Label htmlFor="notes">Additional Notes</Label>
-                      <Textarea
-                        id="notes"
-                        value={currentSession.notes}
-                        onChange={(e) => setCurrentSession({...currentSession, notes: e.target.value})}
-                        placeholder="Enter any additional notes or follow-up items..."
-                        className="min-h-[150px]"
-                      />
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-              
-              {currentSession && (
-                <CardFooter className="flex justify-between border-t px-6 py-4">
-                  <div className="flex items-center">
-                    <Button 
-                      variant="ghost" 
-                      onClick={() => {
-                        setActiveTab("view");
-                        setCurrentSession(null);
-                      }}
-                    >
-                      <Ban className="h-4 w-4 mr-2" />
-                      Cancel
-                    </Button>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => saveSession("draft")}
-                    >
-                      <Save className="h-4 w-4 mr-2" />
-                      Save Draft
-                    </Button>
-                    <Button 
-                      onClick={() => saveSession("completed")}
-                    >
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Complete Check-in
-                    </Button>
-                  </div>
-                </CardFooter>
-              )}
-            </Card>
-          </TabsContent>
+                    {currentSession && (
+                      <CardFooter className="flex justify-between border-t px-6 py-4">
+                        <div className="flex items-center">
+                          <Button 
+                            variant="ghost" 
+                            onClick={() => {
+                              setActiveTab("view");
+                              setCurrentSession(null);
+                            }}
+                          >
+                            <Ban className="h-4 w-4 mr-2" />
+                            Cancel
+                          </Button>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => saveSession("draft")}
+                          >
+                            <Save className="h-4 w-4 mr-2" />
+                            Save Draft
+                          </Button>
+                          <Button 
+                            onClick={() => saveSession("completed")}
+                          >
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            Complete Check-in
+                          </Button>
+                        </div>
+                      </CardFooter>
+                    )}
+                  </Card>
+                </TabsContent>
+              </div>
+            </Tabs>
+          </div>
         </div>
       </div>
     </div>
