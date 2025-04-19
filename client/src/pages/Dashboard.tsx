@@ -88,7 +88,7 @@ const Dashboard = () => {
   
   // Use dynamic statistics based on real-time data
   const statistics = {
-    totalStudents: students.length,
+    totalStudents: students.reduce((total, student) => total + student.numberOfStudents, 0),
     activeInstructors: instructors.length,
     totalSchools: schools.length,
     totalCourses: courses.length,
