@@ -10,7 +10,6 @@ import {
   ListChecks,
   ChevronDown,
   ChevronUp,
-  Download,
   FileQuestion,
   Ban,
   Search,
@@ -47,7 +46,7 @@ interface CheckinAnswer {
 
 interface CheckinSession {
   id: number;
-  instructorId: number;
+  instructorId?: number;
   instructorName: string;
   date: string;
   quarter: string;
@@ -55,6 +54,7 @@ interface CheckinSession {
   notes: string;
   status: "draft" | "completed";
   answers: CheckinAnswer[];
+  school?: string;
 }
 
 // Quarterly check-in questions organized by section
@@ -84,7 +84,7 @@ const defaultQuestions: CheckinQuestion[] = [
 const initialSessions: CheckinSession[] = [];
 
 const QuarterlyCheckins = () => {
-  const { selectedSchool } = useSchool();
+  const { selectedSchool: userSelectedSchool } = useSchool();
   
   // State
   const [activeTab, setActiveTab] = useState("view");
@@ -92,22 +92,16 @@ const QuarterlyCheckins = () => {
   const [filterTerm, setFilterTerm] = useState("");
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [currentQuarter, setCurrentQuarter] = useState(`Q${Math.ceil((new Date().getMonth() + 1) / 3)}`);
-  const [selectedInstructorId, setSelectedInstructorId] = useState<number | null>(null);
+  const [instructorName, setInstructorName] = useState("");
+  const [checkinSchool, setCheckinSchool] = useState<string>("");
+  const [checkinDate, setCheckinDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
   const [currentSession, setCurrentSession] = useState<CheckinSession | null>(null);
   const [expandedSession, setExpandedSession] = useState<number | null>(null);
   
-  // Fetch instructors data
-  const { data: instructors = [] } = useQuery<Instructor[]>({
-    queryKey: selectedSchool 
-      ? ['/api/schools', selectedSchool.id, 'instructors'] 
-      : ['/api/instructors'],
-    enabled: !selectedSchool || !!selectedSchool.id,
+  // Fetch schools data
+  const { data: schools = [] } = useQuery({
+    queryKey: ['/api/schools'],
   });
-  
-  // Senior ELT instructors (those with role containing "Senior")
-  const seniorInstructors = instructors.filter(
-    instructor => instructor.role && instructor.role.includes("Senior")
-  );
   
   // Filter sessions by search term and year/quarter if needed
   const filteredSessions = sessions.filter(session => {
@@ -120,26 +114,32 @@ const QuarterlyCheckins = () => {
   
   // Start a new check-in session
   const startNewSession = () => {
-    if (!selectedInstructorId) {
+    if (!instructorName.trim()) {
       toast({
         title: "Error",
-        description: "Please select an instructor to start a check-in",
+        description: "Please enter an instructor name to start a check-in",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!checkinSchool) {
+      toast({
+        title: "Error",
+        description: "Please select a school for the check-in",
         variant: "destructive",
       });
       return;
     }
     
-    const instructor = instructors.find(i => i.id === selectedInstructorId);
-    if (!instructor) return;
-    
     const newSession: CheckinSession = {
       id: Date.now(), // Temporary ID until saved to backend
-      instructorId: instructor.id,
-      instructorName: instructor.name,
-      date: format(new Date(), "yyyy-MM-dd"),
+      instructorName: instructorName.trim(),
+      date: checkinDate,
       quarter: currentQuarter,
       year: currentYear,
       notes: "",
+      school: checkinSchool,
       status: "draft",
       answers: defaultQuestions.map(q => ({ questionId: q.id, answer: "" })),
     };
@@ -261,6 +261,10 @@ const QuarterlyCheckins = () => {
         <div class="info-row">
           <div class="info-label">Senior ELT:</div>
           <div class="info-value">${session.instructorName}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">School:</div>
+          <div class="info-value">${session.school || 'Not specified'}</div>
         </div>
         <div class="info-row">
           <div class="info-label">Date:</div>
@@ -422,6 +426,7 @@ const QuarterlyCheckins = () => {
                                         {formatDate(session.date)}
                                       </span>
                                       <span>{session.quarter} {session.year}</span>
+                                      {session.school && <span>School: {session.school}</span>}
                                       <span className={`px-2 py-0.5 text-xs rounded-full ${
                                         session.status === "completed" 
                                           ? "bg-green-100 text-green-700" 
@@ -556,77 +561,89 @@ const QuarterlyCheckins = () => {
                         <div className="space-y-4">
                           <div className="grid gap-4 sm:grid-cols-2">
                             <div className="space-y-2">
-                              <Label htmlFor="instructor">Instructor</Label>
+                              <Label htmlFor="instructorName">Instructor Name</Label>
+                              <Input
+                                id="instructorName"
+                                value={instructorName}
+                                onChange={(e) => setInstructorName(e.target.value)}
+                                placeholder="Enter instructor name"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Label htmlFor="school">School</Label>
                               <Select
-                                value={selectedInstructorId?.toString() || ""}
-                                onValueChange={(value) => setSelectedInstructorId(parseInt(value))}
+                                value={checkinSchool}
+                                onValueChange={setCheckinSchool}
                               >
-                                <SelectTrigger id="instructor">
-                                  <SelectValue placeholder="Select an instructor" />
+                                <SelectTrigger id="school">
+                                  <SelectValue placeholder="Select school" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {seniorInstructors.length === 0 ? (
-                                    <SelectItem value="no-instructors" disabled>
-                                      No senior instructors found
-                                    </SelectItem>
-                                  ) : (
-                                    seniorInstructors.map((instructor) => (
-                                      <SelectItem key={instructor.id} value={instructor.id.toString()}>
-                                        {instructor.name}
-                                      </SelectItem>
-                                    ))
-                                  )}
+                                  <SelectItem value="KFNA">KFNA</SelectItem>
+                                  <SelectItem value="NFS East">NFS East</SelectItem>
+                                  <SelectItem value="NFS West">NFS West</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          <div className="grid gap-4 sm:grid-cols-3">
+                            <div className="space-y-2">
+                              <Label htmlFor="date">Date</Label>
+                              <Input
+                                id="date"
+                                type="date"
+                                value={checkinDate}
+                                onChange={(e) => setCheckinDate(e.target.value)}
+                              />
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label htmlFor="quarter">Quarter</Label>
+                              <Select
+                                value={currentQuarter}
+                                onValueChange={setCurrentQuarter}
+                              >
+                                <SelectTrigger id="quarter">
+                                  <SelectValue placeholder="Select quarter" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Q1">Q1</SelectItem>
+                                  <SelectItem value="Q2">Q2</SelectItem>
+                                  <SelectItem value="Q3">Q3</SelectItem>
+                                  <SelectItem value="Q4">Q4</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
                             
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="quarter">Quarter</Label>
-                                <Select
-                                  value={currentQuarter}
-                                  onValueChange={setCurrentQuarter}
-                                >
-                                  <SelectTrigger id="quarter">
-                                    <SelectValue placeholder="Select quarter" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Q1">Q1</SelectItem>
-                                    <SelectItem value="Q2">Q2</SelectItem>
-                                    <SelectItem value="Q3">Q3</SelectItem>
-                                    <SelectItem value="Q4">Q4</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              
-                              <div className="space-y-2">
-                                <Label htmlFor="year">Year</Label>
-                                <Select
-                                  value={currentYear.toString()}
-                                  onValueChange={(value) => setCurrentYear(parseInt(value))}
-                                >
-                                  <SelectTrigger id="year">
-                                    <SelectValue placeholder="Select year" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {[...Array(5)].map((_, i) => {
-                                      const year = new Date().getFullYear() - 2 + i;
-                                      return (
-                                        <SelectItem key={year} value={year.toString()}>
-                                          {year}
-                                        </SelectItem>
-                                      );
-                                    })}
-                                  </SelectContent>
-                                </Select>
-                              </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="year">Year</Label>
+                              <Select
+                                value={currentYear.toString()}
+                                onValueChange={(value) => setCurrentYear(parseInt(value))}
+                              >
+                                <SelectTrigger id="year">
+                                  <SelectValue placeholder="Select year" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {[...Array(5)].map((_, i) => {
+                                    const year = new Date().getFullYear() - 2 + i;
+                                    return (
+                                      <SelectItem key={year} value={year.toString()}>
+                                        {year}
+                                      </SelectItem>
+                                    );
+                                  })}
+                                </SelectContent>
+                              </Select>
                             </div>
                           </div>
                           
                           <div className="pt-2">
                             <Button 
-                              onClick={startNewSession} 
-                              disabled={selectedInstructorId === null}
+                              onClick={startNewSession}
+                              disabled={!instructorName.trim() || !checkinSchool}
                             >
                               <Plus className="h-4 w-4 mr-2" />
                               Start Check-in
