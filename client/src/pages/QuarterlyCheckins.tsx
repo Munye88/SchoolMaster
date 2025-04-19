@@ -1,19 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   CheckCircle,
-  Users,
   CalendarDays,
   Clock,
   Save,
   Plus,
-  MessageSquare,
-  ListChecks,
   ChevronDown,
   ChevronUp,
   FileQuestion,
   Ban,
   Search,
-  UserCheck,
   Printer,
   Edit,
   FilePlus
@@ -28,7 +24,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { format } from "date-fns";
 import { useSchool } from "@/hooks/useSchool";
 import { useQuery } from "@tanstack/react-query";
-import { Instructor } from "@shared/schema";
 import { toast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 
@@ -46,7 +41,6 @@ interface CheckinAnswer {
 
 interface CheckinSession {
   id: number;
-  instructorId?: number;
   instructorName: string;
   date: string;
   quarter: string;
