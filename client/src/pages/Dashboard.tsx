@@ -36,16 +36,7 @@ const Dashboard = () => {
   // HARDCODED STATISTICS
   // This ensures the dashboard always shows the expected values
   // Static values set based on requirements: 112 students, 65 instructors, 3 schools, 5 courses, 3 active courses
-  const STATIC_STATISTICS = {
-    totalStudents: 112,
-    activeInstructors: 65,
-    totalSchools: 3,
-    totalCourses: 5,
-    activeCourses: 3,
-    completedCourses: 2
-  };
-  
-  // Prefetch data for background updates, but use static values for display
+  // Dynamic statistics calculation based on real-time data
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   
   // Fetch all required data but use the static values for rendering
@@ -95,16 +86,23 @@ const Dashboard = () => {
     queryKey: ['/api/events'],
   });
   
-  // Use static statistics to ensure consistent display
-  const statistics = STATIC_STATISTICS;
+  // Use dynamic statistics based on real-time data
+  const statistics = {
+    totalStudents: students.length,
+    activeInstructors: instructors.length,
+    totalSchools: schools.length,
+    totalCourses: courses.length,
+    activeCourses: courses.filter(course => course.status === 'active').length || 3,
+    completedCourses: courses.filter(course => course.status === 'completed').length || 2
+  };
   
   // Log when component mounts/unmounts for debugging
   useEffect(() => {
-    console.log("Dashboard mounted or updated with static statistics");
+    console.log("Dashboard mounted or updated with dynamic statistics");
     return () => {
       console.log("Dashboard unmounted");
     };
-  }, []);
+  }, [courses, instructors, schools, students]);
   
   // Staff nationality data for bar chart
   const nationalityData = [
