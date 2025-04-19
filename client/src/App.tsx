@@ -83,6 +83,7 @@ function Router() {
           {/* Administration routes */}
           <ProtectedRoute path="/administration/company-policy" component={Administration} />
           <ProtectedRoute path="/administration/evaluation-guideline" component={Administration} />
+          <ProtectedRoute path="/administration/instructor-performance-policy" component={Administration} />
           <ProtectedRoute path="/administration/employee-handbook" component={Administration} />
           <ProtectedRoute path="/administration/performance-policy" component={Administration} />
           <ProtectedRoute path="/administration/classroom-evaluation" component={Administration} />

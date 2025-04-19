@@ -2,7 +2,7 @@ import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { FileText, Download, BookOpen, ClipboardList, CheckSquare, Award, Users, Info } from "lucide-react";
+import { FileText, Download, BookOpen, ClipboardList, CheckSquare, Award, Users, Info, FileDown } from "lucide-react";
 import { useSchool } from "@/hooks/useSchool";
 import { Document } from "@shared/schema";
 import { Button } from "@/components/ui/button";
@@ -435,6 +435,53 @@ const Administration = () => {
   ];
 
   // Render Instructor Evaluation Guideline page
+  // Special case for Instructor Performance & Evaluation Policy
+  if (isInstructorPerformancePolicy) {
+    return (
+      <div className="flex-1 overflow-auto p-6 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-[#0A2463]">
+                Instructor Performance & Evaluation Policy
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Guidelines for instructor performance expectations and evaluation procedures
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <a
+                href={instructorPerformancePolicyPdfUrl}
+                download="GovCIO_SAMS_Evaluation_Policy.pdf"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download PDF
+              </a>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-6 border-b border-gray-200">
+              <p className="text-gray-700">
+                This document provides comprehensive guidelines for instructor performance expectations, evaluation
+                methods, and professional development procedures. Please review this document to understand the
+                performance standards and evaluation process at SAMS.
+              </p>
+            </div>
+            <div className="aspect-auto h-[800px]">
+              <iframe 
+                src={instructorPerformancePolicyPdfUrl} 
+                className="w-full h-full border-0" 
+                title="Instructor Performance & Evaluation Policy"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   if (isEvaluationGuideline) {
     return (
       <div className="flex-1 overflow-auto p-6 bg-gray-50">
