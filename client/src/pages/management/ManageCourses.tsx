@@ -189,14 +189,71 @@ export default function ManageCourses() {
 
   // Form submission handlers
   const onCreateSubmit = (values: CourseFormValues) => {
-    createCourseMutation.mutate(values);
+    // Before submitting, automatically calculate the status based on dates
+    const startDate = new Date(values.startDate);
+    const endDate = values.endDate ? new Date(values.endDate) : null;
+    const today = new Date();
+    
+    startDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+    if (endDate) endDate.setHours(0, 0, 0, 0);
+    
+    // Automatically determine the status
+    let calculatedStatus = "Planned";
+    
+    if (endDate && today > endDate) {
+      calculatedStatus = "Completed";
+    } else if (today >= startDate) {
+      calculatedStatus = "Active"; // Using "Active" for database as UI shows "In Progress"
+    } else {
+      calculatedStatus = "Planned"; // UI will show "Starting Soon"
+    }
+    
+    // Use the calculated status instead of the selected one
+    const updatedValues = {
+      ...values,
+      status: calculatedStatus
+    };
+    
+    createCourseMutation.mutate(updatedValues);
   };
 
   const onEditSubmit = (values: CourseFormValues) => {
     if (selectedCourse) {
+      // Before submitting, automatically calculate the status based on dates
+      const startDate = new Date(values.startDate);
+      const endDate = values.endDate ? new Date(values.endDate) : null;
+      const today = new Date();
+      
+      startDate.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+      if (endDate) endDate.setHours(0, 0, 0, 0);
+      
+      // Automatically determine the status based on dates
+      let calculatedStatus = "Planned";
+      
+      if (endDate && today > endDate) {
+        calculatedStatus = "Completed";
+      } else if (today >= startDate) {
+        calculatedStatus = "Active"; // Using "Active" for database as UI shows "In Progress"
+      } else {
+        calculatedStatus = "Planned"; // UI will show "Starting Soon"
+      }
+      
+      // Only change the status if it's not manually set to "Cancelled"
+      const status = values.status === "Cancelled" 
+        ? "Cancelled" 
+        : calculatedStatus;
+      
+      // Use the calculated status
+      const updatedValues = {
+        ...values,
+        status
+      };
+      
       updateCourseMutation.mutate({
         id: selectedCourse.id,
-        data: values,
+        data: updatedValues,
       });
     }
   };
@@ -389,7 +446,12 @@ export default function ManageCourses() {
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Status</FormLabel>
+                      <FormLabel>
+                        Manual Status Override 
+                        <span className="text-xs text-muted-foreground ml-1">
+                          (Only needed for "Cancelled" courses)
+                        </span>
+                      </FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -406,6 +468,9 @@ export default function ManageCourses() {
                           <SelectItem value="Cancelled">Cancelled</SelectItem>
                         </SelectContent>
                       </Select>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Note: Status will be automatically calculated based on dates unless "Cancelled" is selected.
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -598,7 +663,12 @@ export default function ManageCourses() {
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Status</FormLabel>
+                      <FormLabel>
+                        Manual Status Override 
+                        <span className="text-xs text-muted-foreground ml-1">
+                          (Only needed for "Cancelled" courses)
+                        </span>
+                      </FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
@@ -615,6 +685,9 @@ export default function ManageCourses() {
                           <SelectItem value="Cancelled">Cancelled</SelectItem>
                         </SelectContent>
                       </Select>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Note: Status will be automatically calculated based on dates unless "Cancelled" is selected.
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}

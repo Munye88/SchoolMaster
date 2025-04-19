@@ -9,47 +9,50 @@ import { Course } from '@shared/schema';
  * @returns The calculated status of the course
  */
 export function calculateCourseStatus(course: Course): string {
-  // EXTRA DEBUGGING: Something is wrong with date comparisons
-  console.log(`DETAILED DEBUG - Course: ${course.name}`);
-  console.log(`Raw dates - Start: ${course.startDate}, Today's date: ${new Date().toISOString()}`);
-
-  // Get yyyy-mm-dd date strings for comparison
-  const today = new Date().toISOString().split('T')[0];
+  // Simplest possible implementation that should be reliable
   
-  // Format course dates (if in format yyyy-MM-dd, this still works)
-  // Handle both ISO dates and plain dates
-  const startDate = course.startDate.includes('T') 
-    ? course.startDate.split('T')[0] 
-    : course.startDate;
+  // Create date objects and reset time to ensure consistent comparison
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   
-  const endDate = course.endDate 
-    ? (course.endDate.includes('T') ? course.endDate.split('T')[0] : course.endDate)
-    : null;
+  // Parse start date
+  const startDateParts = course.startDate.split('-');
+  const startDate = new Date(
+    parseInt(startDateParts[0]), // year
+    parseInt(startDateParts[1]) - 1, // month (0-indexed)
+    parseInt(startDateParts[2].substring(0, 2)) // day
+  );
+  startDate.setHours(0, 0, 0, 0);
   
-  // Debug logging 
-  console.log(`Comparing - Today: ${today}, Start date: ${startDate}`);
-  console.log(`String comparison: ${today} >= ${startDate} = ${today >= startDate}`);
-
-  // Handle dates
-  const todayObj = new Date(today);
-  const startDateObj = new Date(startDate);
+  // Parse end date if exists
+  let endDate = null;
+  if (course.endDate) {
+    const endDateParts = course.endDate.split('-');
+    endDate = new Date(
+      parseInt(endDateParts[0]), // year
+      parseInt(endDateParts[1]) - 1, // month (0-indexed)
+      parseInt(endDateParts[2].substring(0, 2)) // day
+    );
+    endDate.setHours(0, 0, 0, 0);
+  }
   
-  console.log(`Date object comparison: ${todayObj.getTime()} >= ${startDateObj.getTime()} = ${todayObj.getTime() >= startDateObj.getTime()}`);
+  // Simple time comparison using timestamps
+  const todayTime = today.getTime();
+  const startTime = startDate.getTime();
+  const endTime = endDate ? endDate.getTime() : null;
   
-  // If course has ended
-  if (endDate && today > endDate) {
-    console.log(`Course is COMPLETED`);
+  // Log for debugging
+  console.log(`Course ${course.name}: Today=${todayTime}, Start=${startTime}, End=${endTime}`);
+  
+  // Determine status based on time comparison
+  if (endTime && todayTime > endTime) {
     return 'Completed';
   }
   
-  // If course has started (today is on or after start date)
-  if (today >= startDate) {
-    console.log(`Course is IN PROGRESS`);
+  if (todayTime >= startTime) {
     return 'In Progress';
   }
   
-  // Course hasn't started yet
-  console.log(`Course is STARTING SOON`);
   return 'Starting Soon';
 }
 
