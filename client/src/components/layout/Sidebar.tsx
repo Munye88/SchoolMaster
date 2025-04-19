@@ -471,6 +471,13 @@ const Sidebar = () => {
                       </Link>
                     </li>
                     <li>
+                      <Link href="/administration/manage-dashboard" onClick={() => setShowAdminLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
+                        <LayoutDashboard className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        Manage Dashboard
+                      </Link>
+                    </li>
+                    <li>
                       <Link href="/administration/instructor-recognition" onClick={() => setShowAdminLinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
                         <Award className="h-4 w-4 mr-2 text-yellow-300 group-hover:text-yellow-200" />

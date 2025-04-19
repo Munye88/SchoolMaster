@@ -150,8 +150,7 @@ const Dashboard = () => {
           <div className="flex items-center gap-4">
             <div className="w-1 h-16 bg-blue-400 rounded-full mr-3"></div>
             <div>
-              <h1 className="text-xl font-bold text-white mb-1">Dashboard Overview</h1>
-              <p className="text-sm italic text-blue-100">
+              <p className="text-sm italic text-white">
                 "Leadership is not about being in charge. It is about taking care of those in your charge." – Simon Sinek
               </p>
             </div>
