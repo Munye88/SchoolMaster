@@ -113,11 +113,16 @@ const Dashboard = () => {
     };
   }, [courses, instructors, schools, students]);
   
-  // Staff nationality data for bar chart
+  // Calculate instructor nationality counts from actual data
+  const americanInstructors = instructors.filter(i => i.nationality === 'American').length;
+  const britishInstructors = instructors.filter(i => i.nationality === 'British').length;
+  const canadianInstructors = instructors.filter(i => i.nationality === 'Canadian').length;
+  
+  // Staff nationality data for bar chart with actual counts
   const nationalityData = [
-    { name: 'American', value: 20, color: '#4299E1' },  // blue
-    { name: 'British', value: 15, color: '#48BB78' },   // green
-    { name: 'Canadian', value: 10, color: '#F6AD55' }   // orange
+    { name: 'American', value: americanInstructors, color: '#4299E1' },  // blue
+    { name: 'British', value: britishInstructors, color: '#48BB78' },   // green
+    { name: 'Canadian', value: canadianInstructors, color: '#F6AD55' }   // orange
   ];
   
   const formatDate = (date: Date | string) => {
@@ -403,7 +408,7 @@ const Dashboard = () => {
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="text-sm font-semibold opacity-90 uppercase tracking-wider">Total Instructors</h3>
-                      <p className="text-3xl font-bold mt-1">45</p>
+                      <p className="text-3xl font-bold mt-1">{statistics.activeInstructors}</p>
                     </div>
                     <div className="bg-white/20 p-3 rounded-lg">
                       <UserCheck className="w-8 h-8 text-white" />
@@ -424,18 +429,18 @@ const Dashboard = () => {
                             <h3 className="font-semibold text-blue-900">American</h3>
                           </div>
                           <div className="mt-3 flex items-baseline gap-1">
-                            <span className="text-3xl font-bold text-blue-700">20</span>
+                            <span className="text-3xl font-bold text-blue-700">{americanInstructors}</span>
                             <span className="text-sm font-medium text-blue-600">Instructors</span>
                           </div>
                           <div className="mt-3">
                             <div className="flex items-center justify-between text-xs text-blue-700 mb-1">
                               <span>Distribution</span>
-                              <span>{(20/45*100).toFixed(1)}%</span>
+                              <span>{(americanInstructors/statistics.activeInstructors*100).toFixed(1)}%</span>
                             </div>
                             <div className="w-full bg-blue-200 rounded-full h-2 overflow-hidden">
                               <div 
                                 className="h-full bg-blue-600 rounded-full" 
-                                style={{ width: `${(20/45*100).toFixed(1)}%` }}
+                                style={{ width: `${(americanInstructors/statistics.activeInstructors*100).toFixed(1)}%` }}
                               ></div>
                             </div>
                           </div>
@@ -455,18 +460,18 @@ const Dashboard = () => {
                             <h3 className="font-semibold text-red-900">British</h3>
                           </div>
                           <div className="mt-3 flex items-baseline gap-1">
-                            <span className="text-3xl font-bold text-red-700">15</span>
+                            <span className="text-3xl font-bold text-red-700">{britishInstructors}</span>
                             <span className="text-sm font-medium text-red-600">Instructors</span>
                           </div>
                           <div className="mt-3">
                             <div className="flex items-center justify-between text-xs text-red-700 mb-1">
                               <span>Distribution</span>
-                              <span>{(15/45*100).toFixed(1)}%</span>
+                              <span>{(britishInstructors/statistics.activeInstructors*100).toFixed(1)}%</span>
                             </div>
                             <div className="w-full bg-red-200 rounded-full h-2 overflow-hidden">
                               <div 
                                 className="h-full bg-red-600 rounded-full" 
-                                style={{ width: `${(15/45*100).toFixed(1)}%` }}
+                                style={{ width: `${(britishInstructors/statistics.activeInstructors*100).toFixed(1)}%` }}
                               ></div>
                             </div>
                           </div>
@@ -486,18 +491,18 @@ const Dashboard = () => {
                             <h3 className="font-semibold text-emerald-900">Canadian</h3>
                           </div>
                           <div className="mt-3 flex items-baseline gap-1">
-                            <span className="text-3xl font-bold text-emerald-700">10</span>
+                            <span className="text-3xl font-bold text-emerald-700">{canadianInstructors}</span>
                             <span className="text-sm font-medium text-emerald-600">Instructors</span>
                           </div>
                           <div className="mt-3">
                             <div className="flex items-center justify-between text-xs text-emerald-700 mb-1">
                               <span>Distribution</span>
-                              <span>{(10/45*100).toFixed(1)}%</span>
+                              <span>{(canadianInstructors/statistics.activeInstructors*100).toFixed(1)}%</span>
                             </div>
                             <div className="w-full bg-emerald-200 rounded-full h-2 overflow-hidden">
                               <div 
                                 className="h-full bg-emerald-600 rounded-full" 
-                                style={{ width: `${(10/45*100).toFixed(1)}%` }}
+                                style={{ width: `${(canadianInstructors/statistics.activeInstructors*100).toFixed(1)}%` }}
                               ></div>
                             </div>
                           </div>
