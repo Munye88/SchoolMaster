@@ -54,11 +54,14 @@ import {
 import { format } from "date-fns";
 
 // Form validation schema
-const courseSchema = insertCourseSchema.extend({
-  schoolId: z.coerce.number().min(1, "Please select a school"),
-  status: z.string().min(1, "Status is required"),
-  startDate: z.string().min(1, "Start date is required"),
-});
+// Modify the schema to make instructorId optional
+const courseSchema = insertCourseSchema
+  .omit({ instructorId: true }) // Remove instructorId from validation
+  .extend({
+    schoolId: z.coerce.number().min(1, "Please select a school"),
+    status: z.string().min(1, "Status is required"),
+    startDate: z.string().min(1, "Start date is required"),
+  });
 
 type CourseFormValues = z.infer<typeof courseSchema>;
 
@@ -115,10 +118,23 @@ export default function ManageCourses() {
   // Create course mutation
   const createCourseMutation = useMutation({
     mutationFn: async (courseData: CourseFormValues) => {
-      const res = await apiRequest("POST", "/api/courses", courseData);
-      return await res.json();
+      console.log("Creating course with data:", courseData);
+      
+      try {
+        const res = await apiRequest("POST", "/api/courses", courseData);
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error("Server error response:", errorData);
+          throw new Error(errorData.message || "Server error");
+        }
+        return await res.json();
+      } catch (err) {
+        console.error("Course creation error:", err);
+        throw err;
+      }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Course created successfully:", data);
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
       toast({
         title: "Success",
@@ -127,10 +143,11 @@ export default function ManageCourses() {
       setIsCreateDialogOpen(false);
       createForm.reset();
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error("Failed to create course:", error);
       toast({
         title: "Error",
-        description: `Failed to create course: ${error.message}`,
+        description: error?.message || "An unknown error occurred",
         variant: "destructive",
       });
     },
@@ -139,10 +156,23 @@ export default function ManageCourses() {
   // Update course mutation
   const updateCourseMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number, data: CourseFormValues }) => {
-      const res = await apiRequest("PATCH", `/api/courses/${id}`, data);
-      return await res.json();
+      console.log("Updating course ID:", id, "with data:", data);
+      
+      try {
+        const res = await apiRequest("PATCH", `/api/courses/${id}`, data);
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error("Server error response:", errorData);
+          throw new Error(errorData.message || "Server error");
+        }
+        return await res.json();
+      } catch (err) {
+        console.error("Course update error:", err);
+        throw err;
+      }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("Course updated successfully:", data);
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
       toast({
         title: "Success",
@@ -151,10 +181,11 @@ export default function ManageCourses() {
       setIsEditDialogOpen(false);
       setSelectedCourse(null);
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error("Failed to update course:", error);
       toast({
         title: "Error",
-        description: `Failed to update course: ${error.message}`,
+        description: error?.message || "An unknown error occurred",
         variant: "destructive",
       });
     },
