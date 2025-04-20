@@ -77,13 +77,14 @@ export function useDashboardStats(): DashboardStats {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
   
-  // Fetch courses data
+  // Fetch courses data - refresh frequently to show updates
   const { 
     data: courses = [], 
     isLoading: isLoadingCourses 
   } = useQuery<Course[]>({
     queryKey: ['/api/courses'],
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0, // No stale time - always fetch the latest data
+    refetchOnWindowFocus: true, // Refresh when window gets focus
   });
   
   // Fetch schools data

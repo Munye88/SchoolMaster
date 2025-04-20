@@ -336,7 +336,7 @@ const Dashboard = () => {
                 
                 {/* Course Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {courses.filter(c => c.status === "In Progress").slice(0, 3).map(course => {
+                  {courses.filter(c => c.status === "In Progress" || c.status === "Active").slice(0, 3).map(course => {
                     const school = schools.find(s => s.id === course.schoolId);
                     let fromColor = 'from-blue-50';
                     let toColor = 'to-blue-100';
