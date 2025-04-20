@@ -158,17 +158,21 @@ const StaffEvaluations = () => {
     const schoolInstructorIds = schoolInstructors.map(instructor => instructor.id);
     
     // Filter evaluations to only include those for the selected school's instructors
-    return evaluations.filter(evaluation => 
-      schoolInstructorIds.includes(evaluation.instructorId) && 
-      evaluation.year === selectedYear
-    );
+    return evaluations.filter(evaluation => {
+      // Handle both camelCase and snake_case property names
+      const evalInstructorId = evaluation.instructorId || evaluation.instructor_id;
+      return schoolInstructorIds.includes(evalInstructorId) && 
+             evaluation.year === selectedYear;
+    });
   }, [evaluations, schoolInstructors, selectedSchool, selectedYear]);
 
   // Process quarterly data for each instructor
   const instructorQuarterlyData = schoolInstructors.map(instructor => {
-    const instructorEvals = schoolEvaluations.filter(
-      evaluation => evaluation.instructorId === instructor.id
-    );
+    const instructorEvals = schoolEvaluations.filter(evaluation => {
+      // Handle both camelCase and snake_case property names
+      const evalInstructorId = evaluation.instructorId || evaluation.instructor_id;
+      return evalInstructorId === instructor.id;
+    });
     
     // Get quarterly scores
     const q1Score = instructorEvals.find(e => e.quarter === "Q1")?.score || 0;
