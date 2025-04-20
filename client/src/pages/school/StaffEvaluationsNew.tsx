@@ -115,7 +115,7 @@ const StaffEvaluations = () => {
   // If no evaluations exist, create sample data (just for testing)
   useEffect(() => {
     if (!isLoadingInstructors && !isLoadingEvaluations && evaluations.length === 0 && schoolInstructors.length > 0) {
-      const quarters = ["Q1", "Q2", "Q3"];
+      const quarters = ["Q1", "Q2", "Q3", "Q4"];
       
       schoolInstructors.forEach(instructor => {
         quarters.forEach(quarter => {
@@ -126,7 +126,9 @@ const StaffEvaluations = () => {
             quarter,
             year: "2025",
             feedback: null,
-            evaluatorId: null
+            evaluatorId: null,
+            evaluationType: Math.random() > 0.5 ? "formative" : "summative",
+            employeeId: `EMP${Math.floor(1000 + Math.random() * 9000)}`
           });
         });
       });
@@ -143,6 +145,7 @@ const StaffEvaluations = () => {
     const q1Score = instructorEvals.find(e => e.quarter === "Q1")?.score || 0;
     const q2Score = instructorEvals.find(e => e.quarter === "Q2")?.score || 0;
     const q3Score = instructorEvals.find(e => e.quarter === "Q3")?.score || 0;
+    const q4Score = instructorEvals.find(e => e.quarter === "Q4")?.score || 0;
     
     // Calculate average score
     const quarters = instructorEvals.map(e => e.quarter);
@@ -156,6 +159,7 @@ const StaffEvaluations = () => {
       q1Score,
       q2Score,
       q3Score,
+      q4Score,
       avgScore,
       passing: avgScore >= PASSING_SCORE,
       quarters: quarters,
@@ -188,10 +192,15 @@ const StaffEvaluations = () => {
     ? Math.round(instructorQuarterlyData.reduce((sum, item) => sum + item.q3Score, 0) / instructorQuarterlyData.length)
     : 0;
 
+  const q4Avg = instructorQuarterlyData.length > 0
+    ? Math.round(instructorQuarterlyData.reduce((sum, item) => sum + item.q4Score, 0) / instructorQuarterlyData.length)
+    : 0;
+
   const quarterlyData = [
     { quarter: "Q1", avgScore: q1Avg, color: "#3498db" },
     { quarter: "Q2", avgScore: q2Avg, color: "#2ecc71" },
     { quarter: "Q3", avgScore: q3Avg, color: "#e74c3c" },
+    { quarter: "Q4", avgScore: q4Avg, color: "#9b59b6" },
   ];
 
   // Loading state
@@ -266,24 +275,29 @@ const StaffEvaluations = () => {
             <CardTitle className="text-sm font-medium text-gray-500">Quarterly Averages ({selectedYear})</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               <div className="text-center">
                 <div className="text-lg font-bold text-[#3498db]">{q1Avg}%</div>
-                <div className="text-xs text-gray-500">Quarter 1</div>
+                <div className="text-xs text-gray-500">Q1</div>
               </div>
               <div className="text-center">
                 <div className="text-lg font-bold text-[#2ecc71]">{q2Avg}%</div>
-                <div className="text-xs text-gray-500">Quarter 2</div>
+                <div className="text-xs text-gray-500">Q2</div>
               </div>
               <div className="text-center">
                 <div className="text-lg font-bold text-[#e74c3c]">{q3Avg}%</div>
-                <div className="text-xs text-gray-500">Quarter 3</div>
+                <div className="text-xs text-gray-500">Q3</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-[#9b59b6]">{q4Avg}%</div>
+                <div className="text-xs text-gray-500">Q4</div>
               </div>
             </div>
             <div className="flex mt-4 gap-1">
               <Progress value={q1Avg} className="h-2 flex-1" />
               <Progress value={q2Avg} className="h-2 flex-1" />
               <Progress value={q3Avg} className="h-2 flex-1" />
+              <Progress value={q4Avg} className="h-2 flex-1" />
             </div>
             <p className="text-xs text-gray-500 mt-2">
               Average scores across quarterly evaluations for all instructors
@@ -387,6 +401,7 @@ const StaffEvaluations = () => {
                     <TableHead className="text-center">Quarter 1 Score</TableHead>
                     <TableHead className="text-center">Quarter 2 Score</TableHead>
                     <TableHead className="text-center">Quarter 3 Score</TableHead>
+                    <TableHead className="text-center">Quarter 4 Score</TableHead>
                     <TableHead className="text-center">Average</TableHead>
                     <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
@@ -432,6 +447,17 @@ const StaffEvaluations = () => {
                               : 'bg-gray-100 text-gray-800'
                         }`}>
                           {instructor.q3Score > 0 ? `${instructor.q3Score}%` : 'N/A'}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className={`px-2 py-1 rounded-full ${
+                          instructor.q4Score >= PASSING_SCORE 
+                            ? 'bg-green-100 text-green-800' 
+                            : instructor.q4Score > 0 
+                              ? 'bg-red-100 text-red-800' 
+                              : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {instructor.q4Score > 0 ? `${instructor.q4Score}%` : 'N/A'}
                         </span>
                       </TableCell>
                       <TableCell className="text-center">
