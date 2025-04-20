@@ -425,8 +425,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/courses", async (req, res) => {
     try {
-      const courseData = insertCourseSchema.parse(req.body);
-      const course = await dbStorage.createCourse(courseData);
+      // Add a default instructorId if none is provided
+      const courseData = {
+        ...req.body,
+        instructorId: req.body.instructorId || await getDefaultInstructorId(req.body.schoolId)
+      };
+      const parsedData = insertCourseSchema.parse(courseData);
+      const course = await dbStorage.createCourse(parsedData);
       
       // Log activity
       await dbStorage.createActivity({
@@ -438,10 +443,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(201).json(course);
     } catch (error) {
+      console.error("Course creation error:", error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid course data", errors: error.errors });
       }
-      res.status(500).json({ message: "Failed to create course" });
+      res.status(500).json({ message: "Failed to create course", error: error.message });
     }
   });
   
