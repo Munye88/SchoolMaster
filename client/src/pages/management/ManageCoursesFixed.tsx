@@ -56,7 +56,6 @@ import { format } from "date-fns";
 // Form validation schema
 const courseSchema = insertCourseSchema.extend({
   schoolId: z.coerce.number().min(1, "Please select a school"),
-  instructorId: z.coerce.number().min(1, "Please select an instructor"),
   status: z.string().min(1, "Status is required"),
   startDate: z.string().min(1, "Start date is required"),
 });
@@ -210,7 +209,6 @@ export default function ManageCourses() {
     editForm.reset({
       name: course.name,
       schoolId: course.schoolId,
-      instructorId: course.instructorId,
       status: course.status,
       startDate: course.startDate,
       endDate: course.endDate || "",
