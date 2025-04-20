@@ -81,6 +81,7 @@ const StaffEvaluations = () => {
   const [evalType, setEvalType] = useState<string>("formative");
   const [employeeId, setEmployeeId] = useState<string>("");
   const [filteredInstructors, setFilteredInstructors] = useState<Instructor[]>([]);
+  const [currentEvaluationId, setCurrentEvaluationId] = useState<number | null>(null);
   
   // Fetch instructors and evaluations
   const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
@@ -227,11 +228,17 @@ const StaffEvaluations = () => {
       return evalInstructorId === instructor.id;
     });
     
+    // Get quarterly evaluations
+    const q1Eval = instructorEvals.find(e => e.quarter === "Q1");
+    const q2Eval = instructorEvals.find(e => e.quarter === "Q2");
+    const q3Eval = instructorEvals.find(e => e.quarter === "Q3");
+    const q4Eval = instructorEvals.find(e => e.quarter === "Q4");
+    
     // Get quarterly scores
-    const q1Score = instructorEvals.find(e => e.quarter === "Q1")?.score || 0;
-    const q2Score = instructorEvals.find(e => e.quarter === "Q2")?.score || 0;
-    const q3Score = instructorEvals.find(e => e.quarter === "Q3")?.score || 0;
-    const q4Score = instructorEvals.find(e => e.quarter === "Q4")?.score || 0;
+    const q1Score = q1Eval?.score || 0;
+    const q2Score = q2Eval?.score || 0;
+    const q3Score = q3Eval?.score || 0;
+    const q4Score = q4Eval?.score || 0;
     
     // Calculate average score
     const quarters = instructorEvals.map(e => e.quarter);
@@ -246,6 +253,11 @@ const StaffEvaluations = () => {
       q2Score,
       q3Score,
       q4Score,
+      // Store the evaluation objects for edit/delete operations
+      q1Eval,
+      q2Eval,
+      q3Eval,
+      q4Eval,
       avgScore,
       passing: avgScore >= PASSING_SCORE,
       quarters: quarters,
@@ -505,48 +517,224 @@ const StaffEvaluations = () => {
                       <TableCell className="font-medium">{instructor.name}</TableCell>
                       <TableCell className="text-center">{format(new Date(), 'MM/dd/yy')}</TableCell>
                       <TableCell className="text-center">
-                        <span className={`px-2 py-1 rounded-full ${
-                          instructor.q1Score >= PASSING_SCORE 
-                            ? 'bg-green-100 text-green-800' 
-                            : instructor.q1Score > 0 
-                              ? 'bg-red-100 text-red-800' 
-                              : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {instructor.q1Score > 0 ? `${instructor.q1Score}%` : 'N/A'}
-                        </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className={`px-2 py-1 rounded-full ${
+                            instructor.q1Score >= PASSING_SCORE 
+                              ? 'bg-green-100 text-green-800' 
+                              : instructor.q1Score > 0 
+                                ? 'bg-red-100 text-red-800' 
+                                : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {instructor.q1Score > 0 ? `${instructor.q1Score}%` : 'N/A'}
+                          </span>
+                          {instructor.q1Eval && (
+                            <div className="flex gap-1 mt-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0"
+                                onClick={() => {
+                                  // Set up edit mode for this evaluation
+                                  const instr = schoolInstructors.find(i => i.id === instructor.id);
+                                  if (instr && instructor.q1Eval) {
+                                    setSelectedInstructor(instr);
+                                    setDialogMode("edit");
+                                    setEvalScore(instructor.q1Eval.score);
+                                    setEvalQuarter(instructor.q1Eval.quarter);
+                                    setEvalFeedback(instructor.q1Eval.feedback || "");
+                                    setEvalType(instructor.q1Eval.evaluationType || "formative");
+                                    setEmployeeId(instructor.q1Eval.employeeId || "");
+                                    setEvalDate(instructor.q1Eval.evaluationDate || format(new Date(), 'yyyy-MM-dd'));
+                                    setEvalAttachment(instructor.q1Eval.attachmentUrl);
+                                    setCurrentEvaluationId(instructor.q1Eval.id);
+                                    setDialogOpen(true);
+                                  }
+                                }}
+                              >
+                                <PencilIcon className="h-3 w-3" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => {
+                                  if (instructor.q1Eval) {
+                                    if (confirm("Are you sure you want to delete this evaluation?")) {
+                                      deleteEvaluationMutation.mutate(instructor.q1Eval.id);
+                                    }
+                                  }
+                                }}
+                              >
+                                <XIcon className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <span className={`px-2 py-1 rounded-full ${
-                          instructor.q2Score >= PASSING_SCORE 
-                            ? 'bg-green-100 text-green-800' 
-                            : instructor.q2Score > 0 
-                              ? 'bg-red-100 text-red-800' 
-                              : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {instructor.q2Score > 0 ? `${instructor.q2Score}%` : 'N/A'}
-                        </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className={`px-2 py-1 rounded-full ${
+                            instructor.q2Score >= PASSING_SCORE 
+                              ? 'bg-green-100 text-green-800' 
+                              : instructor.q2Score > 0 
+                                ? 'bg-red-100 text-red-800' 
+                                : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {instructor.q2Score > 0 ? `${instructor.q2Score}%` : 'N/A'}
+                          </span>
+                          {instructor.q2Eval && (
+                            <div className="flex gap-1 mt-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0"
+                                onClick={() => {
+                                  // Set up edit mode for this evaluation
+                                  const instr = schoolInstructors.find(i => i.id === instructor.id);
+                                  if (instr && instructor.q2Eval) {
+                                    setSelectedInstructor(instr);
+                                    setDialogMode("edit");
+                                    setEvalScore(instructor.q2Eval.score);
+                                    setEvalQuarter(instructor.q2Eval.quarter);
+                                    setEvalFeedback(instructor.q2Eval.feedback || "");
+                                    setEvalType(instructor.q2Eval.evaluationType || "formative");
+                                    setEmployeeId(instructor.q2Eval.employeeId || "");
+                                    setEvalDate(instructor.q2Eval.evaluationDate || format(new Date(), 'yyyy-MM-dd'));
+                                    setEvalAttachment(instructor.q2Eval.attachmentUrl);
+                                    setCurrentEvaluationId(instructor.q2Eval.id);
+                                    setDialogOpen(true);
+                                  }
+                                }}
+                              >
+                                <PencilIcon className="h-3 w-3" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => {
+                                  if (instructor.q2Eval) {
+                                    if (confirm("Are you sure you want to delete this evaluation?")) {
+                                      deleteEvaluationMutation.mutate(instructor.q2Eval.id);
+                                    }
+                                  }
+                                }}
+                              >
+                                <XIcon className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <span className={`px-2 py-1 rounded-full ${
-                          instructor.q3Score >= PASSING_SCORE 
-                            ? 'bg-green-100 text-green-800' 
-                            : instructor.q3Score > 0 
-                              ? 'bg-red-100 text-red-800' 
-                              : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {instructor.q3Score > 0 ? `${instructor.q3Score}%` : 'N/A'}
-                        </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className={`px-2 py-1 rounded-full ${
+                            instructor.q3Score >= PASSING_SCORE 
+                              ? 'bg-green-100 text-green-800' 
+                              : instructor.q3Score > 0 
+                                ? 'bg-red-100 text-red-800' 
+                                : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {instructor.q3Score > 0 ? `${instructor.q3Score}%` : 'N/A'}
+                          </span>
+                          {instructor.q3Eval && (
+                            <div className="flex gap-1 mt-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0"
+                                onClick={() => {
+                                  // Set up edit mode for this evaluation
+                                  const instr = schoolInstructors.find(i => i.id === instructor.id);
+                                  if (instr && instructor.q3Eval) {
+                                    setSelectedInstructor(instr);
+                                    setDialogMode("edit");
+                                    setEvalScore(instructor.q3Eval.score);
+                                    setEvalQuarter(instructor.q3Eval.quarter);
+                                    setEvalFeedback(instructor.q3Eval.feedback || "");
+                                    setEvalType(instructor.q3Eval.evaluationType || "formative");
+                                    setEmployeeId(instructor.q3Eval.employeeId || "");
+                                    setEvalDate(instructor.q3Eval.evaluationDate || format(new Date(), 'yyyy-MM-dd'));
+                                    setEvalAttachment(instructor.q3Eval.attachmentUrl);
+                                    setCurrentEvaluationId(instructor.q3Eval.id);
+                                    setDialogOpen(true);
+                                  }
+                                }}
+                              >
+                                <PencilIcon className="h-3 w-3" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => {
+                                  if (instructor.q3Eval) {
+                                    if (confirm("Are you sure you want to delete this evaluation?")) {
+                                      deleteEvaluationMutation.mutate(instructor.q3Eval.id);
+                                    }
+                                  }
+                                }}
+                              >
+                                <XIcon className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <span className={`px-2 py-1 rounded-full ${
-                          instructor.q4Score >= PASSING_SCORE 
-                            ? 'bg-green-100 text-green-800' 
-                            : instructor.q4Score > 0 
-                              ? 'bg-red-100 text-red-800' 
-                              : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {instructor.q4Score > 0 ? `${instructor.q4Score}%` : 'N/A'}
-                        </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className={`px-2 py-1 rounded-full ${
+                            instructor.q4Score >= PASSING_SCORE 
+                              ? 'bg-green-100 text-green-800' 
+                              : instructor.q4Score > 0 
+                                ? 'bg-red-100 text-red-800' 
+                                : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {instructor.q4Score > 0 ? `${instructor.q4Score}%` : 'N/A'}
+                          </span>
+                          {instructor.q4Eval && (
+                            <div className="flex gap-1 mt-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0"
+                                onClick={() => {
+                                  // Set up edit mode for this evaluation
+                                  const instr = schoolInstructors.find(i => i.id === instructor.id);
+                                  if (instr && instructor.q4Eval) {
+                                    setSelectedInstructor(instr);
+                                    setDialogMode("edit");
+                                    setEvalScore(instructor.q4Eval.score);
+                                    setEvalQuarter(instructor.q4Eval.quarter);
+                                    setEvalFeedback(instructor.q4Eval.feedback || "");
+                                    setEvalType(instructor.q4Eval.evaluationType || "formative");
+                                    setEmployeeId(instructor.q4Eval.employeeId || "");
+                                    setEvalDate(instructor.q4Eval.evaluationDate || format(new Date(), 'yyyy-MM-dd'));
+                                    setEvalAttachment(instructor.q4Eval.attachmentUrl);
+                                    setCurrentEvaluationId(instructor.q4Eval.id);
+                                    setDialogOpen(true);
+                                  }
+                                }}
+                              >
+                                <PencilIcon className="h-3 w-3" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => {
+                                  if (instructor.q4Eval) {
+                                    if (confirm("Are you sure you want to delete this evaluation?")) {
+                                      deleteEvaluationMutation.mutate(instructor.q4Eval.id);
+                                    }
+                                  }
+                                }}
+                              >
+                                <XIcon className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-center">
                         {instructor.evaluationsCount > 0 ? `${instructor.avgScore}%` : 'N/A'}
