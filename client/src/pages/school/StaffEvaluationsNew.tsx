@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Instructor, Evaluation, InsertEvaluation } from "@shared/schema";
 import { useSchool } from "@/hooks/useSchool";
@@ -82,23 +82,29 @@ const StaffEvaluations = () => {
   
   // Fetch instructors and evaluations
   const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
-    queryKey: ['/api/instructors', selectedSchool],
-    enabled: !!selectedSchool, // Only run when a school is selected
+    queryKey: ['/api/instructors', selectedSchool?.toString()], // Force string conversion
+    // Always enable the query regardless of selectedSchool
     refetchOnWindowFocus: true,
     refetchOnMount: true,
+    staleTime: 0, // Always fetch fresh data
   });
 
   const { data: evaluations = [], isLoading: isLoadingEvaluations } = useQuery<Evaluation[]>({
     // Include selectedSchool in the queryKey to trigger refetch when school changes
-    queryKey: ['/api/evaluations', selectedSchool],
-    enabled: !!selectedSchool, // Only run when a school is selected
+    queryKey: ['/api/evaluations', selectedSchool?.toString()], // Force string conversion
+    // Always enable the query regardless of selectedSchool
     refetchOnWindowFocus: true,
     refetchOnMount: true,
+    staleTime: 0, // Always fetch fresh data
   });
 
-  const schoolInstructors = selectedSchool 
-    ? instructors.filter(instructor => instructor.schoolId === parseInt(selectedSchool.toString(), 10)) 
-    : instructors;
+  // Filter instructors by school after data is loaded
+  const schoolInstructors = useMemo(() => {
+    if (!selectedSchool || !instructors) return [];
+    return instructors.filter(instructor => 
+      instructor.schoolId === parseInt(selectedSchool.toString(), 10)
+    );
+  }, [instructors, selectedSchool]);
   
   // Create mock evaluation data for instructors if none exist
   const createEvaluationMutation = useMutation({
