@@ -82,14 +82,18 @@ const StaffEvaluations = () => {
   
   // Fetch instructors and evaluations
   const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
-    queryKey: ['/api/instructors'],
+    queryKey: ['/api/instructors', selectedSchool],
+    enabled: !!selectedSchool, // Only run when a school is selected
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   const { data: evaluations = [], isLoading: isLoadingEvaluations } = useQuery<Evaluation[]>({
     // Include selectedSchool in the queryKey to trigger refetch when school changes
     queryKey: ['/api/evaluations', selectedSchool],
-    // Make sure query runs even when selectedSchool changes
+    enabled: !!selectedSchool, // Only run when a school is selected
     refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   const schoolInstructors = selectedSchool 
@@ -103,7 +107,9 @@ const StaffEvaluations = () => {
       return await res.json();
     },
     onSuccess: () => {
+      // Invalidate both evaluations and instructors queries to ensure fresh data
       queryClient.invalidateQueries({ queryKey: ['/api/evaluations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
     },
   });
 
@@ -381,6 +387,8 @@ const StaffEvaluations = () => {
                       setEvalScore(85);
                       setEvalQuarter("Q1");
                       setEvalFeedback("");
+                      setEvalType("formative");
+                      setEmployeeId(`EMP${Math.floor(1000 + Math.random() * 9000)}`);
                       setEvalDate(format(new Date(), 'yyyy-MM-dd'));
                       setEvalAttachment(null);
                       setDialogOpen(true);
@@ -492,6 +500,8 @@ const StaffEvaluations = () => {
                                 setEvalScore(85);
                                 setEvalQuarter("Q1");
                                 setEvalFeedback("");
+                                setEvalType("formative");
+                                setEmployeeId(`EMP${Math.floor(1000 + Math.random() * 9000)}`);
                                 setDialogOpen(true);
                               }
                             }}
