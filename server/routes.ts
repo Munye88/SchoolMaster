@@ -38,6 +38,29 @@ import { generateAIResponse } from "./services/ai";
 import { AIChatRequest } from "../client/src/lib/ai-types";
 import { initDatabase } from "./initDb";
 
+// Helper function to get a default instructor ID for a school
+async function getDefaultInstructorId(schoolId: number): Promise<number> {
+  try {
+    // Get instructors from the specified school
+    const instructors = await dbStorage.getInstructorsBySchool(schoolId);
+    if (instructors && instructors.length > 0) {
+      return instructors[0].id;
+    }
+    
+    // Fallback: Get any instructor
+    const allInstructors = await dbStorage.getInstructors();
+    if (allInstructors && allInstructors.length > 0) {
+      return allInstructors[0].id;
+    }
+    
+    // Last resort: Return a fixed ID
+    return 6876; // Default instructor ID
+  } catch (error) {
+    console.error("Error getting default instructor:", error);
+    return 6876; // Fallback ID
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize the database
   await initDatabase();
@@ -425,13 +448,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/courses", async (req, res) => {
     try {
-      // Add a default instructorId if none is provided
+      console.log("Creating course with data:", req.body);
+      
+      // Make sure we have a schoolId
+      if (!req.body.schoolId) {
+        return res.status(400).json({ message: "schoolId is required" });
+      }
+      
+      // Get a default instructor for this school if not provided
+      let instructorId = req.body.instructorId;
+      if (!instructorId) {
+        instructorId = await getDefaultInstructorId(req.body.schoolId);
+        console.log(`Using default instructor ID: ${instructorId} for school ID: ${req.body.schoolId}`);
+      }
+      
+      // Add instructorId to course data
       const courseData = {
         ...req.body,
-        instructorId: req.body.instructorId || await getDefaultInstructorId(req.body.schoolId)
+        instructorId,
+        // Make sure progress is set with a default if missing
+        progress: req.body.progress || 0
       };
+      
+      console.log("Processed course data:", courseData);
       const parsedData = insertCourseSchema.parse(courseData);
       const course = await dbStorage.createCourse(parsedData);
+      
+      console.log("Course created successfully:", course);
       
       // Log activity
       await dbStorage.createActivity({
@@ -445,9 +488,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Course creation error:", error);
       if (error instanceof z.ZodError) {
+        console.error("Validation errors:", error.errors);
         return res.status(400).json({ message: "Invalid course data", errors: error.errors });
       }
-      res.status(500).json({ message: "Failed to create course", error: error.message });
+      res.status(500).json({ 
+        message: "Failed to create course", 
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   });
   
@@ -458,12 +505,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
-      const updateData = insertCourseSchema.partial().parse(req.body);
-      const updatedCourse = await dbStorage.updateCourse(id, updateData);
+      console.log("Updating course with ID:", id, "Data:", req.body);
       
-      if (!updatedCourse) {
+      // Get the existing course to maintain instructorId if not provided in update
+      const existingCourse = await dbStorage.getCourse(id);
+      if (!existingCourse) {
         return res.status(404).json({ message: "Course not found" });
       }
+      
+      // If instructorId isn't provided in the update, keep the existing one
+      let updateDataRaw = { ...req.body };
+      if (!updateDataRaw.instructorId && existingCourse.instructorId) {
+        updateDataRaw.instructorId = existingCourse.instructorId;
+      }
+      
+      // Parse and validate the data
+      const updateData = insertCourseSchema.partial().parse(updateDataRaw);
+      const updatedCourse = await dbStorage.updateCourse(id, updateData);
+      
+      console.log("Course updated successfully:", updatedCourse);
       
       // Log activity
       await dbStorage.createActivity({
@@ -475,10 +535,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(updatedCourse);
     } catch (error) {
+      console.error("Course update error:", error);
       if (error instanceof z.ZodError) {
+        console.error("Validation errors:", error.errors);
         return res.status(400).json({ message: "Invalid course data", errors: error.errors });
       }
-      res.status(500).json({ message: "Failed to update course" });
+      res.status(500).json({ 
+        message: "Failed to update course", 
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   });
   
