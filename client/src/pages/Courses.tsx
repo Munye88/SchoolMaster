@@ -330,7 +330,7 @@ export default function Courses() {
                     <Badge 
                       className="bg-white bg-opacity-30 text-white font-medium border-none"
                     >
-                      {getCourseStatus(course)}
+                      {course.status === "In Progress" ? "In Progress" : getCourseStatus(course)}
                     </Badge>
                   </div>
                 </CardHeader>
