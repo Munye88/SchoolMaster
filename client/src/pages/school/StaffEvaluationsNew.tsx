@@ -213,8 +213,8 @@ const StaffEvaluations = () => {
     
     // Filter evaluations to only include those for the selected school's instructors
     return evaluations.filter(evaluation => {
-      // Handle both camelCase and snake_case property names
-      const evalInstructorId = evaluation.instructorId || evaluation.instructor_id;
+      // Get the instructor ID from the evaluation
+      const evalInstructorId = evaluation.instructorId;
       return schoolInstructorIds.includes(evalInstructorId) && 
              evaluation.year === selectedYear;
     });
@@ -223,8 +223,8 @@ const StaffEvaluations = () => {
   // Process quarterly data for each instructor
   const instructorQuarterlyData = schoolInstructors.map(instructor => {
     const instructorEvals = schoolEvaluations.filter(evaluation => {
-      // Handle both camelCase and snake_case property names
-      const evalInstructorId = evaluation.instructorId || evaluation.instructor_id;
+      // Get the instructor ID from the evaluation
+      const evalInstructorId = evaluation.instructorId;
       return evalInstructorId === instructor.id;
     });
     
@@ -1063,7 +1063,7 @@ const StaffEvaluations = () => {
             <Button 
               onClick={() => {
                 if (selectedInstructor) {
-                  createEvaluationMutation.mutate({
+                  const evaluationData = {
                     instructorId: selectedInstructor.id,
                     score: evalScore,
                     quarter: evalQuarter,
@@ -1074,26 +1074,41 @@ const StaffEvaluations = () => {
                     evaluatorId: null,
                     evaluationType: evalType,
                     employeeId: employeeId
-                  });
+                  };
+                  
+                  if (dialogMode === "add") {
+                    // Create new evaluation
+                    createEvaluationMutation.mutate(evaluationData);
+                    toast({
+                      title: "Evaluation added",
+                      description: "New evaluation score has been successfully added.",
+                    });
+                  } else if (dialogMode === "edit" && currentEvaluationId) {
+                    // Update existing evaluation
+                    updateEvaluationMutation.mutate({
+                      id: currentEvaluationId,
+                      data: evaluationData
+                    });
+                  }
+                  
                   setDialogOpen(false);
                   
                   // Reset after saving
-                  if (dialogMode === "add") {
-                    setSelectedInstructor(null);
-                    setEvalScore(85);
-                    setEvalQuarter("Q1");
-                    setEvalFeedback("");
-                    setEvalAttachment(null);
-                    setEvalType("formative");
-                    setEmployeeId("");
-                  }
+                  setSelectedInstructor(null);
+                  setEvalScore(85);
+                  setEvalQuarter("Q1");
+                  setEvalFeedback("");
+                  setEvalAttachment(null);
+                  setEvalType("formative");
+                  setEmployeeId("");
+                  setCurrentEvaluationId(null);
                 }
               }} 
               disabled={!selectedInstructor}
               className="gap-2 bg-[#0A2463] hover:bg-[#071A4A]"
             >
               <SaveIcon size={16} />
-              Save Evaluation
+              {dialogMode === "add" ? "Save Evaluation" : "Update Evaluation"}
             </Button>
           </DialogFooter>
         </DialogContent>
