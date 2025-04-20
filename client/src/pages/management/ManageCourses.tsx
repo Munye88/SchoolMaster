@@ -189,47 +189,46 @@ export default function ManageCourses() {
 
   // Form submission handlers
   const onCreateSubmit = (values: CourseFormValues) => {
-    // Before submitting, automatically calculate the status based on dates
-    const startDate = new Date(values.startDate);
-    const endDate = values.endDate ? new Date(values.endDate) : null;
-    const today = new Date();
-    
-    startDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-    if (endDate) endDate.setHours(0, 0, 0, 0);
-    
-    // Automatically determine the status
-    let calculatedStatus = "Planned";
-    
-    if (endDate && today > endDate) {
-      calculatedStatus = "Completed";
-    } else if (today >= startDate) {
-      calculatedStatus = "Active"; // Using "Active" for database as UI shows "In Progress"
-    } else {
-      calculatedStatus = "Planned"; // UI will show "Starting Soon"
-    }
-    
-    // Use the calculated status instead of the selected one
-    const updatedValues = {
-      ...values,
-      status: calculatedStatus
-    };
-    
-    createCourseMutation.mutate(updatedValues);
-  };
-
-  const onEditSubmit = (values: CourseFormValues) => {
-    if (selectedCourse) {
+    try {
       // Before submitting, automatically calculate the status based on dates
+      // Ensure date values are valid
+      if (!values.startDate) {
+        toast({
+          title: "Error",
+          description: "Start date is required",
+          variant: "destructive",
+        });
+        return;
+      }
+      
       const startDate = new Date(values.startDate);
       const endDate = values.endDate ? new Date(values.endDate) : null;
       const today = new Date();
+      
+      // Validate dates
+      if (isNaN(startDate.getTime())) {
+        toast({
+          title: "Error",
+          description: "Invalid start date format",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (endDate && isNaN(endDate.getTime())) {
+        toast({
+          title: "Error",
+          description: "Invalid end date format",
+          variant: "destructive",
+        });
+        return;
+      }
       
       startDate.setHours(0, 0, 0, 0);
       today.setHours(0, 0, 0, 0);
       if (endDate) endDate.setHours(0, 0, 0, 0);
       
-      // Automatically determine the status based on dates
+      // Automatically determine the status
       let calculatedStatus = "Planned";
       
       if (endDate && today > endDate) {
@@ -240,21 +239,101 @@ export default function ManageCourses() {
         calculatedStatus = "Planned"; // UI will show "Starting Soon"
       }
       
-      // Only change the status if it's not manually set to "Cancelled"
-      const status = values.status === "Cancelled" 
-        ? "Cancelled" 
-        : calculatedStatus;
+      // Only use manually selected status if it's "Cancelled"
+      const finalStatus = values.status === "Cancelled" ? "Cancelled" : calculatedStatus;
       
       // Use the calculated status
       const updatedValues = {
         ...values,
-        status
+        status: finalStatus
       };
       
-      updateCourseMutation.mutate({
-        id: selectedCourse.id,
-        data: updatedValues,
+      createCourseMutation.mutate(updatedValues);
+    } catch (error) {
+      console.error("Error in course submission:", error);
+      toast({
+        title: "Error",
+        description: "There was a problem creating the course",
+        variant: "destructive",
       });
+    }
+  };
+
+  const onEditSubmit = (values: CourseFormValues) => {
+    if (selectedCourse) {
+      try {
+        // Before submitting, automatically calculate the status based on dates
+        // Ensure date values are valid
+        if (!values.startDate) {
+          toast({
+            title: "Error",
+            description: "Start date is required",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        const startDate = new Date(values.startDate);
+        const endDate = values.endDate ? new Date(values.endDate) : null;
+        const today = new Date();
+        
+        // Validate dates
+        if (isNaN(startDate.getTime())) {
+          toast({
+            title: "Error",
+            description: "Invalid start date format",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        if (endDate && isNaN(endDate.getTime())) {
+          toast({
+            title: "Error",
+            description: "Invalid end date format",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        startDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+        if (endDate) endDate.setHours(0, 0, 0, 0);
+        
+        // Automatically determine the status based on dates
+        let calculatedStatus = "Planned";
+        
+        if (endDate && today > endDate) {
+          calculatedStatus = "Completed";
+        } else if (today >= startDate) {
+          calculatedStatus = "Active"; // Using "Active" for database as UI shows "In Progress"
+        } else {
+          calculatedStatus = "Planned"; // UI will show "Starting Soon"
+        }
+        
+        // Only change the status if it's not manually set to "Cancelled"
+        const status = values.status === "Cancelled" 
+          ? "Cancelled" 
+          : calculatedStatus;
+        
+        // Use the calculated status
+        const updatedValues = {
+          ...values,
+          status
+        };
+        
+        updateCourseMutation.mutate({
+          id: selectedCourse.id,
+          data: updatedValues,
+        });
+      } catch (error) {
+        console.error("Error in course update:", error);
+        toast({
+          title: "Error",
+          description: "There was a problem updating the course",
+          variant: "destructive",
+        });
+      }
     }
   };
 
