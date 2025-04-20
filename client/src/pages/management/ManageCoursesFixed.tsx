@@ -90,7 +90,7 @@ export default function ManageCourses() {
     resolver: zodResolver(courseSchema),
     defaultValues: {
       name: "",
-      status: "Active",
+      status: "Starting Soon",
       startDate: format(new Date(), "yyyy-MM-dd"),
       endDate: "",
       studentCount: 0,
@@ -104,7 +104,7 @@ export default function ManageCourses() {
     resolver: zodResolver(courseSchema),
     defaultValues: {
       name: "",
-      status: "Active",
+      status: "Starting Soon",
       startDate: "",
       endDate: "",
       studentCount: 0,
@@ -245,7 +245,7 @@ export default function ManageCourses() {
   const courseTypes = ["Aviation", "Refresher", "MMSC", "Cadets"];
   
   // Get available statuses
-  const statusOptions = ["Active", "Completed", "Planned", "Cancelled"];
+  const statusOptions = ["Starting Soon", "In Progress", "Completed"];
 
   return (
     <div className="container mx-auto py-8">
@@ -455,35 +455,7 @@ export default function ManageCourses() {
                   )}
                 />
 
-                <FormField
-                  control={createForm.control}
-                  name="instructorId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Instructor</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(parseInt(value))}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an instructor" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {instructors.map((instructor: any) => (
-                            <SelectItem
-                              key={instructor.id}
-                              value={instructor.id.toString()}
-                            >
-                              {instructor.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -702,36 +674,7 @@ export default function ManageCourses() {
                   )}
                 />
 
-                <FormField
-                  control={editForm.control}
-                  name="instructorId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Instructor</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(parseInt(value))}
-                        value={field.value ? field.value.toString() : ""}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an instructor" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {instructors.map((instructor: any) => (
-                            <SelectItem
-                              key={instructor.id}
-                              value={instructor.id.toString()}
-                            >
-                              {instructor.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
               </div>
 
               <div className="grid grid-cols-2 gap-4">
