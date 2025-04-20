@@ -112,6 +112,8 @@ export const evaluations = pgTable("evaluations", {
   feedback: text("feedback"),
   evaluatorId: integer("evaluator_id").references(() => users.id),
   attachmentUrl: text("attachment_url"),
+  evaluationType: text("evaluation_type"),
+  employeeId: text("employee_id"),
 });
 
 export const insertEvaluationSchema = createInsertSchema(evaluations).pick({
