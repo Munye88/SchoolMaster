@@ -541,10 +541,9 @@ export default function ManageCourses() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Active">Active</SelectItem>
+                          <SelectItem value="Starting Soon">Starting Soon</SelectItem>
+                          <SelectItem value="In Progress">In Progress</SelectItem>
                           <SelectItem value="Completed">Completed</SelectItem>
-                          <SelectItem value="Planned">Planned</SelectItem>
-                          <SelectItem value="Cancelled">Cancelled</SelectItem>
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-muted-foreground mt-1">
@@ -758,10 +757,9 @@ export default function ManageCourses() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Active">Active</SelectItem>
+                          <SelectItem value="Starting Soon">Starting Soon</SelectItem>
+                          <SelectItem value="In Progress">In Progress</SelectItem>
                           <SelectItem value="Completed">Completed</SelectItem>
-                          <SelectItem value="Planned">Planned</SelectItem>
-                          <SelectItem value="Cancelled">Cancelled</SelectItem>
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-muted-foreground mt-1">
