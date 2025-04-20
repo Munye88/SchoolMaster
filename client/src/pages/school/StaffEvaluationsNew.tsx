@@ -121,6 +121,57 @@ const StaffEvaluations = () => {
       }
     },
   });
+  
+  // Update an existing evaluation
+  const updateEvaluationMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number, data: Partial<InsertEvaluation> }) => {
+      const res = await apiRequest("PATCH", `/api/evaluations/${id}`, data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      // Invalidate queries to refresh data
+      if (selectedSchool) {
+        queryClient.invalidateQueries({ queryKey: ['/api/evaluations', selectedSchool.toString()] });
+        queryClient.invalidateQueries({ queryKey: ['/api/instructors', selectedSchool.toString()] });
+      }
+      toast({
+        title: "Evaluation updated",
+        description: "The evaluation has been successfully updated.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to update evaluation",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Delete an evaluation
+  const deleteEvaluationMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("DELETE", `/api/evaluations/${id}`);
+    },
+    onSuccess: () => {
+      // Invalidate queries to refresh data
+      if (selectedSchool) {
+        queryClient.invalidateQueries({ queryKey: ['/api/evaluations', selectedSchool.toString()] });
+        queryClient.invalidateQueries({ queryKey: ['/api/instructors', selectedSchool.toString()] });
+      }
+      toast({
+        title: "Evaluation deleted",
+        description: "The evaluation has been successfully deleted.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to delete evaluation",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
 
   // Initialize filteredInstructors when schoolInstructors change
   useEffect(() => {
