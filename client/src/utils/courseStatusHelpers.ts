@@ -89,6 +89,10 @@ export function calculateCourseStatus(course: Course): string {
     }
     
     if (todayTime >= startTime) {
+      // Check if the stored status is "Active" - if so, return "In Progress" for UI display
+      if (course.status === "Active") {
+        return 'In Progress';
+      }
       return 'In Progress';
     }
     

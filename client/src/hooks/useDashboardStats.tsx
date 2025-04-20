@@ -135,22 +135,38 @@ export function useDashboardStats(): DashboardStats {
   // Calculate course counts when data changes
   useEffect(() => {
     if (courses.length > 0) {
-      // Update cached course statistics using our helper function
-      // IMPORTANT: Count ONLY "In Progress" courses as active
+      // Update cached course statistics counting by DATABASE STATUS
+      // On Course Management Page, we're showing by CALCULATED status
+      // So here we need to match that so the counts are the same
+      const today = new Date();
       cachedCourseStats = {
         totalCourses: courses.length,
+        // Count courses with "In Progress" status in the database
         activeCourses: courses.filter(course => {
-          const status = getCourseStatus(course);
-          return status === 'In Progress';
+          return course.status === 'In Progress';
         }).length,
         completedCourses: courses.filter(course => {
-          const status = getCourseStatus(course);
-          return status === 'Completed';
+          return course.status === 'Completed';
         }).length
       };
       
-      // Log the course statuses for debugging
-      console.log("Course statuses:", courses.map(c => getCourseStatus(c)));
+      // Log the course details for debugging
+      console.log("---------- COURSE STATUS DEBUG ----------");
+      courses.forEach(c => {
+        const isActive = c.status === 'Active' || 
+                (new Date() >= new Date(c.startDate) && 
+                (!c.endDate || new Date() <= new Date(c.endDate)) &&
+                c.status !== 'Cancelled' && 
+                c.status !== 'Completed');
+        
+        console.log(`Course ${c.name}:`, {
+          dbStatus: c.status,
+          uiStatus: getCourseStatus(c),
+          startDate: c.startDate,
+          endDate: c.endDate,
+          isActive
+        });
+      });
       console.log("Active courses:", cachedCourseStats.activeCourses);
       console.log("Completed courses:", cachedCourseStats.completedCourses);
     }
