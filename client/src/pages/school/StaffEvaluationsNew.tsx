@@ -76,6 +76,8 @@ const StaffEvaluations = () => {
   const [evalFeedback, setEvalFeedback] = useState<string>("");
   const [evalDate, setEvalDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
   const [evalAttachment, setEvalAttachment] = useState<string | null>(null);
+  const [evalType, setEvalType] = useState<string>("formative");
+  const [employeeId, setEmployeeId] = useState<string>("");
   const [filteredInstructors, setFilteredInstructors] = useState<Instructor[]>([]);
   
   // Fetch instructors and evaluations
@@ -624,6 +626,19 @@ const StaffEvaluations = () => {
               </div>
             )}
             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="employee-id" className="text-right">
+                Employee ID
+              </Label>
+              <Input
+                id="employee-id"
+                placeholder="Enter employee ID number"
+                value={employeeId}
+                onChange={(e) => setEmployeeId(e.target.value)}
+                className="col-span-3"
+              />
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="quarter" className="text-right">
                 Quarter
               </Label>
@@ -638,6 +653,25 @@ const StaffEvaluations = () => {
                   <SelectItem value="Q1">Quarter 1</SelectItem>
                   <SelectItem value="Q2">Quarter 2</SelectItem>
                   <SelectItem value="Q3">Quarter 3</SelectItem>
+                  <SelectItem value="Q4">Quarter 4</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="eval-type" className="text-right">
+                Evaluation Type
+              </Label>
+              <Select 
+                value={evalType} 
+                onValueChange={setEvalType}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select Evaluation Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="formative">Formative</SelectItem>
+                  <SelectItem value="summative">Summative</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -733,7 +767,9 @@ const StaffEvaluations = () => {
                     evaluationDate: evalDate,
                     feedback: evalFeedback || null,
                     attachmentUrl: evalAttachment || null,
-                    evaluatorId: null
+                    evaluatorId: null,
+                    evaluationType: evalType,
+                    employeeId: employeeId
                   });
                   setDialogOpen(false);
                   
@@ -744,6 +780,8 @@ const StaffEvaluations = () => {
                     setEvalQuarter("Q1");
                     setEvalFeedback("");
                     setEvalAttachment(null);
+                    setEvalType("formative");
+                    setEmployeeId("");
                   }
                 }
               }} 

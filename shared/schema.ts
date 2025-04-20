@@ -125,6 +125,8 @@ export const insertEvaluationSchema = createInsertSchema(evaluations).pick({
   feedback: true,
   evaluatorId: true,
   attachmentUrl: true,
+  evaluationType: true,
+  employeeId: true,
 });
 
 export const documents = pgTable("documents", {
