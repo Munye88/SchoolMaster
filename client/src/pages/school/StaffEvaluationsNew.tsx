@@ -178,31 +178,29 @@ const StaffEvaluations = () => {
 
   // Initialize filteredInstructors when schoolInstructors change
   useEffect(() => {
-    setFilteredInstructors([]);
+    if (schoolInstructors.length > 0) {
+      setFilteredInstructors(schoolInstructors);
+    }
   }, [schoolInstructors]);
 
-  // If no evaluations exist, create sample data (just for testing)
+  // Remove the sample data creation useEffect that was causing the infinite loop
+  
+  // Initialize dialog state when it opens
   useEffect(() => {
-    if (!isLoadingInstructors && !isLoadingEvaluations && evaluations.length === 0 && schoolInstructors.length > 0) {
-      const quarters = ["Q1", "Q2", "Q3", "Q4"];
-      
-      schoolInstructors.forEach(instructor => {
-        quarters.forEach(quarter => {
-          const randomScore = Math.floor(Math.random() * 16) + 75; // Random score between 75-90
-          createEvaluationMutation.mutate({
-            instructorId: instructor.id,
-            score: randomScore,
-            quarter,
-            year: "2025",
-            feedback: null,
-            evaluatorId: null,
-            evaluationType: Math.random() > 0.5 ? "formative" : "summative",
-            employeeId: `EMP${Math.floor(1000 + Math.random() * 9000)}`
-          });
-        });
-      });
+    if (!dialogOpen) return;
+    
+    if (dialogMode === "add") {
+      // Reset form for new evaluation
+      setSelectedInstructor(null);
+      setEvalScore(85);
+      setEvalQuarter("Q1");
+      setEvalFeedback("");
+      setEvalType("formative");
+      setEmployeeId(`EMP${Math.floor(1000 + Math.random() * 9000)}`);
+      setEvalDate(format(new Date(), 'yyyy-MM-dd'));
+      setEvalAttachment(null);
     }
-  }, [schoolInstructors, evaluations, isLoadingInstructors, isLoadingEvaluations, selectedSchool]);
+  }, [dialogOpen, dialogMode]);
 
   // Filter evaluations by school first
   const schoolEvaluations = useMemo(() => {
@@ -906,27 +904,27 @@ const StaffEvaluations = () => {
               <Label htmlFor="instructor" className="text-right">
                 Instructor
               </Label>
-              <Select 
-                value={selectedInstructor ? selectedInstructor.id.toString() : undefined}
-                onValueChange={(val) => {
-                  const instructorId = parseInt(val, 10);
-                  const instr = schoolInstructors.find(i => i.id === instructorId);
-                  if (instr) {
-                    setSelectedInstructor(instr);
-                  }
-                }}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select Instructor" />
-                </SelectTrigger>
-                <SelectContent>
+              <div className="col-span-3">
+                <select 
+                  id="instructor"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={selectedInstructor?.id || ""}
+                  onChange={(e) => {
+                    const instructorId = parseInt(e.target.value, 10);
+                    const instr = schoolInstructors.find(i => i.id === instructorId);
+                    if (instr) {
+                      setSelectedInstructor(instr);
+                    }
+                  }}
+                >
+                  <option value="">Select Instructor</option>
                   {schoolInstructors.map(instructor => (
-                    <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                    <option key={instructor.id} value={instructor.id}>
                       {instructor.name}
-                    </SelectItem>
+                    </option>
                   ))}
-                </SelectContent>
-              </Select>
+                </select>
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="employee-id" className="text-right">
