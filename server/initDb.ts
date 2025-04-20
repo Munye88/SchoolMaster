@@ -13,6 +13,7 @@ import { updateNfsWestInstructors } from './migrations/update_nfs_west_instructo
 import { updateNfsWestImages } from './migrations/update_nfs_west_images';
 import { permanentFixNfsWestImages } from './migrations/permanent_fix_nfs_west_images';
 import { addCompletedDateField } from './migrations/add_completed_date';
+import { addColumnsToEvaluations } from './migrations/add_columns_to_evaluations';
 
 export async function initDatabase() {
   try {
@@ -137,6 +138,9 @@ export async function initDatabase() {
     
     // Add completed_date field to action_logs table
     await addCompletedDateField();
+    
+    // Add evaluationType and employeeId columns to evaluations table
+    await addColumnsToEvaluations();
     
     return true;
   } catch (error) {
