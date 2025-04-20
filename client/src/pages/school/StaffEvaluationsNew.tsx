@@ -106,16 +106,19 @@ const StaffEvaluations = () => {
     );
   }, [instructors, selectedSchool]);
   
-  // Create mock evaluation data for instructors if none exist
+  // Create evaluation data
   const createEvaluationMutation = useMutation({
     mutationFn: async (data: InsertEvaluation) => {
       const res = await apiRequest("POST", "/api/evaluations", data);
       return await res.json();
     },
     onSuccess: () => {
-      // Invalidate both evaluations and instructors queries to ensure fresh data
-      queryClient.invalidateQueries({ queryKey: ['/api/evaluations'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
+      // Invalidate both evaluations and instructors queries with the current school to ensure fresh data
+      if (selectedSchool) {
+        // Use exact query keys including the school to ensure proper cache invalidation
+        queryClient.invalidateQueries({ queryKey: ['/api/evaluations', selectedSchool.toString()] });
+        queryClient.invalidateQueries({ queryKey: ['/api/instructors', selectedSchool.toString()] });
+      }
     },
   });
 
@@ -147,10 +150,24 @@ const StaffEvaluations = () => {
     }
   }, [schoolInstructors, evaluations, isLoadingInstructors, isLoadingEvaluations, selectedSchool]);
 
+  // Filter evaluations by school first
+  const schoolEvaluations = useMemo(() => {
+    if (!selectedSchool || !evaluations) return [];
+    
+    // Get all instructorIds for the selected school
+    const schoolInstructorIds = schoolInstructors.map(instructor => instructor.id);
+    
+    // Filter evaluations to only include those for the selected school's instructors
+    return evaluations.filter(evaluation => 
+      schoolInstructorIds.includes(evaluation.instructorId) && 
+      evaluation.year === selectedYear
+    );
+  }, [evaluations, schoolInstructors, selectedSchool, selectedYear]);
+
   // Process quarterly data for each instructor
   const instructorQuarterlyData = schoolInstructors.map(instructor => {
-    const instructorEvals = evaluations.filter(
-      evaluation => evaluation.instructorId === instructor.id && evaluation.year === selectedYear
+    const instructorEvals = schoolEvaluations.filter(
+      evaluation => evaluation.instructorId === instructor.id
     );
     
     // Get quarterly scores
