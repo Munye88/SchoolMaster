@@ -902,33 +902,32 @@ const StaffEvaluations = () => {
           </DialogHeader>
           
           <div className="grid gap-4 py-4">
-            {!selectedInstructor && (
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="instructor" className="text-right">
-                  Instructor
-                </Label>
-                <Select 
-                  onValueChange={(val) => {
-                    const instructorId = parseInt(val, 10);
-                    const instr = schoolInstructors.find(i => i.id === instructorId);
-                    if (instr) {
-                      setSelectedInstructor(instr);
-                    }
-                  }}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select Instructor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {schoolInstructors.map(instructor => (
-                      <SelectItem key={instructor.id} value={instructor.id.toString()}>
-                        {instructor.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="instructor" className="text-right">
+                Instructor
+              </Label>
+              <Select 
+                value={selectedInstructor ? selectedInstructor.id.toString() : undefined}
+                onValueChange={(val) => {
+                  const instructorId = parseInt(val, 10);
+                  const instr = schoolInstructors.find(i => i.id === instructorId);
+                  if (instr) {
+                    setSelectedInstructor(instr);
+                  }
+                }}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select Instructor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {schoolInstructors.map(instructor => (
+                    <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                      {instructor.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="employee-id" className="text-right">
                 Employee ID
