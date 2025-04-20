@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Instructor, Evaluation, InsertEvaluation } from "@shared/schema";
 import { useSchool } from "@/hooks/useSchool";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -66,6 +67,7 @@ const PASSING_SCORE = 85; // Passing score is 85% as per requirements
 
 const StaffEvaluations = () => {
   const { selectedSchool } = useSchool();
+  const { toast } = useToast();
   const [selectedTab, setSelectedTab] = useState("quarterly");
   const [selectedYear, setSelectedYear] = useState("2025");
   const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);

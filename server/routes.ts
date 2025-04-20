@@ -810,6 +810,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  app.patch("/api/evaluations/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid evaluation ID" });
+    }
+    
+    try {
+      const updateData = insertEvaluationSchema.partial().parse(req.body);
+      
+      // First get the existing evaluation
+      const existingEvaluation = await dbStorage.getEvaluation(id);
+      if (!existingEvaluation) {
+        return res.status(404).json({ message: "Evaluation not found" });
+      }
+      
+      // Update the evaluation
+      const updatedEvaluation = await db
+        .update(evaluations)
+        .set(updateData)
+        .where(eq(evaluations.id, id))
+        .returning();
+        
+      if (!updatedEvaluation || updatedEvaluation.length === 0) {
+        return res.status(404).json({ message: "Evaluation not found" });
+      }
+      
+      // Get instructor name for activity log
+      const instructor = await dbStorage.getInstructor(existingEvaluation.instructorId);
+      const instructorName = instructor ? instructor.name : `Instructor ID ${existingEvaluation.instructorId}`;
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "evaluation_updated",
+        description: `Evaluation for instructor "${instructorName}" updated`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(updatedEvaluation[0]);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid evaluation data", errors: error.errors });
+      }
+      console.error("Error updating evaluation:", error);
+      res.status(500).json({ message: "Failed to update evaluation" });
+    }
+  });
+  
+  app.delete("/api/evaluations/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid evaluation ID" });
+    }
+    
+    try {
+      // First get the existing evaluation
+      const evaluation = await dbStorage.getEvaluation(id);
+      if (!evaluation) {
+        return res.status(404).json({ message: "Evaluation not found" });
+      }
+      
+      // Get instructor name for activity log
+      const instructor = await dbStorage.getInstructor(evaluation.instructorId);
+      const instructorName = instructor ? instructor.name : `Instructor ID ${evaluation.instructorId}`;
+      
+      // Delete the evaluation
+      await db.delete(evaluations).where(eq(evaluations.id, id));
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "evaluation_deleted",
+        description: `Evaluation for instructor "${instructorName}" deleted`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting evaluation:", error);
+      res.status(500).json({ message: "Failed to delete evaluation" });
+    }
+  });
+  
   // Documents
   app.get("/api/documents", async (req, res) => {
     const documents = await dbStorage.getDocuments();
