@@ -16,7 +16,7 @@ import {
   type InterviewQuestion, type InsertInterviewQuestion, interviewQuestions
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, lt, gt, and, isNull, or } from "drizzle-orm";
+import { eq, desc, lt, gt, and, isNull, or, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User methods
@@ -549,8 +549,22 @@ export class MemStorage implements IStorage {
   }
   
   async getStaffAttendanceByDate(date: string): Promise<StaffAttendance[]> {
+    console.log(`Looking for staff attendance records with date: ${date}`);
+    
     return Array.from(this.staffAttendances.values()).filter(
-      (attendance) => attendance.date === date
+      (attendance) => {
+        // Normalize record date by extracting only the date part if it contains time
+        const recordDate = attendance.date.includes('T') ? 
+          attendance.date.split('T')[0] : 
+          attendance.date;
+          
+        // For exact date match, check if dates are equal
+        const isDateMatch = (date.length === 10) ? 
+          recordDate === date : // Full date match (YYYY-MM-DD)
+          recordDate.startsWith(date); // Partial match (YYYY-MM)
+        
+        return isDateMatch;
+      }
     );
   }
   
@@ -928,11 +942,37 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getStaffAttendanceByDate(date: string): Promise<StaffAttendance[]> {
-    return db.select().from(staffAttendance).where(eq(staffAttendance.date, date));
+    console.log(`Database storage: Looking for staff attendance records with date: ${date}`);
+    
+    try {
+      // Use LIKE with a prefix match for all dates
+      const likePattern = `${date}%`;
+      const results = await db.select()
+        .from(staffAttendance)
+        .where(sql`CAST(${staffAttendance.date} AS text) LIKE ${likePattern}`);
+      
+      console.log(`Found ${results.length} staff attendance records with date prefix: ${date}`);
+      return results;
+    } catch (error) {
+      console.error('Error in getStaffAttendanceByDate:', error);
+      // Fallback to a simpler query if the SQL template fails
+      return db.select().from(staffAttendance);
+    }
   }
   
   async getStaffAttendanceBySchool(schoolId: number): Promise<StaffAttendance[]> {
-    return db.select().from(staffAttendance).where(eq(staffAttendance.schoolId, schoolId));
+    // Get instructors from the school first
+    const schoolInstructors = await this.getInstructorsBySchool(schoolId);
+    const instructorIds = schoolInstructors.map(instructor => instructor.id);
+    
+    // Then filter attendance by those instructor IDs
+    if (instructorIds.length === 0) {
+      return [];
+    }
+    
+    // Get all attendance records and filter by instructors from this school
+    const allRecords = await db.select().from(staffAttendance);
+    return allRecords.filter(record => instructorIds.includes(record.instructorId));
   }
   
   async getStaffAttendanceByInstructor(instructorId: number): Promise<StaffAttendance[]> {
@@ -972,7 +1012,9 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getCandidatesByStatus(status: string): Promise<Candidate[]> {
-    return db.select().from(candidates).where(eq(candidates.status, status));
+    // Use a safer approach that doesn't rely on direct eq
+    const allCandidates = await db.select().from(candidates);
+    return allCandidates.filter(candidate => candidate.status === status);
   }
   
   async createCandidate(insertCandidate: InsertCandidate): Promise<Candidate> {

@@ -1536,22 +1536,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Get all attendance records
         const allAttendance = await dbStorage.getAllStaffAttendance();
         
-        // Filter by date (prefix match) and by instructors from the specified school
+        // Get all instructors from the specified school
         const schoolInstructors = await dbStorage.getInstructorsBySchool(schoolIdNum);
         const instructorIds = schoolInstructors.map(instructor => instructor.id);
         
+        console.log(`Filtering attendance records for date: ${date}, schoolId: ${schoolId}, found ${instructorIds.length} instructors for school`);
+        
+        // First normalize the date string to handle both formats
+        const dateStr = date as string;
+        
+        // Filter attendance records
         const filteredAttendance = allAttendance.filter(record => {
-          return record.date.startsWith(date as string) && 
-                 instructorIds.includes(record.instructorId);
+          // Normalize record date by extracting only the date part if it contains time
+          const recordDate = record.date.includes('T') ? 
+            record.date.split('T')[0] : 
+            record.date;
+            
+          // For exact date match, check if dates are equal
+          const isDateMatch = (dateStr.length === 10) ? 
+            recordDate === dateStr : // Full date match (YYYY-MM-DD)
+            recordDate.startsWith(dateStr); // Partial match (YYYY-MM)
+            
+          const isSchoolMatch = instructorIds.includes(record.instructorId);
+          
+          return isDateMatch && isSchoolMatch;
         });
         
+        console.log(`Returning ${filteredAttendance.length} attendance records after filtering by date and school`);
         return res.json(filteredAttendance);
       }
       
       if (date) {
         // Filter by date only
-        const attendance = await dbStorage.getStaffAttendanceByDate(date as string);
-        return res.json(attendance);
+        console.log(`Filtering attendance records for date: ${date} (without schoolId)`);
+        
+        // Get all attendance records
+        const allAttendance = await dbStorage.getAllStaffAttendance();
+        
+        // First normalize the date string
+        const dateStr = date as string;
+        
+        // Filter attendance records by date
+        const filteredAttendance = allAttendance.filter(record => {
+          // Normalize record date by extracting only the date part if it contains time
+          const recordDate = record.date.includes('T') ? 
+            record.date.split('T')[0] : 
+            record.date;
+            
+          // For exact date match, check if dates are equal
+          const isDateMatch = (dateStr.length === 10) ? 
+            recordDate === dateStr : // Full date match (YYYY-MM-DD)
+            recordDate.startsWith(dateStr); // Partial match (YYYY-MM)
+            
+          return isDateMatch;
+        });
+        
+        console.log(`Returning ${filteredAttendance.length} attendance records matching date: ${date}`);
+        return res.json(filteredAttendance);
       }
       
       // Get all records if no specific filters
