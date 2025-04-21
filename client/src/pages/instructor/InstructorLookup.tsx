@@ -190,7 +190,7 @@ const InstructorLookup = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     <div className="flex items-center gap-2">
                       <CalendarDays className="h-4 w-4 text-gray-500" />
-                      <span>Joined: {format(new Date(selectedInstructor.startDate), 'MMM dd, yyyy')}</span>
+                      <span>Joined: {selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMM dd, yyyy') : 'Unknown'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="h-4 w-4 text-gray-500" />
@@ -322,12 +322,14 @@ const InstructorLookup = () => {
                         </div>
                         <div className="flex items-start">
                           <span className="w-32 text-gray-500">Start Date</span>
-                          <span className="flex-1 font-medium">{format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy')}</span>
+                          <span className="flex-1 font-medium">{selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy') : 'Unknown'}</span>
                         </div>
                         <div className="flex items-start">
                           <span className="w-32 text-gray-500">Tenure</span>
                           <span className="flex-1 font-medium">
-                            {Math.round((new Date().getTime() - new Date(selectedInstructor.startDate).getTime()) / (1000 * 60 * 60 * 24 * 30))} months
+                            {selectedInstructor.startDate ? 
+                              `${Math.round((new Date().getTime() - new Date(selectedInstructor.startDate).getTime()) / (1000 * 60 * 60 * 24 * 30))} months` : 
+                              'Unknown'}
                           </span>
                         </div>
                       </div>
@@ -400,7 +402,9 @@ const InstructorLookup = () => {
                                   </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {evaluation.evaluationType.charAt(0).toUpperCase() + evaluation.evaluationType.slice(1)}
+                                  {evaluation.evaluationType ? 
+                                    (evaluation.evaluationType.charAt(0).toUpperCase() + evaluation.evaluationType.slice(1)) 
+                                    : 'Unknown'}
                                 </td>
                                 <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
                                   {evaluation.feedback || 'No feedback provided'}
@@ -479,7 +483,7 @@ const InstructorLookup = () => {
                             {instructorAttendance.map(record => (
                               <tr key={record.id}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                  {format(new Date(record.date), 'MMM dd, yyyy')}
+                                  {record.date ? format(new Date(record.date), 'MMM dd, yyyy') : 'Unknown date'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                   <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -537,7 +541,7 @@ const InstructorLookup = () => {
                               <div>
                                 <h3 className="font-medium text-lg">{recognition.awardTitle}</h3>
                                 <p className="text-sm text-gray-500 mt-1">
-                                  Awarded on {format(new Date(recognition.awardDate), 'MMMM dd, yyyy')}
+                                  Awarded on {recognition.awardDate ? format(new Date(recognition.awardDate), 'MMMM dd, yyyy') : 'Unknown date'}
                                 </p>
                                 <p className="mt-3">{recognition.description}</p>
                                 {recognition.certificateUrl && (
