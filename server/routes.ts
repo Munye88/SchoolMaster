@@ -85,19 +85,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
   app.use('/documents', express.static(documentsDir));
   
-  // Configure multer storage
-  const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-      cb(null, uploadDir);
-    },
-    filename: function(req, file, cb) {
-      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-      const fileExtension = path.extname(file.originalname);
-      cb(null, `${file.fieldname}-${uniqueSuffix}${fileExtension}`);
+  // Configure multer storage to use memory storage for better control
+  // This allows us to handle the file data in memory and write it where we want
+  const memoryStorage = multer.memoryStorage();
+  const upload = multer({ 
+    storage: memoryStorage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    fileFilter: (req, file, cb) => {
+      // Accept PDFs, DOCs and DOCXs for resumes
+      if (file.fieldname === 'resume' || file.fieldname === 'file') {
+        if (
+          file.mimetype === 'application/pdf' || 
+          file.mimetype === 'application/msword' || 
+          file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ) {
+          cb(null, true);
+        } else {
+          // Just log the error but still accept the file to avoid breaking uploads
+          console.warn(`File ${file.originalname} has unsupported mimetype: ${file.mimetype}. Will attempt to process anyway.`);
+          cb(null, true);
+        }
+      } else {
+        // For other uploads, accept common file types
+        cb(null, true);
+      }
     }
   });
-  
-  const upload = multer({ storage: storage });
   
   // API routes - prefix all routes with /api
   
@@ -1173,28 +1186,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Parse resume with AI and extract candidate info
   app.post("/api/candidates/parse-resume", upload.single('resume'), async (req, res) => {
     try {
+      console.log("Resume parsing request received");
+      
       if (!req.file) {
+        console.log("No file uploaded in the request");
         return res.status(400).json({ error: "No file uploaded" });
       }
       
-      // Get the file path
-      const fileName = `${Date.now()}-${req.file.originalname}`;
-      const dirPath = path.join("uploads", "resumes");
-      const filePath = path.join(dirPath, fileName);
+      console.log(`File uploaded: ${req.file.originalname}, mimetype: ${req.file.mimetype}, size: ${req.file.size} bytes`);
       
-      // Create directory if it doesn't exist
+      // Create dedicated directory for resumes
+      const dirPath = path.join("uploads", "resumes");
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
+        console.log(`Created resumes directory: ${dirPath}`);
       }
       
-      // Write file to disk
+      // Create a unique filename
+      const fileName = `${Date.now()}-${req.file.originalname}`;
+      const filePath = path.join(dirPath, fileName);
+      
+      // Write the buffer to disk
       fs.writeFileSync(filePath, req.file.buffer);
+      console.log(`File saved to: ${filePath}`);
       
       // Generate a URL for the uploaded file (relative path)
       const fileUrl = `/uploads/resumes/${fileName}`;
+      console.log(`File URL (for frontend): ${fileUrl}`);
       
-      let candidateInfo = {};
-      let aiProvider = "OpenAI";
+      let candidateInfo = {
+        status: "new" // Always set status to "new" as a minimum
+      };
+      let aiProvider = "Text Analysis"; // Default provider
       
       try {
         // First attempt with OpenAI
