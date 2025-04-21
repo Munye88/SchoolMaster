@@ -176,6 +176,12 @@ const AttendanceForm: React.FC<{
     comments: ""
   });
   
+  // Use the parent refetch function for consistency
+  const { data: attendanceRecords = [], refetch: parentRefetch } = useQuery<StaffAttendance[]>({
+    queryKey: ['/api/staff-attendance'],
+    enabled: false // Only execute manually
+  });
+
   // Mutation for creating attendance record
   const createAttendanceMutation = useMutation({
     mutationFn: async (data: AttendanceFormData) => {
@@ -202,8 +208,22 @@ const AttendanceForm: React.FC<{
       return await response.json();
     },
     onSuccess: () => {
-      // Force a full refresh of attendance data
-      queryClient.invalidateQueries({ queryKey: ['/api/staff-attendance'] });
+      // Force a full refresh of attendance data with proper query keys
+      queryClient.invalidateQueries({ 
+        queryKey: ['/api/staff-attendance']
+      });
+      
+      // Also invalidate all school-specific queries
+      instructors.forEach(instructor => {
+        if (instructor.schoolId) {
+          queryClient.invalidateQueries({
+            queryKey: ['/api/staff-attendance', instructor.schoolId]
+          });
+        }
+      });
+      
+      // Force immediate refresh
+      parentRefetch();
       
       toast({
         title: "Success",
@@ -416,17 +436,37 @@ const StaffAttendance = () => {
   // Format selected date for API request
   const formattedMonth = date ? format(date, "yyyy-MM") : format(new Date(), "yyyy-MM");
   
-  // Fetch attendance data from API
+  // Get the formatted date string for the selected date (if any)
+  const formattedSelectedDate = date ? format(date, 'yyyy-MM-dd') : '';
+  
+  // Build the API URL with query parameters for school and optionally date
+  const requestUrl = `/api/staff-attendance${selectedSchool ? 
+    `?schoolId=${selectedSchool.id}${formattedSelectedDate ? `&date=${formattedSelectedDate}` : ''}` : 
+    formattedSelectedDate ? `?date=${formattedSelectedDate}` : ''}`;
+  
+  // Fetch attendance data from API with proper filtering
   const { data: attendanceRecords = [], isLoading: attendanceLoading, refetch: refetchAttendance } = useQuery<StaffAttendance[]>({
-    queryKey: ['/api/staff-attendance', selectedSchool?.id, Date.now()], // Add school ID and force refresh
+    queryKey: ['/api/staff-attendance', selectedSchool?.id, formattedSelectedDate, Date.now()], // Update key when school or date changes
+    queryFn: async () => {
+      console.log("Fetching attendance data with URL:", requestUrl);
+      const response = await fetch(requestUrl);
+      if (!response.ok) {
+        throw new Error('Failed to fetch attendance records');
+      }
+      const data = await response.json();
+      console.log(`Fetched ${data.length} attendance records from API for school:`, selectedSchool?.name);
+      return data;
+    },
     enabled: !!selectedSchool
   });
   
-  // Force refetch on mount and when school changes
+  // Force refetch when date or school changes
   useEffect(() => {
-    console.log("Forcing attendance data refresh for school ID:", selectedSchool?.id);
-    refetchAttendance();
-  }, [refetchAttendance, selectedSchool?.id]);
+    if (selectedSchool) {
+      console.log("Forcing attendance data refresh for school:", selectedSchool.name, "with date:", formattedSelectedDate);
+      refetchAttendance();
+    }
+  }, [refetchAttendance, selectedSchool?.id, formattedSelectedDate]);
   
   // Process and filter data
   // First filter the attendance records by month
@@ -690,8 +730,16 @@ const StaffAttendance = () => {
         variant: "default"
       });
       
-      // Refresh data
-      queryClient.invalidateQueries({ queryKey: ['/api/staff-attendance'] });
+      // Refresh data with proper query key structure to match our custom query
+      queryClient.invalidateQueries({ 
+        queryKey: ['/api/staff-attendance', selectedSchool?.id] 
+      });
+      
+      // Force immediate specific refresh with the current date
+      setTimeout(() => {
+        console.log("Forcing refresh after bulk submit with date:", format(bulkDate, 'yyyy-MM-dd'));
+        refetchAttendance();
+      }, 200);
       
       // Small delay before exiting bulk mode to ensure data is refreshed
       setTimeout(() => {
@@ -776,7 +824,14 @@ const StaffAttendance = () => {
           
           <Button 
             className="bg-[#0A2463] hover:bg-[#071A4A] gap-2"
-            onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/staff-attendance'] })}
+            onClick={() => {
+              // Invalidate the query with proper parameters
+              queryClient.invalidateQueries({ 
+                queryKey: ['/api/staff-attendance', selectedSchool?.id] 
+              });
+              // Also force an immediate refresh
+              refetchAttendance();
+            }}
           >
             <RefreshCw size={16} /> Refresh
           </Button>
@@ -812,7 +867,16 @@ const StaffAttendance = () => {
             <Calendar
               mode="single"
               selected={date}
-              onSelect={setDate}
+              onSelect={(newDate) => {
+                setDate(newDate);
+                // Force immediate refresh when date changes
+                if (newDate) {
+                  setTimeout(() => {
+                    console.log("Date changed, forcing refresh...");
+                    refetchAttendance();
+                  }, 100);
+                }
+              }}
               initialFocus
             />
           </PopoverContent>
