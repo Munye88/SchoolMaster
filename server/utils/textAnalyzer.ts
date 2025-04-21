@@ -186,35 +186,36 @@ export async function extractCandidateInfoFromText(
           new RegExp(`${result.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*(?:\\n|,|\\|)\\s*([A-Z][a-z]+(?:\\s+[A-Za-z][a-z'\\-]+){1,3})`, 'i')
         ] : [])
       ];
-    
-    // First priority: Check the first 10 lines of the document
-    const firstLines = normalizedText.split('\n').slice(0, 10).join('\n');
-    
-    for (const pattern of namePatterns) {
-      const match = pattern.exec(firstLines);
-      if (match && match[1]) {
-        const possibleName = match[1].trim();
-        // Additional validation: ensure it's not a title, header, or too short
-        if (possibleName.length > 3 && 
-            !/resume|curriculum|vitae|contact|profile/i.test(possibleName) &&
-            possibleName.split(/\s+/).length >= 2) {
-          result.name = possibleName;
-          break;
-        }
-      }
-    }
-    
-    // Fallback: search the entire document
-    if (!result.name) {
+      
+      // First priority: Check the first 10 lines of the document
+      const firstLines = normalizedText.split('\n').slice(0, 10).join('\n');
+      
       for (const pattern of namePatterns) {
-        const match = pattern.exec(normalizedText);
+        const match = pattern.exec(firstLines);
         if (match && match[1]) {
           const possibleName = match[1].trim();
+          // Additional validation: ensure it's not a title, header, or too short
           if (possibleName.length > 3 && 
               !/resume|curriculum|vitae|contact|profile/i.test(possibleName) &&
               possibleName.split(/\s+/).length >= 2) {
             result.name = possibleName;
             break;
+          }
+        }
+      }
+      
+      // Fallback: search the entire document
+      if (!result.name) {
+        for (const pattern of namePatterns) {
+          const match = pattern.exec(normalizedText);
+          if (match && match[1]) {
+            const possibleName = match[1].trim();
+            if (possibleName.length > 3 && 
+                !/resume|curriculum|vitae|contact|profile/i.test(possibleName) &&
+                possibleName.split(/\s+/).length >= 2) {
+              result.name = possibleName;
+              break;
+            }
           }
         }
       }
