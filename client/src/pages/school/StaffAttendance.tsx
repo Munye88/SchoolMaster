@@ -481,7 +481,7 @@ const StaffAttendance = () => {
         newSelectedInstructors[instructor.id] = {
           selected: false,
           status: "present",
-          timeIn: "08:30"
+          timeIn: "07:00"
         };
       });
       
@@ -518,7 +518,7 @@ const StaffAttendance = () => {
           [instructorId]: {
             selected: checked,
             status: "present",
-            timeIn: "08:30"
+            timeIn: "07:00"
           }
         };
       }
@@ -543,7 +543,7 @@ const StaffAttendance = () => {
           [instructorId]: {
             selected: true, // Auto-select if changing status
             status: status,
-            timeIn: "08:30"
+            timeIn: "07:00"
           }
         };
       }
@@ -701,7 +701,7 @@ const StaffAttendance = () => {
         updatedSelections[instructor.id] = {
           selected: checked,
           status: "present",
-          timeIn: "08:30"
+          timeIn: "07:00"
         };
       }
     });
@@ -740,7 +740,7 @@ const StaffAttendance = () => {
               <DialogHeader>
                 <DialogTitle>Record Staff Attendance</DialogTitle>
                 <DialogDescription>
-                  Enter attendance details for an instructor. Click save when you're done.
+                  Enter attendance details for an instructor. Arrivals after 7:00 AM will be automatically marked as late.
                 </DialogDescription>
               </DialogHeader>
               <AttendanceForm 
@@ -964,7 +964,8 @@ const StaffAttendance = () => {
                 <div>
                   <CardTitle>Record Daily Attendance</CardTitle>
                   <p className="text-sm text-gray-500 mt-1">
-                    Select instructors and mark their attendance for {format(bulkDate, 'MMMM dd, yyyy')}
+                    Select instructors and mark their attendance for {format(bulkDate, 'MMMM dd, yyyy')}. 
+                    Note: Arrivals after 7:00 AM will be automatically marked as late.
                   </p>
                 </div>
                 <Popover>
