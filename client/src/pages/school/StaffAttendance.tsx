@@ -376,7 +376,7 @@ const StaffAttendance = () => {
   // Fetch attendance data from API
   const { data: attendanceRecords = [], isLoading: attendanceLoading } = useQuery<StaffAttendance[]>({
     queryKey: ['/api/staff-attendance'],
-    enabled: !!selectedSchool,
+    enabled: !!selectedSchool
   });
   
   // Process and filter data
@@ -384,7 +384,7 @@ const StaffAttendance = () => {
   const currentMonth = date || new Date();
   const currentMonthStr = format(currentMonth, 'yyyy-MM');
   
-  const monthlyRecords = attendanceRecords.filter(record => {
+  const monthlyRecords = attendanceRecords.filter((record: StaffAttendance) => {
     return record.date.startsWith(currentMonthStr);
   });
   
@@ -406,9 +406,9 @@ const StaffAttendance = () => {
     : 0;
   
   // Count actual attendance statuses from the records
-  const presentCount = monthlyRecords.filter(record => record.status === "present").length;
-  const lateCount = monthlyRecords.filter(record => record.status === "late").length;
-  const absentCount = monthlyRecords.filter(record => record.status === "absent").length;
+  const presentCount = monthlyRecords.filter((record: StaffAttendance) => record.status === "present").length;
+  const lateCount = monthlyRecords.filter((record: StaffAttendance) => record.status === "late").length;
+  const absentCount = monthlyRecords.filter((record: StaffAttendance) => record.status === "absent").length;
   
   // For the pie chart, use the actual count of different statuses
   const statusData = [
@@ -1217,8 +1217,10 @@ const StaffAttendance = () => {
                     <TableBody>
                       {/* Filter records for the exact selected date */}
                       {monthlyRecords
-                        .filter(record => record.date === format(date, 'yyyy-MM-dd'))
-                        .map(record => {
+                        .filter((record: StaffAttendance) => {
+                          return record.date.split('T')[0] === format(date, 'yyyy-MM-dd');
+                        })
+                        .map((record: StaffAttendance) => {
                           const instructor = instructors.find(i => i.id === record.instructorId);
                           return (
                             <TableRow key={record.id}>
@@ -1251,7 +1253,7 @@ const StaffAttendance = () => {
                           );
                         })}
                       
-                      {monthlyRecords.filter(record => record.date === format(date, 'yyyy-MM-dd')).length === 0 && (
+                      {monthlyRecords.filter(record => record.date.split('T')[0] === format(date, 'yyyy-MM-dd')).length === 0 && (
                         <TableRow>
                           <TableCell colSpan={6} className="text-center py-6 text-gray-500">
                             No attendance records found for this date. Use the "Record Individual" or "Take Attendance" buttons to add records.
