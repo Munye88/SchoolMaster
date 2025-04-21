@@ -1183,7 +1183,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Parse resume with AI and extract candidate info
+  // Parse resume with enhanced text analysis (no AI APIs required)
   app.post("/api/candidates/parse-resume", upload.single('resume'), async (req, res) => {
     try {
       console.log("Resume parsing request received");
@@ -1233,128 +1233,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: "new",
         resumeUrl: fileUrl
       };
-      let aiProvider = "Basic Text Analysis";
       
-      // Try OpenAI first
       try {
-        console.log("Attempting to extract candidate info with OpenAI...");
-        candidateInfo = await extractCandidateInfo(filePath);
-        aiProvider = "OpenAI";
-      } catch (openaiError) {
-        console.error("OpenAI extraction failed, falling back to Perplexity:", openaiError);
+        // Skip external API calls and use our enhanced text extraction directly
+        const { extractTextFromFile, extractCandidateInfoFromText } = await import('./utils/textAnalyzer');
         
-        // Extract text from the file
-        let resumeText = "";
+        // Extract text from file
+        console.log("Extracting text from file...");
+        const resumeText = await extractTextFromFile(filePath);
         
+        if (!resumeText || resumeText.trim() === '') {
+          console.log("No text could be extracted from the file");
+          return res.status(200).json({
+            ...candidateInfo,
+            aiProvider: "Text Extraction Failed"
+          });
+        }
+        
+        console.log(`Successfully extracted ${resumeText.length} characters of text from file`);
+        
+        // Extract candidate info using our enhanced text pattern analysis
+        const extractedInfo = await extractCandidateInfoFromText(resumeText, filePath);
+        
+        candidateInfo = {
+          ...extractedInfo,
+          resumeUrl: fileUrl
+        };
+        
+        // Return the extracted info with our analyzer as the provider
+        return res.status(200).json({
+          ...candidateInfo,
+          resumeUrl: fileUrl,
+          aiProvider: "Enhanced Pattern Analyzer"
+        });
+      } catch (error) {
+        console.error("Error in text analysis:", error);
+        
+        // Basic fallback if our primary text analyzer fails
         try {
-          if (filePath.toLowerCase().endsWith('.pdf')) {
-            // Handle PDF files with pdf-parse
-            try {
-              const pdfParse = (await import('pdf-parse')).default;
-              const dataBuffer = fs.readFileSync(filePath);
-              const pdfData = await pdfParse(dataBuffer);
-              resumeText = pdfData.text || "";
-              console.log("Successfully extracted text from PDF:", resumeText.substring(0, 100) + "...");
-            } catch (pdfError) {
-              console.error("Error parsing PDF:", pdfError);
-              resumeText = fs.readFileSync(filePath, 'utf8');
-            }
-          } else {
-            // For other file types, read as text
+          // Read text from file directly
+          let resumeText = "";
+          try {
             resumeText = fs.readFileSync(filePath, 'utf8');
+          } catch (readError) {
+            console.error("Failed to read file directly:", readError);
           }
           
-          // Try Perplexity
-          try {
-            console.log("Attempting to extract candidate info with Perplexity...");
-            const { parseResumeWithPerplexity } = await import('./utils/perplexity');
-            const extractedInfo = await parseResumeWithPerplexity(resumeText);
-            candidateInfo = {
-              ...extractedInfo,
-              resumeUrl: fileUrl,
-              status: "new"
-            };
-            aiProvider = "Perplexity AI";
-          } catch (perplexityError) {
-            console.error("Perplexity API call failed:", perplexityError);
-            
-            // Fallback to regex pattern matching
-            console.log("Using basic text pattern matching as fallback");
-            
-            // Extract basic information using regex patterns
+          if (resumeText) {
+            // Very basic extraction as last resort
             const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
             const phoneRegex = /(?:\+\d{1,3}[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}\b/g;
             const nameRegex = /[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/g;
-            const degreeRegex = /(?:Bachelor|Master|PhD|Doctorate|B\.A\.|B\.S\.|M\.A\.|M\.S\.|M\.B\.A\.|P\.h\.D\.|High School|Associate)/i;
             
             const emails = resumeText.match(emailRegex) || [];
             const phones = resumeText.match(phoneRegex) || [];
             const names = resumeText.match(nameRegex) || [];
             
-            // Extract basic information
-            let degree = undefined;
-            const degreeMatch = resumeText.match(degreeRegex);
-            if (degreeMatch) {
-              degree = degreeMatch[0];
-            }
-            
-            let degreeField = undefined;
-            if (resumeText.includes("English")) {
-              degreeField = "English";
-            } else if (resumeText.includes("Literature")) {
-              degreeField = "Literature";
-            } else if (resumeText.includes("Education")) {
-              degreeField = "Education";
-            } else if (resumeText.includes("Linguistics")) {
-              degreeField = "Linguistics";
-            }
-            
-            let yearsExperience = undefined;
-            const experienceMatch = resumeText.match(/(\d+)\s*(?:years?|yrs?)(?:\s+of)?\s+experience/i);
-            if (experienceMatch) {
-              yearsExperience = parseInt(experienceMatch[1], 10);
-            }
-            
-            let certifications = undefined;
-            let hasCertifications = false;
-            if (resumeText.includes("TEFL") || resumeText.includes("TESOL") || resumeText.includes("CELTA")) {
-              certifications = "TEFL/TESOL/CELTA certification";
-              hasCertifications = true;
-            }
-            
             candidateInfo = {
+              ...candidateInfo,
               email: emails.length > 0 ? emails[0] : undefined,
               phone: phones.length > 0 ? phones[0] : undefined,
               name: names.length > 0 ? names[0] : undefined,
-              degree,
-              degreeField,
-              yearsExperience,
-              hasCertifications,
-              certifications,
-              status: "new",
-              resumeUrl: fileUrl
+              status: "new"
             };
-            
-            aiProvider = "Text Pattern Analysis";
           }
-        } catch (textExtractionError) {
-          console.error("Text extraction failed:", textExtractionError);
-          // Keep the default values set earlier
+        } catch (fallbackError) {
+          console.error("Even basic fallback extraction failed:", fallbackError);
         }
+        
+        // Return whatever we could extract
+        return res.status(200).json({
+          ...candidateInfo,
+          resumeUrl: fileUrl,
+          aiProvider: "Basic Fallback Analysis"
+        });
       }
-      
-      // Return the extracted info along with the resume URL
-      return res.status(200).json({
-        ...candidateInfo,
-        resumeUrl: fileUrl,
-        aiProvider: aiProvider
-      });
-      
     } catch (error) {
       console.error("Error parsing resume:", error);
       return res.status(500).json({ 
         error: "Failed to parse resume",
-        status: "new"
+        status: "new",
+        resumeUrl: req.file ? `/uploads/resumes/${Date.now()}-${req.file.originalname}` : null
       });
     }
   });
