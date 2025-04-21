@@ -68,7 +68,7 @@ const InstructorLookup = () => {
 
   // Calculate attendance rate
   const attendanceRate = instructorAttendance.length > 0
-    ? Math.round((instructorAttendance.filter(a => a.status === "Present").length / instructorAttendance.length) * 100)
+    ? Math.round((instructorAttendance.filter(a => a.status === "present").length / instructorAttendance.length) * 100)
     : 0;
 
   // Calculate average evaluation score
@@ -239,7 +239,7 @@ const InstructorLookup = () => {
                 </div>
                 <Progress value={attendanceRate} className="h-2 mt-4" />
                 <p className="text-xs text-gray-500 mt-2">
-                  {instructorAttendance.filter(a => a.status === "Present").length} of {instructorAttendance.length} days present
+                  {instructorAttendance.filter(a => a.status === "present").length} of {instructorAttendance.length} days present
                 </p>
               </CardContent>
             </Card>
@@ -441,7 +441,7 @@ const InstructorLookup = () => {
                             <div className="text-center">
                               <div className="text-lg font-semibold mb-2">Present Days</div>
                               <div className="text-3xl font-bold text-green-600">
-                                {instructorAttendance.filter(a => a.status === "Present").length}
+                                {instructorAttendance.filter(a => a.status === "present").length}
                               </div>
                             </div>
                           </CardContent>
@@ -451,7 +451,7 @@ const InstructorLookup = () => {
                             <div className="text-center">
                               <div className="text-lg font-semibold mb-2">Absent Days</div>
                               <div className="text-3xl font-bold text-red-600">
-                                {instructorAttendance.filter(a => a.status === "Absent").length}
+                                {instructorAttendance.filter(a => a.status === "absent").length}
                               </div>
                             </div>
                           </CardContent>
@@ -461,7 +461,7 @@ const InstructorLookup = () => {
                             <div className="text-center">
                               <div className="text-lg font-semibold mb-2">Late Days</div>
                               <div className="text-3xl font-bold text-amber-600">
-                                {instructorAttendance.filter(a => a.status === "Late").length}
+                                {instructorAttendance.filter(a => a.status === "late").length}
                               </div>
                             </div>
                           </CardContent>
@@ -487,11 +487,11 @@ const InstructorLookup = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                   <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                    record.status === 'Present' ? 'bg-green-100 text-green-800' : 
-                                    record.status === 'Absent' ? 'bg-red-100 text-red-800' : 
+                                    record.status === 'present' ? 'bg-green-100 text-green-800' : 
+                                    record.status === 'absent' ? 'bg-red-100 text-red-800' : 
                                     'bg-amber-100 text-amber-800'
                                   }`}>
-                                    {record.status}
+                                    {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                                   </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
