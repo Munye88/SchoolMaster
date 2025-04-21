@@ -29,25 +29,11 @@ interface GeneratedQuestion {
   question: string;
 }
 
-interface ParsedResumeData {
-  name?: string;
-  email?: string;
-  phone?: string;
-  degree?: string;
-  degreeField?: string;
-  yearsExperience?: number;
-  certifications?: string;
-  hasCertifications?: boolean;
-  nativeEnglishSpeaker?: boolean;
-  militaryExperience?: boolean;
-  generatedQuestions?: GeneratedQuestion[];
-}
-
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   phone: z.string().optional(),
-  resumeUrl: z.string().min(1, "Resume is required"),
+  resumeUrl: z.string().optional(),
   nativeEnglishSpeaker: z.boolean().optional(),
   degree: z.string().optional(),
   degreeField: z.string().optional(),
@@ -101,10 +87,10 @@ export default function CandidateFormNew({
     },
   });
 
-  // Load sample interview questions for testing
+  // Load sample interview questions
   const loadSampleQuestions = () => {
     const sampleQuestions: GeneratedQuestion[] = [
-      // Technical Questions (10)
+      // Technical Questions (5)
       { 
         category: "technical", 
         question: "How would you explain the difference between the present perfect and past perfect to students?" 
@@ -125,28 +111,8 @@ export default function CandidateFormNew({
         category: "technical", 
         question: "How would you explain the difference between passive and active voice to aviation students?" 
       },
-      { 
-        category: "technical", 
-        question: "What techniques do you use to help students master English prepositions?" 
-      },
-      { 
-        category: "technical", 
-        question: "How do you teach modal verbs (can, could, should, would, etc.) and their various uses?" 
-      },
-      { 
-        category: "technical", 
-        question: "What approach do you take when teaching conditionals (if clauses)?" 
-      },
-      { 
-        category: "technical", 
-        question: "How do you explain and teach the difference between countable and uncountable nouns?" 
-      },
-      { 
-        category: "technical", 
-        question: "What methods do you use to help students understand and use phrasal verbs correctly?" 
-      },
-
-      // Curriculum Questions (10)
+      
+      // Curriculum Questions (5)
       { 
         category: "curriculum", 
         question: "How do you support cadets or officers preparing for the ALCPT (American Language Course Placement Test)?" 
@@ -167,28 +133,8 @@ export default function CandidateFormNew({
         category: "curriculum", 
         question: "What assessment methods would you use to evaluate students' progress in an aviation English course?" 
       },
-      { 
-        category: "curriculum", 
-        question: "How would you incorporate authentic aviation materials (manuals, checklists, etc.) into your teaching?" 
-      },
-      { 
-        category: "curriculum", 
-        question: "How would you structure a curriculum to prepare students for ICAO English language proficiency requirements?" 
-      },
-      { 
-        category: "curriculum", 
-        question: "What approaches would you take to teach listening comprehension specifically for air traffic control communications?" 
-      },
-      { 
-        category: "curriculum", 
-        question: "How would you design lesson plans that incorporate both language skills and aviation safety concepts?" 
-      },
-      { 
-        category: "curriculum", 
-        question: "What strategies would you implement to help students achieve standardized test goals while maintaining engagement?" 
-      },
-
-      // Behavioral Questions (10)
+      
+      // Behavioral Questions (5)
       { 
         category: "behavioral", 
         question: "Describe a time when you had to handle a classroom discipline issue. What happened and how did you resolve it?" 
@@ -209,28 +155,8 @@ export default function CandidateFormNew({
         category: "behavioral", 
         question: "Tell me about a time when you had to provide constructive criticism to a student. How did you approach it?" 
       },
-      { 
-        category: "behavioral", 
-        question: "Describe a situation where you had to work with a difficult colleague. How did you handle it?" 
-      },
-      { 
-        category: "behavioral", 
-        question: "Tell me about a time when you had to adjust your lesson plan on the spot. What happened and what did you do?" 
-      },
-      { 
-        category: "behavioral", 
-        question: "Describe a challenging group of students you've taught and how you managed their dynamics." 
-      },
-      { 
-        category: "behavioral", 
-        question: "Tell me about a time when you received feedback about your teaching that required you to make changes." 
-      },
-      { 
-        category: "behavioral", 
-        question: "Describe a situation where you had to balance multiple responsibilities or deadlines. How did you manage your time?" 
-      },
-
-      // General Questions (10)
+      
+      // General Questions (5)
       { 
         category: "general", 
         question: "What inspired you to become an English Language Instructor?" 
@@ -250,26 +176,6 @@ export default function CandidateFormNew({
       { 
         category: "general", 
         question: "How do you create an inclusive learning environment for students from diverse backgrounds?" 
-      },
-      { 
-        category: "general", 
-        question: "What interests you about teaching in a military aviation context specifically?" 
-      },
-      { 
-        category: "general", 
-        question: "How do you handle the challenges of teaching technical English to non-native speakers?" 
-      },
-      { 
-        category: "general", 
-        question: "What strategies do you use to keep students engaged during long instructional periods?" 
-      },
-      { 
-        category: "general", 
-        question: "How would you describe your teaching philosophy in relation to language acquisition?" 
-      },
-      { 
-        category: "general", 
-        question: "What experience or skills do you have that would be particularly valuable in this ELT program?" 
       }
     ];
     
@@ -282,6 +188,7 @@ export default function CandidateFormNew({
     });
   };
 
+  // Resume upload and AI parsing mutation
   const uploadResumeMutation = useMutation({
     mutationFn: async (file: File) => {
       setIsParsingResume(true);
@@ -300,151 +207,60 @@ export default function CandidateFormNew({
       return await response.json();
     },
     onSuccess: (data) => {
-      try {
-        // Update form fields with extracted data
-        form.setValue("name", data.name || form.getValues("name"));
-        form.setValue("email", data.email || form.getValues("email"));
-        form.setValue("phone", data.phone || form.getValues("phone"));
-        form.setValue("resumeUrl", data.resumeUrl || form.getValues("resumeUrl"));
+      // Update form fields with extracted data
+      form.setValue("name", data.name || form.getValues("name"));
+      form.setValue("email", data.email || form.getValues("email"));
+      form.setValue("phone", data.phone || form.getValues("phone"));
+      form.setValue("resumeUrl", data.resumeUrl || form.getValues("resumeUrl"));
+      
+      if (data.degree) {
+        // Standardize degree names
+        const degreeValue = data.degree.toLowerCase().includes("bachelor") ? "Bachelor" :
+                  data.degree.toLowerCase().includes("master") ? "Master" :
+                  data.degree.toLowerCase().includes("phd") ? "PhD" :
+                  data.degree.toLowerCase().includes("high school") ? "High School" :
+                  data.degree;
         
-        if (data.degree) {
-          // Standardize degree names
-          const degreeValue = data.degree.toLowerCase().includes("bachelor") ? "Bachelor" :
-                    data.degree.toLowerCase().includes("master") ? "Master" :
-                    data.degree.toLowerCase().includes("phd") ? "PhD" :
-                    data.degree.toLowerCase().includes("high school") ? "High School" :
-                    data.degree;
-          
-          form.setValue("degree", degreeValue);
-        }
-        
-        form.setValue("degreeField", data.degreeField || form.getValues("degreeField"));
-        
-        if (typeof data.yearsExperience === 'number') {
-          form.setValue("yearsExperience", data.yearsExperience);
-        }
-        
-        form.setValue("certifications", data.certifications || form.getValues("certifications"));
-        
-        if (typeof data.hasCertifications === 'boolean') {
-          form.setValue("hasCertifications", data.hasCertifications);
-        } else if (data.certifications) {
-          // If certifications text exists but boolean flag isn't set
-          form.setValue("hasCertifications", true);
-        }
-        
-        if (typeof data.nativeEnglishSpeaker === 'boolean') {
-          form.setValue("nativeEnglishSpeaker", data.nativeEnglishSpeaker);
-        }
-        
-        if (typeof data.militaryExperience === 'boolean') {
-          form.setValue("militaryExperience", data.militaryExperience);
-        }
-        
-        // Use predefined interview questions
-        const fallbackQuestions: GeneratedQuestion[] = [
-          // Technical Questions (selection of 5)
-          { 
-            category: "technical", 
-            question: "How would you explain the difference between the present perfect and past perfect to students?" 
-          },
-          { 
-            category: "technical", 
-            question: "What strategies do you use to teach complex grammar structures?" 
-          },
-          { 
-            category: "technical", 
-            question: "How do you teach pronunciation to students whose native language has very different phonetics from English?" 
-          },
-          { 
-            category: "technical", 
-            question: "What methods do you use to teach English article usage (a, an, the) to students whose native language doesn't have articles?" 
-          },
-          { 
-            category: "technical", 
-            question: "How would you explain the difference between passive and active voice to aviation students?" 
-          },
-          
-          // Curriculum Questions (selection of 5)
-          { 
-            category: "curriculum", 
-            question: "How do you support cadets or officers preparing for the ALCPT (American Language Course Placement Test)?" 
-          },
-          { 
-            category: "curriculum", 
-            question: "How would you design a specialized curriculum for aviation English focusing on radio communications?" 
-          },
-          { 
-            category: "curriculum", 
-            question: "What resources would you incorporate when teaching technical aviation terminology?" 
-          },
-          { 
-            category: "curriculum", 
-            question: "How do you balance teaching general English proficiency with specialized aviation vocabulary?" 
-          },
-          { 
-            category: "curriculum", 
-            question: "What assessment methods would you use to evaluate students' progress in an aviation English course?" 
-          },
-          
-          // Behavioral Questions (selection of 5)
-          { 
-            category: "behavioral", 
-            question: "Describe a time when you had to handle a classroom discipline issue. What happened and how did you resolve it?" 
-          },
-          { 
-            category: "behavioral", 
-            question: "Tell me about a situation where you had to adapt your teaching style to meet the needs of a struggling student." 
-          },
-          { 
-            category: "behavioral", 
-            question: "Describe a time when you successfully motivated a reluctant or disinterested student." 
-          },
-          { 
-            category: "behavioral", 
-            question: "Give an example of how you've handled cultural differences in the classroom." 
-          },
-          { 
-            category: "behavioral", 
-            question: "Tell me about a time when you had to provide constructive criticism to a student. How did you approach it?" 
-          },
-          
-          // General Questions (selection of 5)
-          { 
-            category: "general", 
-            question: "What inspired you to become an English Language Instructor?" 
-          },
-          { 
-            category: "general", 
-            question: "What do you find most rewarding about teaching English to aviation professionals?" 
-          },
-          { 
-            category: "general", 
-            question: "How do you stay updated with current teaching methodologies and approaches?" 
-          },
-          { 
-            category: "general", 
-            question: "What do you believe are the most important qualities of an effective ELT instructor?" 
-          },
-          { 
-            category: "general", 
-            question: "How do you create an inclusive learning environment for students from diverse backgrounds?" 
-          }
-        ];
-        
-        // Use the fallback questions
-        setGeneratedQuestions(fallbackQuestions);
-        setActiveTab("questions");
-        
-        toast({
-          title: "Resume Analyzed",
-          description: "Resume has been parsed and form fields have been filled automatically. Standard interview questions have been provided.",
-        });
-      } catch (error) {
-        console.error("Error parsing resume data:", error);
-      } finally {
-        setIsParsingResume(false);
+        form.setValue("degree", degreeValue);
       }
+      
+      form.setValue("degreeField", data.degreeField || form.getValues("degreeField"));
+      
+      if (typeof data.yearsExperience === 'number') {
+        form.setValue("yearsExperience", data.yearsExperience);
+      }
+      
+      form.setValue("certifications", data.certifications || form.getValues("certifications"));
+      
+      if (typeof data.hasCertifications === 'boolean') {
+        form.setValue("hasCertifications", data.hasCertifications);
+      } else if (data.certifications) {
+        // If certifications text exists but boolean flag isn't set
+        form.setValue("hasCertifications", true);
+      }
+      
+      if (typeof data.nativeEnglishSpeaker === 'boolean') {
+        form.setValue("nativeEnglishSpeaker", data.nativeEnglishSpeaker);
+      }
+      
+      if (typeof data.militaryExperience === 'boolean') {
+        form.setValue("militaryExperience", data.militaryExperience);
+      }
+      
+      // Generate interview questions based on candidate's background
+      // For now, use standard ELT instructor questions
+      loadSampleQuestions();
+      
+      // Show which AI provider was used
+      const aiProvider = data.aiProvider || "AI";
+      
+      toast({
+        title: "Resume Analyzed",
+        description: `${aiProvider} has extracted candidate information from the resume and generated interview questions.`,
+        variant: "default",
+      });
+      
+      setIsParsingResume(false);
     },
     onError: (error) => {
       console.error("Resume parsing error:", error);
@@ -457,6 +273,7 @@ export default function CandidateFormNew({
     }
   });
 
+  // Create new candidate mutation
   const createCandidateMutation = useMutation({
     mutationFn: async (data: InsertCandidate) => {
       const response = await apiRequest("POST", "/api/candidates", data);
@@ -479,6 +296,7 @@ export default function CandidateFormNew({
     }
   });
 
+  // Update existing candidate mutation
   const updateCandidateMutation = useMutation({
     mutationFn: async (data: Partial<InsertCandidate> & { id: number }) => {
       const { id, ...updateData } = data;
@@ -502,6 +320,7 @@ export default function CandidateFormNew({
     }
   });
 
+  // Handle resume file selection
   const handleResumeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -527,6 +346,7 @@ export default function CandidateFormNew({
     }
   };
 
+  // Form submission handler
   const onSubmit = async (data: FormValues) => {
     try {
       // Resume should already be uploaded at this point
@@ -795,25 +615,47 @@ export default function CandidateFormNew({
                       </FormItem>
                     )}
                   />
-                </div>
-                
-                <FormField
-                  control={form.control}
-                  name="notes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Notes</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Add notes about the candidate..."
-                          rows={3}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+
+                  <FormField
+                    control={form.control}
+                    name="nativeEnglishSpeaker"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                          <FormLabel>Native English Speaker</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="militaryExperience"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                          <FormLabel>Military Experience</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {schoolId && (
+                    <input type="hidden" {...form.register("schoolId")} value={schoolId} />
                   )}
-                />
+                </div>
               </TabsContent>
               
               <TabsContent value="qualifications" className="space-y-4">
@@ -823,21 +665,19 @@ export default function CandidateFormNew({
                     name="degree"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center">
-                          <Award className="h-4 w-4 mr-2" />
-                          Highest Degree
-                        </FormLabel>
+                        <FormLabel>Highest Degree</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select highest degree" />
+                              <SelectValue placeholder="Select degree" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="High School">High School</SelectItem>
+                            <SelectItem value="Associate">Associate</SelectItem>
                             <SelectItem value="Bachelor">Bachelor's</SelectItem>
                             <SelectItem value="Master">Master's</SelectItem>
                             <SelectItem value="PhD">PhD</SelectItem>
@@ -855,7 +695,7 @@ export default function CandidateFormNew({
                       <FormItem>
                         <FormLabel>Field of Study</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g., English, Education, etc." {...field} />
+                          <Input placeholder="E.g., English, Education, TESOL" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -867,14 +707,12 @@ export default function CandidateFormNew({
                     name="yearsExperience"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center">
-                          <Briefcase className="h-4 w-4 mr-2" />
-                          Years of Experience
-                        </FormLabel>
+                        <FormLabel>Years of Experience</FormLabel>
                         <FormControl>
                           <Input 
                             type="number" 
-                            min="0"
+                            min="0" 
+                            placeholder="Years of teaching experience" 
                             {...field}
                             onChange={(e) => field.onChange(Number(e.target.value))}
                           />
@@ -886,70 +724,119 @@ export default function CandidateFormNew({
                   
                   <FormField
                     control={form.control}
-                    name="certifications"
+                    name="hasCertifications"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                          <FormLabel>Has TESOL/TEFL Certifications</FormLabel>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {form.watch("hasCertifications") && (
+                    <FormField
+                      control={form.control}
+                      name="certifications"
+                      render={({ field }) => (
+                        <FormItem className="col-span-2">
+                          <FormLabel>Certification Details</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="List relevant certifications (TESOL, TEFL, CELTA, etc.)" 
+                              className="min-h-[100px]"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  
+                  <FormField
+                    control={form.control}
+                    name="classroomManagement"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Certifications</FormLabel>
+                        <FormLabel>Classroom Management (0-10)</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g., TEFL, CELTA, etc." {...field} />
+                          <Input 
+                            type="number" 
+                            min="0" 
+                            max="10" 
+                            placeholder="Rate from 0-10" 
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  
                   <FormField
                     control={form.control}
-                    name="nativeEnglishSpeaker"
+                    name="grammarProficiency"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>Native English Speaker</FormLabel>
-                        </div>
+                      <FormItem>
+                        <FormLabel>Grammar Proficiency (0-10)</FormLabel>
                         <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
+                          <Input 
+                            type="number" 
+                            min="0" 
+                            max="10" 
+                            placeholder="Rate from 0-10" 
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
                   
                   <FormField
                     control={form.control}
-                    name="hasCertifications"
+                    name="vocabularyProficiency"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>Has TEFL/TESOL</FormLabel>
-                        </div>
+                      <FormItem>
+                        <FormLabel>Vocabulary Teaching (0-10)</FormLabel>
                         <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
+                          <Input 
+                            type="number" 
+                            min="0" 
+                            max="10" 
+                            placeholder="Rate from 0-10" 
+                            {...field}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
                   
                   <FormField
                     control={form.control}
-                    name="militaryExperience"
+                    name="notes"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                        <div className="space-y-0.5">
-                          <FormLabel>Military Experience</FormLabel>
-                        </div>
+                      <FormItem className="col-span-2">
+                        <FormLabel>Additional Notes</FormLabel>
                         <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
+                          <Textarea 
+                            placeholder="Add any additional notes about the candidate" 
+                            className="min-h-[100px]"
+                            {...field} 
                           />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -957,143 +844,118 @@ export default function CandidateFormNew({
               </TabsContent>
               
               <TabsContent value="questions" className="space-y-4">
-                {generatedQuestions.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center p-8 border border-dashed rounded-md">
+                {generatedQuestions.length > 0 ? (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 gap-4">
+                      {/* Technical Questions */}
+                      <div className="rounded-lg border p-4">
+                        <h3 className="text-lg font-semibold mb-2 flex items-center">
+                          <HelpCircle className="h-5 w-5 mr-2 text-blue-600" />
+                          Technical Questions
+                        </h3>
+                        <div className="space-y-3">
+                          {generatedQuestions
+                            .filter(q => q.category === 'technical')
+                            .map((question, index) => (
+                              <div key={`technical-${index}`} className="pl-4 border-l-2 border-blue-200">
+                                <p className="text-sm">{question.question}</p>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                      
+                      {/* Curriculum Questions */}
+                      <div className="rounded-lg border p-4">
+                        <h3 className="text-lg font-semibold mb-2 flex items-center">
+                          <Briefcase className="h-5 w-5 mr-2 text-green-600" />
+                          Curriculum Questions
+                        </h3>
+                        <div className="space-y-3">
+                          {generatedQuestions
+                            .filter(q => q.category === 'curriculum')
+                            .map((question, index) => (
+                              <div key={`curriculum-${index}`} className="pl-4 border-l-2 border-green-200">
+                                <p className="text-sm">{question.question}</p>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                      
+                      {/* Behavioral Questions */}
+                      <div className="rounded-lg border p-4">
+                        <h3 className="text-lg font-semibold mb-2 flex items-center">
+                          <User className="h-5 w-5 mr-2 text-purple-600" />
+                          Behavioral Questions
+                        </h3>
+                        <div className="space-y-3">
+                          {generatedQuestions
+                            .filter(q => q.category === 'behavioral')
+                            .map((question, index) => (
+                              <div key={`behavioral-${index}`} className="pl-4 border-l-2 border-purple-200">
+                                <p className="text-sm">{question.question}</p>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                      
+                      {/* General Questions */}
+                      <div className="rounded-lg border p-4">
+                        <h3 className="text-lg font-semibold mb-2 flex items-center">
+                          <CheckCircle className="h-5 w-5 mr-2 text-amber-600" />
+                          General Questions
+                        </h3>
+                        <div className="space-y-3">
+                          {generatedQuestions
+                            .filter(q => q.category === 'general')
+                            .map((question, index) => (
+                              <div key={`general-${index}`} className="pl-4 border-l-2 border-amber-200">
+                                <p className="text-sm">{question.question}</p>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-sm text-muted-foreground">
+                      These questions will be saved when you submit the candidate information. You can add or edit responses during the interview process.
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
                     <HelpCircle className="h-12 w-12 text-gray-300 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-700">No Interview Questions Yet</h3>
-                    <p className="text-sm text-gray-500 mb-4 text-center">
-                      Upload a resume to automatically generate custom interview questions
-                      or click the "Load Sample Questions" button.
+                    <h3 className="text-lg font-medium mb-1">No Interview Questions Generated</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Upload a resume to automatically generate questions or use the "Load Sample Questions" button.
                     </p>
                     <Button 
                       type="button" 
-                      variant="outline"
+                      variant="outline" 
                       onClick={() => loadSampleQuestions()}
+                      className="text-blue-600 border-blue-600"
                     >
+                      <HelpCircle className="h-4 w-4 mr-2" />
                       Load Sample Questions
                     </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-md font-medium">Generated Interview Questions</h3>
-                    </div>
-                    
-                    {/* Group questions by category */}
-                    <div className="space-y-6">
-                      {/* Technical Questions */}
-                      {generatedQuestions.filter(q => q.category === 'technical').length > 0 && (
-                        <div className="bg-blue-50 p-4 rounded-md">
-                          <h4 className="text-sm font-medium mb-3 text-blue-700 flex items-center">
-                            <span className="bg-blue-700 text-white rounded-full h-6 w-6 flex items-center justify-center mr-2 text-xs">
-                              {generatedQuestions.filter(q => q.category === 'technical').length}
-                            </span>
-                            Technical Questions
-                          </h4>
-                          <div className="space-y-2">
-                            {generatedQuestions
-                              .filter(q => q.category === 'technical')
-                              .map((q, idx) => (
-                                <div key={`tech-${idx}`} className="p-3 bg-white rounded border border-blue-200">
-                                  <p className="text-sm">{q.question}</p>
-                                </div>
-                              ))
-                            }
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Curriculum Questions */}
-                      {generatedQuestions.filter(q => q.category === 'curriculum').length > 0 && (
-                        <div className="bg-emerald-50 p-4 rounded-md">
-                          <h4 className="text-sm font-medium mb-3 text-emerald-700 flex items-center">
-                            <span className="bg-emerald-700 text-white rounded-full h-6 w-6 flex items-center justify-center mr-2 text-xs">
-                              {generatedQuestions.filter(q => q.category === 'curriculum').length}
-                            </span>
-                            Curriculum Questions
-                          </h4>
-                          <div className="space-y-2">
-                            {generatedQuestions
-                              .filter(q => q.category === 'curriculum')
-                              .map((q, idx) => (
-                                <div key={`curr-${idx}`} className="p-3 bg-white rounded border border-emerald-200">
-                                  <p className="text-sm">{q.question}</p>
-                                </div>
-                              ))
-                            }
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Behavioral Questions */}
-                      {generatedQuestions.filter(q => q.category === 'behavioral').length > 0 && (
-                        <div className="bg-amber-50 p-4 rounded-md">
-                          <h4 className="text-sm font-medium mb-3 text-amber-700 flex items-center">
-                            <span className="bg-amber-700 text-white rounded-full h-6 w-6 flex items-center justify-center mr-2 text-xs">
-                              {generatedQuestions.filter(q => q.category === 'behavioral').length}
-                            </span>
-                            Behavioral Questions
-                          </h4>
-                          <div className="space-y-2">
-                            {generatedQuestions
-                              .filter(q => q.category === 'behavioral')
-                              .map((q, idx) => (
-                                <div key={`behave-${idx}`} className="p-3 bg-white rounded border border-amber-200">
-                                  <p className="text-sm">{q.question}</p>
-                                </div>
-                              ))
-                            }
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* General Questions */}
-                      {generatedQuestions.filter(q => q.category === 'general').length > 0 && (
-                        <div className="bg-indigo-50 p-4 rounded-md">
-                          <h4 className="text-sm font-medium mb-3 text-indigo-700 flex items-center">
-                            <span className="bg-indigo-700 text-white rounded-full h-6 w-6 flex items-center justify-center mr-2 text-xs">
-                              {generatedQuestions.filter(q => q.category === 'general').length}
-                            </span>
-                            General Questions
-                          </h4>
-                          <div className="space-y-2">
-                            {generatedQuestions
-                              .filter(q => q.category === 'general')
-                              .map((q, idx) => (
-                                <div key={`gen-${idx}`} className="p-3 bg-white rounded border border-indigo-200">
-                                  <p className="text-sm">{q.question}</p>
-                                </div>
-                              ))
-                            }
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <p className="text-xs text-gray-500">
-                      These questions will be saved with the candidate record for use during interviews.
-                    </p>
                   </div>
                 )}
               </TabsContent>
               
-              <div className="flex justify-end gap-2 pt-4 border-t">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={onCancel}
-                >
+              <div className="flex justify-end space-x-2 pt-4 border-t">
+                <Button type="button" variant="outline" onClick={onCancel}>
                   Cancel
                 </Button>
                 <Button 
-                  type="submit"
-                  disabled={
-                    createCandidateMutation.isPending || 
-                    updateCandidateMutation.isPending || 
-                    uploadResumeMutation.isPending
-                  }
+                  type="submit" 
+                  disabled={form.formState.isSubmitting || uploadResumeMutation.isPending}
                 >
-                  {isEditing ? "Update" : "Add"} Candidate
+                  {form.formState.isSubmitting ? (
+                    <>
+                      <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>
+                      Saving...
+                    </>
+                  ) : (
+                    isEditing ? "Update Candidate" : "Add Candidate"
+                  )}
                 </Button>
               </div>
             </form>

@@ -1180,16 +1180,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Process the uploaded resume file
       const filePath = req.file.path;
       
-      // Extract candidate info using OpenAI
-      const candidateInfo = await extractCandidateInfo(filePath);
-      
       // Generate a URL for the uploaded file (relative path)
       const fileUrl = `/uploads/${path.basename(filePath)}`;
+      
+      let candidateInfo = {};
+      let aiProvider = "OpenAI";
+      
+      try {
+        // First attempt with OpenAI
+        console.log("Attempting to extract candidate info with OpenAI...");
+        candidateInfo = await extractCandidateInfo(filePath);
+      } catch (openaiError) {
+        console.error("OpenAI extraction failed, falling back to Perplexity:", openaiError);
+        
+        // If OpenAI fails, fall back to Perplexity
+        try {
+          const { parseResumeWithPerplexity } = require('./utils/perplexity');
+          
+          // Extract text from PDF or DOC file
+          let resumeText = "";
+          
+          if (filePath.toLowerCase().endsWith('.pdf')) {
+            const pdfParse = require('pdf-parse');
+            const dataBuffer = fs.readFileSync(filePath);
+            const pdfData = await pdfParse(dataBuffer);
+            resumeText = pdfData.text || "";
+          } else if (filePath.toLowerCase().endsWith('.doc') || filePath.toLowerCase().endsWith('.docx')) {
+            // For simplicity, we'll use a basic text extraction approach for DOC files
+            // In a production environment, you'd want to use a more robust solution
+            resumeText = fs.readFileSync(filePath, 'utf8');
+          } else {
+            // For other file types, try to read as text
+            resumeText = fs.readFileSync(filePath, 'utf8');
+          }
+          
+          console.log("Attempting to extract candidate info with Perplexity...");
+          candidateInfo = await parseResumeWithPerplexity(resumeText);
+          aiProvider = "Perplexity AI";
+        } catch (perplexityError) {
+          console.error("Perplexity extraction also failed:", perplexityError);
+          // If both AI services fail, return basic info
+          candidateInfo = {
+            status: "new"
+          };
+          aiProvider = "None (services unavailable)";
+        }
+      }
       
       // Return the extracted info along with the resume URL
       res.status(200).json({
         ...candidateInfo,
-        resumeUrl: fileUrl
+        resumeUrl: fileUrl,
+        aiProvider: aiProvider
       });
     } catch (error) {
       console.error("Error parsing resume:", error);
