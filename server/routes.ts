@@ -10,6 +10,7 @@ import { db } from "./db";
 import { eq } from "drizzle-orm";
 import OpenAI from "openai";
 import { parsePDF } from "./utils/pdfParser";
+import { extractCandidateInfo, rankCandidatesWithAI } from "./utils/openai";
 import { 
   insertInstructorSchema, 
   insertCourseSchema, 
@@ -1145,6 +1146,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Recruitment Module API Routes
   
+  // CV upload storage configuration is shared with the existing upload configuration
+  
   // Candidates
   app.get("/api/candidates", async (req, res) => {
     try {
@@ -1164,6 +1167,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error getting candidates:", error);
       res.status(500).json({ error: "Failed to fetch candidates" });
+    }
+  });
+  
+  // Parse resume with AI and extract candidate info
+  app.post("/api/candidates/parse-resume", upload.single('resume'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+      
+      // Process the uploaded resume file
+      const filePath = req.file.path;
+      
+      // Extract candidate info using OpenAI
+      const candidateInfo = await extractCandidateInfo(filePath);
+      
+      // Generate a URL for the uploaded file (relative path)
+      const fileUrl = `/uploads/${path.basename(filePath)}`;
+      
+      // Return the extracted info along with the resume URL
+      res.status(200).json({
+        ...candidateInfo,
+        resumeUrl: fileUrl
+      });
+    } catch (error) {
+      console.error("Error parsing resume:", error);
+      res.status(500).json({ error: "Failed to parse resume" });
+    }
+  });
+  
+  // Rank candidates with AI
+  app.get("/api/candidates/rank-candidates", async (req, res) => {
+    try {
+      // Get all candidates
+      const candidates = await dbStorage.getCandidates();
+      
+      if (candidates.length === 0) {
+        return res.status(200).json({ 
+          rankedCandidates: [],
+          rationale: "No candidates available to rank."
+        });
+      }
+      
+      // Rank candidates using OpenAI
+      const rankingResult = await rankCandidatesWithAI(candidates);
+      
+      res.status(200).json(rankingResult);
+    } catch (error) {
+      console.error("Error ranking candidates:", error);
+      res.status(500).json({ error: "Failed to rank candidates" });
     }
   });
   

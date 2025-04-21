@@ -1,34 +1,44 @@
-import fs from 'fs';
+import OpenAI from "openai";
+import fs from "fs";
 
-interface PDFData {
-  text: string;
-  numpages?: number;
-  info?: any;
-}
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
-/**
- * A simplified PDF parser that extracts text from PDF files
- * This avoids the issue with pdf-parse requiring test files during import
- */
-export async function parsePDF(pdfBuffer: Buffer): Promise<PDFData> {
+export async function parsePDF(filePath: string): Promise<string> {
   try {
-    // Dynamically import pdf-parse only when needed
-    const pdfParse = await import('pdf-parse');
+    const fileContent = fs.readFileSync(filePath);
+    const base64String = fileContent.toString('base64');
     
-    // Extract text using the pdf-parse library
-    const data = await pdfParse.default(pdfBuffer);
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system", 
+          content: "Extract all text content from this PDF document, preserving the structure as much as possible."
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Please extract all text from this PDF document"
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:application/pdf;base64,${base64String}`
+              }
+            }
+          ],
+        }
+      ]
+    });
     
-    return {
-      text: data.text || '',
-      numpages: data.numpages,
-      info: data.info
-    };
+    return response.choices[0].message.content || "";
   } catch (error) {
-    console.error('Error parsing PDF:', error);
-    
-    // Return empty text if parsing fails
-    return {
-      text: '',
-    };
+    console.error("Error parsing PDF:", error);
+    throw error;
   }
 }
