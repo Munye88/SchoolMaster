@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 
 interface ExtractedCandidateInfo {
   name?: string;
@@ -42,50 +43,203 @@ export async function extractCandidateInfoFromText(
     result.email = emails[0]; // Take the first email found
   }
   
-  // 2. Extract phone numbers with various formats
+  // 2. Extract phone numbers with various formats - improved with more formats
   const phoneRegexList = [
+    // North American formats
     /(?:\+\d{1,3}[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}\b/g, // (123) 456-7890, 123-456-7890
-    /\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/g, // Basic 10-digit formats
-    /\b\+\d{1,3}\s?\d{9,15}\b/g // International format
+    /\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/g, // Basic 10-digit formats like 123-456-7890
+    
+    // International formats
+    /\b\+\d{1,3}\s?\d{9,15}\b/g, // +1 1234567890, +123 123456789
+    /\b\+\d{1,3}\s?\(\d{1,5}\)\s?\d{5,12}\b/g, // +1 (123) 456-7890
+    
+    // Common formats with country/area codes
+    /\b(?:\+|00)\s?\d{1,3}\s?[-.]?\s?\d{1,5}\s?[-.]?\s?\d{3,10}\b/g, // +1.123.456.7890, 00 44 1234 567890
+    
+    // Look for phone/tel/mobile labels in the document followed by numbers
+    /(?:phone|tel|telephone|mobile|cell)(?::|number|\s)+([+0-9()\s.-]{7,25})/i,
+    
+    // European/Asian formats with spaces
+    /\b\d{2,4}\s\d{2,4}\s\d{2,4}(?:\s\d{2,4})?\b/g  // 12 3456 7890, 1234 5678 9012
   ];
   
-  for (const regex of phoneRegexList) {
-    const phones = normalizedText.match(regex) || [];
-    if (phones.length > 0) {
-      result.phone = phones[0];
-      break;
+  // First check for phone label followed by a number
+  const phoneWithLabelMatch = normalizedText.match(/(?:phone|tel|telephone|mobile|cell)(?::|number|\s)+([+0-9()\s.-]{7,25})/i);
+  if (phoneWithLabelMatch && phoneWithLabelMatch[1]) {
+    // Clean up the extracted phone number
+    result.phone = phoneWithLabelMatch[1].trim()
+      .replace(/\s+/g, ' ')  // normalize spaces
+      .replace(/^[-.\s]+|[-.\s]+$/g, ''); // trim leading/trailing separators
+  } else {
+    // If no labeled phone number found, try the regex patterns
+    for (const regex of phoneRegexList) {
+      const phones = normalizedText.match(regex) || [];
+      if (phones.length > 0) {
+        // Filter out numbers that are likely not phone numbers (too short, all zeros, etc.)
+        const validPhones = phones.filter(phone => {
+          const digitsOnly = phone.replace(/\D/g, '');
+          return digitsOnly.length >= 7 && // Must have at least 7 digits
+                !/^0+$/.test(digitsOnly) && // Not all zeros
+                !/^1{7,}$/.test(digitsOnly); // Not all ones
+        });
+        
+        if (validPhones.length > 0) {
+          result.phone = validPhones[0];
+          break;
+        }
+      }
     }
   }
   
-  // 3. Extract full name (more comprehensive)
-  // Try to find name patterns near common resume headers
-  const namePatterns = [
-    /(?:name|full name|candidate)[:\s]+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})/i,
-    /^([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})/m, // Name at the beginning of a line (often at top of resume)
-    /([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})\s*\n.*?(?:email|phone|address)/i, // Name followed by contact info
-    /\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})\b/ // General pattern for names (removed 'g' flag to fix TS error)
-  ];
-  
-  for (const pattern of namePatterns) {
-    const match = pattern.exec(normalizedText);
-    if (match && match[1]) {
-      result.name = match[1].trim();
-      break;
-    }
+  // Format the phone number if found
+  if (result.phone) {
+    // Clean up formatting
+    result.phone = result.phone.trim()
+      .replace(/\s+/g, ' ') // normalize spaces
+      .replace(/^[-.\s]+|[-.\s]+$/g, ''); // trim leading/trailing separators
   }
   
-  // Fallback if previous patterns don't find a name
-  if (!result.name) {
-    const names = normalizedText.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+\b/g) || [];
-    if (names.length > 0) {
-      // Prefer names near the top of the document
-      const firstFewLines = normalizedText.split('\n').slice(0, 5).join(' ');
-      const namesInFirstLines = firstFewLines.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+\b/g) || [];
+  // 3. Extract full name (more comprehensive, improved for better matching)
+  
+  // Check for resume filename first - often contains the candidate's name
+  if (filePath) {
+    const filename = path.basename(filePath);
+    // Extract potential name from filename (e.g., JohnDoe.pdf, Resume_Jane_Smith.pdf, Resume202504170332.pdf)
+    
+    // Special case for date-based filenames like Resume202504170332.pdf
+    // Check if the filename contains a date pattern
+    if (filename.match(/Resume\d{12}/i)) {
+      // For these special cases, rely on the content analysis instead
+      console.log("Date-based filename detected, skipping filename-based name extraction");
+      // Don't extract from filename - continue to next methods
+      return;
+    }
+    
+    const filenameMatch = filename.match(/(?:Resume[_-]?)?([A-Za-z]+[_\s-]?[A-Za-z]+)(?:\.|_)/i);
+    if (filenameMatch && filenameMatch[1]) {
+      // Format the filename by replacing underscores and hyphens with spaces
+      const potentialName = filenameMatch[1]
+        .replace(/[_-]/g, ' ')
+        .replace(/([a-z])([A-Z])/g, '$1 $2') // Split camelCase
+        .trim();
       
-      if (namesInFirstLines.length > 0) {
-        result.name = namesInFirstLines[0];
-      } else {
-        result.name = names[0];
+      // Only use if it looks like a real name (at least two parts, proper capitalization)
+      const nameParts = potentialName.split(/\s+/);
+      if (nameParts.length >= 2) {
+        // Properly capitalize each part of the name
+        const formattedName = nameParts
+          .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+          .join(' ');
+        result.name = formattedName;
+      }
+    }
+  }
+  
+  // More sophisticated patterns for finding names in the text content
+  if (!result.name) {
+    // Look for contact/personal information section first
+    const contactSectionHeaders = ["personal information", "contact", "contact information", "personal details", "personal data"];
+    let contactSection = "";
+    
+    // Try to find a contact information section
+    for (const header of contactSectionHeaders) {
+      const headerIndex = lowercaseText.indexOf(header);
+      if (headerIndex !== -1) {
+        // Extract ~300 characters after the contact header
+        contactSection = normalizedText.substring(headerIndex, headerIndex + 300);
+        break;
+      }
+    }
+    
+    // Special patterns for name in contact section
+    if (contactSection) {
+      // Common patterns in contact sections
+      const contactNamePatterns = [
+        /name\s*[:\|]\s*([A-Z][a-z]+(?:\s+[A-Za-z][a-z'\-]+){1,3})/i,
+        /full\s+name\s*[:\|]\s*([A-Z][a-z]+(?:\s+[A-Za-z][a-z'\-]+){1,3})/i
+      ];
+      
+      for (const pattern of contactNamePatterns) {
+        const match = pattern.exec(contactSection);
+        if (match && match[1]) {
+          const possibleName = match[1].trim();
+          if (possibleName.length > 3 && possibleName.split(/\s+/).length >= 2) {
+            result.name = possibleName;
+            break;
+          }
+        }
+      }
+    }
+    
+    // If no name found in contact section, try other patterns
+    if (!result.name) {
+      // Try to find name patterns near common resume headers
+      const namePatterns = [
+        /(?:curriculum\s+vitae|resume)\s+(?:of|for|by)\s+([A-Z][a-z]+(?:\s+[A-Za-z][a-z'\-]+){1,3})/i,
+        /(?:name|full name|candidate)[:\s|]+([A-Z][a-z]+(?:\s+[A-Za-z][a-z'\-]+){1,3})/i,
+        /^([A-Z][a-z]+(?:\s+[A-Za-z][a-z'\-]+){1,3})\s*$/m, // Name alone on a line
+        /^([A-Z][a-z]+(?:\s+[A-Za-z][a-z'\-]+){1,3})\s*\n/m, // Name at beginning of document
+        /([A-Z][a-z]+(?:\s+[A-Za-z][a-z'\-]+){1,3})\s*\n.*?(?:email|phone|address|contact)/i, // Name followed by contact info
+        /\b((?:[A-Z][a-z]{1,20}\s){1,2}[A-Z][a-z]{2,20})\b/, // General pattern for typical names
+        
+        // Look specifically near the extracted email address if available
+        ...(result.email ? [
+          new RegExp(`([A-Z][a-z]+(?:\\s+[A-Za-z][a-z'\\-]+){1,3})\\s*(?:\\n|,|\\|)\\s*${result.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i'),
+          new RegExp(`${result.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*(?:\\n|,|\\|)\\s*([A-Z][a-z]+(?:\\s+[A-Za-z][a-z'\\-]+){1,3})`, 'i')
+        ] : [])
+      ];
+    
+    // First priority: Check the first 10 lines of the document
+    const firstLines = normalizedText.split('\n').slice(0, 10).join('\n');
+    
+    for (const pattern of namePatterns) {
+      const match = pattern.exec(firstLines);
+      if (match && match[1]) {
+        const possibleName = match[1].trim();
+        // Additional validation: ensure it's not a title, header, or too short
+        if (possibleName.length > 3 && 
+            !/resume|curriculum|vitae|contact|profile/i.test(possibleName) &&
+            possibleName.split(/\s+/).length >= 2) {
+          result.name = possibleName;
+          break;
+        }
+      }
+    }
+    
+    // Fallback: search the entire document
+    if (!result.name) {
+      for (const pattern of namePatterns) {
+        const match = pattern.exec(normalizedText);
+        if (match && match[1]) {
+          const possibleName = match[1].trim();
+          if (possibleName.length > 3 && 
+              !/resume|curriculum|vitae|contact|profile/i.test(possibleName) &&
+              possibleName.split(/\s+/).length >= 2) {
+            result.name = possibleName;
+            break;
+          }
+        }
+      }
+    }
+    
+    // Last resort: extract any capitalized words that look like names
+    if (!result.name) {
+      // Scan the first 400 characters for potential names (common location at top of resume)
+      const topSection = normalizedText.substring(0, 400);
+      const potentialNames = topSection.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+\b/g) || [];
+      
+      if (potentialNames.length > 0) {
+        // Filter out common non-name capitalized phrases
+        const filteredNames = potentialNames.filter(name => 
+          !/resume|curriculum|vitae|education|contact|profile|experience|objective|summary|university|college/i.test(name) &&
+          name.split(/\s+/).length >= 2
+        );
+        
+        if (filteredNames.length > 0) {
+          result.name = filteredNames[0];
+        } else {
+          result.name = potentialNames[0]; // Use first match if no filtered matches
+        }
       }
     }
   }
