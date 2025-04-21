@@ -410,6 +410,7 @@ const StaffAttendance = () => {
   const lateCount = monthlyRecords.filter(record => record.status === "late").length;
   const absentCount = monthlyRecords.filter(record => record.status === "absent").length;
   
+  // For the pie chart, use the actual count of different statuses
   const statusData = [
     { name: "Present", value: presentCount, color: "#10B981" },
     { name: "Late", value: lateCount, color: "#F59E0B" },
@@ -840,15 +841,21 @@ const StaffAttendance = () => {
           <CardContent>
             <div className="grid grid-cols-3 gap-6">
               <div className="flex flex-col items-center p-3 rounded-lg bg-green-50">
-                <div className="text-2xl font-bold text-green-600">{Math.round(presentCount / (totalInstructors || 1) * 100) || 0}%</div>
+                <div className="text-2xl font-bold text-green-600">
+                  {Math.round(presentCount / Math.max(1, presentCount + lateCount + absentCount) * 100)}%
+                </div>
                 <div className="text-xs text-gray-500">On Time</div>
               </div>
               <div className="flex flex-col items-center p-3 rounded-lg bg-amber-50">
-                <div className="text-2xl font-bold text-amber-600">{Math.round(lateCount / (totalInstructors || 1) * 100) || 0}%</div>
+                <div className="text-2xl font-bold text-amber-600">
+                  {Math.round(lateCount / Math.max(1, presentCount + lateCount + absentCount) * 100)}%
+                </div>
                 <div className="text-xs text-gray-500">Late</div>
               </div>
               <div className="flex flex-col items-center p-3 rounded-lg bg-red-50">
-                <div className="text-2xl font-bold text-red-600">{Math.round(absentCount / (totalInstructors || 1) * 100) || 0}%</div>
+                <div className="text-2xl font-bold text-red-600">
+                  {Math.round(absentCount / Math.max(1, presentCount + lateCount + absentCount) * 100)}%
+                </div>
                 <div className="text-xs text-gray-500">Absent</div>
               </div>
             </div>
@@ -1163,13 +1170,102 @@ const StaffAttendance = () => {
         
         <TabsContent value="detailed" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Detailed Attendance Records</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Detailed Attendance Records</CardTitle>
+                <CardDescription>
+                  Attendance records for {date ? format(date, 'MMMM dd, yyyy') : 'selected date'}
+                </CardDescription>
+              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "MMMM dd, yyyy") : <span>Select date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12 text-gray-500">
-                Detailed view with daily records is coming soon.
-              </div>
+              {date ? (
+                <div className="border rounded-md overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Instructor</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Time In</TableHead>
+                        <TableHead>Time Out</TableHead>
+                        <TableHead>Comments</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {/* Filter records for the exact selected date */}
+                      {monthlyRecords
+                        .filter(record => record.date === format(date, 'yyyy-MM-dd'))
+                        .map(record => {
+                          const instructor = instructors.find(i => i.id === record.instructorId);
+                          return (
+                            <TableRow key={record.id}>
+                              <TableCell>
+                                <div className="font-medium">{instructor ? instructor.name : 'Unknown'}</div>
+                                <div className="text-xs text-gray-500">{instructor ? instructor.nationality : ''}</div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge className={cn(
+                                  record.status === 'present' && 'bg-green-100 text-green-800 hover:bg-green-100',
+                                  record.status === 'late' && 'bg-amber-100 text-amber-800 hover:bg-amber-100',
+                                  record.status === 'absent' && 'bg-red-100 text-red-800 hover:bg-red-100',
+                                  record.status === 'sick' && 'bg-blue-100 text-blue-800 hover:bg-blue-100',
+                                  record.status === 'paternity' && 'bg-purple-100 text-purple-800 hover:bg-purple-100',
+                                  record.status === 'pto' && 'bg-cyan-100 text-cyan-800 hover:bg-cyan-100',
+                                  record.status === 'bereavement' && 'bg-gray-100 text-gray-800 hover:bg-gray-100',
+                                )}>
+                                  {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>{record.timeIn || 'N/A'}</TableCell>
+                              <TableCell>{record.timeOut || 'N/A'}</TableCell>
+                              <TableCell>{record.comments || 'No comments'}</TableCell>
+                              <TableCell className="text-right">
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      
+                      {monthlyRecords.filter(record => record.date === format(date, 'yyyy-MM-dd')).length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center py-6 text-gray-500">
+                            No attendance records found for this date. Use the "Record Individual" or "Take Attendance" buttons to add records.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="text-center py-12 text-gray-500">
+                  Please select a date to view detailed attendance records.
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
