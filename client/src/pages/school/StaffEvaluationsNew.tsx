@@ -79,7 +79,7 @@ const StaffEvaluations = () => {
   const [evalDate, setEvalDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
   const [evalAttachment, setEvalAttachment] = useState<string | null>(null);
   const [evalType, setEvalType] = useState<string>("formative");
-  const [employeeId, setEmployeeId] = useState<string>("");
+  // Employee ID field removed as requested
   const [filteredInstructors, setFilteredInstructors] = useState<Instructor[]>([]);
   const [currentEvaluationId, setCurrentEvaluationId] = useState<number | null>(null);
   
@@ -221,7 +221,7 @@ const StaffEvaluations = () => {
       setEvalQuarter("Q1");
       setEvalFeedback("");
       setEvalType("formative");
-      setEmployeeId(`EMP${Math.floor(1000 + Math.random() * 9000)}`);
+      // Employee ID field removed as requested
       setEvalDate(format(new Date(), 'yyyy-MM-dd'));
       setEvalAttachment(null);
       setSelectedInstructor(null); // Clear any previously selected instructor
@@ -564,7 +564,6 @@ const StaffEvaluations = () => {
                                     setEvalQuarter(instructor.q1Eval.quarter);
                                     setEvalFeedback(instructor.q1Eval.feedback || "");
                                     setEvalType(instructor.q1Eval.evaluationType || "formative");
-                                    setEmployeeId(instructor.q1Eval.employeeId || "");
                                     setEvalDate(instructor.q1Eval.evaluationDate || format(new Date(), 'yyyy-MM-dd'));
                                     setEvalAttachment(instructor.q1Eval.attachmentUrl);
                                     setCurrentEvaluationId(instructor.q1Eval.id);
@@ -958,18 +957,7 @@ const StaffEvaluations = () => {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="employee-id" className="text-right">
-                Employee ID
-              </Label>
-              <Input
-                id="employee-id"
-                placeholder="Enter employee ID number"
-                value={employeeId}
-                onChange={(e) => setEmployeeId(e.target.value)}
-                className="col-span-3"
-              />
-            </div>
+            {/* Employee ID field removed as requested */}
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="quarter" className="text-right">
@@ -1101,8 +1089,8 @@ const StaffEvaluations = () => {
                     feedback: evalFeedback || null,
                     attachmentUrl: evalAttachment || null,
                     evaluatorId: null,
-                    evaluationType: evalType,
-                    employeeId: employeeId
+                    evaluationType: evalType
+                    // employeeId field removed as requested
                   };
                   
                   if (dialogMode === "add") {
@@ -1129,7 +1117,7 @@ const StaffEvaluations = () => {
                   setEvalFeedback("");
                   setEvalAttachment(null);
                   setEvalType("formative");
-                  setEmployeeId("");
+                  // Employee ID field removed as requested
                   setCurrentEvaluationId(null);
                 }
               }} 
