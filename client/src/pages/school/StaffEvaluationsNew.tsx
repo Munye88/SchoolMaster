@@ -618,7 +618,6 @@ const StaffEvaluations = () => {
                                     setEvalQuarter(instructor.q2Eval.quarter);
                                     setEvalFeedback(instructor.q2Eval.feedback || "");
                                     setEvalType(instructor.q2Eval.evaluationType || "formative");
-                                    setEmployeeId(instructor.q2Eval.employeeId || "");
                                     setEvalDate(instructor.q2Eval.evaluationDate || format(new Date(), 'yyyy-MM-dd'));
                                     setEvalAttachment(instructor.q2Eval.attachmentUrl);
                                     setCurrentEvaluationId(instructor.q2Eval.id);
@@ -673,7 +672,6 @@ const StaffEvaluations = () => {
                                     setEvalQuarter(instructor.q3Eval.quarter);
                                     setEvalFeedback(instructor.q3Eval.feedback || "");
                                     setEvalType(instructor.q3Eval.evaluationType || "formative");
-                                    setEmployeeId(instructor.q3Eval.employeeId || "");
                                     setEvalDate(instructor.q3Eval.evaluationDate || format(new Date(), 'yyyy-MM-dd'));
                                     setEvalAttachment(instructor.q3Eval.attachmentUrl);
                                     setCurrentEvaluationId(instructor.q3Eval.id);
@@ -728,7 +726,6 @@ const StaffEvaluations = () => {
                                     setEvalQuarter(instructor.q4Eval.quarter);
                                     setEvalFeedback(instructor.q4Eval.feedback || "");
                                     setEvalType(instructor.q4Eval.evaluationType || "formative");
-                                    setEmployeeId(instructor.q4Eval.employeeId || "");
                                     setEvalDate(instructor.q4Eval.evaluationDate || format(new Date(), 'yyyy-MM-dd'));
                                     setEvalAttachment(instructor.q4Eval.attachmentUrl);
                                     setCurrentEvaluationId(instructor.q4Eval.id);
@@ -789,7 +786,6 @@ const StaffEvaluations = () => {
                                 setEvalQuarter("Q1");
                                 setEvalFeedback("");
                                 setEvalType("formative");
-                                setEmployeeId(`EMP${Math.floor(1000 + Math.random() * 9000)}`);
                                 setDialogOpen(true);
                               }
                             }}
