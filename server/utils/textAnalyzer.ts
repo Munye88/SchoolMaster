@@ -108,30 +108,28 @@ export async function extractCandidateInfoFromText(
     
     // Special case for date-based filenames like Resume202504170332.pdf
     // Check if the filename contains a date pattern
-    if (filename.match(/Resume\d{12}/i)) {
-      // For these special cases, rely on the content analysis instead
-      console.log("Date-based filename detected, skipping filename-based name extraction");
-      // Don't extract from filename - continue to next methods
-      return;
-    }
-    
-    const filenameMatch = filename.match(/(?:Resume[_-]?)?([A-Za-z]+[_\s-]?[A-Za-z]+)(?:\.|_)/i);
-    if (filenameMatch && filenameMatch[1]) {
-      // Format the filename by replacing underscores and hyphens with spaces
-      const potentialName = filenameMatch[1]
-        .replace(/[_-]/g, ' ')
-        .replace(/([a-z])([A-Z])/g, '$1 $2') // Split camelCase
-        .trim();
-      
-      // Only use if it looks like a real name (at least two parts, proper capitalization)
-      const nameParts = potentialName.split(/\s+/);
-      if (nameParts.length >= 2) {
-        // Properly capitalize each part of the name
-        const formattedName = nameParts
-          .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-          .join(' ');
-        result.name = formattedName;
+    if (!filename.match(/Resume\d{12}/i)) {
+      // Only try to extract from filename if it's not a date-based filename
+      const filenameMatch = filename.match(/(?:Resume[_-]?)?([A-Za-z]+[_\s-]?[A-Za-z]+)(?:\.|_)/i);
+      if (filenameMatch && filenameMatch[1]) {
+        // Format the filename by replacing underscores and hyphens with spaces
+        const potentialName = filenameMatch[1]
+          .replace(/[_-]/g, ' ')
+          .replace(/([a-z])([A-Z])/g, '$1 $2') // Split camelCase
+          .trim();
+        
+        // Only use if it looks like a real name (at least two parts, proper capitalization)
+        const nameParts = potentialName.split(/\s+/);
+        if (nameParts.length >= 2) {
+          // Properly capitalize each part of the name
+          const formattedName = nameParts
+            .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+            .join(' ');
+          result.name = formattedName;
+        }
       }
+    } else {
+      console.log("Date-based filename detected, skipping filename-based name extraction");
     }
   }
   
