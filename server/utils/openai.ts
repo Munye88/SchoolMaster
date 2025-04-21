@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { fileTypeFromBuffer } from "file-type";
 import { Candidate } from "@shared/schema";
+import { parsePDF } from "./pdfParser";
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -49,68 +50,45 @@ export async function extractCandidateInfo(filePath: string): Promise<Partial<Ca
   }
 }
 
-// Extract text from PDF using OpenAI's ability to process PDFs
+// Extract text from PDF using OpenAI's document analysis capabilities
 async function extractTextFromPDF(filePath: string): Promise<string> {
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: "Extract all relevant text content from this PDF resume. Focus on preserving the structure and all details about education, experience, skills, and contact information."
-        },
-        {
-          role: "user", 
-          content: [
-            {
-              type: "text",
-              text: "Extract all relevant text from this resume PDF:"
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:application/pdf;base64,${fs.readFileSync(filePath).toString("base64")}`
-              }
-            }
-          ]
-        }
-      ]
-    });
-    
-    return response.choices[0].message.content || "";
+    return await parsePDF(filePath);
   } catch (error) {
     console.error("Error extracting text from PDF:", error);
     throw error;
   }
 }
 
-// Extract text from DOCX (simplified version)
+// Extract text from DOCX file
 async function extractTextFromDOCX(filePath: string): Promise<string> {
   try {
-    // Here we're using OpenAI to extract text from a document image
-    // This is a fallback approach - in a production app you might want
-    // to use a dedicated document parsing library
+    // For this implementation, we're using a simplified approach:
+    // Convert the file to base64 and use OpenAI to extract text
+    const fileContent = fs.readFileSync(filePath);
+    const base64String = fileContent.toString('base64');
+    
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
       messages: [
         {
-          role: "system",
-          content: "Extract all relevant text content from this document. Focus on preserving the structure and all details about education, experience, skills, and contact information."
+          role: "system", 
+          content: "Extract all text content from this Word document, preserving the structure as much as possible."
         },
         {
-          role: "user", 
+          role: "user",
           content: [
             {
               type: "text",
-              text: "Extract all relevant text from this resume document:"
+              text: "Please extract all text from this Word document"
             },
             {
               type: "image_url",
               image_url: {
-                url: `data:application/octet-stream;base64,${fs.readFileSync(filePath).toString("base64")}`
+                url: `data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${base64String}`
               }
             }
-          ]
+          ],
         }
       ]
     });
@@ -122,107 +100,122 @@ async function extractTextFromDOCX(filePath: string): Promise<string> {
   }
 }
 
-// Parse resume content using GPT-4o
+// Use AI to parse the resume content and extract structured data
 async function parseResumeWithAI(content: string): Promise<Partial<Candidate>> {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
+      response_format: { type: "json_object" },
       messages: [
         {
           role: "system",
-          content: `Extract structured information from the resume text. Return a JSON object with these fields:
-          - name: Full name of the candidate
-          - email: Email address
-          - phone: Phone number
-          - degree: Highest degree obtained (Bachelor, Master, PhD, etc.)
-          - degreeField: Field of study
-          - yearsExperience: Total years of teaching/educational experience as a number
-          - hasCertifications: Boolean if they have any teaching certifications
-          - certifications: List of teaching certifications (CELTA, TEFL, TESOL, etc.)
-          - militaryExperience: Boolean if they have military experience
-          - nativeEnglishSpeaker: Best guess if they're a native English speaker based on education or background
-          - notes: A brief summary of their key qualifications and fit for an English Language Training instructor position`
+          content: `
+          You are an expert resume analyzer for English Language Training (ELT) instructor positions.
+          Extract relevant candidate information from the resume text provided.
+          Format your response as a JSON object with the following structure:
+          {
+            "name": "Full name of the candidate",
+            "email": "Email address",
+            "phone": "Phone number",
+            "degree": "Highest educational degree (Bachelor, Master, PhD, or High School)",
+            "degreeField": "Field of study for the highest degree",
+            "yearsExperience": Number of years of teaching experience,
+            "hasCertifications": Boolean indicating if they have teaching certifications,
+            "certifications": "Description of teaching certifications (TEFL, CELTA, etc.)",
+            "nativeEnglishSpeaker": Boolean indicating if they appear to be a native English speaker,
+            "militaryExperience": Boolean indicating if they have military experience
+          }
+          `
         },
         {
           role: "user",
           content: content
         }
-      ],
-      response_format: { type: "json_object" }
+      ]
     });
     
     const result = JSON.parse(response.choices[0].message.content || "{}");
+    console.log("AI parsed resume result:", result);
     
-    // Convert any string representation of booleans to actual booleans
-    if (typeof result.hasCertifications === "string") {
-      result.hasCertifications = result.hasCertifications.toLowerCase() === "true";
-    }
-    if (typeof result.militaryExperience === "string") {
-      result.militaryExperience = result.militaryExperience.toLowerCase() === "true";
-    }
-    if (typeof result.nativeEnglishSpeaker === "string") {
-      result.nativeEnglishSpeaker = result.nativeEnglishSpeaker.toLowerCase() === "true";
-    }
-    
-    // Convert years experience to number
-    if (typeof result.yearsExperience === "string") {
-      result.yearsExperience = parseInt(result.yearsExperience) || 0;
-    }
-    
-    return result;
+    return {
+      name: result.name,
+      email: result.email,
+      phone: result.phone,
+      degree: result.degree,
+      degreeField: result.degreeField,
+      yearsExperience: typeof result.yearsExperience === 'number' ? result.yearsExperience : 
+                      (typeof result.yearsExperience === 'string' ? parseInt(result.yearsExperience) : 0),
+      hasCertifications: result.hasCertifications,
+      certifications: result.certifications,
+      nativeEnglishSpeaker: result.nativeEnglishSpeaker,
+      militaryExperience: result.militaryExperience,
+      // Default fields
+      status: "new",
+      schoolId: undefined,
+      notes: "",
+      resumeUrl: ""
+    };
   } catch (error) {
     console.error("Error parsing resume with AI:", error);
-    throw error;
+    return {};
   }
 }
 
-// Rank candidates using AI
+// Rank candidates based on qualifications
 export async function rankCandidatesWithAI(candidates: Candidate[]): Promise<{ rankedCandidates: Candidate[], rationale: string }> {
   try {
-    const candidatesData = candidates.map(c => ({
+    // Prepare candidate data for the AI
+    const candidateData = candidates.map(c => ({
       id: c.id,
       name: c.name,
-      education: `${c.degree || "Unknown"} in ${c.degreeField || "Unknown"}`,
-      yearsExperience: c.yearsExperience || 0,
-      certifications: c.certifications || "None",
+      degree: c.degree,
+      degreeField: c.degreeField,
+      yearsExperience: c.yearsExperience,
       hasCertifications: c.hasCertifications,
-      militaryExperience: c.militaryExperience,
+      certifications: c.certifications,
       nativeEnglishSpeaker: c.nativeEnglishSpeaker,
-      grammarProficiency: c.grammarProficiency || 0,
-      vocabularyProficiency: c.vocabularyProficiency || 0,
-      classroomManagement: c.classroomManagement || 0,
-      overallScore: c.overallScore || 0,
+      militaryExperience: c.militaryExperience,
       status: c.status,
-      notes: c.notes
+      classroomManagement: c.classroomManagement,
+      grammarProficiency: c.grammarProficiency,
+      vocabularyProficiency: c.vocabularyProficiency
     }));
     
+    // Use OpenAI to rank candidates
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
+      response_format: { type: "json_object" },
       messages: [
         {
           role: "system",
-          content: `You are an expert recruitment assistant for English Language Training (ELT) instructors. 
-          Rank the provided candidate data to select the top 10 candidates. 
-          Consider these factors in descending order of importance:
-          1. Teaching experience (years, especially in ESL/ELT)
-          2. Relevant education (degrees in English, ESL, TESOL, or Education)
-          3. Teaching certifications (CELTA, TEFL, TESOL)
-          4. Native English speaker status
-          5. Assessment scores (grammar, vocabulary, classroom management)
-          6. Military experience (a plus but not required)
+          content: `
+          You are an expert ELT instructor recruiter. Analyze and rank candidates based on the following criteria:
           
-          Return a JSON object with:
-          1. "rankedCandidates": Array of candidate IDs in ranked order (best first)
-          2. "rationale": Brief explanation of your ranking methodology and key differentiators`
+          1. Education (highest weight for Master's or PhD in TESOL, English, Education, or related field)
+          2. Teaching experience (years)
+          3. Certifications (TESOL, CELTA, etc.)
+          4. Native English speaker status
+          5. Military experience (a plus for this context)
+          6. Proficiency scores (classroom management, grammar, vocabulary)
+          
+          Provide your output as a JSON with the following structure:
+          {
+            "rankedCandidates": [id1, id2, id3, ...],  // Array of candidate IDs in rank order (best first)
+            "rationale": "Explanation of your ranking methodology and key observations"
+          }
+          
+          Provide detailed rationale explaining why candidates were ranked in this order.
+          Focus on identifying the top 10 candidates.
+          `
         },
         {
           role: "user",
-          content: JSON.stringify(candidatesData)
+          content: JSON.stringify(candidateData)
         }
-      ],
-      response_format: { type: "json_object" }
+      ]
     });
     
+    // Parse the response
     const result = JSON.parse(response.choices[0].message.content || "{}");
     
     // Map ranked IDs back to full candidate objects
