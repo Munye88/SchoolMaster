@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Instructor } from "@shared/schema";
 import { useSchool } from "@/hooks/useSchool";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { 
   Calendar as CalendarIcon, 
