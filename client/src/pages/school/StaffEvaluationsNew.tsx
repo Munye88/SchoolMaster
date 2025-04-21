@@ -185,13 +185,16 @@ const StaffEvaluations = () => {
 
   // Remove the sample data creation useEffect that was causing the infinite loop
   
-  // Initialize dialog state when it opens
+  // Initialize form data when the dialog opens
   useEffect(() => {
+    console.log("Dialog state changed:", { dialogOpen, dialogMode });
+    
     if (!dialogOpen) return;
     
+    // For both add and edit modes, we need to check if we need to initialize or clear form values
     if (dialogMode === "add") {
       // Reset form for new evaluation
-      setSelectedInstructor(null);
+      console.log("Initializing add form with schoolInstructors:", schoolInstructors);
       setEvalScore(85);
       setEvalQuarter("Q1");
       setEvalFeedback("");
@@ -199,7 +202,10 @@ const StaffEvaluations = () => {
       setEmployeeId(`EMP${Math.floor(1000 + Math.random() * 9000)}`);
       setEvalDate(format(new Date(), 'yyyy-MM-dd'));
       setEvalAttachment(null);
+      setSelectedInstructor(null); // Clear any previously selected instructor
+      setCurrentEvaluationId(null); // Reset the evaluation ID
     }
+    // We don't need to handle edit mode initialization here as it's done in the click handlers
   }, [dialogOpen, dialogMode]);
 
   // Filter evaluations by school first
@@ -472,15 +478,10 @@ const StaffEvaluations = () => {
                   <Button 
                     className="bg-[#0A2463] hover:bg-[#071A4A] gap-2"
                     onClick={() => {
-                      setSelectedInstructor(null);
+                      console.log("Add New Evaluation clicked");
+                      // Set dialog mode first, then open dialog
+                      // The useEffect will handle initializing the form
                       setDialogMode("add");
-                      setEvalScore(85);
-                      setEvalQuarter("Q1");
-                      setEvalFeedback("");
-                      setEvalType("formative");
-                      setEmployeeId(`EMP${Math.floor(1000 + Math.random() * 9000)}`);
-                      setEvalDate(format(new Date(), 'yyyy-MM-dd'));
-                      setEvalAttachment(null);
                       setDialogOpen(true);
                     }}
                   >
@@ -911,19 +912,32 @@ const StaffEvaluations = () => {
                   value={selectedInstructor?.id || ""}
                   onChange={(e) => {
                     const instructorId = parseInt(e.target.value, 10);
+                    console.log("Selected instructor ID:", instructorId);
+                    if (isNaN(instructorId)) {
+                      setSelectedInstructor(null);
+                      return;
+                    }
                     const instr = schoolInstructors.find(i => i.id === instructorId);
+                    console.log("Found instructor:", instr);
                     if (instr) {
                       setSelectedInstructor(instr);
                     }
                   }}
                 >
                   <option value="">Select Instructor</option>
-                  {schoolInstructors.map(instructor => (
-                    <option key={instructor.id} value={instructor.id}>
-                      {instructor.name}
-                    </option>
-                  ))}
+                  {schoolInstructors.length > 0 ? (
+                    schoolInstructors.map(instructor => (
+                      <option key={instructor.id} value={instructor.id}>
+                        {instructor.name} ({instructor.nationality})
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>No instructors available for this school</option>
+                  )}
                 </select>
+                <div className="mt-1 text-xs text-gray-500">
+                  {schoolInstructors.length} instructors available
+                </div>
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
