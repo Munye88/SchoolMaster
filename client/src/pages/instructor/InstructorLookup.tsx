@@ -1,0 +1,582 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useSchool } from "@/hooks/useSchool";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Search, Mail, Phone, MapPin, Award, Briefcase, Calendar as CalendarIcon, UserCheck, Star, FileText, CalendarDays, XIcon } from "lucide-react";
+import { format } from "date-fns";
+
+const InstructorLookup = () => {
+  const { selectedSchool } = useSchool();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedInstructor, setSelectedInstructor] = useState<any | null>(null);
+  const [activeTab, setActiveTab] = useState("profile");
+
+  // Fetch all instructors
+  const { data: instructors = [], isLoading: loadingInstructors } = useQuery<any[]>({
+    queryKey: ['/api/instructors'],
+    refetchOnWindowFocus: false,
+  });
+
+  // Fetch evaluations
+  const { data: evaluations = [], isLoading: loadingEvaluations } = useQuery<any[]>({
+    queryKey: ['/api/evaluations'],
+    refetchOnWindowFocus: false,
+    enabled: !!selectedInstructor,
+  });
+
+  // Fetch attendance
+  const { data: attendance = [], isLoading: loadingAttendance } = useQuery<any[]>({
+    queryKey: ['/api/staff-attendance'],
+    refetchOnWindowFocus: false,
+    enabled: !!selectedInstructor,
+  });
+
+  // Fetch recognitions
+  const { data: recognitions = [], isLoading: loadingRecognitions } = useQuery<any[]>({
+    queryKey: ['/api/recognitions'],
+    refetchOnWindowFocus: false,
+    enabled: !!selectedInstructor,
+  });
+
+  // Filter instructors based on search query
+  const filteredInstructors = searchQuery
+    ? instructors.filter(
+        instructor =>
+          instructor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          instructor.nationality.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
+
+  // Filter data for selected instructor
+  const instructorEvaluations = evaluations.filter(
+    e => selectedInstructor && e.instructorId === selectedInstructor.id
+  );
+  
+  const instructorAttendance = attendance.filter(
+    a => selectedInstructor && a.instructorId === selectedInstructor.id
+  );
+  
+  const instructorRecognitions = recognitions.filter(
+    r => selectedInstructor && r.instructorId === selectedInstructor.id
+  );
+
+  // Calculate attendance rate
+  const attendanceRate = instructorAttendance.length > 0
+    ? Math.round((instructorAttendance.filter(a => a.status === "Present").length / instructorAttendance.length) * 100)
+    : 0;
+
+  // Calculate average evaluation score
+  const avgEvalScore = instructorEvaluations.length > 0
+    ? Math.round(instructorEvaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / instructorEvaluations.length)
+    : 0;
+
+  // Get instructor school name
+  const getSchoolName = (schoolId: number) => {
+    const schoolMap: Record<number, string> = {
+      350: "NFS East",
+      351: "KFNA",
+      352: "NFS West"
+    };
+    return schoolMap[schoolId] || "Unknown School";
+  };
+
+  return (
+    <div className="flex-1 p-8 bg-gray-50">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">
+            <span className="bg-gradient-to-r from-[#0A2463] to-[#3E92CC] bg-clip-text text-transparent">
+              Instructor Lookup
+            </span>
+          </h1>
+          <p className="text-gray-500">Search for instructors and view complete information</p>
+        </div>
+      </div>
+
+      {/* Search Section */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Search Instructors</CardTitle>
+          <CardDescription>Enter an instructor's name or nationality to begin</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2 items-center">
+            <Search className="h-5 w-5 text-gray-400" />
+            <Input
+              placeholder="Search by name or nationality..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1"
+            />
+            <Button 
+              variant="outline" 
+              onClick={() => setSearchQuery("")}
+              className="w-24"
+            >
+              Clear
+            </Button>
+          </div>
+
+          {/* Search Results */}
+          {searchQuery && filteredInstructors.length > 0 && (
+            <div className="mt-4 border rounded-md divide-y max-h-60 overflow-y-auto">
+              {filteredInstructors.map(instructor => (
+                <div 
+                  key={instructor.id}
+                  className="p-3 flex items-center gap-3 hover:bg-gray-50 cursor-pointer"
+                  onClick={() => {
+                    setSelectedInstructor(instructor);
+                    setSearchQuery("");
+                  }}
+                >
+                  <Avatar className="h-10 w-10 border-2 border-blue-300">
+                    {instructor.imageUrl ? (
+                      <AvatarImage src={instructor.imageUrl} alt={instructor.name} />
+                    ) : (
+                      <AvatarFallback>{instructor.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                    )}
+                  </Avatar>
+                  <div className="flex-1">
+                    <p className="font-medium">{instructor.name}</p>
+                    <p className="text-sm text-gray-500">{instructor.nationality}</p>
+                  </div>
+                  <Badge variant="outline">{getSchoolName(instructor.schoolId)}</Badge>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {searchQuery && filteredInstructors.length === 0 && (
+            <div className="mt-4 p-4 text-center border rounded-md bg-gray-50">
+              <p className="text-gray-500">No instructors found matching "{searchQuery}"</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Instructor Details Section */}
+      {selectedInstructor ? (
+        <div className="space-y-6">
+          {/* Instructor Header Card */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+                <Avatar className="h-24 w-24 border-4 border-blue-300">
+                  {selectedInstructor.imageUrl ? (
+                    <AvatarImage src={selectedInstructor.imageUrl} alt={selectedInstructor.name} />
+                  ) : (
+                    <AvatarFallback className="text-2xl">{selectedInstructor.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                  )}
+                </Avatar>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold">{selectedInstructor.name}</h2>
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-300">
+                      {selectedInstructor.nationality}
+                    </Badge>
+                    <Badge className="bg-purple-100 text-purple-800 hover:bg-purple-200 border-purple-300">
+                      {getSchoolName(selectedInstructor.schoolId)}
+                    </Badge>
+                    <Badge className="bg-green-100 text-green-800 hover:bg-green-200 border-green-300">
+                      {selectedInstructor.credentials}
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div className="flex items-center gap-2">
+                      <CalendarDays className="h-4 w-4 text-gray-500" />
+                      <span>Joined: {format(new Date(selectedInstructor.startDate), 'MMM dd, yyyy')}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-gray-500" />
+                      <span>{selectedInstructor.phone}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-gray-500" />
+                      <span>Compound: {selectedInstructor.compound}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Average Evaluation Score</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="text-3xl font-bold">{avgEvalScore}%</div>
+                  <div className={`p-2 rounded-full ${avgEvalScore >= 85 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
+                    <Star className="h-5 w-5" />
+                  </div>
+                </div>
+                <Progress value={avgEvalScore} className="h-2 mt-4" />
+                <p className="text-xs text-gray-500 mt-2">
+                  {instructorEvaluations.length} evaluations recorded
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Attendance Rate</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="text-3xl font-bold">{attendanceRate}%</div>
+                  <div className={`p-2 rounded-full ${attendanceRate >= 90 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}`}>
+                    <UserCheck className="h-5 w-5" />
+                  </div>
+                </div>
+                <Progress value={attendanceRate} className="h-2 mt-4" />
+                <p className="text-xs text-gray-500 mt-2">
+                  {instructorAttendance.filter(a => a.status === "Present").length} of {instructorAttendance.length} days present
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Recognition Awards</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="text-3xl font-bold">{instructorRecognitions.length}</div>
+                  <div className="p-2 rounded-full bg-blue-100 text-blue-800">
+                    <Award className="h-5 w-5" />
+                  </div>
+                </div>
+                <div className="mt-4 h-2"></div>
+                <p className="text-xs text-gray-500 mt-2">
+                  {instructorRecognitions.length > 0 
+                    ? `Most recent: ${instructorRecognitions[0]?.awardTitle || 'Unknown Award'}`
+                    : 'No recognitions yet'
+                  }
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Tabbed Content */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+              <TabsTrigger value="evaluations">Evaluations</TabsTrigger>
+              <TabsTrigger value="attendance">Attendance</TabsTrigger>
+              <TabsTrigger value="recognition">Recognition</TabsTrigger>
+            </TabsList>
+
+            {/* Profile Tab */}
+            <TabsContent value="profile">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Instructor Profile</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h3 className="font-medium text-gray-900 mb-2">Personal Information</h3>
+                      <div className="space-y-3">
+                        <div className="flex items-start">
+                          <span className="w-32 text-gray-500">Full Name</span>
+                          <span className="flex-1 font-medium">{selectedInstructor.name}</span>
+                        </div>
+                        <div className="flex items-start">
+                          <span className="w-32 text-gray-500">Nationality</span>
+                          <span className="flex-1 font-medium">{selectedInstructor.nationality}</span>
+                        </div>
+                        <div className="flex items-start">
+                          <span className="w-32 text-gray-500">Status</span>
+                          <span className="flex-1 font-medium">{selectedInstructor.accompaniedStatus}</span>
+                        </div>
+                        <div className="flex items-start">
+                          <span className="w-32 text-gray-500">Phone</span>
+                          <span className="flex-1 font-medium">{selectedInstructor.phone}</span>
+                        </div>
+                        <div className="flex items-start">
+                          <span className="w-32 text-gray-500">Compound</span>
+                          <span className="flex-1 font-medium">{selectedInstructor.compound}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="font-medium text-gray-900 mb-2">Employment Information</h3>
+                      <div className="space-y-3">
+                        <div className="flex items-start">
+                          <span className="w-32 text-gray-500">School</span>
+                          <span className="flex-1 font-medium">{getSchoolName(selectedInstructor.schoolId)}</span>
+                        </div>
+                        <div className="flex items-start">
+                          <span className="w-32 text-gray-500">Credentials</span>
+                          <span className="flex-1 font-medium">{selectedInstructor.credentials}</span>
+                        </div>
+                        <div className="flex items-start">
+                          <span className="w-32 text-gray-500">Start Date</span>
+                          <span className="flex-1 font-medium">{format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy')}</span>
+                        </div>
+                        <div className="flex items-start">
+                          <span className="w-32 text-gray-500">Tenure</span>
+                          <span className="flex-1 font-medium">
+                            {Math.round((new Date().getTime() - new Date(selectedInstructor.startDate).getTime()) / (1000 * 60 * 60 * 24 * 30))} months
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Evaluations Tab */}
+            <TabsContent value="evaluations">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Staff Evaluations</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {instructorEvaluations.length > 0 ? (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        {['Q1', 'Q2', 'Q3', 'Q4'].map(quarter => {
+                          const quarterEval = instructorEvaluations.find(e => e.quarter === quarter);
+                          const score = quarterEval?.score || 0;
+                          return (
+                            <Card key={quarter}>
+                              <CardContent className="pt-6">
+                                <div className="text-center">
+                                  <div className="text-lg font-semibold mb-2">{quarter}</div>
+                                  <div className={`inline-flex items-center justify-center h-16 w-16 rounded-full text-xl font-bold ${
+                                    score >= 85 ? 'bg-green-100 text-green-800' : 
+                                    score > 0 ? 'bg-amber-100 text-amber-800' : 
+                                    'bg-gray-100 text-gray-500'
+                                  }`}>
+                                    {score > 0 ? `${score}%` : 'N/A'}
+                                  </div>
+                                  {quarterEval && (
+                                    <div className="mt-2 text-sm text-gray-500">
+                                      {format(new Date(quarterEval.evaluationDate), 'MMM dd, yyyy')}
+                                    </div>
+                                  )}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+
+                      <div className="border rounded-lg overflow-hidden">
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quarter</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Feedback</th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {instructorEvaluations.map(evaluation => (
+                              <tr key={evaluation.id}>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{evaluation.quarter}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {format(new Date(evaluation.evaluationDate), 'MMM dd, yyyy')}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                    evaluation.score >= 85 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
+                                  }`}>
+                                    {evaluation.score}%
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {evaluation.evaluationType.charAt(0).toUpperCase() + evaluation.evaluationType.slice(1)}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                                  {evaluation.feedback || 'No feedback provided'}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-6 text-center">
+                      <FileText className="mx-auto h-12 w-12 text-gray-400" />
+                      <h3 className="mt-2 text-sm font-semibold text-gray-900">No evaluations</h3>
+                      <p className="mt-1 text-sm text-gray-500">No evaluation records found for this instructor.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Attendance Tab */}
+            <TabsContent value="attendance">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Staff Attendance</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {instructorAttendance.length > 0 ? (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <Card>
+                          <CardContent className="pt-6">
+                            <div className="text-center">
+                              <div className="text-lg font-semibold mb-2">Present Days</div>
+                              <div className="text-3xl font-bold text-green-600">
+                                {instructorAttendance.filter(a => a.status === "Present").length}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent className="pt-6">
+                            <div className="text-center">
+                              <div className="text-lg font-semibold mb-2">Absent Days</div>
+                              <div className="text-3xl font-bold text-red-600">
+                                {instructorAttendance.filter(a => a.status === "Absent").length}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent className="pt-6">
+                            <div className="text-center">
+                              <div className="text-lg font-semibold mb-2">Late Days</div>
+                              <div className="text-3xl font-bold text-amber-600">
+                                {instructorAttendance.filter(a => a.status === "Late").length}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      <div className="border rounded-lg overflow-hidden">
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time In</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time Out</th>
+                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {instructorAttendance.map(record => (
+                              <tr key={record.id}>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                  {format(new Date(record.date), 'MMM dd, yyyy')}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                    record.status === 'Present' ? 'bg-green-100 text-green-800' : 
+                                    record.status === 'Absent' ? 'bg-red-100 text-red-800' : 
+                                    'bg-amber-100 text-amber-800'
+                                  }`}>
+                                    {record.status}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {record.timeIn || 'N/A'}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                  {record.timeOut || 'N/A'}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                                  {record.notes || '-'}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-6 text-center">
+                      <CalendarIcon className="mx-auto h-12 w-12 text-gray-400" />
+                      <h3 className="mt-2 text-sm font-semibold text-gray-900">No attendance records</h3>
+                      <p className="mt-1 text-sm text-gray-500">No attendance records found for this instructor.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Recognition Tab */}
+            <TabsContent value="recognition">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Instructor Recognition</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {instructorRecognitions.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {instructorRecognitions.map(recognition => (
+                        <Card key={recognition.id}>
+                          <CardContent className="pt-6">
+                            <div className="flex gap-4">
+                              <div className="flex-shrink-0">
+                                <div className="h-12 w-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                                  <Award className="h-6 w-6" />
+                                </div>
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-lg">{recognition.awardTitle}</h3>
+                                <p className="text-sm text-gray-500 mt-1">
+                                  Awarded on {format(new Date(recognition.awardDate), 'MMMM dd, yyyy')}
+                                </p>
+                                <p className="mt-3">{recognition.description}</p>
+                                {recognition.certificateUrl && (
+                                  <Button variant="outline" className="mt-3 gap-2">
+                                    <FileText className="h-4 w-4" />
+                                    View Certificate
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-6 text-center">
+                      <Award className="mx-auto h-12 w-12 text-gray-400" />
+                      <h3 className="mt-2 text-sm font-semibold text-gray-900">No recognition awards</h3>
+                      <p className="mt-1 text-sm text-gray-500">This instructor hasn't received any recognition awards yet.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      ) : (
+        <Card className="p-8 text-center">
+          <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+            <Search className="h-10 w-10 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium">Search for an instructor</h3>
+          <p className="text-gray-500 mt-2 max-w-md mx-auto">
+            Use the search box above to find an instructor and view their complete profile, evaluations, attendance, and recognition information.
+          </p>
+        </Card>
+      )}
+    </div>
+  );
+};
+
+export default InstructorLookup;

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import InstructorProfile from "@/pages/InstructorProfile";
+import InstructorLookup from "@/pages/instructor/InstructorLookup";
 import Courses from "@/pages/Courses";
 import TestTracker from "@/pages/TestTracker";
 import Reports from "@/pages/Reports";
@@ -70,6 +71,7 @@ function Router() {
           <ProtectedRoute path="/" component={Dashboard} />
           <ProtectedRoute path="/instructors" component={InstructorProfile} />
           <ProtectedRoute path="/instructors/:id" component={InstructorProfile} />
+          <ProtectedRoute path="/instructor-lookup" component={InstructorLookup} />
           <ProtectedRoute path="/courses" component={Courses} />
           <ProtectedRoute path="/dli" component={BookOrder} />
           <ProtectedRoute path="/dli/book-order" component={BookOrder} />
