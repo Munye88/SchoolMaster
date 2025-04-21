@@ -366,7 +366,7 @@ const InstructorLookup = () => {
                                   </div>
                                   {quarterEval && (
                                     <div className="mt-2 text-sm text-gray-500">
-                                      {format(new Date(quarterEval.evaluationDate), 'MMM dd, yyyy')}
+                                      {quarterEval.evaluationDate ? format(new Date(quarterEval.evaluationDate), 'MMM dd, yyyy') : 'Unknown date'}
                                     </div>
                                   )}
                                 </div>
@@ -392,7 +392,7 @@ const InstructorLookup = () => {
                               <tr key={evaluation.id}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{evaluation.quarter}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {format(new Date(evaluation.evaluationDate), 'MMM dd, yyyy')}
+                                  {evaluation.evaluationDate ? format(new Date(evaluation.evaluationDate), 'MMM dd, yyyy') : 'Unknown date'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                   <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
