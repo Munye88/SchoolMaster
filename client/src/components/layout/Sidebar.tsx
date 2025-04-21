@@ -127,13 +127,24 @@ const Sidebar = () => {
         {/* User menu */}
         <div className="flex items-center space-x-4">
           {user && (
-            <button 
-              onClick={handleLogout} 
-              className="text-red-500 flex items-center text-sm font-medium bg-white hover:bg-red-50 px-3 py-1.5 rounded border border-red-200"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              <span>Sign out</span>
-            </button>
+            <>
+              <div className="flex items-center mr-3">
+                <div className="bg-blue-100 rounded-full p-1.5 mr-2">
+                  <UserCheck className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-[#0A2463]">{user.username}</p>
+                  <p className="text-xs text-blue-600">{user.role}</p>
+                </div>
+              </div>
+              <button 
+                onClick={handleLogout} 
+                className="text-red-500 flex items-center text-sm font-medium bg-white hover:bg-red-50 px-3 py-1.5 rounded border border-red-200"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                <span>Sign out</span>
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -603,31 +614,11 @@ const Sidebar = () => {
             </ul>
           </div>
           
-          {/* User info/version at bottom */}
+          {/* Version info at bottom */}
           <div className="p-4 border-t border-blue-800">
-            {!collapsed && (
-              <>
-                {user && (
-                  <div className="flex items-center mb-2">
-                    <div className="bg-blue-900 rounded-full p-2 mr-3">
-                      <UserCheck className="h-5 w-5 text-blue-200" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-white">{user.username}</p>
-                      <p className="text-xs text-blue-300">{user.role}</p>
-                    </div>
-                  </div>
-                )}
-                <div className="text-xs text-blue-400">
-                  Version 1.2.0
-                </div>
-              </>
-            )}
-            {collapsed && (
-              <div className="flex justify-center">
-                <UserCheck className="h-6 w-6 text-blue-300" />
-              </div>
-            )}
+            <div className="text-xs text-blue-400 text-center">
+              Version 1.2.0
+            </div>
           </div>
         </div>
       </div>
