@@ -1177,11 +1177,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "No file uploaded" });
       }
       
-      // Process the uploaded resume file
-      const filePath = req.file.path;
+      // Get the file path
+      const fileName = `${Date.now()}-${req.file.originalname}`;
+      const dirPath = path.join("uploads", "resumes");
+      const filePath = path.join(dirPath, fileName);
+      
+      // Create directory if it doesn't exist
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
+      
+      // Write file to disk
+      fs.writeFileSync(filePath, req.file.buffer);
       
       // Generate a URL for the uploaded file (relative path)
-      const fileUrl = `/uploads/${path.basename(filePath)}`;
+      const fileUrl = `/uploads/resumes/${fileName}`;
       
       let candidateInfo = {};
       let aiProvider = "OpenAI";
@@ -1202,12 +1212,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
           let resumeText = "";
           
           if (filePath.toLowerCase().endsWith('.pdf')) {
-            // Since we can't use require, we'll use the pdf-parse library that's already imported
-            // at the top of the file
-            const pdfParse = (await import('pdf-parse')).default;
-            const dataBuffer = fs.readFileSync(filePath);
-            const pdfData = await pdfParse(dataBuffer);
-            resumeText = pdfData.text || "";
+            // Handle PDF files with pdf-parse
+            try {
+              // Import pdf-parse dynamically
+              const pdfParse = (await import('pdf-parse')).default;
+              // Read file as buffer
+              const dataBuffer = fs.readFileSync(filePath);
+              // Parse PDF
+              const pdfData = await pdfParse(dataBuffer);
+              resumeText = pdfData.text || "";
+              console.log("Successfully extracted text from PDF:", resumeText.substring(0, 100) + "...");
+            } catch (pdfError) {
+              console.error("Error parsing PDF:", pdfError);
+              // If PDF parsing fails, try to read as text anyway
+              try {
+                resumeText = fs.readFileSync(filePath, 'utf8');
+              } catch (readError) {
+                console.error("Failed to read file as text:", readError);
+                resumeText = ""; // Empty content if everything fails
+              }
+            }
           } else if (filePath.toLowerCase().endsWith('.doc') || filePath.toLowerCase().endsWith('.docx')) {
             // For simplicity, we'll use a basic text extraction approach for DOC files
             // In a production environment, you'd want to use a more robust solution
@@ -1218,8 +1242,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
           
           console.log("Attempting to extract candidate info with Perplexity...");
-          candidateInfo = await parseResumeWithPerplexity(resumeText);
-          aiProvider = "Perplexity AI";
+          // Let's add fallback values in case Perplexity fails
+          try {
+            const extractedInfo = await parseResumeWithPerplexity(resumeText);
+            candidateInfo = extractedInfo;
+            aiProvider = "Perplexity AI";
+          } catch (perplexityApiError) {
+            console.error("Perplexity API call failed:", perplexityApiError);
+            
+            // Simple extraction of basic information from the text
+            console.log("Using basic text pattern matching as fallback");
+            
+            // Extract basic information using more robust regex patterns
+            const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+            const phoneRegex = /(?:\+\d{1,3}[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}\b/g;
+            const nameRegex = /[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/g; // Look for "First Last" pattern anywhere in text
+            
+            // Look for education keywords
+            const degreeRegex = /(?:Bachelor|Master|PhD|Doctorate|B\.A\.|B\.S\.|M\.A\.|M\.S\.|M\.B\.A\.|P\.h\.D\.|High School|Associate)/i;
+            
+            const emails = resumeText.match(emailRegex) || [];
+            const phones = resumeText.match(phoneRegex) || [];
+            const names = resumeText.match(nameRegex) || [];
+            
+            // Find a degree if mentioned
+            let degree = undefined;
+            const degreeMatch = resumeText.match(degreeRegex);
+            if (degreeMatch) {
+              degree = degreeMatch[0];
+            }
+            
+            // Find degree field (simplistic approach)
+            let degreeField = undefined;
+            if (resumeText.includes("English")) {
+              degreeField = "English";
+            } else if (resumeText.includes("Literature")) {
+              degreeField = "Literature";
+            } else if (resumeText.includes("Education")) {
+              degreeField = "Education";
+            } else if (resumeText.includes("Linguistics")) {
+              degreeField = "Linguistics";
+            }
+            
+            // Look for years of experience
+            let yearsExperience = undefined;
+            const experienceMatch = resumeText.match(/(\d+)\s*(?:years?|yrs?)(?:\s+of)?\s+experience/i);
+            if (experienceMatch) {
+              yearsExperience = parseInt(experienceMatch[1], 10);
+            }
+            
+            // Check for certifications
+            let certifications = undefined;
+            let hasCertifications = false;
+            if (resumeText.includes("TEFL") || resumeText.includes("TESOL") || resumeText.includes("CELTA")) {
+              certifications = "TEFL/TESOL/CELTA certification";
+              hasCertifications = true;
+            }
+            
+            candidateInfo = {
+              email: emails.length > 0 ? emails[0] : undefined,
+              phone: phones.length > 0 ? phones[0] : undefined,
+              name: names.length > 0 ? names[0] : undefined,
+              degree,
+              degreeField,
+              yearsExperience,
+              hasCertifications,
+              certifications,
+              status: "new"
+            };
+            
+            aiProvider = "Basic Text Analysis (AI services unavailable)";
+          }
         } catch (perplexityError) {
           console.error("Perplexity extraction also failed:", perplexityError);
           // If both AI services fail, return basic info

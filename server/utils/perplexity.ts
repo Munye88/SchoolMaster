@@ -21,16 +21,17 @@ export async function parseResumeWithPerplexity(resumeText: string): Promise<Par
         messages: [
           {
             role: "system",
-            content: "You are a resume parsing expert. Extract the following information from the resume text: name, email, phone, degree, degreeField (the field of study), yearsExperience (as a number), certifications, nativeEnglishSpeaker (true/false), and militaryExperience (true/false). Return the information in JSON format only."
+            content: "You are a resume parsing expert. Extract the following information from the resume text: name, email, phone, degree, degreeField (the field of study), yearsExperience (as a number), certifications, nativeEnglishSpeaker (true/false), and militaryExperience (true/false). Return the information in JSON format ONLY, without any additional text or explanation, using this exact structure:\n\n{\"name\": \"Full Name\", \"email\": \"email@example.com\", \"phone\": \"123-456-7890\", \"degree\": \"Bachelor's\", \"degreeField\": \"English Literature\", \"yearsExperience\": 5, \"certifications\": \"TEFL, CELTA\", \"nativeEnglishSpeaker\": true, \"militaryExperience\": false}"
           },
           {
             role: "user",
             content: resumeText
           }
         ],
-        temperature: 0.2,
+        temperature: 0.1,
         top_p: 0.9,
-        max_tokens: 1000
+        max_tokens: 1000,
+        response_format: { type: "json_object" }
       })
     });
 
@@ -50,7 +51,28 @@ export async function parseResumeWithPerplexity(resumeText: string): Promise<Par
     const content = data.choices[0]?.message?.content || "{}";
     console.log("Raw Perplexity response:", content);
     
-    const result = JSON.parse(content);
+    let result;
+    try {
+      // Try parsing as JSON directly
+      result = JSON.parse(content);
+    } catch (jsonError) {
+      console.log("Error parsing JSON from Perplexity response, attempting to extract JSON");
+      
+      // If it's not valid JSON, try to extract JSON from the text
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          result = JSON.parse(jsonMatch[0]);
+        } catch (extractError) {
+          console.error("Failed to extract JSON from response", extractError);
+          // Set default empty object
+          result = {};
+        }
+      } else {
+        console.log("No JSON structure found in response");
+        result = {};
+      }
+    }
     
     // Map the result to a candidate object
     return {
