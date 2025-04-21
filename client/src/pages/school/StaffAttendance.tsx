@@ -76,26 +76,36 @@ function processAttendanceData(
   selectedDate: Date,
   filterByDay = false // New parameter to filter by exact day if needed
 ) {
-  const year = selectedDate.getFullYear();
-  const month = selectedDate.getMonth() + 1;
-  const day = selectedDate.getDate();
+  console.log('Processing attendance with records:', {
+    recordCount: attendanceRecords.length,
+    selectedDate: format(selectedDate, 'yyyy-MM-dd'),
+    filterByDay
+  });
   
-  // Filter records based on date parameters
+  // Direct string comparison approach for better accuracy
+  const formattedSelectedDate = format(selectedDate, 'yyyy-MM-dd');
+  const formattedSelectedMonth = formattedSelectedDate.substring(0, 7); // yyyy-MM
+  
+  // Filter records based on date parameters using string comparison
   const filteredAttendanceRecords = attendanceRecords.filter(record => {
-    // Split off time portion of date if it exists
-    const datePart = record.date.split('T')[0];
-    const recordDate = new Date(datePart);
-    const recordYear = recordDate.getFullYear();
-    const recordMonth = recordDate.getMonth() + 1;
-    const recordDay = recordDate.getDate();
+    // Normalize the date format (handle both with and without time component)
+    const normalizedDate = record.date.includes('T') 
+      ? record.date.split('T')[0] 
+      : record.date;
+    
+    console.log('Comparing dates:', {
+      recordDate: normalizedDate,
+      selectedDate: formattedSelectedDate,
+      match: filterByDay ? normalizedDate === formattedSelectedDate : normalizedDate.startsWith(formattedSelectedMonth)
+    });
     
     // If filtering by day, match the exact day
     if (filterByDay) {
-      return recordYear === year && recordMonth === month && recordDay === day;
+      return normalizedDate === formattedSelectedDate;
     }
     
     // Otherwise filter by month and year
-    return recordYear === year && recordMonth === month;
+    return normalizedDate.startsWith(formattedSelectedMonth);
   });
   
   return instructors.map(instructor => {
@@ -407,10 +417,16 @@ const StaffAttendance = () => {
   const formattedMonth = date ? format(date, "yyyy-MM") : format(new Date(), "yyyy-MM");
   
   // Fetch attendance data from API
-  const { data: attendanceRecords = [], isLoading: attendanceLoading } = useQuery<StaffAttendance[]>({
-    queryKey: ['/api/staff-attendance'],
+  const { data: attendanceRecords = [], isLoading: attendanceLoading, refetch: refetchAttendance } = useQuery<StaffAttendance[]>({
+    queryKey: ['/api/staff-attendance', selectedSchool?.id, Date.now()], // Add school ID and force refresh
     enabled: !!selectedSchool
   });
+  
+  // Force refetch on mount and when school changes
+  useEffect(() => {
+    console.log("Forcing attendance data refresh for school ID:", selectedSchool?.id);
+    refetchAttendance();
+  }, [refetchAttendance, selectedSchool?.id]);
   
   // Process and filter data
   // First filter the attendance records by month
@@ -418,7 +434,9 @@ const StaffAttendance = () => {
   const currentMonthStr = format(currentMonth, 'yyyy-MM');
   
   const monthlyRecords = attendanceRecords.filter((record: StaffAttendance) => {
-    return record.date.startsWith(currentMonthStr);
+    // Handle both date formats: with and without time component
+    const recordDate = record.date.split('T')[0]; // Extract only the date part
+    return recordDate.startsWith(currentMonthStr);
   });
   
   // Determine if we should filter by day based on the selected tab and view
@@ -427,8 +445,14 @@ const StaffAttendance = () => {
   // Records for the specific day when in detailed view
   const dayRecords = shouldFilterByDay 
     ? attendanceRecords.filter((record: StaffAttendance) => {
-        const datePart = record.date.split('T')[0];
-        return datePart === format(date, 'yyyy-MM-dd');
+        // Normalize both dates to yyyy-MM-dd format for comparison
+        let recordDate = record.date;
+        if (recordDate.includes('T')) {
+          recordDate = recordDate.split('T')[0];
+        }
+        const formattedSelectedDate = format(date, 'yyyy-MM-dd');
+        console.log('Comparing dates:', recordDate, formattedSelectedDate, recordDate === formattedSelectedDate);
+        return recordDate === formattedSelectedDate;
       }) 
     : [];
   
