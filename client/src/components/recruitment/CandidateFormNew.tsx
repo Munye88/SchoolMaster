@@ -195,23 +195,47 @@ export default function CandidateFormNew({
       const formData = new FormData();
       formData.append("resume", file); // This should match the parameter name in multer config
       
+      console.log(`Uploading resume: ${file.name} (${file.type}, ${Math.round(file.size / 1024)} KB)`);
+      
       const response = await fetch("/api/candidates/parse-resume", {
         method: "POST",
         body: formData,
       });
       
       if (!response.ok) {
-        throw new Error("Failed to parse resume with AI");
+        const errorText = await response.text();
+        console.error("Resume parsing error response:", errorText);
+        throw new Error(`Failed to parse resume: ${response.status} ${response.statusText}`);
       }
       
       return await response.json();
     },
     onSuccess: (data) => {
+      console.log("Resume successfully parsed:", data);
+      
+      // Track which fields were updated
+      const updatedFields: string[] = [];
+      
       // Update form fields with extracted data
-      form.setValue("name", data.name || form.getValues("name"));
-      form.setValue("email", data.email || form.getValues("email"));
-      form.setValue("phone", data.phone || form.getValues("phone"));
-      form.setValue("resumeUrl", data.resumeUrl || form.getValues("resumeUrl"));
+      if (data.name) {
+        form.setValue("name", data.name);
+        updatedFields.push("name");
+      }
+      
+      if (data.email) {
+        form.setValue("email", data.email);
+        updatedFields.push("email");
+      }
+      
+      if (data.phone) {
+        form.setValue("phone", data.phone);
+        updatedFields.push("phone");
+      }
+      
+      if (data.resumeUrl) {
+        form.setValue("resumeUrl", data.resumeUrl);
+        updatedFields.push("resumeUrl");
+      }
       
       if (data.degree) {
         // Standardize degree names
@@ -222,41 +246,57 @@ export default function CandidateFormNew({
                   data.degree;
         
         form.setValue("degree", degreeValue);
+        updatedFields.push("degree");
       }
       
-      form.setValue("degreeField", data.degreeField || form.getValues("degreeField"));
+      if (data.degreeField) {
+        form.setValue("degreeField", data.degreeField);
+        updatedFields.push("degreeField");
+      }
       
       if (typeof data.yearsExperience === 'number') {
         form.setValue("yearsExperience", data.yearsExperience);
+        updatedFields.push("yearsExperience");
       }
       
-      form.setValue("certifications", data.certifications || form.getValues("certifications"));
+      if (data.certifications) {
+        form.setValue("certifications", data.certifications);
+        updatedFields.push("certifications");
+      }
       
       if (typeof data.hasCertifications === 'boolean') {
         form.setValue("hasCertifications", data.hasCertifications);
+        updatedFields.push("hasCertifications");
       } else if (data.certifications) {
         // If certifications text exists but boolean flag isn't set
         form.setValue("hasCertifications", true);
+        updatedFields.push("hasCertifications");
       }
       
       if (typeof data.nativeEnglishSpeaker === 'boolean') {
         form.setValue("nativeEnglishSpeaker", data.nativeEnglishSpeaker);
+        updatedFields.push("nativeEnglishSpeaker");
       }
       
       if (typeof data.militaryExperience === 'boolean') {
         form.setValue("militaryExperience", data.militaryExperience);
+        updatedFields.push("militaryExperience");
       }
       
+      console.log("Fields updated:", updatedFields.join(", "));
+      
       // Generate interview questions based on candidate's background
-      // For now, use standard ELT instructor questions
-      loadSampleQuestions();
+      if (updatedFields.length > 2) {
+        console.log("Generating interview questions based on candidate data");
+        loadSampleQuestions();
+      }
       
       // Show which AI provider was used
       const aiProvider = data.aiProvider || "AI";
       
       toast({
         title: "Resume Analyzed",
-        description: `${aiProvider} has extracted candidate information from the resume and generated interview questions.`,
+        description: `${aiProvider} extracted ${updatedFields.length} fields from the resume.`,
         variant: "default",
       });
       
@@ -266,7 +306,7 @@ export default function CandidateFormNew({
       console.error("Resume parsing error:", error);
       toast({
         title: "Analysis Failed",
-        description: "Failed to analyze resume with AI. Please fill in the form manually.",
+        description: "Failed to analyze resume. Please fill in the form manually.",
         variant: "destructive",
       });
       setIsParsingResume(false);
@@ -326,22 +366,56 @@ export default function CandidateFormNew({
       const file = e.target.files[0];
       setResumeFile(file);
       
+      // Check file size
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        toast({
+          title: "File Too Large",
+          description: "The resume file is too large. Maximum file size is 10MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Check file type - allow PDF, DOC, DOCX but also TXT for testing
+      const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+      if (!validTypes.includes(file.type)) {
+        console.warn(`File type ${file.type} may not be fully supported. Recommended formats are PDF, DOC, and DOCX.`);
+      }
+      
       try {
         // Display processing toast
         toast({
           title: "Processing Resume",
-          description: "AI is analyzing your resume... This might take a few seconds.",
+          description: "Analyzing your resume... This might take a few seconds.",
         });
         
+        console.log("Uploading file:", file.name, file.type, `${(file.size/1024).toFixed(2)}KB`);
+        
+        // Set form field to processing state
+        setIsParsingResume(true);
+        
         // Upload and parse immediately
-        await uploadResumeMutation.mutateAsync(file);
+        const result = await uploadResumeMutation.mutateAsync(file);
+        
+        console.log("Resume parse result:", result);
+        
+        // Show which technology was used to parse the resume
+        const aiProvider = result.aiProvider || "AI";
+        
+        toast({
+          title: "Resume Analyzed Successfully",
+          description: `${aiProvider} has extracted information from the resume.`,
+        });
+        
       } catch (error) {
         console.error("Error processing resume:", error);
         toast({
           title: "Analysis Failed",
-          description: "Failed to analyze resume with AI. Please fill in the form manually.",
+          description: "Failed to analyze resume. Please fill in the form manually.",
           variant: "destructive",
         });
+      } finally {
+        setIsParsingResume(false);
       }
     }
   };
@@ -520,9 +594,10 @@ export default function CandidateFormNew({
                                 <input
                                   id="resume-upload"
                                   type="file"
-                                  accept=".pdf,.doc,.docx"
+                                  accept=".pdf,.doc,.docx,.txt"
                                   className="hidden"
                                   onChange={handleResumeChange}
+                                  disabled={isParsingResume}
                                 />
                               </label>
                             )}

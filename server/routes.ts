@@ -1188,9 +1188,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Resume parsing request received");
       
-      if (!req.file) {
-        console.log("No file uploaded in the request");
-        return res.status(400).json({ error: "No file uploaded" });
+      // Check if file was properly uploaded
+      if (!req.file || !req.file.buffer || req.file.buffer.length === 0) {
+        console.log("File is missing or empty");
+        return res.status(400).json({ 
+          error: "No valid file uploaded", 
+          resumeUrl: null,
+          name: null,
+          email: null,
+          phone: null,
+          status: "new",
+          aiProvider: "None (no file)"
+        });
       }
       
       console.log(`File uploaded: ${req.file.originalname}, mimetype: ${req.file.mimetype}, size: ${req.file.size} bytes`);
@@ -1207,95 +1216,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filePath = path.join(dirPath, fileName);
       
       // Write the buffer to disk
-      fs.writeFileSync(filePath, req.file.buffer);
-      console.log(`File saved to: ${filePath}`);
+      try {
+        fs.writeFileSync(filePath, req.file.buffer);
+        console.log(`File saved to: ${filePath}`);
+      } catch (writeError) {
+        console.error("Error writing file to disk:", writeError);
+        // We'll continue anyway and try to extract info from the buffer
+      }
       
       // Generate a URL for the uploaded file (relative path)
       const fileUrl = `/uploads/resumes/${fileName}`;
       console.log(`File URL (for frontend): ${fileUrl}`);
       
-      let candidateInfo = {
-        status: "new" // Always set status to "new" as a minimum
+      // Default candidate info with file URL
+      let candidateInfo: any = {
+        status: "new",
+        resumeUrl: fileUrl
       };
-      let aiProvider = "Text Analysis"; // Default provider
+      let aiProvider = "Basic Text Analysis";
       
+      // Try OpenAI first
       try {
-        // First attempt with OpenAI
         console.log("Attempting to extract candidate info with OpenAI...");
         candidateInfo = await extractCandidateInfo(filePath);
+        aiProvider = "OpenAI";
       } catch (openaiError) {
         console.error("OpenAI extraction failed, falling back to Perplexity:", openaiError);
         
-        // If OpenAI fails, fall back to Perplexity
+        // Extract text from the file
+        let resumeText = "";
+        
         try {
-          // Import modules properly with ES imports - don't specify extension for TypeScript
-          const { parseResumeWithPerplexity } = await import('./utils/perplexity');
-          
-          // Extract text from PDF or DOC file
-          let resumeText = "";
-          
           if (filePath.toLowerCase().endsWith('.pdf')) {
             // Handle PDF files with pdf-parse
             try {
-              // Import pdf-parse dynamically
               const pdfParse = (await import('pdf-parse')).default;
-              // Read file as buffer
               const dataBuffer = fs.readFileSync(filePath);
-              // Parse PDF
               const pdfData = await pdfParse(dataBuffer);
               resumeText = pdfData.text || "";
               console.log("Successfully extracted text from PDF:", resumeText.substring(0, 100) + "...");
             } catch (pdfError) {
               console.error("Error parsing PDF:", pdfError);
-              // If PDF parsing fails, try to read as text anyway
-              try {
-                resumeText = fs.readFileSync(filePath, 'utf8');
-              } catch (readError) {
-                console.error("Failed to read file as text:", readError);
-                resumeText = ""; // Empty content if everything fails
-              }
+              resumeText = fs.readFileSync(filePath, 'utf8');
             }
-          } else if (filePath.toLowerCase().endsWith('.doc') || filePath.toLowerCase().endsWith('.docx')) {
-            // For simplicity, we'll use a basic text extraction approach for DOC files
-            // In a production environment, you'd want to use a more robust solution
-            resumeText = fs.readFileSync(filePath, 'utf8');
           } else {
-            // For other file types, try to read as text
+            // For other file types, read as text
             resumeText = fs.readFileSync(filePath, 'utf8');
           }
           
-          console.log("Attempting to extract candidate info with Perplexity...");
-          // Let's add fallback values in case Perplexity fails
+          // Try Perplexity
           try {
+            console.log("Attempting to extract candidate info with Perplexity...");
+            const { parseResumeWithPerplexity } = await import('./utils/perplexity');
             const extractedInfo = await parseResumeWithPerplexity(resumeText);
-            candidateInfo = extractedInfo;
+            candidateInfo = {
+              ...extractedInfo,
+              resumeUrl: fileUrl,
+              status: "new"
+            };
             aiProvider = "Perplexity AI";
-          } catch (perplexityApiError) {
-            console.error("Perplexity API call failed:", perplexityApiError);
+          } catch (perplexityError) {
+            console.error("Perplexity API call failed:", perplexityError);
             
-            // Simple extraction of basic information from the text
+            // Fallback to regex pattern matching
             console.log("Using basic text pattern matching as fallback");
             
-            // Extract basic information using more robust regex patterns
+            // Extract basic information using regex patterns
             const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
             const phoneRegex = /(?:\+\d{1,3}[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}\b/g;
-            const nameRegex = /[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/g; // Look for "First Last" pattern anywhere in text
-            
-            // Look for education keywords
+            const nameRegex = /[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/g;
             const degreeRegex = /(?:Bachelor|Master|PhD|Doctorate|B\.A\.|B\.S\.|M\.A\.|M\.S\.|M\.B\.A\.|P\.h\.D\.|High School|Associate)/i;
             
             const emails = resumeText.match(emailRegex) || [];
             const phones = resumeText.match(phoneRegex) || [];
             const names = resumeText.match(nameRegex) || [];
             
-            // Find a degree if mentioned
+            // Extract basic information
             let degree = undefined;
             const degreeMatch = resumeText.match(degreeRegex);
             if (degreeMatch) {
               degree = degreeMatch[0];
             }
             
-            // Find degree field (simplistic approach)
             let degreeField = undefined;
             if (resumeText.includes("English")) {
               degreeField = "English";
@@ -1307,14 +1309,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
               degreeField = "Linguistics";
             }
             
-            // Look for years of experience
             let yearsExperience = undefined;
             const experienceMatch = resumeText.match(/(\d+)\s*(?:years?|yrs?)(?:\s+of)?\s+experience/i);
             if (experienceMatch) {
               yearsExperience = parseInt(experienceMatch[1], 10);
             }
             
-            // Check for certifications
             let certifications = undefined;
             let hasCertifications = false;
             if (resumeText.includes("TEFL") || resumeText.includes("TESOL") || resumeText.includes("CELTA")) {
@@ -1331,30 +1331,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
               yearsExperience,
               hasCertifications,
               certifications,
-              status: "new"
+              status: "new",
+              resumeUrl: fileUrl
             };
             
-            aiProvider = "Basic Text Analysis (AI services unavailable)";
+            aiProvider = "Text Pattern Analysis";
           }
-        } catch (perplexityError) {
-          console.error("Perplexity extraction also failed:", perplexityError);
-          // If both AI services fail, return basic info
-          candidateInfo = {
-            status: "new"
-          };
-          aiProvider = "None (services unavailable)";
+        } catch (textExtractionError) {
+          console.error("Text extraction failed:", textExtractionError);
+          // Keep the default values set earlier
         }
       }
       
       // Return the extracted info along with the resume URL
-      res.status(200).json({
+      return res.status(200).json({
         ...candidateInfo,
         resumeUrl: fileUrl,
         aiProvider: aiProvider
       });
+      
     } catch (error) {
       console.error("Error parsing resume:", error);
-      res.status(500).json({ error: "Failed to parse resume" });
+      return res.status(500).json({ 
+        error: "Failed to parse resume",
+        status: "new"
+      });
     }
   });
   
