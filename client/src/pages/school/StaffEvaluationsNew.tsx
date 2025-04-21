@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Instructor, Evaluation, InsertEvaluation } from "@shared/schema";
 import { useSchool } from "@/hooks/useSchool";
@@ -101,13 +101,35 @@ const StaffEvaluations = () => {
     staleTime: 0, // Always fetch fresh data
   });
 
-  // Filter instructors by school after data is loaded
+  // Helper function to get the current school ID - handle all possible types of selectedSchool
+  const getCurrentSchoolId = useCallback((): number => {
+    if (!selectedSchool) return 0;
+    if (typeof selectedSchool === 'object' && selectedSchool !== null) {
+      return selectedSchool.id;
+    }
+    if (typeof selectedSchool === 'string') {
+      return parseInt(selectedSchool, 10) || 0; 
+    }
+    if (typeof selectedSchool === 'number') {
+      return selectedSchool;
+    }
+    return 0;
+  }, [selectedSchool]);
+  
+  // Just log the instructors for debugging
+  useEffect(() => {
+    const schoolId = getCurrentSchoolId();
+    console.log("All instructors:", instructors);
+    console.log("Selected school ID:", schoolId);
+    const filtered = instructors.filter(instructor => instructor.schoolId === schoolId);
+    console.log("Filtered instructors:", filtered);
+  }, [instructors, selectedSchool, getCurrentSchoolId]);
+  
+  // Filter instructors by school after data is loaded - using our helper function
   const schoolInstructors = useMemo(() => {
-    if (!selectedSchool || !instructors) return [];
-    return instructors.filter(instructor => 
-      instructor.schoolId === parseInt(selectedSchool.toString(), 10)
-    );
-  }, [instructors, selectedSchool]);
+    const schoolId = getCurrentSchoolId();
+    return instructors.filter(instructor => instructor.schoolId === schoolId);
+  }, [instructors, getCurrentSchoolId]);
   
   // Create evaluation data
   const createEvaluationMutation = useMutation({
@@ -917,7 +939,7 @@ const StaffEvaluations = () => {
                       setSelectedInstructor(null);
                       return;
                     }
-                    const instr = schoolInstructors.find(i => i.id === instructorId);
+                    const instr = instructors.find(i => i.id === instructorId);
                     console.log("Found instructor:", instr);
                     if (instr) {
                       setSelectedInstructor(instr);
@@ -925,15 +947,11 @@ const StaffEvaluations = () => {
                   }}
                 >
                   <option value="">Select Instructor</option>
-                  {schoolInstructors.length > 0 ? (
-                    schoolInstructors.map(instructor => (
-                      <option key={instructor.id} value={instructor.id}>
-                        {instructor.name} ({instructor.nationality})
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>No instructors available for this school</option>
-                  )}
+                  {schoolInstructors.map(instructor => (
+                    <option key={instructor.id} value={instructor.id}>
+                      {instructor.name} ({instructor.nationality})
+                    </option>
+                  ))}
                 </select>
                 <div className="mt-1 text-xs text-gray-500">
                   {schoolInstructors.length} instructors available
