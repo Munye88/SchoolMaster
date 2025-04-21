@@ -63,7 +63,7 @@ export async function extractCandidateInfoFromText(
     /(?:name|full name|candidate)[:\s]+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})/i,
     /^([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})/m, // Name at the beginning of a line (often at top of resume)
     /([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})\s*\n.*?(?:email|phone|address)/i, // Name followed by contact info
-    /\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})\b/g // General pattern for names
+    /\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})\b/ // General pattern for names (removed 'g' flag to fix TS error)
   ];
   
   for (const pattern of namePatterns) {
@@ -116,8 +116,22 @@ export async function extractCandidateInfoFromText(
   ];
   
   // First try to find degree in education sections
-  const educationSectionRegex = /\b(?:education|academic|qualification|degree)\b.*?(?:\n\n|\n\w+:)/is;
-  const educationSection = educationSectionRegex.exec(normalizedText);
+  // Use a simplified approach without dotAll flag
+  let educationSection = null;
+  const educationHeaders = ["education", "academic", "qualification", "degree"];
+  
+  // Look for education sections by finding headers and then extracting content
+  for (const header of educationHeaders) {
+    const headerRegex = new RegExp(`\\b${header}\\b.*?\\n`, 'i');
+    const match = headerRegex.exec(normalizedText);
+    if (match) {
+      // Get the next ~200 characters after the education header
+      const startPos = match.index;
+      const sectionText = normalizedText.substring(startPos, startPos + 200);
+      educationSection = [sectionText];
+      break;
+    }
+  }
   
   if (educationSection) {
     const educationText = educationSection[0];

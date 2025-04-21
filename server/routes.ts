@@ -8,9 +8,6 @@ import path from "path";
 import multer from "multer";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import OpenAI from "openai";
-import { parsePDF } from "./utils/pdfParser";
-import { extractCandidateInfo, rankCandidatesWithAI } from "./utils/openai";
 import { 
   insertInstructorSchema, 
   insertCourseSchema, 
@@ -1318,7 +1315,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Rank candidates with AI
+  // Rank candidates based on criteria
   app.get("/api/candidates/rank-candidates", async (req, res) => {
     try {
       // Get all candidates
@@ -1331,10 +1328,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Rank candidates using OpenAI
-      const rankingResult = await rankCandidatesWithAI(candidates);
+      // Use pattern-based ranking algorithm instead of external AI
+      console.log("Ranking candidates using internal scoring algorithm...");
       
-      res.status(200).json(rankingResult);
+      // Score candidates based on education, experience, certifications, and other criteria
+      const rankedCandidates = candidates.map(candidate => {
+        // Start with a base score
+        let score = 50;
+        
+        // Add points for degree level
+        if (candidate.degree) {
+          if (candidate.degree.includes('PhD') || candidate.degree.includes('Doctorate')) {
+            score += 15;
+          } else if (candidate.degree.includes('Master')) {
+            score += 10;
+          } else if (candidate.degree.includes('Bachelor')) {
+            score += 5;
+          }
+        }
+        
+        // Add points for relevant degree field
+        if (candidate.degreeField) {
+          const field = candidate.degreeField.toLowerCase();
+          if (field.includes('english') || field.includes('linguistics') || field.includes('language')) {
+            score += 10;
+          } else if (field.includes('education') || field.includes('teaching')) {
+            score += 8;
+          } else if (field.includes('literature')) {
+            score += 6;
+          }
+        }
+        
+        // Add points for years of experience
+        if (candidate.yearsExperience) {
+          if (candidate.yearsExperience >= 10) {
+            score += 15;
+          } else if (candidate.yearsExperience >= 5) {
+            score += 10;
+          } else if (candidate.yearsExperience >= 2) {
+            score += 5;
+          } else {
+            score += 2;
+          }
+        }
+        
+        // Add points for certifications
+        if (candidate.hasCertifications) {
+          score += 10;
+        }
+        
+        // Add points for native English speaker
+        if (candidate.nativeEnglishSpeaker) {
+          score += 8;
+        }
+        
+        // Add points for military experience (relevant for this specific program)
+        if (candidate.militaryExperience) {
+          score += 7;
+        }
+        
+        // Return candidate with score
+        return {
+          ...candidate,
+          score
+        };
+      });
+      
+      // Sort by score (descending)
+      rankedCandidates.sort((a, b) => b.score - a.score);
+      
+      // Get top 10 candidates
+      const top10Candidates = rankedCandidates.slice(0, 10);
+      
+      // Generate rationale for ranking
+      const rationale = `Candidates were ranked based on a scoring system that evaluates their education level (degree type and field of study), years of experience, professional certifications, English language proficiency, and relevant military experience. The top candidates demonstrate strong credentials in English language teaching with appropriate qualifications.`;
+      
+      res.status(200).json({
+        rankedCandidates: top10Candidates,
+        rationale
+      });
     } catch (error) {
       console.error("Error ranking candidates:", error);
       res.status(500).json({ error: "Failed to rank candidates" });
