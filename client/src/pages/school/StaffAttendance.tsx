@@ -208,21 +208,28 @@ const AttendanceForm: React.FC<{
       return await response.json();
     },
     onSuccess: () => {
-      // Force a full refresh of attendance data with proper query keys
+      // Invalidate queries with proper structure
+      
+      // Generic query - invalidate all attendance data
       queryClient.invalidateQueries({ 
         queryKey: ['/api/staff-attendance']
       });
       
-      // Also invalidate all school-specific queries
-      instructors.forEach(instructor => {
-        if (instructor.schoolId) {
-          queryClient.invalidateQueries({
-            queryKey: ['/api/staff-attendance', instructor.schoolId]
-          });
-        }
-      });
+      // Specific school query with date
+      if (selectedSchool) {
+        queryClient.invalidateQueries({
+          queryKey: ['/api/staff-attendance', selectedSchool.id, formattedSelectedDate]
+        });
+      }
       
-      // Force immediate refresh
+      // School-specific queries without date
+      if (selectedSchool) {
+        queryClient.invalidateQueries({
+          queryKey: ['/api/staff-attendance', selectedSchool.id]
+        });
+      }
+      
+      // Force immediate refresh with the specific query
       parentRefetch();
       
       toast({
@@ -446,7 +453,7 @@ const StaffAttendance = () => {
   
   // Fetch attendance data from API with proper filtering
   const { data: attendanceRecords = [], isLoading: attendanceLoading, refetch: refetchAttendance } = useQuery<StaffAttendance[]>({
-    queryKey: ['/api/staff-attendance', selectedSchool?.id, formattedSelectedDate, Date.now()], // Update key when school or date changes
+    queryKey: ['/api/staff-attendance', selectedSchool?.id, formattedSelectedDate], // Update key when school or date changes
     queryFn: async () => {
       console.log("Fetching attendance data with URL:", requestUrl);
       const response = await fetch(requestUrl);
