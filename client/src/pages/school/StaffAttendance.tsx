@@ -405,10 +405,10 @@ const StaffAttendance = () => {
     ? Math.round(instructorsWithRecords.reduce((sum: number, item: any) => sum + item.attendanceRate, 0) / instructorsWithRecords.length)
     : 0;
   
-  // Count instructors by attendance category
-  const presentCount = instructorsWithRecords.filter((item: any) => item.attendanceRate >= 90).length;
-  const lateCount = instructorsWithRecords.filter((item: any) => item.attendanceRate >= 75 && item.attendanceRate < 90).length;
-  const absentCount = instructorsWithRecords.filter((item: any) => item.attendanceRate < 75).length;
+  // Count actual attendance statuses from the records
+  const presentCount = monthlyRecords.filter(record => record.status === "present").length;
+  const lateCount = monthlyRecords.filter(record => record.status === "late").length;
+  const absentCount = monthlyRecords.filter(record => record.status === "absent").length;
   
   const statusData = [
     { name: "Present", value: presentCount, color: "#10B981" },
