@@ -32,7 +32,7 @@ const InstructorLookup = () => {
 
   // Fetch attendance
   const { data: attendance = [], isLoading: loadingAttendance } = useQuery<any[]>({
-    queryKey: ['/api/staff-attendance'],
+    queryKey: ['/api/staff-attendance', selectedInstructor?.schoolId],
     refetchOnWindowFocus: false,
     enabled: !!selectedInstructor,
   });
@@ -68,7 +68,7 @@ const InstructorLookup = () => {
 
   // Calculate attendance rate
   const attendanceRate = instructorAttendance.length > 0
-    ? Math.round((instructorAttendance.filter(a => a.status === "present").length / instructorAttendance.length) * 100)
+    ? Math.round((instructorAttendance.filter(a => a.status.toLowerCase() === "present").length / instructorAttendance.length) * 100)
     : 0;
 
   // Calculate average evaluation score
