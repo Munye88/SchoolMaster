@@ -193,7 +193,7 @@ export default function CandidateFormNew({
     mutationFn: async (file: File) => {
       setIsParsingResume(true);
       const formData = new FormData();
-      formData.append("resume", file);
+      formData.append("resume", file); // This should match the parameter name in multer config
       
       const response = await fetch("/api/candidates/parse-resume", {
         method: "POST",

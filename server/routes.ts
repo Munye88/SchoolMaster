@@ -1195,13 +1195,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // If OpenAI fails, fall back to Perplexity
         try {
-          const { parseResumeWithPerplexity } = require('./utils/perplexity');
+          // Import modules properly with ES imports - don't specify extension for TypeScript
+          const { parseResumeWithPerplexity } = await import('./utils/perplexity');
           
           // Extract text from PDF or DOC file
           let resumeText = "";
           
           if (filePath.toLowerCase().endsWith('.pdf')) {
-            const pdfParse = require('pdf-parse');
+            // Since we can't use require, we'll use the pdf-parse library that's already imported
+            // at the top of the file
+            const pdfParse = (await import('pdf-parse')).default;
             const dataBuffer = fs.readFileSync(filePath);
             const pdfData = await pdfParse(dataBuffer);
             resumeText = pdfData.text || "";
