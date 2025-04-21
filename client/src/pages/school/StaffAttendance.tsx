@@ -73,25 +73,41 @@ interface StaffAttendance {
 function processAttendanceData(
   instructors: Instructor[],
   attendanceRecords: StaffAttendance[],
-  selectedDate: Date
+  selectedDate: Date,
+  filterByDay = false // New parameter to filter by exact day if needed
 ) {
   const year = selectedDate.getFullYear();
   const month = selectedDate.getMonth() + 1;
-  const daysInMonth = new Date(year, month, 0).getDate();
+  const day = selectedDate.getDate();
+  
+  // Filter records based on date parameters
+  const filteredAttendanceRecords = attendanceRecords.filter(record => {
+    // Split off time portion of date if it exists
+    const datePart = record.date.split('T')[0];
+    const recordDate = new Date(datePart);
+    const recordYear = recordDate.getFullYear();
+    const recordMonth = recordDate.getMonth() + 1;
+    const recordDay = recordDate.getDate();
+    
+    // If filtering by day, match the exact day
+    if (filterByDay) {
+      return recordYear === year && recordMonth === month && recordDay === day;
+    }
+    
+    // Otherwise filter by month and year
+    return recordYear === year && recordMonth === month;
+  });
   
   return instructors.map(instructor => {
-    // Get records for this instructor in selected month
-    const instructorRecords = attendanceRecords.filter(record => {
-      const recordDate = new Date(record.date);
-      return record.instructorId === instructor.id && 
-             recordDate.getMonth() + 1 === month &&
-             recordDate.getFullYear() === year;
-    });
+    // Get records for this instructor with the filtered date criteria
+    const instructorRecords = filteredAttendanceRecords.filter(record => 
+      record.instructorId === instructor.id
+    );
     
     // Calculate attendance metrics
-    // Only count days that have attendance records for any instructor
+    // Count unique days that have attendance records for any instructor
     const recordedDays = new Set(
-      attendanceRecords.map(record => record.date.split('T')[0])
+      filteredAttendanceRecords.map(record => record.date.split('T')[0])
     ).size;
     
     // Use recorded days instead of total days in month (for more realistic percentages)
@@ -145,7 +161,7 @@ const AttendanceForm: React.FC<{
     instructorId: 0,
     date: format(new Date(), 'yyyy-MM-dd'),
     status: "present",
-    timeIn: "09:00",
+    timeIn: "07:00", // Set default time to 7:00 AM as requested
     timeOut: "17:00",
     comments: ""
   });
@@ -198,7 +214,7 @@ const AttendanceForm: React.FC<{
     },
   });
   
-  // Handle form submission
+  // Handle form submission with automatic late detection
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.instructorId === 0) {
@@ -210,7 +226,24 @@ const AttendanceForm: React.FC<{
       return;
     }
     
-    createAttendanceMutation.mutate(formData);
+    // Convert timeIn to minutes for easier comparison
+    const timeInParts = formData.timeIn.split(':');
+    const timeInMinutes = parseInt(timeInParts[0]) * 60 + parseInt(timeInParts[1]);
+    
+    // 7:00 AM threshold in minutes = 7 * 60 + 0 = 420 minutes
+    const thresholdMinutes = 7 * 60;
+    
+    // If the person arrived after 7:00 AM and status is "present", mark as "late"
+    const updatedFormData = {...formData};
+    if (timeInMinutes > thresholdMinutes && formData.status === "present") {
+      updatedFormData.status = "late";
+      toast({
+        title: "Late Arrival Detected",
+        description: `Arrival time ${formData.timeIn} is after 7:00 AM. Status changed to Late.`,
+      });
+    }
+    
+    createAttendanceMutation.mutate(updatedFormData);
   };
   
   // Update form when date changes
@@ -388,8 +421,25 @@ const StaffAttendance = () => {
     return record.date.startsWith(currentMonthStr);
   });
   
-  // Then process the filtered records
-  const attendanceData = processAttendanceData(schoolInstructors, monthlyRecords, currentMonth);
+  // Determine if we should filter by day based on the selected tab and view
+  const shouldFilterByDay = selectedTab === 'detailed' && !!date;
+  
+  // Records for the specific day when in detailed view
+  const dayRecords = shouldFilterByDay 
+    ? attendanceRecords.filter((record: StaffAttendance) => {
+        const datePart = record.date.split('T')[0];
+        return datePart === format(date, 'yyyy-MM-dd');
+      }) 
+    : [];
+  
+  // Then process the filtered records - filter by day if in detailed view
+  const attendanceData = processAttendanceData(
+    schoolInstructors, 
+    shouldFilterByDay ? dayRecords : monthlyRecords, 
+    currentMonth,
+    shouldFilterByDay
+  );
+  
   const filteredData = attendanceData.filter((item: any) => 
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -406,9 +456,12 @@ const StaffAttendance = () => {
     : 0;
   
   // Count actual attendance statuses from the records
-  const presentCount = monthlyRecords.filter((record: StaffAttendance) => record.status === "present").length;
-  const lateCount = monthlyRecords.filter((record: StaffAttendance) => record.status === "late").length;
-  const absentCount = monthlyRecords.filter((record: StaffAttendance) => record.status === "absent").length;
+  // Use dayRecords or monthlyRecords based on view
+  const recordsToCount = shouldFilterByDay ? dayRecords : monthlyRecords;
+  
+  const presentCount = recordsToCount.filter((record: StaffAttendance) => record.status === "present").length;
+  const lateCount = recordsToCount.filter((record: StaffAttendance) => record.status === "late").length;
+  const absentCount = recordsToCount.filter((record: StaffAttendance) => record.status === "absent").length;
   
   // For the pie chart, use the actual count of different statuses
   const statusData = [
@@ -550,8 +603,28 @@ const StaffAttendance = () => {
     }
     
     try {
+      // Keep track of instructors marked as late due to late arrival
+      const lateArrivals: number[] = [];
+
       const promises = selectedIds.map(instructorId => {
         const instructorData = selectedInstructors[instructorId];
+        
+        // Check for late arrival
+        let status = instructorData.status;
+        
+        // Convert timeIn to minutes for easier comparison
+        const timeInParts = instructorData.timeIn.split(':');
+        const timeInMinutes = parseInt(timeInParts[0]) * 60 + parseInt(timeInParts[1]);
+        
+        // 7:00 AM threshold in minutes = 7 * 60 + 0 = 420 minutes
+        const thresholdMinutes = 7 * 60;
+        
+        // If the person arrived after 7:00 AM and status is "present", mark as "late"
+        if (timeInMinutes > thresholdMinutes && status === "present") {
+          status = "late";
+          lateArrivals.push(instructorId);
+        }
+
         return fetch('/api/staff-attendance', {
           method: 'POST',
           headers: {
@@ -560,7 +633,7 @@ const StaffAttendance = () => {
           body: JSON.stringify({
             instructorId,
             date: format(bulkDate, 'yyyy-MM-dd'),
-            status: instructorData.status,
+            status: status,
             timeIn: instructorData.timeIn,
             timeOut: null,
             comments: "",
@@ -570,6 +643,14 @@ const StaffAttendance = () => {
       });
       
       await Promise.all(promises);
+      
+      // Notify about late arrivals if any were detected
+      if (lateArrivals.length > 0) {
+        toast({
+          title: "Late Arrivals Detected",
+          description: `${lateArrivals.length} instructor(s) marked as late because they arrived after 7:00 AM.`,
+        });
+      }
       
       // Reset selections
       const resetSelections = { ...selectedInstructors };
