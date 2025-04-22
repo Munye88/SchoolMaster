@@ -1013,6 +1013,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  app.put("/api/events/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid event ID" });
+    }
+    
+    try {
+      const eventData = insertEventSchema.parse(req.body);
+      
+      // Check if event exists
+      const existingEvents = await db.select().from(events).where(eq(events.id, id));
+      if (existingEvents.length === 0) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      // Update the event
+      const updatedEvents = await db
+        .update(events)
+        .set(eventData)
+        .where(eq(events.id, id))
+        .returning();
+      
+      if (!updatedEvents || updatedEvents.length === 0) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "event_updated",
+        description: `Event "${updatedEvents[0].title}" updated`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(updatedEvents[0]);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid event data", errors: error.errors });
+      }
+      console.error("Error updating event:", error);
+      res.status(500).json({ message: "Failed to update event" });
+    }
+  });
+  
+  app.delete("/api/events/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid event ID" });
+    }
+    
+    try {
+      // Check if event exists and get its title for the activity log
+      const existingEvents = await db.select().from(events).where(eq(events.id, id));
+      if (existingEvents.length === 0) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      const eventTitle = existingEvents[0].title;
+      
+      // Delete the event
+      await db.delete(events).where(eq(events.id, id));
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "event_deleted",
+        description: `Event "${eventTitle}" deleted`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      res.status(500).json({ message: "Failed to delete event" });
+    }
+  });
+  
   // Get school statistics
   app.get("/api/statistics/schools", async (req, res) => {
     const schools = await dbStorage.getSchools();
