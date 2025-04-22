@@ -118,6 +118,8 @@ interface Instructor {
 const TestTracker = () => {
   const { selectedSchool, schools } = useSchool();
   const [searchQuery, setSearchQuery] = useState("");
+  // Store imported test data that will override the mock data
+  const [importedTestData, setImportedTestData] = useState<AggregateTestData[]>([]);
   const [selectedTestType, setSelectedTestType] = useState<'Book' | 'ALCPT' | 'ECL' | 'OPI'>('Book');
   const [selectedYear, setSelectedYear] = useState(2025);
   const [selectedMonth, setSelectedMonth] = useState("April");
@@ -161,6 +163,24 @@ const TestTracker = () => {
     schoolId: "",
     testType: 'Book',
   });
+  
+  // Update compare periods when test type changes
+  useEffect(() => {
+    if (compareTestType === 'Book') {
+      setComparePeriod1('1');
+      setComparePeriod2('2');
+    } else {
+      setComparePeriod1('January');
+      setComparePeriod2('February');
+    }
+  }, [compareTestType]);
+  
+  // Set default years on component mount
+  useEffect(() => {
+    const currentYear = new Date().getFullYear();
+    setCompareYear1(currentYear - 1);
+    setCompareYear2(currentYear);
+  }, []);
   
   // Form validation for manual entry
   const isManualFormValid = () => {
@@ -252,8 +272,7 @@ const TestTracker = () => {
     setShowManualEntryModal(true);
   };
   
-  // Store imported test data that will override the mock data
-  const [importedTestData, setImportedTestData] = useState<AggregateTestData[]>([]);
+  // Moved this declaration up to avoid reference errors
   
   // Mock data for individual test results (used in the detailed view)
   const testResults: TestResult[] = [
