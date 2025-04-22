@@ -126,6 +126,9 @@ const TestTracker = () => {
   const [testTypeFilter, setTestTypeFilter] = useState("all");
   const [nationalityFilter, setNationalityFilter] = useState("all");
   
+  // Store imported test data that will override the mock data
+  const [importedTestData, setImportedTestData] = useState<AggregateTestData[]>([]);
+  
   // Mock data for individual test results (used in the detailed view)
   const testResults: TestResult[] = [
     // Sample test results would go here
@@ -470,11 +473,35 @@ const TestTracker = () => {
     ])
   );
 
-  // All test data combined
-  const allTestData = [...bookTestData, ...monthlyTestData];
+  // Combine mock data with imported data, giving priority to imported data
+  const combinedTestData = [...bookTestData, ...monthlyTestData];
+  
+  // Add imported data, replacing mock data where applicable
+  importedTestData.forEach(importedData => {
+    // Find if there's an existing mock entry with the same criteria
+    const existingIndex = combinedTestData.findIndex(data => {
+      if (data.testType !== importedData.testType) return false;
+      if (data.schoolId !== importedData.schoolId) return false;
+      if (data.year !== importedData.year) return false;
+      
+      if (importedData.testType === 'Book') {
+        return data.cycle === importedData.cycle;
+      } else {
+        return data.month === importedData.month;
+      }
+    });
+    
+    if (existingIndex >= 0) {
+      // Replace existing entry with imported data
+      combinedTestData[existingIndex] = importedData;
+    } else {
+      // Add new entry if no match was found
+      combinedTestData.push(importedData);
+    }
+  });
 
   // Filter test data based on selections
-  const filteredTestData = allTestData.filter(data => {
+  const filteredTestData = combinedTestData.filter(data => {
     // Filter by test type
     const testTypeMatch = data.testType === selectedTestType;
     
@@ -493,13 +520,13 @@ const TestTracker = () => {
   });
 
   // Get all filtered Book test data for comparing cycles (regardless of selected cycle)
-  const allBookTestData = allTestData.filter(data => 
+  const allBookTestData = combinedTestData.filter(data => 
     data.testType === 'Book' && 
     (selectedSchoolFilter === 'all' || data.schoolId.toString() === selectedSchoolFilter)
   );
 
   // Get all filtered monthly test data for the selected test type (regardless of selected month)
-  const allMonthlyData = allTestData.filter(data => 
+  const allMonthlyData = combinedTestData.filter(data => 
     data.testType === selectedTestType &&
     data.testType !== 'Book' &&
     (selectedSchoolFilter === 'all' || data.schoolId.toString() === selectedSchoolFilter)
@@ -524,32 +551,155 @@ const TestTracker = () => {
     setShowImportModal(true);
   };
   
-  // Handle Excel file selection with school and test type context
+  // Handle Excel file selection with school and test type context - now with actual Excel file processing
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Here we'd use a library like ExcelJS to parse the Excel file
-      // For now, simulate importing data from the attached excel file
       const schoolName = schools.find(s => s.id.toString() === importSchool)?.name || "Unknown School";
+      const schoolId = parseInt(importSchool);
       
       alert(`Importing ${importTestType} test data for ${schoolName} from "${file.name}"...`);
       
-      // In a real implementation, we would:
-      // 1. Read the Excel file using FileReader
-      // 2. Parse it with ExcelJS or a similar library
-      // 3. Map the data to our application state
-      // 4. Update the UI to show the imported data
+      // Use FileReader to read the Excel file
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          // Import XLSX dynamically to prevent issues with SSR
+          const XLSX = await import('xlsx');
+          const data = new Uint8Array(e.target?.result as ArrayBuffer);
+          const workbook = XLSX.read(data, { type: 'array' });
+          
+          // Assuming the first sheet contains the test data
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          
+          // Convert the worksheet to JSON
+          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+          
+          console.log("Imported Excel Data:", jsonData);
+          
+          if (jsonData.length === 0) {
+            alert("No data found in the Excel file. Please check the file format.");
+            return;
+          }
+          
+          // Process the data according to the test type
+          if (importTestType === 'Book') {
+            // Create a new test data object
+            const totalStudents = jsonData.length;
+            
+            // Calculate average score and passing rate
+            let totalScore = 0;
+            let passingCount = 0;
+            const passingScore = 75; // Default passing score for Book Test
+            
+            jsonData.forEach((row: any) => {
+              // Assuming the Excel has a column named 'Score' or similar
+              const score = parseFloat(row.Score || row.score || row.SCORE || 0);
+              totalScore += score;
+              if (score >= passingScore) {
+                passingCount++;
+              }
+            });
+            
+            const averageScore = totalScore / totalStudents;
+            const passingRate = (passingCount / totalStudents) * 100;
+            
+            // Create new test data object to add to state
+            const newTestData: AggregateTestData = {
+              id: Date.now(), // Generate a unique ID
+              cycle: selectedCycle,
+              year: selectedYear,
+              testType: 'Book',
+              schoolId,
+              schoolName,
+              studentCount: totalStudents,
+              averageScore: Math.round(averageScore),
+              passingScore: passingScore,
+              passingRate: Math.round(passingRate)
+            };
+            
+            // Add to imported test data - replace any existing data for this school/cycle
+            setImportedTestData(prev => {
+              // Remove any existing data for this school and cycle
+              const filtered = prev.filter(item => 
+                !(item.schoolId === schoolId && 
+                  item.testType === 'Book' && 
+                  item.cycle === selectedCycle && 
+                  item.year === selectedYear)
+              );
+              // Add the new data
+              return [...filtered, newTestData];
+            });
+            
+            // Update the UI with the actual data from the Excel file
+            alert(`Imported ${importTestType} test data for ${schoolName}!\n\nTotal Students: ${totalStudents}\nAverage Score: ${Math.round(averageScore)}\nPassing Rate: ${Math.round(passingRate)}%`);
+          } else {
+            // Process other test types (ALCPT, ECL, OPI)
+            // Similar logic as above but with appropriate columns and passing scores
+            const totalStudents = jsonData.length;
+            
+            // Calculate average score and passing rate
+            let totalScore = 0;
+            let passingCount = 0;
+            const passingScore = importTestType === 'ALCPT' ? 70 : (importTestType === 'ECL' ? 65 : 60); // Different passing scores based on test type
+            
+            jsonData.forEach((row: any) => {
+              const score = parseFloat(row.Score || row.score || row.SCORE || 0);
+              totalScore += score;
+              if (score >= passingScore) {
+                passingCount++;
+              }
+            });
+            
+            const averageScore = totalScore / totalStudents;
+            const passingRate = (passingCount / totalStudents) * 100;
+            
+            // Create new test data object for other test types
+            const newTestData: AggregateTestData = {
+              id: Date.now(), // Generate a unique ID
+              month: selectedMonth,
+              year: selectedYear,
+              testType: importTestType as 'ALCPT' | 'ECL' | 'OPI',
+              schoolId,
+              schoolName,
+              studentCount: totalStudents,
+              averageScore: Math.round(averageScore),
+              passingScore: passingScore,
+              passingRate: Math.round(passingRate)
+            };
+            
+            // Add to imported test data - replace any existing data for this school/month/test type
+            setImportedTestData(prev => {
+              // Remove any existing data for this school, month, test type
+              const filtered = prev.filter(item => 
+                !(item.schoolId === schoolId && 
+                  item.testType === importTestType && 
+                  item.month === selectedMonth && 
+                  item.year === selectedYear)
+              );
+              // Add the new data
+              return [...filtered, newTestData];
+            });
+            
+            // Update the UI with the actual data from the Excel file
+            alert(`Imported ${importTestType} test data for ${schoolName}!\n\nTotal Students: ${totalStudents}\nAverage Score: ${Math.round(averageScore)}\nPassing Rate: ${Math.round(passingRate)}%`);
+          }
+          
+          setShowImportModal(false);
+        } catch (error) {
+          console.error("Error processing Excel file:", error);
+          alert(`Error processing Excel file: ${error.message}`);
+        }
+      };
       
-      // For the demo, we're just showing that we've detected the Excel file
-      console.log("Excel file selected:", file.name);
-      console.log("School:", schoolName);
-      console.log("Test Type:", importTestType);
+      reader.onerror = (error) => {
+        console.error("FileReader error:", error);
+        alert("Error reading the Excel file. Please try again.");
+      };
       
-      // Simulate a successful import
-      setTimeout(() => {
-        alert(`${importTestType} test data imported successfully for ${schoolName}!`);
-        setShowImportModal(false);
-      }, 1000);
+      // Read the file as an array buffer
+      reader.readAsArrayBuffer(file);
     }
   };
   
