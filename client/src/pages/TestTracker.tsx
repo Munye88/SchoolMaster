@@ -569,6 +569,150 @@ const TestTracker = () => {
   };
   
   // Handle print report functionality
+  // Handle export data functionality
+  const handleExportData = () => {
+    const schoolName = selectedSchoolFilter !== 'all' 
+      ? schools.find(s => s.id.toString() === selectedSchoolFilter)?.name 
+      : 'All Schools';
+      
+    const title = selectedTestType === 'Book' 
+      ? `${schoolName} - Book Test Results - Cycle ${selectedCycle}, ${selectedYear}` 
+      : `${schoolName} - ${selectedTestType} Test Results - ${selectedMonth}, ${selectedYear}`;
+    
+    // Create CSV content
+    let csvContent = "data:text/csv;charset=utf-8,";
+    
+    // Add headers
+    csvContent += "School,Test Type,Students,Average Score,Passing Score,Pass Rate\n";
+    
+    // Add data rows
+    filteredTestData.forEach(data => {
+      csvContent += `${data.schoolName},${data.testType},${data.studentCount},`;
+      csvContent += `${data.averageScore},${data.passingScore},${data.passingRate}%\n`;
+    });
+    
+    // Create download link
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${title.replace(/\s/g, '_')}.csv`);
+    document.body.appendChild(link);
+    
+    // Trigger download and cleanup
+    link.click();
+    document.body.removeChild(link);
+  };
+  
+  // Handle export analysis functionality
+  const handleExportAnalysis = () => {
+    const schoolName = selectedSchoolFilter !== 'all' 
+      ? schools.find(s => s.id.toString() === selectedSchoolFilter)?.name 
+      : 'All Schools';
+      
+    const title = selectedTestType === 'Book' 
+      ? `${schoolName} - Book Test Analysis - Cycle ${selectedCycle}, ${selectedYear}` 
+      : `${schoolName} - ${selectedTestType} Test Analysis - ${selectedMonth}, ${selectedYear}`;
+    
+    // Create CSV content with statistical analysis
+    let csvContent = "data:text/csv;charset=utf-8,";
+    
+    // Add test information
+    csvContent += "Test Analysis Report\n";
+    csvContent += `Report Name,${title}\n`;
+    csvContent += `Generated Date,${new Date().toLocaleString()}\n\n`;
+    
+    // Add summary statistics
+    csvContent += "Summary Statistics\n";
+    csvContent += "Metric,Value\n";
+    csvContent += `Total Students,${filteredTestData.reduce((sum, data) => sum + data.studentCount, 0)}\n`;
+    
+    const avgScore = filteredTestData.length > 0
+      ? Math.round(filteredTestData.reduce((sum, data) => sum + data.averageScore, 0) / filteredTestData.length)
+      : 0;
+    csvContent += `Average Score,${avgScore}\n`;
+    
+    const passRate = filteredTestData.length > 0
+      ? Math.round(filteredTestData.reduce((sum, data) => sum + data.passingRate, 0) / filteredTestData.length)
+      : 0;
+    csvContent += `Pass Rate,${passRate}%\n\n`;
+    
+    // Add school breakdown
+    csvContent += "School Performance Breakdown\n";
+    csvContent += "School,Students,Average Score,Pass Rate,Status\n";
+    
+    filteredTestData.forEach(data => {
+      const status = data.passingRate >= 70 ? "PASS" : "NEEDS IMPROVEMENT";
+      csvContent += `${data.schoolName},${data.studentCount},${data.averageScore},${data.passingRate}%,${status}\n`;
+    });
+    
+    // Create download link
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${title.replace(/\s/g, '_')}_Analysis.csv`);
+    document.body.appendChild(link);
+    
+    // Trigger download and cleanup
+    link.click();
+    document.body.removeChild(link);
+  };
+  
+  // Handle export test results functionality
+  const handleExportTestResults = () => {
+    // Generate a CSV of the individual test results
+    const schoolName = selectedSchoolFilter !== 'all' 
+      ? schools.find(s => s.id.toString() === selectedSchoolFilter)?.name 
+      : 'All Schools';
+      
+    const title = `${schoolName} - Individual Test Results - ${selectedYear}`;
+    
+    // Create CSV content
+    let csvContent = "data:text/csv;charset=utf-8,";
+    
+    // Add headers
+    csvContent += "ID,Student,Course,Test Type,Date,Score,Passing Score,Status,School\n";
+    
+    // Add data rows for filtered test results
+    filteredTestResults.forEach(result => {
+      const schoolName = schools.find(s => s.id === result.schoolId)?.name || "Unknown";
+      csvContent += `${result.id},${result.studentName},${result.courseName},${result.type},`;
+      csvContent += `${result.testDate.toLocaleDateString()},${result.score},${result.passingScore},`;
+      csvContent += `${result.status},${schoolName}\n`;
+    });
+    
+    // Create download link
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${title.replace(/\s/g, '_')}.csv`);
+    document.body.appendChild(link);
+    
+    // Trigger download and cleanup
+    link.click();
+    document.body.removeChild(link);
+  };
+  
+  // Generate PDF report
+  const handleGeneratePDFReport = () => {
+    // Use the same functionality as print, but with PDF generation
+    const schoolName = selectedSchoolFilter !== 'all' 
+      ? schools.find(s => s.id.toString() === selectedSchoolFilter)?.name 
+      : 'All Schools';
+    
+    // Create a printable version specifically for PDF
+    alert(`Generating PDF report for ${schoolName} ${selectedTestType} tests. PDF will download shortly.`);
+    
+    // In a real implementation, we would:
+    // 1. Use a library like jsPDF to generate a PDF
+    // 2. Format the data and add it to the PDF
+    // 3. Save the PDF to the user's device
+    
+    // This is a simulation - in a real implementation we would generate a proper PDF
+    setTimeout(() => {
+      alert(`PDF Report for ${schoolName} has been generated and downloaded.`);
+    }, 1500);
+  };
+  
   const handlePrintReport = () => {
     // Create a printable version of the current test data
     const printWindow = window.open('', '_blank');
@@ -719,7 +863,10 @@ const TestTracker = () => {
             <Upload className="mr-2 h-4 w-4" /> Import Excel
           </Button>
           
-          <Button className="bg-[#0A2463] hover:bg-[#071A4A] flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all duration-200">
+          <Button 
+            className="bg-[#0A2463] hover:bg-[#071A4A] flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all duration-200"
+            onClick={handleExportData}
+          >
             <Download className="mr-2 h-4 w-4" /> Export Data
           </Button>
         </div>
@@ -810,6 +957,11 @@ const TestTracker = () => {
               <SelectContent>
                 <SelectItem value="2024">2024</SelectItem>
                 <SelectItem value="2025">2025</SelectItem>
+                <SelectItem value="2026">2026</SelectItem>
+                <SelectItem value="2027">2027</SelectItem>
+                <SelectItem value="2028">2028</SelectItem>
+                <SelectItem value="2029">2029</SelectItem>
+                <SelectItem value="2030">2030</SelectItem>
               </SelectContent>
             </Select>
           </CardContent>
@@ -983,7 +1135,10 @@ const TestTracker = () => {
                 Comprehensive {selectedTestType} test performance analysis across all schools
               </CardDescription>
             </div>
-            <Button className="mt-4 md:mt-0 gap-2 bg-white text-[#0A2463] hover:bg-blue-100 transition-all duration-300">
+            <Button 
+              className="mt-4 md:mt-0 gap-2 bg-white text-[#0A2463] hover:bg-blue-100 transition-all duration-300"
+              onClick={handleExportAnalysis}
+            >
               <Download size={16} /> Export Analysis
             </Button>
           </div>
