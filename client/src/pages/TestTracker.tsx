@@ -109,6 +109,9 @@ const TestTracker = () => {
   const [selectedYear, setSelectedYear] = useState(2025);
   const [selectedMonth, setSelectedMonth] = useState("April");
   const [selectedCycle, setSelectedCycle] = useState(1);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importSchool, setImportSchool] = useState("");
+  const [importTestType, setImportTestType] = useState("");
   const [selectedSchoolFilter, setSelectedSchoolFilter] = useState("all");
   const [courseFilter, setCourseFilter] = useState("all");
   const [testTypeFilter, setTestTypeFilter] = useState("all");
@@ -505,13 +508,22 @@ const TestTracker = () => {
   // Reference to hidden file input
   const [fileInputRef, setFileInputRef] = useState<HTMLInputElement | null>(null);
   
-  // Handle Excel file selection
+  // Show the import modal with school and test type selection
+  const handleImportExcel = () => {
+    setImportSchool("");
+    setImportTestType("");
+    setShowImportModal(true);
+  };
+  
+  // Handle Excel file selection with school and test type context
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       // Here we'd use a library like ExcelJS to parse the Excel file
       // For now, simulate importing data from the attached excel file
-      alert(`Importing data from "${file.name}"...`);
+      const schoolName = schools.find(s => s.id.toString() === importSchool)?.name || "Unknown School";
+      
+      alert(`Importing ${importTestType} test data for ${schoolName} from "${file.name}"...`);
       
       // In a real implementation, we would:
       // 1. Read the Excel file using FileReader
@@ -521,16 +533,24 @@ const TestTracker = () => {
       
       // For the demo, we're just showing that we've detected the Excel file
       console.log("Excel file selected:", file.name);
+      console.log("School:", schoolName);
+      console.log("Test Type:", importTestType);
       
       // Simulate a successful import
       setTimeout(() => {
-        alert("Test data imported successfully from Excel file!");
+        alert(`${importTestType} test data imported successfully for ${schoolName}!`);
+        setShowImportModal(false);
       }, 1000);
     }
   };
   
-  // Trigger file input click
-  const handleImportExcel = () => {
+  // Actual file import after school and test type are selected
+  const proceedWithImport = () => {
+    if (!importSchool || !importTestType) {
+      alert("Please select both a school and test type before importing");
+      return;
+    }
+    
     // Create a file input if it doesn't exist
     if (!fileInputRef) {
       const input = document.createElement('input');
