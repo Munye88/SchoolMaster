@@ -1888,13 +1888,13 @@ const TestTracker = () => {
                                   name: compareTestType === 'Book' ? 
                                     `Cycle ${comparePeriod1} (${compareYear1})` : 
                                     `${comparePeriod1} (${compareYear1})`,
-                                  score: getComparisonData().dataset1[0]?.averageScore || 0
+                                  score: getComparisonData(importedTestData, compareSchool, compareTestType, compareYear1, compareYear2, comparePeriod1, comparePeriod2).dataset1[0]?.averageScore || 0
                                 },
                                 {
                                   name: compareTestType === 'Book' ? 
                                     `Cycle ${comparePeriod2} (${compareYear2})` : 
                                     `${comparePeriod2} (${compareYear2})`,
-                                  score: getComparisonData().dataset2[0]?.averageScore || 0
+                                  score: getComparisonData(importedTestData, compareSchool, compareTestType, compareYear1, compareYear2, comparePeriod1, comparePeriod2).dataset2[0]?.averageScore || 0
                                 }
                               ]}
                               margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
@@ -1924,13 +1924,13 @@ const TestTracker = () => {
                                   name: compareTestType === 'Book' ? 
                                     `Cycle ${comparePeriod1} (${compareYear1})` : 
                                     `${comparePeriod1} (${compareYear1})`,
-                                  rate: getComparisonData().dataset1[0]?.passingRate || 0
+                                  rate: getComparisonData(importedTestData, compareSchool, compareTestType, compareYear1, compareYear2, comparePeriod1, comparePeriod2).dataset1[0]?.passingRate || 0
                                 },
                                 {
                                   name: compareTestType === 'Book' ? 
                                     `Cycle ${comparePeriod2} (${compareYear2})` : 
                                     `${comparePeriod2} (${compareYear2})`,
-                                  rate: getComparisonData().dataset2[0]?.passingRate || 0
+                                  rate: getComparisonData(importedTestData, compareSchool, compareTestType, compareYear1, compareYear2, comparePeriod1, comparePeriod2).dataset2[0]?.passingRate || 0
                                 }
                               ]}
                               margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
@@ -1961,13 +1961,13 @@ const TestTracker = () => {
                                 name: compareTestType === 'Book' ? 
                                   `Cycle ${comparePeriod1} (${compareYear1})` : 
                                   `${comparePeriod1} (${compareYear1})`,
-                                count: getComparisonData().dataset1[0]?.studentCount || 0
+                                count: getComparisonData(importedTestData, compareSchool, compareTestType, compareYear1, compareYear2, comparePeriod1, comparePeriod2).dataset1[0]?.studentCount || 0
                               },
                               {
                                 name: compareTestType === 'Book' ? 
                                   `Cycle ${comparePeriod2} (${compareYear2})` : 
                                   `${comparePeriod2} (${compareYear2})`,
-                                count: getComparisonData().dataset2[0]?.studentCount || 0
+                                count: getComparisonData(importedTestData, compareSchool, compareTestType, compareYear1, compareYear2, comparePeriod1, comparePeriod2).dataset2[0]?.studentCount || 0
                               }
                             ]}
                             margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
