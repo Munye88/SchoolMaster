@@ -1659,7 +1659,10 @@ const TestTracker = () => {
                           <TableCell>{data.studentCount}</TableCell>
                           <TableCell>{data.averageScore}</TableCell>
                           <TableCell>
-                            <Badge variant={data.passingRate >= 70 ? "success" : "destructive"}>
+                            <Badge className={data.passingRate >= 70 
+                              ? "bg-green-100 text-green-800 border-green-200" 
+                              : "bg-red-100 text-red-800 border-red-200"
+                            }>
                               {data.passingRate}%
                             </Badge>
                           </TableCell>
