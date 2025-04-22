@@ -295,18 +295,6 @@ const Sidebar = () => {
                 </Link>
               </li>
               
-              {/* Instructor Lookup */}
-              <li>
-                <Link href="/instructor-lookup" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  isActive("/instructor-lookup") && "bg-blue-900 font-medium text-white",
-                  !isActive("/instructor-lookup") && "text-gray-100"
-                )}>
-                  <Search className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
-                  {!collapsed && <span>Instructor Lookup</span>}
-                </Link>
-              </li>
-              
               {/* DLI - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleDLI} className={cn(
