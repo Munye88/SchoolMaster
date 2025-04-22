@@ -1887,6 +1887,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  app.put("/api/staff-attendance/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid attendance record ID" });
+    }
+    
+    try {
+      // Get the current record to verify it exists
+      const existingRecord = await db.query.staff_attendance.findFirst({
+        where: eq(staff_attendance.id, id)
+      });
+      
+      if (!existingRecord) {
+        return res.status(404).json({ message: "Attendance record not found" });
+      }
+      
+      // Process the update data
+      const updateData = {
+        status: req.body.status,
+        timeIn: req.body.timeIn || null,
+        timeOut: req.body.timeOut || null,
+        comments: req.body.comments || null,
+      };
+      
+      // Update the record
+      const updatedAttendance = await dbStorage.updateStaffAttendance(id, updateData);
+      
+      // Log activity
+      const instructor = await dbStorage.getInstructor(existingRecord.instructorId);
+      await dbStorage.createActivity({
+        type: "attendance_updated",
+        description: `Attendance for "${instructor?.name || 'Instructor'}" updated to ${updateData.status}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(updatedAttendance);
+    } catch (error) {
+      console.error("Error updating attendance record:", error);
+      res.status(500).json({ message: "Failed to update attendance record" });
+    }
+  });
+  
   app.patch("/api/staff-attendance/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {

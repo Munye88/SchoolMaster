@@ -20,7 +20,8 @@ import {
   RefreshCw,
   FileText,
   User,
-  UserCheck
+  UserCheck,
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -166,8 +167,14 @@ const EditAttendanceForm: React.FC<{
 }> = ({ record, instructorName, onClose }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState({
-    status: record.status,
+  // Explicitly type the form data to match StaffAttendance status type
+  const [formData, setFormData] = useState<{
+    status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement";
+    timeIn: string;
+    timeOut: string;
+    comments: string;
+  }>({
+    status: record.status as "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement",
     timeIn: record.timeIn || "07:00",
     timeOut: record.timeOut || "17:00",
     comments: record.comments || ""
@@ -257,7 +264,9 @@ const EditAttendanceForm: React.FC<{
           <Label htmlFor="status">Status</Label>
           <Select
             value={formData.status}
-            onValueChange={(value) => setFormData({ ...formData, status: value })}
+            onValueChange={(value: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement") => 
+              setFormData({ ...formData, status: value })
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Select status" />
@@ -1600,9 +1609,26 @@ const StaffAttendance = () => {
                               <TableCell>{record.timeOut || 'N/A'}</TableCell>
                               <TableCell>{record.comments || 'No comments'}</TableCell>
                               <TableCell className="text-right">
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                  <Edit className="h-4 w-4" />
-                                </Button>
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="sm:max-w-[525px]">
+                                    <DialogHeader>
+                                      <DialogTitle>Edit Attendance Record</DialogTitle>
+                                      <DialogDescription>
+                                        Update attendance details for {instructor ? instructor.name : 'Unknown'} on {format(new Date(record.date), "MMMM dd, yyyy")}.
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <EditAttendanceForm 
+                                      record={record}
+                                      instructorName={instructor ? instructor.name : 'Unknown'}
+                                      onClose={() => {}}
+                                    />
+                                  </DialogContent>
+                                </Dialog>
                               </TableCell>
                             </TableRow>
                           );
