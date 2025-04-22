@@ -33,7 +33,8 @@ import {
   TrendingUp,
   Calendar,
   Printer,
-  Clipboard
+  Clipboard,
+  Pencil
 } from "lucide-react";
 import { useSchool } from "@/hooks/useSchool";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -125,6 +126,120 @@ const TestTracker = () => {
   const [courseFilter, setCourseFilter] = useState("all");
   const [testTypeFilter, setTestTypeFilter] = useState("all");
   const [nationalityFilter, setNationalityFilter] = useState("all");
+  const [activeView, setActiveView] = useState<'dashboard' | 'data-entry' | 'date-range'>('dashboard');
+  const [showManualEntryModal, setShowManualEntryModal] = useState(false);
+  const [historicalView, setHistoricalView] = useState(false);
+  const [dateRange, setDateRange] = useState<{start: Date | null, end: Date | null}>({
+    start: null,
+    end: null,
+  });
+  
+  // Manual data entry form state
+  const [manualEntryData, setManualEntryData] = useState<{
+    schoolId: string;
+    schoolName?: string;
+    testType: 'Book' | 'ALCPT' | 'ECL' | 'OPI';
+    cycle?: number;
+    month?: string;
+    year?: number;
+    studentCount?: number;
+    averageScore?: number;
+    passingScore?: number;
+    passingRate?: number;
+  }>({
+    schoolId: "",
+    testType: 'Book',
+  });
+  
+  // Form validation for manual entry
+  const isManualFormValid = () => {
+    const { schoolId, testType, year, studentCount, averageScore, passingScore, passingRate } = manualEntryData;
+    
+    // Basic validation
+    if (!schoolId || !testType || !year || !studentCount || !averageScore || !passingScore || !passingRate) {
+      return false;
+    }
+    
+    // Test type specific validation
+    if (testType === 'Book' && !manualEntryData.cycle) {
+      return false;
+    }
+    
+    if (testType !== 'Book' && !manualEntryData.month) {
+      return false;
+    }
+    
+    return true;
+  };
+  
+  // Handle manual data submission
+  const handleManualDataSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!isManualFormValid()) return;
+    
+    const schoolName = schools.find(s => s.id.toString() === manualEntryData.schoolId)?.name || "Unknown School";
+    const schoolId = parseInt(manualEntryData.schoolId);
+    
+    // Create new test data entry
+    const newTestData: AggregateTestData = {
+      id: Date.now(),
+      year: manualEntryData.year!,
+      testType: manualEntryData.testType,
+      schoolId,
+      schoolName,
+      studentCount: manualEntryData.studentCount!,
+      averageScore: manualEntryData.averageScore!,
+      passingScore: manualEntryData.passingScore!,
+      passingRate: manualEntryData.passingRate!,
+      ...(manualEntryData.testType === 'Book' 
+        ? { cycle: manualEntryData.cycle } 
+        : { month: manualEntryData.month })
+    };
+    
+    // Add to imported test data
+    setImportedTestData(prev => {
+      const criteria = (item: AggregateTestData) => {
+        if (item.schoolId !== schoolId) return false;
+        if (item.testType !== manualEntryData.testType) return false;
+        if (item.year !== manualEntryData.year) return false;
+        
+        if (manualEntryData.testType === 'Book') {
+          return item.cycle === manualEntryData.cycle;
+        } else {
+          return item.month === manualEntryData.month;
+        }
+      };
+      
+      // Remove any existing matching entry
+      const filteredData = prev.filter(item => !criteria(item));
+      
+      // Add the new data
+      return [...filteredData, newTestData];
+    });
+    
+    // Reset form and close modal
+    setShowManualEntryModal(false);
+    setManualEntryData({
+      schoolId: "",
+      testType: 'Book',
+    });
+    
+    // Alert the user
+    alert(`Test data successfully added for ${schoolName}!`);
+  };
+  
+  // Handle opening the manual entry modal
+  const handleOpenManualEntry = () => {
+    setManualEntryData({
+      schoolId: selectedSchoolFilter !== 'all' ? selectedSchoolFilter : "",
+      testType: selectedTestType,
+      year: selectedYear,
+      cycle: selectedTestType === 'Book' ? selectedCycle : undefined,
+      month: selectedTestType !== 'Book' ? selectedMonth : undefined,
+    });
+    setShowManualEntryModal(true);
+  };
   
   // Store imported test data that will override the mock data
   const [importedTestData, setImportedTestData] = useState<AggregateTestData[]>([]);
@@ -1054,6 +1169,192 @@ const TestTracker = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Manual Data Entry Modal */}
+      <Dialog open={showManualEntryModal} onOpenChange={setShowManualEntryModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Manual Test Data Entry</DialogTitle>
+            <DialogDescription>
+              Enter test data details manually to add to the Test Tracker.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleManualDataSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="manualSchool" className="text-right">
+                  School
+                </Label>
+                <Select value={manualEntryData.schoolId} onValueChange={(value) => setManualEntryData(prev => ({ ...prev, schoolId: value }))}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select school" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {schools.map(school => (
+                      <SelectItem key={school.id} value={school.id.toString()}>{school.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="manualTestType" className="text-right">
+                  Test Type
+                </Label>
+                <Select 
+                  value={manualEntryData.testType} 
+                  onValueChange={(value) => setManualEntryData(prev => ({ ...prev, testType: value as 'Book' | 'ALCPT' | 'ECL' | 'OPI' }))}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select test type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Book">Book Test</SelectItem>
+                    <SelectItem value="ALCPT">ALCPT</SelectItem>
+                    <SelectItem value="ECL">ECL</SelectItem>
+                    <SelectItem value="OPI">OPI</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {manualEntryData.testType === 'Book' ? (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="manualCycle" className="text-right">
+                    Cycle
+                  </Label>
+                  <Select 
+                    value={manualEntryData.cycle?.toString() || ""} 
+                    onValueChange={(value) => setManualEntryData(prev => ({ ...prev, cycle: parseInt(value) }))}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select cycle" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 15 }, (_, i) => (
+                        <SelectItem key={i+1} value={(i+1).toString()}>Cycle {i+1}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="manualMonth" className="text-right">
+                    Month
+                  </Label>
+                  <Select 
+                    value={manualEntryData.month || ""} 
+                    onValueChange={(value) => setManualEntryData(prev => ({ ...prev, month: value }))}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['January', 'February', 'March', 'April', 'May', 'June', 
+                        'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                        <SelectItem key={month} value={month}>{month}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="manualYear" className="text-right">
+                  Year
+                </Label>
+                <Select 
+                  value={manualEntryData.year?.toString() || ""} 
+                  onValueChange={(value) => setManualEntryData(prev => ({ ...prev, year: parseInt(value) }))}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2024">2024</SelectItem>
+                    <SelectItem value="2025">2025</SelectItem>
+                    <SelectItem value="2026">2026</SelectItem>
+                    <SelectItem value="2027">2027</SelectItem>
+                    <SelectItem value="2028">2028</SelectItem>
+                    <SelectItem value="2029">2029</SelectItem>
+                    <SelectItem value="2030">2030</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="studentCount" className="text-right">
+                  Total Students
+                </Label>
+                <Input 
+                  id="studentCount"
+                  type="number"
+                  className="col-span-3"
+                  value={manualEntryData.studentCount?.toString() || ""}
+                  onChange={(e) => setManualEntryData(prev => ({ ...prev, studentCount: parseInt(e.target.value) }))}
+                  min={0}
+                  placeholder="Enter number of students"
+                />
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="averageScore" className="text-right">
+                  Average Score
+                </Label>
+                <Input 
+                  id="averageScore"
+                  type="number"
+                  className="col-span-3"
+                  value={manualEntryData.averageScore?.toString() || ""}
+                  onChange={(e) => setManualEntryData(prev => ({ ...prev, averageScore: parseInt(e.target.value) }))}
+                  min={0}
+                  max={100}
+                  placeholder="Enter average score"
+                />
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="passingScore" className="text-right">
+                  Passing Score
+                </Label>
+                <Input 
+                  id="passingScore"
+                  type="number"
+                  className="col-span-3"
+                  value={manualEntryData.passingScore?.toString() || ""}
+                  onChange={(e) => setManualEntryData(prev => ({ ...prev, passingScore: parseInt(e.target.value) }))}
+                  min={0}
+                  max={100}
+                  placeholder="Enter passing score"
+                />
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="passingRate" className="text-right">
+                  Passing Rate (%)
+                </Label>
+                <Input 
+                  id="passingRate"
+                  type="number"
+                  className="col-span-3"
+                  value={manualEntryData.passingRate?.toString() || ""}
+                  onChange={(e) => setManualEntryData(prev => ({ ...prev, passingRate: parseInt(e.target.value) }))}
+                  min={0}
+                  max={100}
+                  placeholder="Enter passing rate"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowManualEntryModal(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={!isManualFormValid()}>
+                Save Data
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
@@ -1075,6 +1376,14 @@ const TestTracker = () => {
           </Button>
           
           <Button 
+            variant="outline"
+            onClick={handleOpenManualEntry}
+            className="flex-1 sm:flex-none border-[#007d49] text-[#007d49] hover:bg-[#007d49]/10 transition-all duration-200"
+          >
+            <Pencil className="mr-2 h-4 w-4" /> Enter Data
+          </Button>
+          
+          <Button 
             className="bg-[#0A2463] hover:bg-[#071A4A] flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all duration-200"
             onClick={handleExportData}
           >
@@ -1083,26 +1392,304 @@ const TestTracker = () => {
         </div>
       </div>
       
-      {/* Test Type Selector */}
-      <Tabs defaultValue="Book" className="mb-6" onValueChange={(value) => setSelectedTestType(value as 'Book' | 'ALCPT' | 'ECL' | 'OPI')}>
+      {/* Main View Selector */}
+      <Tabs defaultValue="dashboard" className="mb-6" onValueChange={(value) => setActiveView(value as 'dashboard' | 'data-entry' | 'date-range')}>
         <TabsList className="mb-2">
-          <TabsTrigger value="Book" className="flex items-center gap-1">
-            <BookOpen className="h-4 w-4" />
-            Book Tests
+          <TabsTrigger value="dashboard" className="flex items-center gap-1">
+            <BarChart2 className="h-4 w-4" />
+            Dashboard
           </TabsTrigger>
-          <TabsTrigger value="ALCPT" className="flex items-center gap-1">
-            <FileText className="h-4 w-4" />
-            ALCPT
+          <TabsTrigger value="data-entry" className="flex items-center gap-1">
+            <Pencil className="h-4 w-4" />
+            Data Entry
           </TabsTrigger>
-          <TabsTrigger value="ECL" className="flex items-center gap-1">
-            <Award className="h-4 w-4" />
-            ECL
-          </TabsTrigger>
-          <TabsTrigger value="OPI" className="flex items-center gap-1">
-            <User className="h-4 w-4" />
-            OPI
+          <TabsTrigger value="date-range" className="flex items-center gap-1">
+            <Calendar className="h-4 w-4" />
+            Historical View
           </TabsTrigger>
         </TabsList>
+        
+        <TabsContent value="dashboard">
+          {/* Test Type Selector */}
+          <Tabs defaultValue="Book" className="mb-6" onValueChange={(value) => setSelectedTestType(value as 'Book' | 'ALCPT' | 'ECL' | 'OPI')}>
+            <TabsList className="mb-2">
+              <TabsTrigger value="Book" className="flex items-center gap-1 bg-blue-100 data-[state=active]:bg-blue-200 text-blue-800">
+                <BookOpen className="h-4 w-4" />
+                Book Tests
+              </TabsTrigger>
+              <TabsTrigger value="ALCPT" className="flex items-center gap-1 bg-green-100 data-[state=active]:bg-green-200 text-green-800">
+                <FileText className="h-4 w-4" />
+                ALCPT
+              </TabsTrigger>
+              <TabsTrigger value="ECL" className="flex items-center gap-1 bg-purple-100 data-[state=active]:bg-purple-200 text-purple-800">
+                <Award className="h-4 w-4" />
+                ECL
+              </TabsTrigger>
+              <TabsTrigger value="OPI" className="flex items-center gap-1 bg-amber-100 data-[state=active]:bg-amber-200 text-amber-800">
+                <User className="h-4 w-4" />
+                OPI
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </TabsContent>
+        
+        <TabsContent value="data-entry">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Manual Test Data Entry</h2>
+            <p className="text-gray-600 mb-6">Add or update test data by filling out the form below.</p>
+            
+            <form onSubmit={handleManualDataSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* School Selection */}
+                <div className="space-y-2">
+                  <Label htmlFor="school">School</Label>
+                  <Select 
+                    value={manualEntryData.schoolId} 
+                    onValueChange={(value) => setManualEntryData(prev => ({ ...prev, schoolId: value }))}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select School" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {schools.map(school => (
+                        <SelectItem key={school.id} value={school.id.toString()}>{school.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Test Type Selection */}
+                <div className="space-y-2">
+                  <Label htmlFor="testType">Test Type</Label>
+                  <Select 
+                    value={manualEntryData.testType} 
+                    onValueChange={(value) => setManualEntryData(prev => ({ 
+                      ...prev, 
+                      testType: value as 'Book' | 'ALCPT' | 'ECL' | 'OPI',
+                      // Reset cycle/month when test type changes
+                      cycle: value === 'Book' ? (prev.cycle || 1) : undefined,
+                      month: value !== 'Book' ? (prev.month || 'January') : undefined
+                    }))}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Test Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Book" className="text-blue-700 font-medium">Book Test</SelectItem>
+                      <SelectItem value="ALCPT" className="text-green-700 font-medium">ALCPT</SelectItem>
+                      <SelectItem value="ECL" className="text-purple-700 font-medium">ECL</SelectItem>
+                      <SelectItem value="OPI" className="text-amber-700 font-medium">OPI</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Year Selection */}
+                <div className="space-y-2">
+                  <Label htmlFor="year">Year</Label>
+                  <Select 
+                    value={manualEntryData.year?.toString() || ""} 
+                    onValueChange={(value) => setManualEntryData(prev => ({ ...prev, year: parseInt(value) }))}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="2024">2024</SelectItem>
+                      <SelectItem value="2025">2025</SelectItem>
+                      <SelectItem value="2026">2026</SelectItem>
+                      <SelectItem value="2027">2027</SelectItem>
+                      <SelectItem value="2028">2028</SelectItem>
+                      <SelectItem value="2029">2029</SelectItem>
+                      <SelectItem value="2030">2030</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Cycle or Month Selection based on Test Type */}
+                {manualEntryData.testType === 'Book' ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="cycle">Cycle</Label>
+                    <Select 
+                      value={manualEntryData.cycle?.toString() || ""} 
+                      onValueChange={(value) => setManualEntryData(prev => ({ ...prev, cycle: parseInt(value) }))}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select Cycle" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 15 }, (_, i) => (
+                          <SelectItem key={i+1} value={(i+1).toString()}>Cycle {i+1}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Label htmlFor="month">Month</Label>
+                    <Select 
+                      value={manualEntryData.month || ""} 
+                      onValueChange={(value) => setManualEntryData(prev => ({ ...prev, month: value }))}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select Month" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                          <SelectItem key={month} value={month}>{month}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {/* Student Count */}
+                <div className="space-y-2">
+                  <Label htmlFor="studentCount">Total Students</Label>
+                  <Input 
+                    id="studentCount"
+                    type="number"
+                    value={manualEntryData.studentCount?.toString() || ""}
+                    onChange={(e) => setManualEntryData(prev => ({ ...prev, studentCount: parseInt(e.target.value) }))}
+                    min={0}
+                    className="w-full"
+                    placeholder="Enter count"
+                  />
+                </div>
+                
+                {/* Average Score */}
+                <div className="space-y-2">
+                  <Label htmlFor="averageScore">Average Score</Label>
+                  <Input 
+                    id="averageScore"
+                    type="number"
+                    value={manualEntryData.averageScore?.toString() || ""}
+                    onChange={(e) => setManualEntryData(prev => ({ ...prev, averageScore: parseInt(e.target.value) }))}
+                    min={0}
+                    max={100}
+                    className="w-full"
+                    placeholder="Enter score"
+                  />
+                </div>
+                
+                {/* Passing Score */}
+                <div className="space-y-2">
+                  <Label htmlFor="passingScore">Passing Score</Label>
+                  <Input 
+                    id="passingScore"
+                    type="number"
+                    value={manualEntryData.passingScore?.toString() || ""}
+                    onChange={(e) => setManualEntryData(prev => ({ ...prev, passingScore: parseInt(e.target.value) }))}
+                    min={0}
+                    max={100}
+                    className="w-full"
+                    placeholder="Enter score"
+                  />
+                </div>
+                
+                {/* Passing Rate */}
+                <div className="space-y-2">
+                  <Label htmlFor="passingRate">Pass Rate (%)</Label>
+                  <Input 
+                    id="passingRate"
+                    type="number"
+                    value={manualEntryData.passingRate?.toString() || ""}
+                    onChange={(e) => setManualEntryData(prev => ({ ...prev, passingRate: parseInt(e.target.value) }))}
+                    min={0}
+                    max={100}
+                    className="w-full"
+                    placeholder="Enter percentage"
+                  />
+                </div>
+              </div>
+              
+              <div className="pt-2 flex justify-end space-x-2">
+                <Button type="reset" variant="outline" onClick={() => setManualEntryData({
+                  schoolId: "",
+                  testType: 'Book',
+                })}>
+                  Reset Form
+                </Button>
+                <Button type="submit" disabled={!isManualFormValid()}>
+                  Save Test Data
+                </Button>
+              </div>
+            </form>
+            
+            <div className="mt-8 border-t pt-6">
+              <h3 className="text-lg font-medium mb-4">Recent Data Entries</h3>
+              
+              {importedTestData.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>School</TableHead>
+                        <TableHead>Test Type</TableHead>
+                        <TableHead>Period</TableHead>
+                        <TableHead>Year</TableHead>
+                        <TableHead>Students</TableHead>
+                        <TableHead>Avg. Score</TableHead>
+                        <TableHead>Pass Rate</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {importedTestData
+                        .sort((a, b) => b.id - a.id) // Show newest first
+                        .slice(0, 5) // Show only last 5 entries
+                        .map(data => (
+                        <TableRow key={data.id}>
+                          <TableCell>{data.schoolName}</TableCell>
+                          <TableCell>
+                            <Badge className={`
+                              ${data.testType === 'Book' ? 'bg-blue-100 text-blue-800' : ''}
+                              ${data.testType === 'ALCPT' ? 'bg-green-100 text-green-800' : ''}
+                              ${data.testType === 'ECL' ? 'bg-purple-100 text-purple-800' : ''}
+                              ${data.testType === 'OPI' ? 'bg-amber-100 text-amber-800' : ''}
+                            `}>
+                              {data.testType}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{data.cycle ? `Cycle ${data.cycle}` : data.month}</TableCell>
+                          <TableCell>{data.year}</TableCell>
+                          <TableCell>{data.studentCount}</TableCell>
+                          <TableCell>{data.averageScore}</TableCell>
+                          <TableCell>
+                            <Badge variant={data.passingRate >= 70 ? "success" : "destructive"}>
+                              {data.passingRate}%
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
+                  <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                  <p>No test data has been added yet. Use the form above to add test results.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="date-range">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Historical Data View</h2>
+            <p className="text-gray-600 mb-6">View and compare test results across multiple periods.</p>
+            
+            {/* Date range implementation to be completed */}
+            <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
+              <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+              <p>Historical data view is under development.</p>
+            </div>
+          </div>
+        </TabsContent>
       </Tabs>
       
       {/* Filter Controls */}
