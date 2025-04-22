@@ -32,6 +32,8 @@ import {
   Clock, 
   TrendingUp,
   Calendar,
+  CalendarRange,
+  CheckSquare,
   Printer,
   Clipboard,
   Pencil
@@ -1698,10 +1700,300 @@ const TestTracker = () => {
             <h2 className="text-xl font-semibold mb-4 text-gray-800">Historical Data View</h2>
             <p className="text-gray-600 mb-6">View and compare test results across multiple periods.</p>
             
-            {/* Date range implementation to be completed */}
-            <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
-              <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-              <p>Historical data view is under development.</p>
+            {/* Historical comparison controls */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              {/* School Filter */}
+              <Card className="shadow-sm bg-gradient-to-r from-blue-50 to-indigo-50 border border-indigo-100 hover:shadow-md transition-all duration-200">
+                <CardContent className="p-4">
+                  <Select value={compareSchool} onValueChange={setCompareSchool}>
+                    <SelectTrigger className="bg-white border-blue-100">
+                      <Flag className="h-4 w-4 mr-2 text-blue-500" />
+                      <SelectValue placeholder="Select School" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Schools</SelectItem>
+                      {schools.map(school => (
+                        <SelectItem key={school.id} value={school.id.toString()}>{school.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
+              
+              {/* Test Type Selector */}
+              <Card className="shadow-sm bg-gradient-to-r from-purple-50 to-blue-50 border border-blue-100 hover:shadow-md transition-all duration-200">
+                <CardContent className="p-4">
+                  <Select 
+                    value={compareTestType} 
+                    onValueChange={(value) => setCompareTestType(value as 'Book' | 'ALCPT' | 'ECL' | 'OPI')}
+                  >
+                    <SelectTrigger className="bg-white border-blue-100">
+                      <CheckSquare className="h-4 w-4 mr-2 text-blue-500" />
+                      <SelectValue placeholder="Select Test Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Book">Book Test</SelectItem>
+                      <SelectItem value="ALCPT">ALCPT</SelectItem>
+                      <SelectItem value="ECL">ECL</SelectItem>
+                      <SelectItem value="OPI">OPI</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Comparison periods */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              {/* First period */}
+              <Card className="shadow-sm hover:shadow-md transition-all duration-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-medium">First Period</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Period Selector */}
+                    <div>
+                      {compareTestType === 'Book' ? (
+                        <Select value={comparePeriod1} onValueChange={setComparePeriod1}>
+                          <SelectTrigger className="w-full">
+                            <BookOpen className="h-4 w-4 mr-2 text-blue-500" />
+                            <SelectValue placeholder="Select Cycle" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 15 }, (_, i) => (
+                              <SelectItem key={i+1} value={(i+1).toString()}>Cycle {i+1}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Select value={comparePeriod1} onValueChange={setComparePeriod1}>
+                          <SelectTrigger className="w-full">
+                            <Calendar className="h-4 w-4 mr-2 text-blue-500" />
+                            <SelectValue placeholder="Select Month" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {['January', 'February', 'March', 'April', 'May', 'June', 
+                              'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                              <SelectItem key={month} value={month}>{month}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                    
+                    {/* Year Selector */}
+                    <div>
+                      <Select 
+                        value={compareYear1.toString()} 
+                        onValueChange={(value) => setCompareYear1(parseInt(value))}
+                      >
+                        <SelectTrigger className="w-full">
+                          <CalendarRange className="h-4 w-4 mr-2 text-blue-500" />
+                          <SelectValue placeholder="Select Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[2023, 2024, 2025].map(year => (
+                            <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Second period */}
+              <Card className="shadow-sm hover:shadow-md transition-all duration-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg font-medium">Second Period</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Period Selector */}
+                    <div>
+                      {compareTestType === 'Book' ? (
+                        <Select value={comparePeriod2} onValueChange={setComparePeriod2}>
+                          <SelectTrigger className="w-full">
+                            <BookOpen className="h-4 w-4 mr-2 text-blue-500" />
+                            <SelectValue placeholder="Select Cycle" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 15 }, (_, i) => (
+                              <SelectItem key={i+1} value={(i+1).toString()}>Cycle {i+1}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Select value={comparePeriod2} onValueChange={setComparePeriod2}>
+                          <SelectTrigger className="w-full">
+                            <Calendar className="h-4 w-4 mr-2 text-blue-500" />
+                            <SelectValue placeholder="Select Month" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {['January', 'February', 'March', 'April', 'May', 'June', 
+                              'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                              <SelectItem key={month} value={month}>{month}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                    
+                    {/* Year Selector */}
+                    <div>
+                      <Select 
+                        value={compareYear2.toString()} 
+                        onValueChange={(value) => setCompareYear2(parseInt(value))}
+                      >
+                        <SelectTrigger className="w-full">
+                          <CalendarRange className="h-4 w-4 mr-2 text-blue-500" />
+                          <SelectValue placeholder="Select Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[2023, 2024, 2025].map(year => (
+                            <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Comparison charts */}
+            <div className="mt-8">
+              <Card className="shadow-md">
+                <CardHeader>
+                  <CardTitle>Comparison of Test Results</CardTitle>
+                  <CardDescription>
+                    {compareTestType === 'Book' ? 
+                      `Comparing Book Test Cycle ${comparePeriod1} (${compareYear1}) with Cycle ${comparePeriod2} (${compareYear2})` : 
+                      `Comparing ${compareTestType} Test for ${comparePeriod1} (${compareYear1}) with ${comparePeriod2} (${compareYear2})`
+                    }
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {importedTestData.length > 0 ? (
+                    <div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        {/* Average Score Comparison */}
+                        <div>
+                          <h3 className="text-md font-medium mb-4 text-gray-700">Average Score Comparison</h3>
+                          <ResponsiveContainer width="100%" height={300}>
+                            <BarChart
+                              data={[
+                                {
+                                  name: compareTestType === 'Book' ? 
+                                    `Cycle ${comparePeriod1} (${compareYear1})` : 
+                                    `${comparePeriod1} (${compareYear1})`,
+                                  score: getComparisonData().dataset1[0]?.averageScore || 0
+                                },
+                                {
+                                  name: compareTestType === 'Book' ? 
+                                    `Cycle ${comparePeriod2} (${compareYear2})` : 
+                                    `${comparePeriod2} (${compareYear2})`,
+                                  score: getComparisonData().dataset2[0]?.averageScore || 0
+                                }
+                              ]}
+                              margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="name" />
+                              <YAxis />
+                              <Tooltip />
+                              <Legend />
+                              <Bar 
+                                dataKey="score" 
+                                name="Average Score" 
+                                fill="#4F46E5" 
+                                radius={[4, 4, 0, 0]}
+                              />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                        
+                        {/* Passing Rate Comparison */}
+                        <div>
+                          <h3 className="text-md font-medium mb-4 text-gray-700">Passing Rate Comparison</h3>
+                          <ResponsiveContainer width="100%" height={300}>
+                            <BarChart
+                              data={[
+                                {
+                                  name: compareTestType === 'Book' ? 
+                                    `Cycle ${comparePeriod1} (${compareYear1})` : 
+                                    `${comparePeriod1} (${compareYear1})`,
+                                  rate: getComparisonData().dataset1[0]?.passingRate || 0
+                                },
+                                {
+                                  name: compareTestType === 'Book' ? 
+                                    `Cycle ${comparePeriod2} (${compareYear2})` : 
+                                    `${comparePeriod2} (${compareYear2})`,
+                                  rate: getComparisonData().dataset2[0]?.passingRate || 0
+                                }
+                              ]}
+                              margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="name" />
+                              <YAxis />
+                              <Tooltip />
+                              <Legend />
+                              <Bar 
+                                dataKey="rate" 
+                                name="Passing Rate (%)" 
+                                fill="#10B981" 
+                                radius={[4, 4, 0, 0]}
+                              />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                      
+                      {/* Student Count Comparison */}
+                      <div className="mt-8">
+                        <h3 className="text-md font-medium mb-4 text-gray-700">Student Count Comparison</h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart
+                            data={[
+                              {
+                                name: compareTestType === 'Book' ? 
+                                  `Cycle ${comparePeriod1} (${compareYear1})` : 
+                                  `${comparePeriod1} (${compareYear1})`,
+                                count: getComparisonData().dataset1[0]?.studentCount || 0
+                              },
+                              {
+                                name: compareTestType === 'Book' ? 
+                                  `Cycle ${comparePeriod2} (${compareYear2})` : 
+                                  `${comparePeriod2} (${compareYear2})`,
+                                count: getComparisonData().dataset2[0]?.studentCount || 0
+                              }
+                            ]}
+                            margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar 
+                              dataKey="count" 
+                              name="Student Count" 
+                              fill="#6366F1" 
+                              radius={[4, 4, 0, 0]}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
+                      <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                      <p>No test data available for comparison. Please add test data first.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           </div>
         </TabsContent>
