@@ -878,12 +878,12 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-gray-100">
-                <Link href="/instructors" className="flex items-center justify-between p-4 hover:bg-gray-50">
+                <Link href="/instructor/lookup" className="flex items-center justify-between p-4 hover:bg-gray-50">
                   <div className="flex items-center">
                     <div className="bg-purple-100 p-2 rounded-lg mr-3">
                       <User className="h-4 w-4 text-purple-600" />
                     </div>
-                    <span className="text-sm font-medium">Instructor Directory</span>
+                    <span className="text-sm font-medium">Instructor Lookup</span>
                   </div>
                   <ChevronRight className="h-4 w-4 text-gray-400" />
                 </Link>
@@ -896,15 +896,7 @@ const Dashboard = () => {
                   </div>
                   <ChevronRight className="h-4 w-4 text-gray-400" />
                 </Link>
-                <Link href="/documents" className="flex items-center justify-between p-4 hover:bg-gray-50">
-                  <div className="flex items-center">
-                    <div className="bg-yellow-100 p-2 rounded-lg mr-3">
-                      <Building className="h-4 w-4 text-yellow-600" />
-                    </div>
-                    <span className="text-sm font-medium">Administrative Documents</span>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-gray-400" />
-                </Link>
+
               </div>
             </CardContent>
           </Card>
