@@ -1625,7 +1625,7 @@ const StaffAttendance = () => {
                                     <EditAttendanceForm 
                                       record={record}
                                       instructorName={instructor ? instructor.name : 'Unknown'}
-                                      onClose={() => {}}
+                                      onClose={() => document.querySelector('[data-state="open"]')?.querySelector('[aria-label="Close"]')?.click()}
                                     />
                                   </DialogContent>
                                 </Dialog>

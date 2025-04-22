@@ -29,7 +29,8 @@ import {
   instructors,
   actionLogs,
   candidates,
-  interviewQuestions
+  interviewQuestions,
+  staffAttendance
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
@@ -1895,9 +1896,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     try {
       // Get the current record to verify it exists
-      const existingRecord = await db.query.staff_attendance.findFirst({
-        where: eq(staff_attendance.id, id)
-      });
+      const existingRecord = await dbStorage.getStaffAttendance(id);
       
       if (!existingRecord) {
         return res.status(404).json({ message: "Attendance record not found" });
