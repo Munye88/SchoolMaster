@@ -30,7 +30,8 @@ import {
   actionLogs,
   candidates,
   interviewQuestions,
-  staffAttendance
+  staffAttendance,
+  events
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
