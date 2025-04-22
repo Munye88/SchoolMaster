@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
   AlertCircle, AlertTriangle, Calendar, X, Bookmark, UserMinus, 
-  GraduationCap, Users, BookOpen, CheckCircle, Bell, Award
+  GraduationCap, Users, BookOpen, CheckCircle, Bell, Award,
+  Play, Trash2, UserPlus, UsersIcon
 } from 'lucide-react';
-import { format, subDays } from 'date-fns';
+import { format, subDays, isToday, differenceInDays } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { StaffAttendance, StaffLeave, Evaluation, Instructor, Course, Student } from "@shared/schema";
 import { useSchool } from '@/hooks/useSchool';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Set a smaller height for the notification panel to match other dashboard components
 const NOTIFICATION_PANEL_HEIGHT = "h-[220px]";
@@ -55,6 +57,28 @@ const Notifications: React.FC<NotificationsProps> = ({
 }) => {
   const { selectedSchool } = useSchool();
   const [activeTab, setActiveTab] = useState<string>("all");
+  
+  // State for dismissed notifications
+  const [dismissedNotifications, setDismissedNotifications] = useState<(string | number)[]>(() => {
+    const savedDismissed = localStorage.getItem('dismissed_notifications');
+    return savedDismissed ? JSON.parse(savedDismissed) : [];
+  });
+  
+  // Save dismissed notifications to localStorage
+  useEffect(() => {
+    localStorage.setItem('dismissed_notifications', JSON.stringify(dismissedNotifications));
+  }, [dismissedNotifications]);
+  
+  // Handle dismissing a notification
+  const handleDismissNotification = (id: string | number) => {
+    setDismissedNotifications(prev => [...prev, id]);
+  };
+  
+  // Clear all notifications
+  const handleClearAllNotifications = () => {
+    const idsToAdd = filteredAlerts.map(alert => alert.id);
+    setDismissedNotifications(prev => [...prev, ...idsToAdd]);
+  };
   
   // Find absent instructors (those marked absent in staff attendance)
   const absentInstructors = staffAttendance
@@ -214,6 +238,11 @@ const Notifications: React.FC<NotificationsProps> = ({
   
   const filteredAlerts = getFilteredAlerts();
   
+  // Filter out dismissed notifications
+  const filteredNonDismissedAlerts = filteredAlerts.filter(
+    alert => !dismissedNotifications.includes(alert.id)
+  );
+  
   // Get count badge for tabs
   const getCategoryCount = (category: string) => {
     const typeMap: Record<string, NotificationType[]> = {
@@ -269,7 +298,8 @@ const Notifications: React.FC<NotificationsProps> = ({
       </div>
       
       <div className="flex items-center justify-between mb-4">
-        <div className="flex gap-2 bg-white/90 p-1 rounded-lg shadow-md border border-gray-200 backdrop-blur-sm">
+        <div className="flex items-center w-full">
+          <div className="flex-1 flex gap-2 bg-white/90 p-1 rounded-lg shadow-md border border-gray-200 backdrop-blur-sm">
           <Button 
             variant={activeTab === "all" ? "default" : "ghost"}
             size="sm" 
@@ -330,14 +360,31 @@ const Notifications: React.FC<NotificationsProps> = ({
               {getCategoryCount("courses")}
             </span>
           </Button>
+          </div>
+          
+          {filteredNonDismissedAlerts.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-2 text-xs flex items-center gap-1 py-1 px-3 hover:bg-red-50 hover:text-red-600 text-gray-500"
+              onClick={handleClearAllNotifications}
+            >
+              <Trash2 className="h-3 w-3" />
+              Clear All
+            </Button>
+          )}
         </div>
       </div>
       
       <ScrollArea className="h-[240px] w-full mt-2">
         <div className="space-y-3">
-          {filteredAlerts.length > 0 ? (
-            filteredAlerts.map((alert, index) => (
-              <NotificationCard key={`${alert.type}-${alert.id}-${index}`} alert={alert} />
+          {filteredNonDismissedAlerts.length > 0 ? (
+            filteredNonDismissedAlerts.map((alert, index) => (
+              <NotificationCard 
+                key={`${alert.type}-${alert.id}-${index}`} 
+                alert={alert} 
+                onDismiss={handleDismissNotification} 
+              />
             ))
           ) : (
             <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-md text-gray-500 animate-in fade-in duration-300">
@@ -357,7 +404,10 @@ const Notifications: React.FC<NotificationsProps> = ({
 };
 
 // Notification Card Component
-const NotificationCard: React.FC<{ alert: Notification }> = ({ alert }) => {
+const NotificationCard: React.FC<{ 
+  alert: Notification, 
+  onDismiss: (id: string | number) => void 
+}> = ({ alert, onDismiss }) => {
   // Determine color theme and icon based on alert type
   let badgeColor = '';
   let bgColor = '';
@@ -438,11 +488,31 @@ const NotificationCard: React.FC<{ alert: Notification }> = ({ alert }) => {
   
   return (
     <div 
-      className={`p-3 rounded-xl border ${bgColor} ${borderColor} shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${NOTIFICATION_ANIMATION}`}
+      className={`p-3 rounded-xl border ${bgColor} ${borderColor} shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${NOTIFICATION_ANIMATION} relative group`}
       style={{
         backgroundImage: 'radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.8), transparent 25%)'
       }}
     >
+      {/* Dismiss button */}
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button 
+              className="absolute right-2 top-2 h-5 w-5 rounded-full bg-gray-100/80 hover:bg-gray-200 flex items-center justify-center border border-gray-200 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDismiss(alert.id);
+              }}
+            >
+              <X className="h-3 w-3 text-gray-500" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <p className="text-xs">Dismiss notification</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
           <div className="font-medium text-gray-800 flex items-center">
