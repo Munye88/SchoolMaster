@@ -25,6 +25,7 @@ const Sidebar = () => {
   const [showManageLinks, setShowManageLinks] = useState<boolean>(false);
   const [showActivityLinks, setShowActivityLinks] = useState<boolean>(false);
   const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
+  const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
   
   const isActive = (path: string) => {
     return location === path || location.startsWith(path + "/");
@@ -125,25 +126,42 @@ const Sidebar = () => {
         </div>
         
         {/* User menu */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 relative">
           {user && (
             <>
-              <div className="flex items-center mr-3">
+              <div 
+                className="flex items-center bg-white hover:bg-blue-50 transition-colors rounded-lg px-3 py-1.5 cursor-pointer border border-blue-100"
+                onClick={() => setShowUserMenu(!showUserMenu)}
+              >
                 <div className="bg-blue-100 rounded-full p-1.5 mr-2">
                   <UserCheck className="h-5 w-5 text-blue-600" />
                 </div>
-                <div>
+                <div className="mr-1">
                   <p className="text-sm font-medium text-[#0A2463]">{user.username}</p>
                   <p className="text-xs text-blue-600">{user.role}</p>
                 </div>
+                <ChevronDown className={`h-4 w-4 text-blue-600 transition-transform duration-200 ${showUserMenu ? 'rotate-180' : ''}`} />
               </div>
-              <button 
-                onClick={handleLogout} 
-                className="text-red-500 flex items-center text-sm font-medium bg-white hover:bg-red-50 px-3 py-1.5 rounded border border-red-200"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                <span>Sign out</span>
-              </button>
+              
+              {/* Dropdown menu */}
+              {showUserMenu && (
+                <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50 animate-in fade-in slide-in-from-top-5 duration-200">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <p className="text-xs text-gray-500">Signed in as</p>
+                    <p className="text-sm font-medium text-[#0A2463]">{user.username}</p>
+                  </div>
+                  
+                  <div className="py-1">
+                    <button
+                      className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600"
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="h-4 w-4 mr-2 text-red-500" />
+                      <span>Sign out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
