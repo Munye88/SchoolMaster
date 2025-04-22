@@ -1409,13 +1409,7 @@ const TestTracker = () => {
             <Upload className="mr-2 h-4 w-4" /> Import Excel
           </Button>
           
-          <Button 
-            variant="outline"
-            onClick={handleOpenManualEntry}
-            className="flex-1 sm:flex-none border-[#007d49] text-[#007d49] hover:bg-[#007d49]/10 transition-all duration-200"
-          >
-            <Pencil className="mr-2 h-4 w-4" /> Enter Data
-          </Button>
+          {/* Removed redundant "Enter Data" button as we already have a Data Entry tab */}
           
           <Button 
             className="bg-[#0A2463] hover:bg-[#071A4A] flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all duration-200"
