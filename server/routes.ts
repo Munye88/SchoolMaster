@@ -1003,13 +1003,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.post("/api/events", async (req, res) => {
     try {
-      const eventData = insertEventSchema.parse(req.body);
-      const event = await dbStorage.createEvent(eventData);
+      console.log("Event creation data received:", req.body);
+      
+      // Convert ISO date strings to proper objects if they're not already
+      const eventData = {
+        ...req.body,
+        // Ensure dates are properly formatted for storage
+        start: new Date(req.body.start),
+        end: new Date(req.body.end),
+      };
+      
+      // Validate the data
+      const validatedData = insertEventSchema.parse(eventData);
+      
+      const event = await dbStorage.createEvent(validatedData);
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "event_created",
+        description: `Event "${event.title}" created`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
       res.status(201).json(event);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Zod validation error:", error.errors);
         return res.status(400).json({ message: "Invalid event data", errors: error.errors });
       }
+      console.error("Error creating event:", error);
       res.status(500).json({ message: "Failed to create event" });
     }
   });
@@ -1021,7 +1044,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
-      const eventData = insertEventSchema.parse(req.body);
+      console.log("Event update data received:", req.body);
+      
+      // Convert ISO date strings to proper objects if they're not already
+      const eventData = {
+        ...req.body,
+        // Ensure dates are properly formatted for storage
+        start: new Date(req.body.start),
+        end: new Date(req.body.end),
+      };
+      
+      // Validate the data
+      const validatedData = insertEventSchema.parse(eventData);
       
       // Check if event exists
       const existingEvents = await db.select().from(events).where(eq(events.id, id));
@@ -1032,7 +1066,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update the event
       const updatedEvents = await db
         .update(events)
-        .set(eventData)
+        .set(validatedData)
         .where(eq(events.id, id))
         .returning();
       
@@ -1051,6 +1085,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updatedEvents[0]);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Zod validation error:", error.errors);
         return res.status(400).json({ message: "Invalid event data", errors: error.errors });
       }
       console.error("Error updating event:", error);
