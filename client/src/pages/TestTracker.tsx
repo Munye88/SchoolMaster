@@ -2104,59 +2104,54 @@ const TestTracker = () => {
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartPieChart>
                       <defs>
-                        <linearGradient id="knfaGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#4285F4" />
-                          <stop offset="100%" stopColor="#5B9BF9" />
-                        </linearGradient>
-                        <linearGradient id="nfsEastGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#34A853" />
-                          <stop offset="100%" stopColor="#4FC26B" />
-                        </linearGradient>
-                        <linearGradient id="nfsWestGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#FBBC05" />
-                          <stop offset="100%" stopColor="#FFD74C" />
-                        </linearGradient>
+                        <filter id="glow" height="300%" width="300%" x="-100%" y="-100%">
+                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                          <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                          </feMerge>
+                        </filter>
+                        <filter id="shadow">
+                          <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.3"/>
+                        </filter>
                       </defs>
                       <Pie
                         data={[
                           { 
                             name: "KNFA", 
-                            value: filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0, 
-                            fill: "url(#knfaGradient)"
+                            value: filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0
                           },
                           { 
                             name: "NFS East", 
-                            value: filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0, 
-                            fill: "url(#nfsEastGradient)"
+                            value: filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0
                           },
                           { 
                             name: "NFS West", 
-                            value: filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0, 
-                            fill: "url(#nfsWestGradient)"
+                            value: filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0
                           }
                         ]}
                         cx="50%"
                         cy="50%"
-                        labelLine={true}
-                        innerRadius={65}
+                        labelLine={false}
                         outerRadius={110}
-                        paddingAngle={4}
-                        cornerRadius={6}
-                        stroke="#fff"
-                        strokeWidth={3}
+                        innerRadius={60}
+                        paddingAngle={2}
                         dataKey="value"
+                        startAngle={90}
+                        endAngle={-270}
+                        filter="url(#shadow)"
+                        label={(entry) => {
+                          const percent = Math.round((entry.value / (
+                            (filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0) + 
+                            (filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0) + 
+                            (filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0)
+                          )) * 100);
+                          return `${percent}%`;
+                        }}
                       >
-                        {[
-                          { name: "KNFA", fill: "url(#knfaGradient)" },
-                          { name: "NFS East", fill: "url(#nfsEastGradient)" },
-                          { name: "NFS West", fill: "url(#nfsWestGradient)" }
-                        ].map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={entry.fill}
-                            strokeWidth={2}
-                          />
-                        ))}
+                        <Cell fill="#4285F4" stroke="#fff" strokeWidth={3} />
+                        <Cell fill="#34A853" stroke="#fff" strokeWidth={3} />
+                        <Cell fill="#FBBC05" stroke="#fff" strokeWidth={3} />
                       </Pie>
                       <Tooltip 
                         contentStyle={{ 
@@ -2172,8 +2167,8 @@ const TestTracker = () => {
                         layout="horizontal" 
                         verticalAlign="bottom" 
                         align="center"
-                        iconType="circle"
-                        iconSize={10}
+                        iconType="square"
+                        iconSize={12}
                         wrapperStyle={{
                           paddingTop: '20px',
                           fontWeight: 600
@@ -2318,137 +2313,7 @@ const TestTracker = () => {
         </CardContent>
       </Card>
       
-      <div className="bg-white rounded-lg shadow-md border p-4 mb-6">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
-          <h2 className="text-xl font-bold text-blue-800 flex items-center">
-            <Clipboard className="h-5 w-5 mr-2 text-blue-700" />
-            Detailed Test Analysis
-          </h2>
-          
-          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-            <div className="relative flex-1 sm:flex-none">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input 
-                placeholder="Search tests..." 
-                className="pl-9 w-full sm:w-64"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            
-            <Select value={courseFilter} onValueChange={setCourseFilter}>
-              <SelectTrigger className="w-full sm:w-36">
-                <SelectValue placeholder="Course" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Courses</SelectItem>
-                {uniqueCourses.map(course => (
-                  <SelectItem key={course} value={course}>{course}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <Select value={testTypeFilter} onValueChange={setTestTypeFilter}>
-              <SelectTrigger className="w-full sm:w-36">
-                <SelectValue placeholder="Test Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {uniqueTestTypes.map(type => (
-                  <SelectItem key={type} value={type}>{type}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <Button 
-              variant="outline" 
-              className="flex-1 sm:flex-none bg-white hover:bg-gray-50 border-blue-200 text-blue-600"
-              onClick={() => handlePrintReport()}
-            >
-              <Printer className="h-4 w-4 mr-2" />
-              Print Report
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              className="flex-1 sm:flex-none border-blue-200 text-blue-600 hover:bg-blue-50"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-          </div>
-        </div>
-        
-        <div>
-          <Card>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[60px]">ID</TableHead>
-                    <TableHead>Student</TableHead>
-                    <TableHead>Course</TableHead>
-                    <TableHead>Test Type</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Score</TableHead>
-                    <TableHead>Passing Score</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredTestResults.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={9} className="text-center py-8">
-                        <p className="text-gray-500">
-                          {searchQuery || courseFilter !== "all" || testTypeFilter !== "all"
-                            ? "No test results match your search criteria." 
-                            : "No test results available."}
-                        </p>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    filteredTestResults.map(result => (
-                      <TableRow key={result.id}>
-                        <TableCell className="font-medium">{result.id}</TableCell>
-                        <TableCell>{result.studentName}</TableCell>
-                        <TableCell>{result.courseName}</TableCell>
-                        <TableCell>{result.type}</TableCell>
-                        <TableCell>{formatDate(result.testDate)}</TableCell>
-                        <TableCell className="font-medium">{result.score}</TableCell>
-                        <TableCell>{result.passingScore}</TableCell>
-                        <TableCell>
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            result.status === "Pass" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                          }`}>
-                            {result.status}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                ...
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>View Details</DropdownMenuItem>
-                              <DropdownMenuItem>Edit Result</DropdownMenuItem>
-                              <DropdownMenuItem>Print Report</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </div>
-        
-        {/* We've removed the other tabs from the UI */}
-      </div>
+      {/* Removed the Detailed Test Analysis section as requested */}
     </main>
   );
 };
