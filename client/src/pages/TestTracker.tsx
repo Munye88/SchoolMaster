@@ -129,6 +129,14 @@ const TestTracker = () => {
   const [activeView, setActiveView] = useState<'dashboard' | 'data-entry' | 'date-range'>('dashboard');
   const [showManualEntryModal, setShowManualEntryModal] = useState(false);
   const [historicalView, setHistoricalView] = useState(false);
+  
+  // State for historical comparison view
+  const [compareSchool, setCompareSchool] = useState<string>('all');
+  const [compareTestType, setCompareTestType] = useState<'Book' | 'ALCPT' | 'ECL' | 'OPI'>('Book');
+  const [comparePeriod1, setComparePeriod1] = useState<string>(compareTestType === 'Book' ? '1' : 'January');
+  const [comparePeriod2, setComparePeriod2] = useState<string>(compareTestType === 'Book' ? '2' : 'February');
+  const [compareYear1, setCompareYear1] = useState<number>(2024);
+  const [compareYear2, setCompareYear2] = useState<number>(2025);
   const [dateRange, setDateRange] = useState<{start: Date | null, end: Date | null}>({
     start: null,
     end: null,
