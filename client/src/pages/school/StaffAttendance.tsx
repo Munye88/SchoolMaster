@@ -158,6 +158,172 @@ interface AttendanceFormData {
   comments: string;
 }
 
+// Component for editing existing attendance records
+const EditAttendanceForm: React.FC<{
+  record: StaffAttendance;
+  instructorName: string;
+  onClose: () => void;
+}> = ({ record, instructorName, onClose }) => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [formData, setFormData] = useState({
+    status: record.status,
+    timeIn: record.timeIn || "07:00",
+    timeOut: record.timeOut || "17:00",
+    comments: record.comments || ""
+  });
+  
+  // Mutation for updating attendance record
+  const updateAttendanceMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await fetch(`/api/staff-attendance/${record.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to update attendance record.");
+      }
+      
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success!",
+        description: `Updated attendance record for ${instructorName}.`,
+        variant: "default"
+      });
+      
+      // Invalidate queries to refresh the data
+      queryClient.invalidateQueries({ 
+        queryKey: ['/api/staff-attendance'] 
+      });
+      
+      onClose();
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to update record",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Convert timeIn to minutes for easier comparison
+    const timeInParts = formData.timeIn.split(':');
+    const timeInMinutes = parseInt(timeInParts[0]) * 60 + parseInt(timeInParts[1]);
+    
+    // 7:00 AM threshold in minutes = 7 * 60 + 0 = 420 minutes
+    const thresholdMinutes = 7 * 60;
+    
+    // If the person arrived after 7:00 AM and status is "present", mark as "late"
+    const updatedFormData = {...formData};
+    if (timeInMinutes > thresholdMinutes && formData.status === "present") {
+      updatedFormData.status = "late";
+      toast({
+        title: "Late Arrival Detected",
+        description: `Arrival time ${formData.timeIn} is after 7:00 AM. Status changed to Late.`,
+      });
+    }
+    
+    updateAttendanceMutation.mutate(updatedFormData);
+  };
+  
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="grid gap-4 py-4">
+        <div className="grid gap-2">
+          <Label>Instructor</Label>
+          <div className="px-3 py-2 border rounded bg-gray-50">
+            {instructorName}
+          </div>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label>Date</Label>
+          <div className="px-3 py-2 border rounded bg-gray-50">
+            {format(new Date(record.date), 'MMMM dd, yyyy')}
+          </div>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="status">Status</Label>
+          <Select
+            value={formData.status}
+            onValueChange={(value) => setFormData({ ...formData, status: value })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="present">Present</SelectItem>
+              <SelectItem value="late">Late</SelectItem>
+              <SelectItem value="absent">Absent</SelectItem>
+              <SelectItem value="sick">Sick</SelectItem>
+              <SelectItem value="pto">PTO</SelectItem>
+              <SelectItem value="paternity">Paternity</SelectItem>
+              <SelectItem value="bereavement">Bereavement</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="timeIn">Time In</Label>
+          <Input
+            id="timeIn"
+            type="time"
+            value={formData.timeIn}
+            onChange={(e) => setFormData({ ...formData, timeIn: e.target.value })}
+          />
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="timeOut">Time Out</Label>
+          <Input
+            id="timeOut"
+            type="time"
+            value={formData.timeOut}
+            onChange={(e) => setFormData({ ...formData, timeOut: e.target.value })}
+          />
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="comments">Comments</Label>
+          <Input
+            id="comments"
+            value={formData.comments}
+            onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
+            placeholder="Any additional notes..."
+          />
+        </div>
+      </div>
+      
+      <DialogFooter>
+        <Button variant="outline" type="button" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={updateAttendanceMutation.isPending}>
+          {updateAttendanceMutation.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Updating...
+            </>
+          ) : (
+            "Update Record"
+          )}
+        </Button>
+      </DialogFooter>
+    </form>
+  );
+};
+
 // Component for recording new attendance
 const AttendanceForm: React.FC<{
   instructors: Instructor[];
@@ -215,19 +381,8 @@ const AttendanceForm: React.FC<{
         queryKey: ['/api/staff-attendance']
       });
       
-      // Specific school query with date
-      if (selectedSchool) {
-        queryClient.invalidateQueries({
-          queryKey: ['/api/staff-attendance', selectedSchool.id, formattedSelectedDate]
-        });
-      }
-      
-      // School-specific queries without date
-      if (selectedSchool) {
-        queryClient.invalidateQueries({
-          queryKey: ['/api/staff-attendance', selectedSchool.id]
-        });
-      }
+      // Generic invalidation is sufficient
+      // We've removed school-specific query invalidation to prevent errors
       
       // Force immediate refresh with the specific query
       parentRefetch();
@@ -739,7 +894,7 @@ const StaffAttendance = () => {
       
       // Refresh data with proper query key structure to match our custom query
       queryClient.invalidateQueries({ 
-        queryKey: ['/api/staff-attendance', selectedSchool?.id] 
+        queryKey: ['/api/staff-attendance'] 
       });
       
       // Force immediate specific refresh with the current date
@@ -834,7 +989,7 @@ const StaffAttendance = () => {
             onClick={() => {
               // Invalidate the query with proper parameters
               queryClient.invalidateQueries({ 
-                queryKey: ['/api/staff-attendance', selectedSchool?.id] 
+                queryKey: ['/api/staff-attendance'] 
               });
               // Also force an immediate refresh
               refetchAttendance();
@@ -1290,6 +1445,7 @@ const StaffAttendance = () => {
                                             <TableHead>Status</TableHead>
                                             <TableHead>Time In</TableHead>
                                             <TableHead>Comments</TableHead>
+                                            <TableHead>Actions</TableHead>
                                           </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -1300,8 +1456,8 @@ const StaffAttendance = () => {
                                                 <TableCell>
                                                   <Badge 
                                                     className={
-                                                      record.status === "present" ? "bg-green-500" : 
-                                                      record.status === "late" ? "bg-amber-500" : 
+                                                      record.status.toLowerCase() === "present" ? "bg-green-500" : 
+                                                      record.status.toLowerCase() === "late" ? "bg-amber-500" : 
                                                       "bg-red-500"
                                                     }
                                                   >
@@ -1310,11 +1466,33 @@ const StaffAttendance = () => {
                                                 </TableCell>
                                                 <TableCell>{record.timeIn || "N/A"}</TableCell>
                                                 <TableCell>{record.comments || "-"}</TableCell>
+                                                <TableCell>
+                                                  <Dialog>
+                                                    <DialogTrigger asChild>
+                                                      <Button variant="ghost" size="icon" title="Edit attendance record">
+                                                        <Edit size={16} className="text-gray-500 hover:text-blue-600" />
+                                                      </Button>
+                                                    </DialogTrigger>
+                                                    <DialogContent className="sm:max-w-[525px]">
+                                                      <DialogHeader>
+                                                        <DialogTitle>Edit Attendance Record</DialogTitle>
+                                                        <DialogDescription>
+                                                          Update attendance details for {item.name} on {format(new Date(record.date), "MMMM dd, yyyy")}.
+                                                        </DialogDescription>
+                                                      </DialogHeader>
+                                                      <EditAttendanceForm 
+                                                        record={record}
+                                                        instructorName={item.name}
+                                                        onClose={() => {}}
+                                                      />
+                                                    </DialogContent>
+                                                  </Dialog>
+                                                </TableCell>
                                               </TableRow>
                                             ))
                                           ) : (
                                             <TableRow>
-                                              <TableCell colSpan={4} className="text-center py-4 text-gray-500">
+                                              <TableCell colSpan={5} className="text-center py-4 text-gray-500">
                                                 No attendance records found for this month.
                                               </TableCell>
                                             </TableRow>
