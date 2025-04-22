@@ -2308,6 +2308,13 @@ const TestTracker = () => {
               >
                 <FileText size={16} /> Generate PDF Report
               </Button>
+              <Button 
+                variant="outline" 
+                className="border-blue-200 text-blue-600 gap-2 hover:bg-blue-50"
+                onClick={() => handlePrintReport()}
+              >
+                <Printer size={16} /> Print Report
+              </Button>
             </div>
           </div>
         </CardContent>
