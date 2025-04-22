@@ -14,6 +14,7 @@ import { updateNfsWestImages } from './migrations/update_nfs_west_images';
 import { permanentFixNfsWestImages } from './migrations/permanent_fix_nfs_west_images';
 import { addCompletedDateField } from './migrations/add_completed_date';
 import { addColumnsToEvaluations } from './migrations/add_columns_to_evaluations';
+import { addNotificationsTable } from './migrations/add_notifications_table';
 
 export async function initDatabase() {
   try {
@@ -141,6 +142,9 @@ export async function initDatabase() {
     
     // Add evaluationType and employeeId columns to evaluations table
     await addColumnsToEvaluations();
+    
+    // Add notifications table
+    await addNotificationsTable();
     
     return true;
   } catch (error) {

@@ -338,6 +338,43 @@ export const staffAttendanceRelations = relations(staffAttendance, ({ one }) => 
 export type StaffAttendance = typeof staffAttendance.$inferSelect;
 export type InsertStaffAttendance = z.infer<typeof insertStaffAttendanceSchema>;
 
+// Notifications System
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  type: text("type", { 
+    enum: ["absent", "leave", "evaluation", "student_change", "staff_change", "course_complete", "system"] 
+  }).notNull(),
+  priority: text("priority", { 
+    enum: ["high", "medium", "low"] 
+  }).notNull().default("medium"),
+  relatedId: integer("related_id"),  // ID of related entity (instructor, course, etc.)
+  schoolId: integer("school_id").references(() => schools.id),
+  isRead: boolean("is_read").notNull().default(false),
+  isDismissed: boolean("is_dismissed").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  dismissedAt: timestamp("dismissed_at"),
+  expiresAt: timestamp("expires_at"),
+  userId: integer("user_id").references(() => users.id)  // User who should see this notification
+});
+
+export const insertNotificationSchema = createInsertSchema(notifications).pick({
+  title: true,
+  message: true,
+  type: true,
+  priority: true,
+  relatedId: true,
+  schoolId: true,
+  isRead: true,
+  isDismissed: true,
+  expiresAt: true,
+  userId: true
+});
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+
 // Type for Aggregated Test Data visualization
 export interface AggregateTestData {
   id: number;
