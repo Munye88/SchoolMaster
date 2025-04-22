@@ -4,6 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PrintButton } from "@/components/ui/print-button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 import { 
   Search, 
   Upload, 
@@ -843,6 +852,58 @@ const TestTracker = () => {
 
   return (
     <main className="flex-1 overflow-y-auto py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+      {/* Import Modal */}
+      <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Import Test Data from Excel</DialogTitle>
+            <DialogDescription>
+              Select a school and test type before uploading your Excel file.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="school" className="text-right">
+                School
+              </Label>
+              <Select value={importSchool} onValueChange={setImportSchool}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select school" />
+                </SelectTrigger>
+                <SelectContent>
+                  {schools.map(school => (
+                    <SelectItem key={school.id} value={school.id.toString()}>{school.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="testType" className="text-right">
+                Test Type
+              </Label>
+              <Select value={importTestType} onValueChange={setImportTestType}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select test type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Book">Book Test</SelectItem>
+                  <SelectItem value="ALCPT">ALCPT</SelectItem>
+                  <SelectItem value="ECL">ECL</SelectItem>
+                  <SelectItem value="OPI">OPI</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowImportModal(false)}>
+              Cancel
+            </Button>
+            <Button type="button" onClick={proceedWithImport} disabled={!importSchool || !importTestType}>
+              Select Excel File
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
@@ -1406,10 +1467,17 @@ const TestTracker = () => {
               The data visualizations help school administrators identify trends and areas for improvement.
             </p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <Button className="bg-[#0A2463] hover:bg-[#071A4A] gap-2">
+              <Button 
+                className="bg-[#0A2463] hover:bg-[#071A4A] gap-2"
+                onClick={handleExportTestResults}
+              >
                 <Download size={16} /> Export Test Results
               </Button>
-              <Button variant="outline" className="border-[#0A2463] text-[#0A2463] gap-2">
+              <Button 
+                variant="outline" 
+                className="border-[#0A2463] text-[#0A2463] gap-2"
+                onClick={handleGeneratePDFReport}
+              >
                 <FileText size={16} /> Generate PDF Report
               </Button>
             </div>
