@@ -802,9 +802,13 @@ const TestTracker = () => {
           }
           
           setShowImportModal(false);
-        } catch (error) {
+        } catch (error: unknown) {
           console.error("Error processing Excel file:", error);
-          alert(`Error processing Excel file: ${error.message}`);
+          if (error instanceof Error) {
+            alert(`Error processing Excel file: ${error.message}`);
+          } else {
+            alert("An unknown error occurred while processing the Excel file.");
+          }
         }
       };
       
@@ -2099,39 +2103,82 @@ const TestTracker = () => {
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartPieChart>
+                      <defs>
+                        <linearGradient id="knfaGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#4285F4" />
+                          <stop offset="100%" stopColor="#5B9BF9" />
+                        </linearGradient>
+                        <linearGradient id="nfsEastGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#34A853" />
+                          <stop offset="100%" stopColor="#4FC26B" />
+                        </linearGradient>
+                        <linearGradient id="nfsWestGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#FBBC05" />
+                          <stop offset="100%" stopColor="#FFD74C" />
+                        </linearGradient>
+                      </defs>
                       <Pie
                         data={[
                           { 
                             name: "KNFA", 
                             value: filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0, 
-                            color: "#4285F4" 
+                            fill: "url(#knfaGradient)"
                           },
                           { 
                             name: "NFS East", 
                             value: filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0, 
-                            color: "#34A853" 
+                            fill: "url(#nfsEastGradient)"
                           },
                           { 
                             name: "NFS West", 
                             value: filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0, 
-                            color: "#FBBC05" 
+                            fill: "url(#nfsWestGradient)"
                           }
                         ]}
                         cx="50%"
                         cy="50%"
-                        labelLine={false}
-                        outerRadius={120}
-                        innerRadius={60}
-                        fill="#8884d8"
+                        labelLine={true}
+                        innerRadius={65}
+                        outerRadius={110}
+                        paddingAngle={4}
+                        cornerRadius={6}
+                        stroke="#fff"
+                        strokeWidth={3}
                         dataKey="value"
-                        label={({ name, value }) => `${name}: ${value} students`}
                       >
-                        <Cell key="KNFA" fill="#4285F4" />
-                        <Cell key="NFS East" fill="#34A853" />
-                        <Cell key="NFS West" fill="#FBBC05" />
+                        {[
+                          { name: "KNFA", fill: "url(#knfaGradient)" },
+                          { name: "NFS East", fill: "url(#nfsEastGradient)" },
+                          { name: "NFS West", fill: "url(#nfsWestGradient)" }
+                        ].map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.fill}
+                            strokeWidth={2}
+                          />
+                        ))}
                       </Pie>
-                      <Tooltip formatter={(value) => [`${value} students`, 'Count']} />
-                      <Legend />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                          border: 'none',
+                          padding: '12px'
+                        }}
+                        formatter={(value) => [`${value} students`, 'Count']}
+                      />
+                      <Legend 
+                        layout="horizontal" 
+                        verticalAlign="bottom" 
+                        align="center"
+                        iconType="circle"
+                        iconSize={10}
+                        wrapperStyle={{
+                          paddingTop: '20px',
+                          fontWeight: 600
+                        }}
+                      />
                     </RechartPieChart>
                   </ResponsiveContainer>
                 </div>
@@ -2153,47 +2200,93 @@ const TestTracker = () => {
                       data={filteredTestData}
                       margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                       layout="vertical"
-                      barSize={40}
+                      barSize={36}
                     >
-                      <CartesianGrid strokeDasharray="3 3" horizontal={true} />
-                      <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 14 }} />
-                      <YAxis type="category" dataKey="schoolName" width={100} tick={{ fontSize: 14, fontWeight: 'bold' }} />
+                      <defs>
+                        <linearGradient id="passGradient" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#34A853" />
+                          <stop offset="100%" stopColor="#4FC26B" />
+                        </linearGradient>
+                        <linearGradient id="failGradient" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#EA4335" />
+                          <stop offset="100%" stopColor="#FF6A5E" />
+                        </linearGradient>
+                        <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+                          <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.2"/>
+                        </filter>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={true} />
+                      <XAxis 
+                        type="number" 
+                        domain={[0, 100]} 
+                        tick={{ fontSize: 12 }} 
+                        axisLine={{ stroke: '#e0e0e0' }}
+                        tickLine={{ stroke: '#e0e0e0' }}
+                      />
+                      <YAxis 
+                        type="category" 
+                        dataKey="schoolName" 
+                        width={100} 
+                        tick={{ fontSize: 13, fontWeight: 'bold' }}
+                        axisLine={{ stroke: '#e0e0e0' }}
+                        tickLine={{ stroke: '#e0e0e0' }}
+                      />
                       <Tooltip 
-                        contentStyle={{ fontSize: '14px' }} 
+                        cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                          border: 'none',
+                          padding: '12px',
+                          fontSize: '14px'
+                        }} 
                         formatter={(value) => [`${value}%`, 'Pass Rate']}
                       />
-                      <Legend wrapperStyle={{ fontSize: '14px' }} />
+                      <Legend 
+                        wrapperStyle={{ 
+                          fontSize: '13px',
+                          paddingTop: '15px'
+                        }}
+                        iconType="circle"
+                        iconSize={10}
+                      />
                       <Bar 
                         dataKey="passingRate" 
                         name="Pass Rate (%)" 
-                        radius={[0, 8, 8, 0]}
+                        radius={[4, 4, 4, 4]}
                         label={{ 
                           position: 'right', 
-                          formatter: (value) => `${value}%`, 
+                          formatter: (value: number) => `${value}%`, 
                           fill: '#000', 
-                          fontSize: 14,
-                          fontWeight: 'bold' 
+                          fontSize: 13,
+                          fontWeight: 'bold',
+                          offset: 15
                         }}
+                        animationDuration={1200}
                       >
                         {filteredTestData.map((entry, index) => (
                           <Cell 
                             key={`cell-${index}`} 
-                            fill={entry.passingRate >= 70 ? "#34A853" : "#EA4335"} 
+                            fill={entry.passingRate >= 70 ? "url(#passGradient)" : "url(#failGradient)"}
+                            filter="url(#shadow)"
+                            stroke="#fff"
+                            strokeWidth={1}
                           />
                         ))}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="mt-4 flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-green-500 rounded-sm"></div>
-                      <span className="text-sm font-medium">Pass</span>
+                <div className="mt-6 flex justify-center">
+                  <div className="grid grid-cols-2 gap-8 bg-gray-50 p-3 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-md bg-gradient-to-r from-[#34A853] to-[#4FC26B] shadow-sm"></div>
+                      <span className="text-sm font-medium text-gray-700">Pass (≥70%)</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 bg-red-500 rounded-sm"></div>
-                      <span className="text-sm font-medium">Fail</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-md bg-gradient-to-r from-[#EA4335] to-[#FF6A5E] shadow-sm"></div>
+                      <span className="text-sm font-medium text-gray-700">Fail (Below 70%)</span>
                     </div>
                   </div>
                 </div>
