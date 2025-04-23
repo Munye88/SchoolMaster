@@ -1047,6 +1047,7 @@ const Reports = () => {
                   {reportType === "performance" && "Recognize and reward instructors with highest performance improvements."}
                   {reportType === "attendance" && "Follow up with students having attendance below threshold."}
                   {reportType === "evaluations" && "Establish peer mentoring program for new instructors."}
+                  {reportType === "staffLeave" && "Implement better tracking system for PTO and R&R categories."}
                   {reportType === "trends" && "Expand successful Language Training course offerings."}
                 </span>
               </li>
@@ -1056,6 +1057,7 @@ const Reports = () => {
                   {reportType === "performance" && "Share best practices from NFS East with other schools."}
                   {reportType === "attendance" && "Review scheduling for courses with attendance issues."}
                   {reportType === "evaluations" && "Update evaluation criteria for next quarter based on feedback."}
+                  {reportType === "staffLeave" && "Monitor and reduce the increasing trend of Negative PTO requests."}
                   {reportType === "trends" && "Implement new tracking metrics for course effectiveness."}
                 </span>
               </li>
