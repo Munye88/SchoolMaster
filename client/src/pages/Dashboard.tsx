@@ -751,8 +751,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Calendar */}
-          <CalendarComponent className="shadow-sm" />
+
 
           {/* To-Do List */}
           <Card className="shadow-sm">
