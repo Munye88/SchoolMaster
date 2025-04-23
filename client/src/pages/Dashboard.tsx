@@ -681,6 +681,15 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
+          {/* Calendar added at the bottom of Left Column */}
+          <Card className="shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-lg text-[#0A2463]">Calendar</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <CalendarComponent className="shadow-none" />
+            </CardContent>
+          </Card>
 
         </div>
 
