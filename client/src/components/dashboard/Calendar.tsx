@@ -240,14 +240,17 @@ export function Calendar({ className }: CalendarProps) {
                 const getSchoolName = (schoolId: number | null) => {
                   if (!schoolId) return 'All Schools';
                   
-                  if (currentSchool && currentSchool.id === schoolId) {
-                    return currentSchool.name;
+                  if (selectedSchool && selectedSchool.id === schoolId) {
+                    return selectedSchool.name;
                   }
                   
                   const schoolMap: Record<number, string> = {
                     1: 'KNFA',
+                    350: 'KNFA',
                     2: 'NFS East',
-                    3: 'NFS West'
+                    351: 'NFS East',
+                    3: 'NFS West',
+                    352: 'NFS West'
                   };
                   
                   return schoolMap[schoolId] || 'Unknown School';
