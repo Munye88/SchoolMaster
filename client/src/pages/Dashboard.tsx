@@ -814,7 +814,7 @@ const Dashboard = () => {
               <CardTitle className="text-lg text-[#0A2463]">Notifications</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="max-h-[220px] overflow-y-auto">
+              <div>
                 <Notifications
                   instructors={instructors}
                   staffAttendance={staffAttendance}
@@ -826,9 +826,9 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* Quick Links */}
-          <Card className="shadow-sm">
+          
+          {/* Quick Links - moved to bottom */}
+          <Card className="shadow-sm mt-4">
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-lg text-[#0A2463]">Quick Links</CardTitle>
             </CardHeader>
@@ -852,7 +852,6 @@ const Dashboard = () => {
                   </div>
                   <ChevronRight className="h-4 w-4 text-gray-400" />
                 </Link>
-
               </div>
             </CardContent>
           </Card>

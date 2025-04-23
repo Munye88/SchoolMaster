@@ -608,8 +608,8 @@ const Notifications: React.FC<NotificationsProps> = ({
         </div>
       </div>
       
-      {/* Notification list with scroll area */}
-      <ScrollArea className="h-[240px] w-full border-x border-b border-gray-200 rounded-b-xl bg-gray-50 shadow-inner">
+      {/* Notification list with scroll area - increased height */}
+      <ScrollArea className="h-[380px] w-full border-x border-b border-gray-200 rounded-b-xl bg-gray-50 shadow-inner">
         <div className="space-y-3 p-3">
           {filteredNonDismissedAlerts.length > 0 ? (
             filteredNonDismissedAlerts.map((alert, index) => (
