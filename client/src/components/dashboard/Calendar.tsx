@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, MapPin } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
-import { Event } from '@shared/schema';
+import { Event, School } from '@shared/schema';
 import { useSchool } from '@/hooks/useSchool';
+import * as Hijri from 'hijri-js';
 import {
   Tooltip,
   TooltipContent,
@@ -19,14 +20,17 @@ interface CalendarProps {
 
 export function Calendar({ className }: CalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { selectedSchool, currentSchool } = useSchool();
+  const { selectedSchool, schools } = useSchool();
+  
+  // Use selectedSchool as the current school
+  const currentSchool = selectedSchool;
   
   // Fetch all events or school-specific events based on selection
   const { data: events, isLoading } = useQuery<Event[]>({
-    queryKey: selectedSchool && currentSchool 
-      ? ['/api/schools', currentSchool.id, 'events']
+    queryKey: selectedSchool 
+      ? ['/api/schools', selectedSchool.id, 'events']
       : ['/api/events'],
-    enabled: !selectedSchool || !!currentSchool?.id,
+    enabled: !selectedSchool || !!selectedSchool?.id,
   });
   
   const handlePreviousMonth = () => {
@@ -41,30 +45,105 @@ export function Calendar({ className }: CalendarProps) {
   const monthEnd = endOfMonth(currentMonth);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
   
+  // Function to get Hijri date
+  const getHijriDate = (date: Date) => {
+    try {
+      // Use the Hijri-js library to convert gregorian date to Hijri
+      // Format the date to required format (YYYY/MM/DD)
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1; // JavaScript months are 0-based
+      const day = date.getDate();
+      
+      const formattedDate = `${year}/${month}/${day}`;
+      
+      // Convert to Hijri using the library
+      const hijriData = Hijri.gregorianToHijri(formattedDate);
+      
+      // Format the Hijri date nicely
+      if (hijriData && hijriData.day && hijriData.month && hijriData.year) {
+        const monthNames = [
+          "Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani", 
+          "Jumada al-Awwal", "Jumada al-Thani", "Rajab", "Sha'ban", 
+          "Ramadan", "Shawwal", "Dhu al-Qi'dah", "Dhu al-Hijjah"
+        ];
+        
+        const hijriMonthName = monthNames[hijriData.month - 1] || "";
+        return `${hijriData.day} ${hijriMonthName} ${hijriData.year} AH`;
+      }
+      
+      return "";
+    } catch (error) {
+      console.error("Error converting to Hijri date:", error);
+      return "";
+    }
+  };
+
+  // Function to get school name by ID
+  const getSchoolName = (schoolId: number | null) => {
+    if (!schoolId) return 'All Schools';
+    
+    if (currentSchool && currentSchool.id === schoolId) {
+      return currentSchool.name;
+    }
+    
+    // If we're showing events for all schools, try to get the school name
+    const schoolMap: Record<number, string> = {
+      1: 'KNFA',
+      350: 'NFS East',
+      351: 'NFS West'
+    };
+    
+    return schoolMap[schoolId] || 'Unknown School';
+  };
+
+  // Function to get school color by ID
+  const getSchoolColor = (schoolId: number | null): string => {
+    if (!schoolId) return "bg-gray-100";
+    
+    // Color mapping for schools
+    const schoolColorMap: Record<number, string> = {
+      1: "bg-blue-100", // KNFA
+      350: "bg-green-100", // NFS East
+      351: "bg-purple-100" // NFS West
+    };
+    
+    return schoolColorMap[schoolId] || "bg-gray-100";
+  };
+
+  // Function to determine if an event is a student day
+  const isStudentDay = (event: Event): boolean => {
+    return event.title.toLowerCase().includes("student day") || 
+           event.description?.toLowerCase().includes("student day") || 
+           false;
+  };
+  
   const renderDay = (day: Date) => {
     const isCurrentMonth = isSameMonth(day, currentMonth);
     const isCurrentDay = isToday(day);
     const dayEvents = events?.filter(event => isSameDay(new Date(event.start), day)) || [];
     const hasEvents = dayEvents.length > 0;
     
-    // Function to get school name by ID
-    const getSchoolName = (schoolId: number | null) => {
-      if (!schoolId) return 'All Schools';
-      
-      if (currentSchool && currentSchool.id === schoolId) {
-        return currentSchool.name;
+    // Check if there are any student days for this date
+    const studentDayEvents = dayEvents.filter(isStudentDay);
+    const hasStudentDay = studentDayEvents.length > 0;
+    
+    // Get the first student day event to determine coloring
+    const firstStudentDayEvent = studentDayEvents[0];
+    
+    // Determine background color for student days by school
+    let dayBgColor = "";
+    if (hasStudentDay && firstStudentDayEvent.schoolId) {
+      if (firstStudentDayEvent.schoolId === 1) {
+        dayBgColor = "bg-blue-50"; // KNFA
+      } else if (firstStudentDayEvent.schoolId === 350) {
+        dayBgColor = "bg-green-50"; // NFS East
+      } else if (firstStudentDayEvent.schoolId === 351) {
+        dayBgColor = "bg-purple-50"; // NFS West
       }
-      
-      // If we're showing events for all schools, try to get the school name
-      // This is a stub - ideally we'd fetch all schools and match by ID
-      const schoolMap: Record<number, string> = {
-        1: 'KNFA',
-        2: 'NFS East',
-        3: 'NFS West'
-      };
-      
-      return schoolMap[schoolId] || 'Unknown School';
-    };
+    }
+    
+    // Get Hijri date for hover
+    const hijriDate = getHijriDate(day);
     
     const dayContent = (
       <>
@@ -72,11 +151,19 @@ export function Calendar({ className }: CalendarProps) {
         {hasEvents && (
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
             <div className="flex space-x-0.5">
-              {dayEvents.slice(0, 3).map((_, index) => (
-                <div key={index} className="h-1 w-1 rounded-full bg-blue-500" />
-              ))}
+              {dayEvents.slice(0, 3).map((event, index) => {
+                // Use school-specific colors for the event indicators
+                let dotColor = "bg-blue-500";
+                if (event.schoolId === 1) dotColor = "bg-blue-500"; // KNFA
+                if (event.schoolId === 350) dotColor = "bg-green-500"; // NFS East
+                if (event.schoolId === 351) dotColor = "bg-purple-500"; // NFS West
+                
+                return (
+                  <div key={index} className={`h-1 w-1 rounded-full ${dotColor}`} />
+                );
+              })}
               {dayEvents.length > 3 && (
-                <div className="h-1 w-1 rounded-full bg-blue-300" />
+                <div className="h-1 w-1 rounded-full bg-gray-300" />
               )}
             </div>
           </div>
@@ -84,61 +171,75 @@ export function Calendar({ className }: CalendarProps) {
       </>
     );
     
+    // Both tooltipped and non-tooltipped days share these classes
+    const baseClasses = cn(
+      "h-10 w-10 flex items-center justify-center rounded-full text-sm relative",
+      !isCurrentMonth && "text-gray-400",
+      isCurrentDay && "bg-blue-100 font-bold text-blue-800",
+      hasStudentDay && dayBgColor, // Apply school-specific background color for student days
+      "hover:bg-gray-100 cursor-pointer"
+    );
+    
     // If there are no events, just return the day without a tooltip
     if (!hasEvents) {
       return (
-        <div 
-          key={day.toString()} 
-          className={cn(
-            "h-10 w-10 flex items-center justify-center rounded-full text-sm relative",
-            !isCurrentMonth && "text-gray-400",
-            isCurrentDay && "bg-blue-100 font-bold text-blue-800",
-            "hover:bg-gray-100 cursor-pointer"
-          )}
-        >
-          {dayContent}
-        </div>
+        <TooltipProvider key={day.toString()}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className={baseClasses}>
+                {dayContent}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="p-2">
+              <div className="text-xs">
+                <div className="font-semibold">{format(day, 'MMMM d, yyyy')}</div>
+                <div className="text-gray-500 mt-1">{hijriDate}</div>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     }
     
-    // If there are events, wrap in a tooltip
+    // If there are events, show event details in tooltip
     return (
       <TooltipProvider key={day.toString()}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div 
-              className={cn(
-                "h-10 w-10 flex items-center justify-center rounded-full text-sm relative",
-                !isCurrentMonth && "text-gray-400",
-                isCurrentDay && "bg-blue-100 font-bold text-blue-800",
-                hasEvents && !isCurrentDay && "font-semibold",
-                "hover:bg-gray-100 cursor-pointer"
-              )}
-            >
+            <div className={cn(baseClasses, hasEvents && !isCurrentDay && "font-semibold")}>
               {dayContent}
             </div>
           </TooltipTrigger>
           <TooltipContent side="right" className="p-0 max-w-[250px]">
             <div className="p-2">
               <div className="font-semibold mb-1">{format(day, 'MMMM d, yyyy')}</div>
+              <div className="text-xs text-gray-500 mb-2">{hijriDate}</div>
               <div className="space-y-2">
-                {dayEvents.map(event => (
-                  <div key={event.id} className="text-xs border-l-2 border-blue-500 pl-2">
-                    <div className="font-medium">{event.title}</div>
-                    <div className="flex items-center text-gray-500 mt-0.5">
-                      <Clock className="h-3 w-3 mr-1" />
-                      <span>
-                        {format(new Date(event.start), 'h:mm a')} - {format(new Date(event.end), 'h:mm a')}
-                      </span>
-                    </div>
-                    {event.schoolId !== null && (
+                {dayEvents.map(event => {
+                  // Determine border color based on school
+                  let borderColor = "border-gray-400";
+                  if (event.schoolId === 1) borderColor = "border-blue-500"; // KNFA
+                  if (event.schoolId === 350) borderColor = "border-green-500"; // NFS East
+                  if (event.schoolId === 351) borderColor = "border-purple-500"; // NFS West
+                  
+                  return (
+                    <div key={event.id} className={`text-xs border-l-2 ${borderColor} pl-2`}>
+                      <div className="font-medium">{event.title}</div>
                       <div className="flex items-center text-gray-500 mt-0.5">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        <span>{getSchoolName(event.schoolId)}</span>
+                        <Clock className="h-3 w-3 mr-1" />
+                        <span>
+                          {format(new Date(event.start), 'h:mm a')} - {format(new Date(event.end), 'h:mm a')}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                ))}
+                      {event.schoolId !== null && (
+                        <div className="flex items-center text-gray-500 mt-0.5">
+                          <MapPin className="h-3 w-3 mr-1" />
+                          <span>{getSchoolName(event.schoolId)}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </TooltipContent>
@@ -206,27 +307,11 @@ export function Calendar({ className }: CalendarProps) {
               .map(event => {
                 // Get school label color based on schoolId
                 let schoolColor = "bg-gray-100 text-gray-600";
-                if (event.schoolId === 1) schoolColor = "bg-blue-100 text-blue-600";
-                if (event.schoolId === 2) schoolColor = "bg-green-100 text-green-600";
-                if (event.schoolId === 3) schoolColor = "bg-purple-100 text-purple-600";
+                if (event.schoolId === 1) schoolColor = "bg-blue-100 text-blue-600"; // KNFA
+                if (event.schoolId === 350) schoolColor = "bg-green-100 text-green-600"; // NFS East
+                if (event.schoolId === 351) schoolColor = "bg-purple-100 text-purple-600"; // NFS West
                 
-                // Get school name
-                const getSchoolName = (schoolId: number | null) => {
-                  if (!schoolId) return 'All Schools';
-                  
-                  if (currentSchool && currentSchool.id === schoolId) {
-                    return currentSchool.name;
-                  }
-                  
-                  const schoolMap: Record<number, string> = {
-                    1: 'KNFA',
-                    2: 'NFS East',
-                    3: 'NFS West'
-                  };
-                  
-                  return schoolMap[schoolId] || 'Unknown School';
-                };
-                
+                // Get school name using the same function as above
                 const schoolName = getSchoolName(event.schoolId);
                 
                 return (
