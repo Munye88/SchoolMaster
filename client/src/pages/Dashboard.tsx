@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useSchool } from "@/hooks/useSchool";
 import { Link } from "wouter";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { Calendar as CalendarComponent } from "@/components/dashboard/Calendar";
 import Notifications from "@/components/dashboard/Notifications";
 import { useQuery } from "@tanstack/react-query";
@@ -701,51 +701,7 @@ const Dashboard = () => {
 
         {/* Right Column */}
         <div className="space-y-6">
-          {/* Recent Activity */}
-          <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-lg text-[#0A2463]">Recent Activity</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="divide-y divide-gray-100">
-                <div className="p-4 flex gap-3">
-                  <div className="bg-blue-100 p-1.5 rounded-full h-fit">
-                    <User className="h-4 w-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">New instructor onboarded</p>
-                    <p className="text-xs text-gray-500">Sarah Johnson was added to NFS East</p>
-                    <p className="text-xs text-gray-400 mt-1">2 hours ago</p>
-                  </div>
-                </div>
-                <div className="p-4 flex gap-3">
-                  <div className="bg-green-100 p-1.5 rounded-full h-fit">
-                    <Check className="h-4 w-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Course completed</p>
-                    <p className="text-xs text-gray-500">Aviation English I completed at KNFA</p>
-                    <p className="text-xs text-gray-400 mt-1">Yesterday</p>
-                  </div>
-                </div>
-                <div className="p-4 flex gap-3">
-                  <div className="bg-yellow-100 p-1.5 rounded-full h-fit">
-                    <Activity className="h-4 w-4 text-yellow-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Reports submitted</p>
-                    <p className="text-xs text-gray-500">Monthly evaluation reports submitted</p>
-                    <p className="text-xs text-gray-400 mt-1">Sep 30, 2024</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Calendar */}
-          <CalendarComponent className="shadow-sm" />
-
-          {/* Upcoming Events */}
+          {/* Upcoming Events - replacing Recent Activity */}
           <Card className="shadow-sm">
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-center">
@@ -758,57 +714,65 @@ const Dashboard = () => {
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-medium text-sm">Student Days</h4>
-                    <span className="bg-amber-100 text-amber-600 text-xs px-2 py-0.5 rounded-full">NFS West</span>
+                    <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">Tomorrow</span>
                   </div>
-                  <div className="flex items-center text-xs text-gray-500 gap-3">
-                    <div className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>Apr 18, 2025</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-3 w-3 mr-1" />
-                      <span>All Day</span>
-                    </div>
-                  </div>
-                  <div className="mt-1 text-xs text-gray-500">
-                    Open house for students to showcase projects and achievement
+                  <p className="text-xs text-gray-500">
+                    Aviation English II student day at KFNA
+                  </p>
+                  <div className="flex items-center mt-2 text-xs text-gray-400">
+                    <Calendar className="h-3 w-3 mr-1" />
+                    <span>{format(new Date(Date.now() + 86400000), "MMM dd, yyyy")}</span>
                   </div>
                 </div>
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-medium text-sm">Staff Meeting</h4>
-                    <span className="bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded-full">KNFA</span>
+                    <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs">Next Week</span>
                   </div>
-                  <div className="flex items-center text-xs text-gray-500 gap-3">
-                    <div className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>Apr 20, 2025</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-3 w-3 mr-1" />
-                      <span>09:00 - 10:30</span>
-                    </div>
+                  <p className="text-xs text-gray-500">
+                    Monthly staff meeting for all instructors
+                  </p>
+                  <div className="flex items-center mt-2 text-xs text-gray-400">
+                    <Calendar className="h-3 w-3 mr-1" />
+                    <span>{format(new Date(Date.now() + 7 * 86400000), "MMM dd, yyyy")}</span>
                   </div>
                 </div>
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-sm">Quarterly Review</h4>
-                    <span className="bg-green-100 text-green-600 text-xs px-2 py-0.5 rounded-full">NFS East</span>
+                    <h4 className="font-medium text-sm">End of Course</h4>
+                    <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-xs">2 Weeks</span>
                   </div>
-                  <div className="flex items-center text-xs text-gray-500 gap-3">
-                    <div className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>May 5, 2025</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-3 w-3 mr-1" />
-                      <span>11:00 - 13:00</span>
-                    </div>
+                  <p className="text-xs text-gray-500">
+                    Technical English course completion
+                  </p>
+                  <div className="flex items-center mt-2 text-xs text-gray-400">
+                    <Calendar className="h-3 w-3 mr-1" />
+                    <span>{format(new Date(Date.now() + 14 * 86400000), "MMM dd, yyyy")}</span>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
+
+          {/* Notifications - moved here to swap position with calendar */}
+          <Card className="shadow-sm">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-lg text-[#0A2463]">Notifications</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pb-6">
+              <Notifications
+                instructors={instructors}
+                staffAttendance={staffAttendance}
+                staffLeave={staffLeave}
+                evaluations={evaluations}
+                courses={courses}
+                students={students}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Calendar moved to the bottom of this column */}
+          <CalendarComponent className="shadow-sm" />
 
           {/* To-Do List */}
           <Card className="shadow-sm">
