@@ -316,15 +316,27 @@ const Notifications: React.FC<NotificationsProps> = ({
   // Course notifications
   const courseNotifications: Notification[] = courses
     .filter(course => {
-      // Courses that are about to start (within 7 days) or end (within 7 days)
-      const startDate = new Date(course.startDate);
-      const endDate = new Date(course.endDate);
-      const startDiff = differenceInDays(startDate, today);
-      const endDiff = differenceInDays(endDate, today);
+      // Check if dates exist and are valid
+      if (!course.startDate || !course.endDate) return false;
       
-      return (startDiff <= 7 && startDiff >= 0) || (endDiff <= 7 && endDiff >= 0);
+      try {
+        // Try to create Date objects to validate them
+        const startDate = new Date(course.startDate);
+        const endDate = new Date(course.endDate);
+        
+        // Make sure they're valid dates
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return false;
+        
+        const startDiff = differenceInDays(startDate, today);
+        const endDiff = differenceInDays(endDate, today);
+        
+        return (startDiff <= 7 && startDiff >= 0) || (endDiff <= 7 && endDiff >= 0);
+      } catch (error) {
+        return false;
+      }
     })
     .map(course => {
+      // Create Date objects (we know they're valid from the filter)
       const startDate = new Date(course.startDate);
       const endDate = new Date(course.endDate);
       const startDiff = differenceInDays(startDate, today);
@@ -356,31 +368,18 @@ const Notifications: React.FC<NotificationsProps> = ({
   // Student count change notifications
   const studentCountNotifications: Notification[] = [];
   if (students && students.length > 0) {
-    // Group students by course
-    const courseStudentCounts = students.reduce((acc, student) => {
-      const courseId = student.courseId;
-      if (!acc[courseId]) {
-        acc[courseId] = 0;
-      }
-      acc[courseId]++;
-      return acc;
-    }, {} as Record<number, number>);
-    
-    // Create notifications for courses with large student counts
-    Object.entries(courseStudentCounts).forEach(([courseId, count]) => {
-      if (count > 25) {
-        const course = courses.find(c => c.id === parseInt(courseId));
-        if (course) {
-          studentCountNotifications.push({
-            id: `student-count-${courseId}`,
-            name: 'High Enrollment',
-            schoolId: course.schoolId,
-            reason: `${course.name} has ${count} students enrolled`,
-            type: 'student_change' as NotificationType,
-            priority: 'medium' as 'high' | 'medium' | 'low',
-            timestamp: today,
-          });
-        }
+    // Find courses with high enrollment
+    students.forEach(student => {
+      if (student.numberOfStudents > 25) {
+        studentCountNotifications.push({
+          id: `student-count-${student.id}`,
+          name: 'High Enrollment',
+          schoolId: student.schoolId,
+          reason: `${student.courseType} has ${student.numberOfStudents} students enrolled`,
+          type: 'student_change' as NotificationType,
+          priority: 'medium' as 'high' | 'medium' | 'low',
+          timestamp: today,
+        });
       }
     });
   }
