@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, MapPin } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay } from 'date-fns';
-import { toHijri } from 'hijri-converter';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
@@ -48,10 +47,6 @@ export function Calendar({ className }: CalendarProps) {
     const dayEvents = events?.filter(event => isSameDay(new Date(event.start), day)) || [];
     const hasEvents = dayEvents.length > 0;
     
-    // Convert to Hijri date
-    const hijriDate = toHijri(day.getFullYear(), day.getMonth() + 1, day.getDate());
-    const isFirstDayOfHijriMonth = hijriDate.hd === 1;
-    
     // Function to get school name by ID
     const getSchoolName = (schoolId: number | null) => {
       if (!schoolId) return 'All Schools';
@@ -91,11 +86,6 @@ export function Calendar({ className }: CalendarProps) {
       <>
         <div className="relative">
           {format(day, 'd')}
-          {isFirstDayOfHijriMonth && (
-            <div className="absolute -top-2 -right-2 text-[8px] text-amber-600 font-semibold">
-              {hijriDate.hm}/1
-            </div>
-          )}
         </div>
         {hasEvents && (
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
