@@ -626,27 +626,50 @@ const Reports = () => {
               <CardContent className="h-80 bg-gradient-to-b from-rose-50 to-white py-3 px-1">
                 <div className="w-full h-full rounded-lg bg-white shadow-inner border border-rose-100 p-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart margin={{ top: 20, right: 30, left: 20, bottom: 25 }}>
+                    <RechartsPieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                       <Pie
                         data={instructorEvaluationData}
                         cx="50%"
-                        cy="50%"
-                        labelLine={true}
-                        label={({ score, count }) => `${score}: ${count}`}
-                        outerRadius={80}
+                        cy="45%"
+                        labelLine={false}
+                        label={({ score, count, percent }) => (
+                          `${score}:${count} (${(percent * 100).toFixed(0)}%)`
+                        )}
+                        outerRadius={90}
+                        innerRadius={35}
+                        paddingAngle={3}
                         fill="#8884d8"
                         dataKey="count"
                         nameKey="score"
+                        stroke="#fff"
+                        strokeWidth={2}
                       >
                         {instructorEvaluationData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.fill}
+                          />
                         ))}
                       </Pie>
                       <Tooltip 
                         formatter={(value, name) => [`${value} instructors`, name]}
-                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                        contentStyle={{ 
+                          borderRadius: '8px', 
+                          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                          background: 'rgba(255, 255, 255, 0.95)',
+                          border: '1px solid #f0f0f0'
+                        }}
                       />
-                      <Legend />
+                      <Legend 
+                        iconType="circle" 
+                        layout="horizontal"
+                        verticalAlign="bottom"
+                        align="center"
+                        wrapperStyle={{
+                          paddingTop: '15px',
+                          fontSize: '12px'
+                        }}
+                      />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
