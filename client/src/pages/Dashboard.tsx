@@ -701,51 +701,7 @@ const Dashboard = () => {
 
         {/* Right Column */}
         <div className="space-y-6">
-          {/* Recent Activity */}
-          <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-lg text-[#0A2463]">Recent Activity</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="divide-y divide-gray-100">
-                <div className="p-4 flex gap-3">
-                  <div className="bg-blue-100 p-1.5 rounded-full h-fit">
-                    <User className="h-4 w-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">New instructor onboarded</p>
-                    <p className="text-xs text-gray-500">Sarah Johnson was added to NFS East</p>
-                    <p className="text-xs text-gray-400 mt-1">2 hours ago</p>
-                  </div>
-                </div>
-                <div className="p-4 flex gap-3">
-                  <div className="bg-green-100 p-1.5 rounded-full h-fit">
-                    <Check className="h-4 w-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Course completed</p>
-                    <p className="text-xs text-gray-500">Aviation English I completed at KNFA</p>
-                    <p className="text-xs text-gray-400 mt-1">Yesterday</p>
-                  </div>
-                </div>
-                <div className="p-4 flex gap-3">
-                  <div className="bg-yellow-100 p-1.5 rounded-full h-fit">
-                    <Activity className="h-4 w-4 text-yellow-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Reports submitted</p>
-                    <p className="text-xs text-gray-500">Monthly evaluation reports submitted</p>
-                    <p className="text-xs text-gray-400 mt-1">Sep 30, 2024</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Calendar */}
-          <CalendarComponent className="shadow-sm" />
-
-          {/* Upcoming Events */}
+          {/* Upcoming Events (replacing Recent Activity) */}
           <Card className="shadow-sm">
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-center">
@@ -758,57 +714,45 @@ const Dashboard = () => {
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-medium text-sm">Student Days</h4>
-                    <span className="bg-amber-100 text-amber-600 text-xs px-2 py-0.5 rounded-full">NFS West</span>
+                    <span className="text-xs font-medium text-blue-600 px-2 py-0.5 bg-blue-50 rounded-full border border-blue-100">
+                      KFNA
+                    </span>
                   </div>
-                  <div className="flex items-center text-xs text-gray-500 gap-3">
-                    <div className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>Apr 18, 2025</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-3 w-3 mr-1" />
-                      <span>All Day</span>
-                    </div>
-                  </div>
-                  <div className="mt-1 text-xs text-gray-500">
-                    Open house for students to showcase projects and achievement
+                  <div className="flex items-center text-gray-500 text-xs">
+                    <Calendar className="h-3 w-3 mr-1" />
+                    <span>April 28, 2025</span>
                   </div>
                 </div>
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-sm">Staff Meeting</h4>
-                    <span className="bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded-full">KNFA</span>
+                    <h4 className="font-medium text-sm">Instructor Meeting</h4>
+                    <span className="text-xs font-medium text-green-600 px-2 py-0.5 bg-green-50 rounded-full border border-green-100">
+                      NFS East
+                    </span>
                   </div>
-                  <div className="flex items-center text-xs text-gray-500 gap-3">
-                    <div className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>Apr 20, 2025</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-3 w-3 mr-1" />
-                      <span>09:00 - 10:30</span>
-                    </div>
+                  <div className="flex items-center text-gray-500 text-xs">
+                    <Calendar className="h-3 w-3 mr-1" />
+                    <span>May 2, 2025</span>
                   </div>
                 </div>
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-sm">Quarterly Review</h4>
-                    <span className="bg-green-100 text-green-600 text-xs px-2 py-0.5 rounded-full">NFS East</span>
+                    <h4 className="font-medium text-sm">ALCPT Testing</h4>
+                    <span className="text-xs font-medium text-purple-600 px-2 py-0.5 bg-purple-50 rounded-full border border-purple-100">
+                      NFS West
+                    </span>
                   </div>
-                  <div className="flex items-center text-xs text-gray-500 gap-3">
-                    <div className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>May 5, 2025</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-3 w-3 mr-1" />
-                      <span>11:00 - 13:00</span>
-                    </div>
+                  <div className="flex items-center text-gray-500 text-xs">
+                    <Calendar className="h-3 w-3 mr-1" />
+                    <span>May 15, 2025</span>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
+
+          {/* Calendar */}
+          <CalendarComponent className="shadow-sm" />
 
           {/* To-Do List */}
           <Card className="shadow-sm">
