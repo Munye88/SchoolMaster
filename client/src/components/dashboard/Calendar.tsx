@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, MapPin } from 'lucide-react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay } from 'date-fns';
+import { toHijri } from 'hijri-converter';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
@@ -47,6 +48,10 @@ export function Calendar({ className }: CalendarProps) {
     const dayEvents = events?.filter(event => isSameDay(new Date(event.start), day)) || [];
     const hasEvents = dayEvents.length > 0;
     
+    // Convert to Hijri date
+    const hijriDate = toHijri(day.getFullYear(), day.getMonth() + 1, day.getDate());
+    const isFirstDayOfHijriMonth = hijriDate.hd === 1;
+    
     // Function to get school name by ID
     const getSchoolName = (schoolId: number | null) => {
       if (!schoolId) return 'All Schools';
@@ -56,7 +61,6 @@ export function Calendar({ className }: CalendarProps) {
       }
       
       // If we're showing events for all schools, try to get the school name
-      // This is a stub - ideally we'd fetch all schools and match by ID
       const schoolMap: Record<number, string> = {
         1: 'KNFA',
         2: 'NFS East',
@@ -66,18 +70,37 @@ export function Calendar({ className }: CalendarProps) {
       return schoolMap[schoolId] || 'Unknown School';
     };
     
+    // Group events by school for color coding
+    const schoolEvents = {
+      knfa: dayEvents.filter(e => e.schoolId === 1 || e.schoolId === 350),
+      nfsEast: dayEvents.filter(e => e.schoolId === 2 || e.schoolId === 351),
+      nfsWest: dayEvents.filter(e => e.schoolId === 3 || e.schoolId === 352),
+      other: dayEvents.filter(e => !e.schoolId || (e.schoolId !== 1 && e.schoolId !== 2 && e.schoolId !== 3 && 
+                                                 e.schoolId !== 350 && e.schoolId !== 351 && e.schoolId !== 352))
+    };
+    
+    const hasKnfaEvents = schoolEvents.knfa.length > 0;
+    const hasNfsEastEvents = schoolEvents.nfsEast.length > 0;
+    const hasNfsWestEvents = schoolEvents.nfsWest.length > 0;
+    const hasOtherEvents = schoolEvents.other.length > 0;
+    
     const dayContent = (
       <>
-        {format(day, 'd')}
+        <div className="relative">
+          {format(day, 'd')}
+          {isFirstDayOfHijriMonth && (
+            <div className="absolute -top-2 -right-2 text-[8px] text-amber-600 font-semibold">
+              {hijriDate.hm}/1
+            </div>
+          )}
+        </div>
         {hasEvents && (
           <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
             <div className="flex space-x-0.5">
-              {dayEvents.slice(0, 3).map((_, index) => (
-                <div key={index} className="h-1 w-1 rounded-full bg-blue-500" />
-              ))}
-              {dayEvents.length > 3 && (
-                <div className="h-1 w-1 rounded-full bg-blue-300" />
-              )}
+              {hasKnfaEvents && <div className="h-1 w-1 rounded-full bg-blue-500" />}
+              {hasNfsEastEvents && <div className="h-1 w-1 rounded-full bg-green-500" />}
+              {hasNfsWestEvents && <div className="h-1 w-1 rounded-full bg-purple-500" />}
+              {hasOtherEvents && <div className="h-1 w-1 rounded-full bg-gray-500" />}
             </div>
           </div>
         )}
