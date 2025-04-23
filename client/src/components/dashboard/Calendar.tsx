@@ -45,44 +45,35 @@ export function Calendar({ className }: CalendarProps) {
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
   
   // Function to get Hijri date (simple approximation)
-  const getHijriDate = (date: Date) => {
+  const getHijriDate = (date: Date): string => {
     try {
-      // Hijri year started ~622 CE and has slightly shorter years
-      // This is a simple approximation that doesn't account for precise calendar differences
-      const timestamp = date.getTime();
+      // Formula based on a rough approximation
+      // Hijri calendar started on July 16, 622 CE
       const gregorianYear = date.getFullYear();
-      const gregorianMonth = date.getMonth() + 1;
+      const gregorianMonth = date.getMonth() + 1; // JavaScript months are 0-based
       const gregorianDay = date.getDate();
       
-      // Starting point for calculation - 622 CE July 16 is roughly 1 AH
-      const hijriYearOffset = 622;
+      // Approximate conversion to Hijri date
+      // This is a very simple formula that doesn't account for precise lunar calendar adjustments
+      const hijriYear = Math.floor((gregorianYear - 622) / 0.97);
       
-      // Rough approximation - Hijri year is about 354.36 days vs. 365.25 for Gregorian
-      const adjustmentFactor = 0.97; // (354.36/365.25)
-      
-      // Calculate Hijri year (approximate)
-      const hijriYear = Math.floor((gregorianYear - hijriYearOffset) / adjustmentFactor);
-      
-      // Calculate Hijri month and day (rough approximation)
-      // This doesn't take into account specific month durations, which alternate between 29-30 days
+      // Approximate month - shifting by about 10 days per month
       const monthNames = [
         "Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani", 
         "Jumada al-Awwal", "Jumada al-Thani", "Rajab", "Sha'ban", 
         "Ramadan", "Shawwal", "Dhu al-Qi'dah", "Dhu al-Hijjah"
       ];
       
-      // For simplicity, we'll just offset the Hijri month by 2-3 months back
-      // This is not accurate but gives a simple approximation
+      // Simple approximation - shift months by 9 (30-day offset vs lunar ~29.5 days)
       let hijriMonth = (gregorianMonth + 9) % 12;
       if (hijriMonth === 0) hijriMonth = 12;
       
-      // Day calculation - rough estimate
+      // Approximate day - simplistic approach
       let hijriDay = gregorianDay;
+      if (hijriDay > 29) hijriDay = 29; // Hijri months never exceed 30 days
       
-      const hijriMonthName = monthNames[hijriMonth - 1] || "";
-      return `${hijriDay} ${hijriMonthName} ${hijriYear} AH`;
-    } catch (error) {
-      console.error("Error calculating Hijri date:", error);
+      return `${hijriDay} ${monthNames[hijriMonth - 1]} ${hijriYear} AH`;
+    } catch (err) {
       return "Hijri date unavailable";
     }
   };
