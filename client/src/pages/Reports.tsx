@@ -102,18 +102,19 @@ const Reports = () => {
     { month: 'Dec', knfa: 95, nfsEast: 96, nfsWest: 94 }
   ];
   
-  // Staff leave data
+  // Staff leave data - separated PTO and R&R into distinct categories
   const leaveTypeData = [
-    { name: 'PTO/R&R', value: 48, fill: '#0A2463' },
+    { name: 'PTO', value: 28, fill: '#0A2463' },
+    { name: 'R&R', value: 20, fill: '#3B82F6' },
     { name: 'Paternity', value: 12, fill: '#4CB944' },
     { name: 'Bereavement', value: 8, fill: '#FF8811' },
     { name: 'Negative PTO', value: 4, fill: '#E63946' }
   ];
   
   const leaveBySchoolData = [
-    { name: 'KNFA', pto: 16, paternity: 4, bereavement: 3, negativePto: 1 },
-    { name: 'NFS East', pto: 14, paternity: 5, bereavement: 2, negativePto: 1 },
-    { name: 'NFS West', pto: 18, paternity: 3, bereavement: 3, negativePto: 2 }
+    { name: 'KNFA', pto: 10, rr: 6, paternity: 4, bereavement: 3, negativePto: 1 },
+    { name: 'NFS East', pto: 8, rr: 6, paternity: 5, bereavement: 2, negativePto: 1 },
+    { name: 'NFS West', pto: 10, rr: 8, paternity: 3, bereavement: 3, negativePto: 2 }
   ];
   
   const leaveMonthlyTrendsData = [
@@ -688,26 +689,44 @@ const Reports = () => {
               <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
                 <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart margin={{ top: 20, right: 30, left: 20, bottom: 25 }}>
+                    <RechartsPieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                       <Pie
                         data={leaveTypeData}
                         cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
-                        outerRadius={80}
+                        cy="45%"
+                        labelLine={true}
+                        label={({ name, value, percent }) => `${name}: ${value}`}
+                        outerRadius={85}
+                        innerRadius={30}
+                        paddingAngle={2}
                         fill="#8884d8"
                         dataKey="value"
                       >
                         {leaveTypeData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.fill} 
+                            stroke="#fff"
+                            strokeWidth={1}
+                          />
                         ))}
                       </Pie>
                       <Tooltip 
                         formatter={(value) => [`${value} requests`, '']}
                         contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                        itemStyle={{ textTransform: 'capitalize' }}
                       />
-                      <Legend />
+                      <Legend 
+                        layout="horizontal" 
+                        verticalAlign="bottom" 
+                        align="center"
+                        payload={leaveTypeData.map((item, index) => ({
+                          id: item.name,
+                          value: `${item.name} (${item.value})`,
+                          type: 'square',
+                          color: item.fill,
+                        }))}
+                      />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
@@ -848,7 +867,8 @@ const Reports = () => {
                       formatter={(value) => [`${value} requests`, '']}
                     />
                     <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                    <Bar dataKey="pto" name="PTO/R&R" fill="#0A2463" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="pto" name="PTO" fill="#0A2463" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="rr" name="R&R" fill="#3B82F6" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="paternity" name="Paternity" fill="#4CB944" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="bereavement" name="Bereavement" fill="#FF8811" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="negativePto" name="Negative PTO" fill="#E63946" radius={[4, 4, 0, 0]} />
