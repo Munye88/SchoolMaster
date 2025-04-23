@@ -53,65 +53,106 @@ const NotificationCard: React.FC<{
   onDismiss: (id: string | number) => void;
 }> = ({ alert, onDismiss }) => {
   // Determine color theme and icon based on alert type
-  let badgeColor = '';
-  let bgColor = '';
-  let borderColor = '';
+  let colorScheme = {
+    primary: '',   // Main card color
+    secondary: '', // Accent color
+    textColor: '', // Text color for badge
+    borderColor: '',
+    bgGradient: '',
+    iconColor: '',
+  };
+  
   let alertIcon = null;
   let label = '';
   
+  // Color schemes based on notification type
   switch (alert.type) {
     case 'absent':
-      badgeColor = 'bg-red-100 text-red-800 border border-red-200';
-      bgColor = 'bg-gradient-to-r from-red-50 to-red-100';
-      borderColor = 'border-red-200';
-      alertIcon = <X className="h-4 w-4 mr-2 text-red-600" />;
+      colorScheme = {
+        primary: 'from-red-600 to-red-700',
+        secondary: 'bg-red-50',
+        textColor: 'text-red-900',
+        borderColor: 'border-red-300',
+        bgGradient: 'from-red-50 to-red-100',
+        iconColor: 'text-red-100',
+      };
+      alertIcon = <X className="h-5 w-5 mr-2 text-white" />;
       label = 'Absent Today';
       break;
     case 'leave':
-      badgeColor = 'bg-amber-100 text-amber-800 border border-amber-200';
-      bgColor = 'bg-gradient-to-r from-amber-50 to-amber-100';
-      borderColor = 'border-amber-200';
-      alertIcon = <Calendar className="h-4 w-4 mr-2 text-amber-600" />;
+      colorScheme = {
+        primary: 'from-amber-500 to-amber-600',
+        secondary: 'bg-amber-50',
+        textColor: 'text-amber-900',
+        borderColor: 'border-amber-300',
+        bgGradient: 'from-amber-50 to-amber-100',
+        iconColor: 'text-amber-100',
+      };
+      alertIcon = <Calendar className="h-5 w-5 mr-2 text-white" />;
       label = 'On Leave';
       break;
     case 'evaluation':
-      badgeColor = 'bg-purple-100 text-purple-800 border border-purple-200';
-      bgColor = 'bg-gradient-to-r from-purple-50 to-purple-100';
-      borderColor = 'border-purple-200';
-      alertIcon = <AlertCircle className="h-4 w-4 mr-2 text-purple-600" />;
+      colorScheme = {
+        primary: 'from-purple-600 to-purple-700',
+        secondary: 'bg-purple-50',
+        textColor: 'text-purple-900',
+        borderColor: 'border-purple-300',
+        bgGradient: 'from-purple-50 to-purple-100',
+        iconColor: 'text-purple-100',
+      };
+      alertIcon = <AlertCircle className="h-5 w-5 mr-2 text-white" />;
       label = 'Low Score';
       break;
     case 'student_change':
-      badgeColor = 'bg-blue-100 text-blue-800 border border-blue-200';
-      bgColor = 'bg-gradient-to-r from-blue-50 to-blue-100';
-      borderColor = 'border-blue-200';
-      alertIcon = <GraduationCap className="h-4 w-4 mr-2 text-blue-600" />;
+      colorScheme = {
+        primary: 'from-blue-600 to-blue-700',
+        secondary: 'bg-blue-50',
+        textColor: 'text-blue-900',
+        borderColor: 'border-blue-300',
+        bgGradient: 'from-blue-50 to-blue-100',
+        iconColor: 'text-blue-100',
+      };
+      alertIcon = <GraduationCap className="h-5 w-5 mr-2 text-white" />;
       label = 'Students';
       break;
     case 'staff_change':
-      badgeColor = 'bg-green-100 text-green-800 border border-green-200';
-      bgColor = 'bg-gradient-to-r from-green-50 to-green-100';
-      borderColor = 'border-green-200';
-      alertIcon = <UserPlus className="h-4 w-4 mr-2 text-green-600" />;
+      colorScheme = {
+        primary: 'from-green-600 to-green-700',
+        secondary: 'bg-green-50',
+        textColor: 'text-green-900',
+        borderColor: 'border-green-300',
+        bgGradient: 'from-green-50 to-green-100',
+        iconColor: 'text-green-100',
+      };
+      alertIcon = <UserPlus className="h-5 w-5 mr-2 text-white" />;
       label = 'Staff Update';
       break;
     case 'course_complete':
-      badgeColor = 'bg-indigo-100 text-indigo-800 border border-indigo-200';
-      bgColor = 'bg-gradient-to-r from-indigo-50 to-indigo-100';
-      borderColor = 'border-indigo-200';
-      alertIcon = <Award className="h-4 w-4 mr-2 text-indigo-600" />;
-      label = 'Course Complete';
+      colorScheme = {
+        primary: 'from-indigo-600 to-indigo-700',
+        secondary: 'bg-indigo-50',
+        textColor: 'text-indigo-900',
+        borderColor: 'border-indigo-300',
+        bgGradient: 'from-indigo-50 to-indigo-100',
+        iconColor: 'text-indigo-100',
+      };
+      alertIcon = <Award className="h-5 w-5 mr-2 text-white" />;
+      label = 'Course Update';
       break;
   }
   
-  // Priority indicator
-  const getPriorityIndicator = () => {
+  // Priority label
+  const getPriorityLabel = () => {
     if (alert.priority === 'high') {
-      return <div className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1" />;
+      return <div className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 rounded-full border-2 border-white shadow-md flex items-center justify-center z-10" title="High Priority">
+        <AlertTriangle className="h-3 w-3 text-white" />
+      </div>;
     } else if (alert.priority === 'medium') {
-      return <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1" />;
+      return <div className="absolute -top-1 -right-1 h-5 w-5 bg-amber-500 rounded-full border-2 border-white shadow-md flex items-center justify-center z-10" title="Medium Priority">
+        <AlertCircle className="h-3 w-3 text-white" />
+      </div>;
     }
-    return <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1" />;
+    return null;
   };
   
   // Format timestamp
@@ -132,49 +173,57 @@ const NotificationCard: React.FC<{
   
   return (
     <div 
-      className={`p-3 rounded-xl border ${bgColor} ${borderColor} shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${NOTIFICATION_ANIMATION} relative group`}
-      style={{
-        backgroundImage: 'radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.8), transparent 25%)'
-      }}
+      className={`rounded-xl shadow-md hover:shadow-xl transition-all duration-300 ${NOTIFICATION_ANIMATION} group relative overflow-hidden`}
     >
-      {/* Dismiss button */}
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button 
-              className="absolute right-2 top-2 h-5 w-5 rounded-full bg-gray-100/80 hover:bg-gray-200 flex items-center justify-center border border-gray-200 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDismiss(alert.id);
-              }}
-            >
-              <X className="h-3 w-3 text-gray-500" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="left">
-            <p className="text-xs">Dismiss notification</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      {/* Priority indicator */}
+      {getPriorityLabel()}
       
-      <div className="flex flex-col gap-1">
+      {/* Header section with color based on notification type */}
+      <div className={`bg-gradient-to-r ${colorScheme.primary} p-3 text-white relative`}>
+        <div className="absolute inset-0 overflow-hidden opacity-10">
+          <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/30"></div>
+          <div className="absolute right-6 bottom-0 w-8 h-8 rounded-full bg-white/20"></div>
+          <div className="absolute left-6 top-2 w-6 h-6 rounded-full bg-white/20"></div>
+        </div>
+        
         <div className="flex items-center justify-between">
-          <div className="font-medium text-gray-800 flex items-center">
-            {getPriorityIndicator()}
-            <span className="font-semibold">{alert.name}</span>
+          <div className="flex items-center gap-2 z-10">
+            <div className="p-1.5 rounded-full bg-white/20 shadow-inner">
+              {alertIcon}
+            </div>
+            <span className="font-bold">{alert.name}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-600 bg-white/50 px-1.5 py-0.5 rounded-full border border-white/60 shadow-sm">
+          <div className="flex items-center gap-1">
+            <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-sm">
               {getTimeDisplay()}
             </span>
-            <Badge className={`text-xs font-medium px-2 py-0.5 shadow-sm ${badgeColor}`}>
-              {label}
-            </Badge>
           </div>
         </div>
-        <div className="flex items-center text-sm text-gray-700 mt-2 p-1.5 pl-2 bg-white/40 backdrop-blur-sm border border-white/60 rounded-lg">
-          {alertIcon}
-          <span>{alert.reason}</span>
+      </div>
+      
+      {/* Content area */}
+      <div className={`p-3 bg-gradient-to-b ${colorScheme.bgGradient}`}>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-gray-700 font-medium">{alert.reason}</p>
+          
+          {/* Dismiss button - always visible */}
+          <button 
+            className="h-7 w-7 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center border border-gray-200 shadow-sm transition-colors duration-200"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDismiss(alert.id);
+            }}
+            title="Dismiss notification"
+          >
+            <Trash2 className="h-4 w-4 text-gray-500" />
+          </button>
+        </div>
+        
+        {/* Badge showing the notification type */}
+        <div className="mt-2 flex justify-end">
+          <Badge className={`${colorScheme.secondary} ${colorScheme.textColor} border ${colorScheme.borderColor} text-xs font-medium shadow-sm`}>
+            {label}
+          </Badge>
         </div>
       </div>
     </div>
@@ -443,15 +492,16 @@ const Notifications: React.FC<NotificationsProps> = ({
   }
 
   // Notification count
-  const notificationCount = allAlerts.filter(
-    alert => !dismissedNotifications.includes(alert.id)
-  ).length;
-
+  // Calculate notification count  
+  const notificationCount = filteredNonDismissedAlerts.length;
+  
   return (
     <div>
-      <div className="bg-gradient-to-r from-[#0A2463] via-[#1A3473] to-[#0A2463] rounded-xl shadow-xl p-4 text-white mb-4 relative overflow-hidden">
+      {/* Header with animation and gradient */}
+      <div className="bg-gradient-to-r from-[#0A2463] via-[#1A3473] to-[#0A2463] rounded-t-xl p-4 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzBoMnYyaC0yek0zMCAzMGgydjJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
         <div className="absolute top-0 right-0 w-40 h-40 bg-blue-400/10 rounded-full transform translate-x-20 -translate-y-20 blur-2xl"></div>
+        
         <div className="relative z-10 flex justify-between items-center">
           <div>
             <h3 className="text-sm font-semibold opacity-90 uppercase tracking-wider">Notifications</h3>
@@ -460,22 +510,32 @@ const Notifications: React.FC<NotificationsProps> = ({
               <span className="ml-2 text-sm opacity-80">Active Alerts</span>
             </p>
           </div>
-          <div className="bg-white/20 p-3 rounded-lg backdrop-blur-sm shadow-inner border border-white/30 animate-pulse">
-            <Bell className="w-7 h-7 text-white" />
+          
+          {/* Animated bell icon with pulse effect */}
+          <div className="bg-white/20 p-3 rounded-full backdrop-blur-sm shadow-inner border border-white/30">
+            <div className={`relative ${notificationCount > 0 ? 'animate-bounce' : ''}`}>
+              <Bell className="w-7 h-7 text-white" />
+              {notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 border border-white flex items-center justify-center text-[10px] font-bold">
+                  {notificationCount > 9 ? '9+' : notificationCount}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
       
-      <div className="flex items-center justify-between mb-4">
+      {/* Category tabs with colorful indicators */}
+      <div className="flex items-center justify-between p-2 bg-gray-50 border-x border-t border-gray-200">
         <div className="flex items-center w-full">
-          <div className="flex-1 flex gap-2 bg-white/90 p-1 rounded-lg shadow-md border border-gray-200 backdrop-blur-sm">
+          <div className="flex-1 flex gap-1 overflow-x-auto py-1 px-1 scrollbar-none">
             <Button 
               variant={activeTab === "all" ? "default" : "ghost"}
               size="sm" 
-              className={`py-1 px-3 text-xs rounded-md ${
+              className={`whitespace-nowrap py-1 px-3 text-xs rounded-md ${
                 activeTab === "all" 
-                  ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg" 
-                  : "hover:bg-blue-100 text-gray-800"
+                  ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md" 
+                  : "hover:bg-blue-100 text-gray-800 shadow-sm border border-gray-200"
               }`}
               onClick={() => setActiveTab("all")}
             >
@@ -484,13 +544,14 @@ const Notifications: React.FC<NotificationsProps> = ({
                 {getCategoryCount("all")}
               </span>
             </Button>
+            
             <Button 
               variant={activeTab === "staff" ? "default" : "ghost"}
               size="sm" 
-              className={`py-1 px-3 text-xs rounded-md ${
+              className={`whitespace-nowrap py-1 px-3 text-xs rounded-md ${
                 activeTab === "staff" 
-                  ? "bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg" 
-                  : "hover:bg-green-100 text-gray-800"
+                  ? "bg-gradient-to-r from-green-600 to-green-700 text-white shadow-md" 
+                  : "hover:bg-green-100 text-gray-800 shadow-sm border border-gray-200"
               }`}
               onClick={() => setActiveTab("staff")}
             >
@@ -499,13 +560,14 @@ const Notifications: React.FC<NotificationsProps> = ({
                 {getCategoryCount("staff")}
               </span>
             </Button>
+            
             <Button 
               variant={activeTab === "students" ? "default" : "ghost"}
               size="sm" 
-              className={`py-1 px-3 text-xs rounded-md ${
+              className={`whitespace-nowrap py-1 px-3 text-xs rounded-md ${
                 activeTab === "students" 
-                  ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg" 
-                  : "hover:bg-purple-100 text-gray-800"
+                  ? "bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-md" 
+                  : "hover:bg-purple-100 text-gray-800 shadow-sm border border-gray-200"
               }`}
               onClick={() => setActiveTab("students")}
             >
@@ -514,13 +576,14 @@ const Notifications: React.FC<NotificationsProps> = ({
                 {getCategoryCount("students")}
               </span>
             </Button>
+            
             <Button 
               variant={activeTab === "courses" ? "default" : "ghost"}
               size="sm" 
-              className={`py-1 px-3 text-xs rounded-md ${
+              className={`whitespace-nowrap py-1 px-3 text-xs rounded-md ${
                 activeTab === "courses" 
-                  ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-lg" 
-                  : "hover:bg-amber-100 text-gray-800"
+                  ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-md" 
+                  : "hover:bg-amber-100 text-gray-800 shadow-sm border border-gray-200"
               }`}
               onClick={() => setActiveTab("courses")}
             >
@@ -531,11 +594,12 @@ const Notifications: React.FC<NotificationsProps> = ({
             </Button>
           </div>
           
+          {/* Clear all button */}
           {filteredNonDismissedAlerts.length > 0 && (
             <Button
               variant="ghost"
               size="sm"
-              className="ml-2 text-xs flex items-center gap-1 py-1 px-3 hover:bg-red-50 hover:text-red-600 text-gray-500"
+              className="ml-1 whitespace-nowrap text-xs flex items-center gap-1 py-1 px-2 hover:bg-red-50 hover:text-red-600 text-gray-500 border border-gray-200 shadow-sm"
               onClick={handleClearAllNotifications}
             >
               <Trash2 className="h-3 w-3" />
@@ -545,8 +609,9 @@ const Notifications: React.FC<NotificationsProps> = ({
         </div>
       </div>
       
-      <ScrollArea className="h-[240px] w-full mt-2">
-        <div className="space-y-3">
+      {/* Notification list with scroll area */}
+      <ScrollArea className="h-[240px] w-full border-x border-b border-gray-200 rounded-b-xl bg-gray-50 shadow-inner">
+        <div className="space-y-3 p-3">
           {filteredNonDismissedAlerts.length > 0 ? (
             filteredNonDismissedAlerts.map((alert, index) => (
               <NotificationCard 
