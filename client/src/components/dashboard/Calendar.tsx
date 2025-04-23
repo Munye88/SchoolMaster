@@ -20,14 +20,14 @@ interface CalendarProps {
 
 export function Calendar({ className }: CalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { selectedSchool, currentSchool } = useSchool();
+  const { selectedSchool } = useSchool();
   
   // Fetch all events or school-specific events based on selection
   const { data: events, isLoading } = useQuery<Event[]>({
-    queryKey: selectedSchool && currentSchool 
-      ? ['/api/schools', currentSchool.id, 'events']
+    queryKey: selectedSchool
+      ? ['/api/schools', selectedSchool.id, 'events']
       : ['/api/events'],
-    enabled: !selectedSchool || !!currentSchool?.id,
+    enabled: true,
   });
   
   const handlePreviousMonth = () => {
@@ -56,15 +56,18 @@ export function Calendar({ className }: CalendarProps) {
     const getSchoolName = (schoolId: number | null) => {
       if (!schoolId) return 'All Schools';
       
-      if (currentSchool && currentSchool.id === schoolId) {
-        return currentSchool.name;
+      if (selectedSchool && selectedSchool.id === schoolId) {
+        return selectedSchool.name;
       }
       
       // If we're showing events for all schools, try to get the school name
       const schoolMap: Record<number, string> = {
         1: 'KNFA',
         2: 'NFS East',
-        3: 'NFS West'
+        3: 'NFS West',
+        350: 'KNFA',
+        351: 'NFS East',
+        352: 'NFS West'
       };
       
       return schoolMap[schoolId] || 'Unknown School';
@@ -237,14 +240,17 @@ export function Calendar({ className }: CalendarProps) {
                 const getSchoolName = (schoolId: number | null) => {
                   if (!schoolId) return 'All Schools';
                   
-                  if (currentSchool && currentSchool.id === schoolId) {
-                    return currentSchool.name;
+                  if (selectedSchool && selectedSchool.id === schoolId) {
+                    return selectedSchool.name;
                   }
                   
                   const schoolMap: Record<number, string> = {
                     1: 'KNFA',
                     2: 'NFS East',
-                    3: 'NFS West'
+                    3: 'NFS West',
+                    350: 'KNFA',
+                    351: 'NFS East',
+                    352: 'NFS West'
                   };
                   
                   return schoolMap[schoolId] || 'Unknown School';
