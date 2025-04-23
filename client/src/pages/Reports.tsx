@@ -977,7 +977,7 @@ const Reports = () => {
                   {reportType === "performance" && "Overall performance has improved by 12% since last quarter."}
                   {reportType === "attendance" && "Attendance rate is 96%, which is above the target of 90%."}
                   {reportType === "evaluations" && "85% of instructors received satisfactory or above ratings."}
-                  {reportType === "staffLeave" && "PTO/R&R is the most common leave type at 48 requests (67% of total)."}
+                  {reportType === "staffLeave" && "Leave types now clearly separated with PTO and R&R shown as distinct categories."}
                   {reportType === "trends" && "Steady improvement in test scores over the past 6 months."}
                 </span>
               </li>
@@ -991,7 +991,7 @@ const Reports = () => {
                   {reportType === "performance" && "NFS East shows the highest improvement in test scores."}
                   {reportType === "attendance" && "Technical Training courses have the lowest attendance rate."}
                   {reportType === "evaluations" && "Quarterly evaluations are completed for 95% of staff."}
-                  {reportType === "staffLeave" && "December and June show highest leave requests - 15 and 12 respectively."}
+                  {reportType === "staffLeave" && "PTO (28) and R&R (20) make up 67% of all leave requests."}
                   {reportType === "trends" && "Course enrollment has increased by 23% year over year."}
                 </span>
               </li>
