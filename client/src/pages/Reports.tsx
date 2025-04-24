@@ -626,48 +626,56 @@ const Reports = () => {
               <CardContent className="h-80 bg-gradient-to-b from-rose-50 to-white py-3 px-1">
                 <div className="w-full h-full rounded-lg bg-white shadow-inner border border-rose-100 p-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                    <RechartsPieChart>
+                      <defs>
+                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                          <feDropShadow dx="0" dy="0" stdDeviation="3" floodOpacity="0.2" />
+                        </filter>
+                      </defs>
                       <Pie
                         data={instructorEvaluationData}
                         cx="50%"
-                        cy="45%"
+                        cy="46%"
                         labelLine={false}
-                        label={({ score, count, percent }) => (
-                          `${score}:${count} (${(percent * 100).toFixed(0)}%)`
-                        )}
-                        outerRadius={90}
+                        label={({ name, percent }) => `${percent * 100}%`}
+                        outerRadius={85}
                         innerRadius={35}
                         paddingAngle={3}
-                        fill="#8884d8"
                         dataKey="count"
                         nameKey="score"
                         stroke="#fff"
                         strokeWidth={2}
+                        filter="url(#shadow)"
                       >
                         {instructorEvaluationData.map((entry, index) => (
                           <Cell 
                             key={`cell-${index}`} 
-                            fill={entry.fill}
+                            fill={entry.fill} 
                           />
                         ))}
                       </Pie>
-                      <Tooltip 
-                        formatter={(value, name) => [`${value} instructors`, name]}
-                        contentStyle={{ 
-                          borderRadius: '8px', 
-                          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                          background: 'rgba(255, 255, 255, 0.95)',
-                          border: '1px solid #f0f0f0'
-                        }}
-                      />
                       <Legend 
-                        iconType="circle" 
                         layout="horizontal"
                         verticalAlign="bottom"
                         align="center"
+                        formatter={(value, entry) => {
+                          const { payload } = entry;
+                          const match = instructorEvaluationData.find(item => item.score === value);
+                          return `${value}: ${match?.count || 0} instructors`;
+                        }}
                         wrapperStyle={{
-                          paddingTop: '15px',
-                          fontSize: '12px'
+                          fontSize: '12px',
+                          paddingTop: '15px'
+                        }}
+                      />
+                      <Tooltip
+                        formatter={(value) => [`${value} instructors`, '']}
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+                          border: 'none',
+                          padding: '10px'
                         }}
                       />
                     </RechartsPieChart>
@@ -712,43 +720,58 @@ const Reports = () => {
               <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
                 <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                    <RechartsPieChart>
+                      <defs>
+                        <filter id="leaveShadow" x="-20%" y="-20%" width="140%" height="140%">
+                          <feDropShadow dx="0" dy="0" stdDeviation="3" floodOpacity="0.2" />
+                        </filter>
+                      </defs>
                       <Pie
                         data={leaveTypeData}
                         cx="50%"
-                        cy="45%"
-                        labelLine={true}
-                        label={({ name, value, percent }) => `${name}: ${value}`}
+                        cy="46%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
                         outerRadius={85}
-                        innerRadius={30}
-                        paddingAngle={2}
+                        innerRadius={35}
+                        paddingAngle={3}
                         fill="#8884d8"
                         dataKey="value"
+                        nameKey="name"
+                        stroke="#fff"
+                        strokeWidth={2}
+                        filter="url(#leaveShadow)"
                       >
                         {leaveTypeData.map((entry, index) => (
                           <Cell 
                             key={`cell-${index}`} 
                             fill={entry.fill} 
-                            stroke="#fff"
-                            strokeWidth={1}
                           />
                         ))}
                       </Pie>
                       <Tooltip 
-                        formatter={(value) => [`${value} requests`, '']}
-                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                        formatter={(value, name) => [`${value} requests`, name]}
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+                          border: 'none',
+                          padding: '10px'
+                        }}
                         itemStyle={{ textTransform: 'capitalize' }}
                       />
                       <Legend 
-                        layout="horizontal" 
-                        verticalAlign="bottom" 
+                        layout="horizontal"
+                        verticalAlign="bottom"
                         align="center"
-                        payload={leaveTypeData.map((item, index) => ({
-                          id: item.name,
-                          value: `${item.name} (${item.value})`,
-                          type: 'square',
-                          color: item.fill,
-                        }))}
+                        formatter={(value, entry) => {
+                          const match = leaveTypeData.find(item => item.name === value);
+                          return `${value}: ${match?.value || 0} requests`;
+                        }}
+                        wrapperStyle={{
+                          fontSize: '12px',
+                          paddingTop: '15px'
+                        }}
                       />
                     </RechartsPieChart>
                   </ResponsiveContainer>
