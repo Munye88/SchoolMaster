@@ -55,13 +55,13 @@ export function StandardInstructorAvatar({
       .toUpperCase();
   };
   
-  // Size classes with consistent proportions
+  // Size classes with consistent proportions - ensuring all have exact same dimensions
   const sizeClasses = {
-    sm: "h-14 w-14 text-base",  // Slightly larger for consistency
-    md: "h-20 w-20 text-xl",    // Standard size
-    lg: "h-28 w-28 text-2xl",
-    xl: "h-36 w-36 text-3xl",
-    '2xl': "h-48 w-48 text-4xl", // Larger size for profile pictures
+    sm: "h-14 w-14 min-h-[3.5rem] min-w-[3.5rem] text-base",  // Slightly larger for consistency
+    md: "h-20 w-20 min-h-[5rem] min-w-[5rem] text-xl",    // Standard size with minimum dimensions
+    lg: "h-28 w-28 min-h-[7rem] min-w-[7rem] text-2xl",
+    xl: "h-36 w-36 min-h-[9rem] min-w-[9rem] text-3xl",
+    '2xl': "h-48 w-48 min-h-[12rem] min-w-[12rem] text-4xl", // Larger size for profile pictures
   };
   
   // Font size for initials
@@ -84,7 +84,7 @@ export function StandardInstructorAvatar({
     return "border-[#00AEEF]"; // Light blue border to match the example image
   };
   
-  const containerClassName = `${sizeClasses[size]} rounded-full ${getBorderColor()} border-4 overflow-hidden flex items-center justify-center shadow-md`;
+  const containerClassName = `${sizeClasses[size]} rounded-full ${getBorderColor()} border-4 overflow-hidden flex items-center justify-center shadow-md flex-shrink-0 flex-grow-0`;
   
   return (
     <div className={containerClassName}>
@@ -96,7 +96,9 @@ export function StandardInstructorAvatar({
             className="h-full w-full object-cover" 
             style={{ 
               objectPosition: "center 15%", // Position higher to show faces properly
-              transform: "scale(0.9)" // Scale down slightly to ensure face fits in circle
+              transform: "scale(1)", // Don't scale down to ensure consistent size
+              width: "100%",
+              height: "100%"
             }}
             onError={handleImageError}
           />
