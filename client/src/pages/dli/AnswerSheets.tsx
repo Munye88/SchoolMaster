@@ -158,7 +158,7 @@ const AnswerSheets = () => {
     switch (id) {
       case 349: return { id: 349, name: 'KNFA', code: 'KNFA', color: 'blue' };
       case 350: return { id: 350, name: 'NFS East', code: 'NFS_EAST', color: 'green' };
-      case 351: return { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'orange' };
+      case 351: return { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'purple' };
       default: return null;
     }
   };
@@ -167,7 +167,7 @@ const AnswerSheets = () => {
   const schools = [
     { id: 349, name: 'KNFA', code: 'KNFA', color: 'blue' },
     { id: 350, name: 'NFS East', code: 'NFS_EAST', color: 'green' },
-    { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'orange' },
+    { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'purple' },
   ];
   
   // Filter sheets by school, search query, and status
@@ -436,7 +436,7 @@ const AnswerSheets = () => {
     switch (schoolId) {
       case 349: return 'bg-blue-600';
       case 350: return 'bg-green-600';
-      case 351: return 'bg-orange-600';
+      case 351: return 'bg-purple-600'; // Changed from orange to purple
       default: return 'bg-gray-600';
     }
   };
