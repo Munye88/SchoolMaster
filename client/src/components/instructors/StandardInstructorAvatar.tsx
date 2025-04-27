@@ -55,10 +55,10 @@ export function StandardInstructorAvatar({
       .toUpperCase();
   };
   
-  // Size classes with adjusted proportions
+  // Size classes with consistent proportions
   const sizeClasses = {
-    sm: "h-12 w-12 text-base",
-    md: "h-20 w-20 text-xl",
+    sm: "h-14 w-14 text-base",  // Slightly larger for consistency
+    md: "h-20 w-20 text-xl",    // Standard size
     lg: "h-28 w-28 text-2xl",
     xl: "h-36 w-36 text-3xl",
     '2xl': "h-48 w-48 text-4xl", // Larger size for profile pictures
