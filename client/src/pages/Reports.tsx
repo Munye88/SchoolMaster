@@ -625,41 +625,43 @@ const Reports = () => {
               </CardHeader>
               <CardContent className="h-80 bg-gradient-to-b from-rose-50 to-white py-3 px-1">
                 <div className="w-full h-full rounded-lg bg-white shadow-inner border border-rose-100 p-4">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                      <Pie
-                        data={instructorEvaluationData}
-                        cx="50%"
-                        cy="45%"
-                        outerRadius={80}
-                        innerRadius={30}
-                        fill="#8884d8"
-                        paddingAngle={2}
-                        dataKey="count"
-                        nameKey="score"
-                        stroke="#fff"
-                        strokeWidth={2}
-                        label={(entry) => `${entry.score}: ${entry.count}`}
-                        labelLine={false}
-                      >
-                        {instructorEvaluationData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <Legend 
-                        layout="horizontal"
-                        verticalAlign="bottom"
-                        align="center"
-                        formatter={(value) => {
-                          const match = instructorEvaluationData.find(item => item.score === value);
-                          return `${value}: ${match?.count} instructors`;
-                        }}
-                        wrapperStyle={{
-                          paddingTop: '20px'
-                        }}
-                      />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
+                  <div className="h-full flex flex-col">
+                    <div className="flex-1">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RechartsPieChart>
+                          <Pie
+                            data={instructorEvaluationData}
+                            cx="50%"
+                            cy="40%"
+                            outerRadius={80}
+                            fill="#8884d8"
+                            dataKey="count"
+                          >
+                            {instructorEvaluationData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.fill} />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            formatter={(value) => [`${value} instructors`, '']} 
+                          />
+                        </RechartsPieChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="grid grid-cols-5 gap-2 mt-4">
+                      {instructorEvaluationData.map((entry, index) => (
+                        <div key={index} className="flex flex-col items-center">
+                          <div className="flex items-center mb-1">
+                            <div 
+                              className="h-3 w-3 rounded-full mr-1" 
+                              style={{ backgroundColor: entry.fill }}
+                            />
+                            <span className="text-xs font-medium">{entry.score}</span>
+                          </div>
+                          <span className="text-xs font-bold">{entry.count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
