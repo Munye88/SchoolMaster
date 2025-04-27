@@ -488,6 +488,7 @@ export default function ManageInstructors() {
                               <SelectContent>
                                 <SelectItem value="Al Reem">Al Reem</SelectItem>
                                 <SelectItem value="Saken">Saken</SelectItem>
+                                <SelectItem value="Sharbatly Village">Sharbatly Village</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -827,6 +828,7 @@ export default function ManageInstructors() {
                           <SelectContent>
                             <SelectItem value="Al Reem">Al Reem</SelectItem>
                             <SelectItem value="Saken">Saken</SelectItem>
+                            <SelectItem value="Sharbatly Village">Sharbatly Village</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
