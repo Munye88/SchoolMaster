@@ -6,6 +6,7 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Course, insertCourseSchema } from "@shared/schema";
+import { calculateCourseProgress } from "@/utils/courseStatusHelpers";
 
 import {
   Dialog,
@@ -339,12 +340,12 @@ export default function ManageCourses() {
                   <div>
                     <div className="flex justify-between mb-1">
                       <span>Progress</span>
-                      <span>{course.progress}%</span>
+                      <span>{calculateCourseProgress(course)}%</span>
                     </div>
                     <div className="w-full h-2 bg-gray-200 rounded-full">
                       <div
                         className="h-full bg-blue-600 rounded-full"
-                        style={{ width: `${course.progress}%` }}
+                        style={{ width: `${calculateCourseProgress(course)}%` }}
                       />
                     </div>
                   </div>
