@@ -1,6 +1,58 @@
 import { Course } from '@shared/schema';
 
 /**
+ * Calculate course progress percentage based on start and end dates
+ * @param course The course object
+ * @returns A number between 0-100 representing the course progress
+ */
+export function calculateCourseProgress(course: Course): number {
+  // If we already have a progress value > 0, use it
+  if (course.progress > 0) {
+    return course.progress;
+  }
+
+  // Cannot calculate progress without valid dates
+  if (!course.startDate || !course.endDate) {
+    return 0;
+  }
+
+  try {
+    // Parse dates safely
+    const startDate = new Date(course.startDate);
+    const endDate = new Date(course.endDate);
+    const today = new Date();
+    
+    // Ensure dates are valid
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      console.warn(`Invalid date format for course ${course.name}`);
+      return 0;
+    }
+    
+    // If course hasn't started yet
+    if (today < startDate) {
+      return 0;
+    }
+    
+    // If course is already complete
+    if (today > endDate) {
+      return 100;
+    }
+    
+    // Calculate progress as percentage of time elapsed
+    const totalDuration = endDate.getTime() - startDate.getTime();
+    const elapsedDuration = today.getTime() - startDate.getTime();
+    
+    const progressPercent = Math.round((elapsedDuration / totalDuration) * 100);
+    
+    // Ensure progress is between 0-100
+    return Math.max(0, Math.min(100, progressPercent));
+  } catch (error) {
+    console.error(`Error calculating progress for course:`, course, error);
+    return 0;
+  }
+}
+
+/**
  * Calculate the actual status of a course based on its dates
  * IMPORTANT: This is a simpler implementation that converts dates to simple timestamps
  * to ensure consistent comparison

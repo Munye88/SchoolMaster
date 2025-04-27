@@ -4,7 +4,7 @@ import { type Course, type Instructor } from "@shared/schema";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { Target, Calendar } from "lucide-react";
-import { getCourseStatus } from "@/utils/courseStatusHelpers";
+import { getCourseStatus, calculateCourseProgress } from "@/utils/courseStatusHelpers";
 
 interface CourseCardProps {
   course: Course;
@@ -58,10 +58,10 @@ const CourseCard = ({ course }: CourseCardProps) => {
         <div className="mb-3">
           <div className="flex justify-between text-xs text-gray-500 mb-1">
             <span>Progress</span>
-            <span>{course.progress}%</span>
+            <span>{calculateCourseProgress(course)}%</span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-2">
-            <div className="bg-[#3E92CC] h-2 rounded-full" style={{ width: `${course.progress}%` }}></div>
+            <div className="bg-[#3E92CC] h-2 rounded-full" style={{ width: `${calculateCourseProgress(course)}%` }}></div>
           </div>
         </div>
         

@@ -18,7 +18,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
-import { getCourseStatus } from "@/utils/courseStatusHelpers";
+import { getCourseStatus, calculateCourseProgress } from "@/utils/courseStatusHelpers";
 // Logo moved to the navbar, no longer needed here
 
 const Dashboard = () => {
