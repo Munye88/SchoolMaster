@@ -65,7 +65,7 @@ const SchoolInstructorProfiles = () => {
     } else if (schoolName.includes("NFS East")) {
       return "bg-[#2A7F46]"; // Green for NFS East
     } else if (schoolName.includes("NFS West")) {
-      return "bg-[#E86A33]"; // Orange for NFS West
+      return "bg-[#4A5899]"; // Professional blue-purple for NFS West (was orange)
     }
     return "bg-[#0A2463]"; // Default blue
   };
@@ -77,7 +77,7 @@ const SchoolInstructorProfiles = () => {
     } else if (schoolName.includes("NFS East")) {
       return "#2A7F46"; // Green for NFS East
     } else if (schoolName.includes("NFS West")) {
-      return "#E86A33"; // Orange for NFS West
+      return "#4A5899"; // Professional blue-purple for NFS West (was orange)
     }
     return "#0A2463"; // Default blue
   };

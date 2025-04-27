@@ -93,7 +93,7 @@ const InstructorProfile = () => {
                       schoolColor={
                         instructor.schoolId === 349 ? '#0A2463' : // KFNA (blue)
                         instructor.schoolId === 350 ? '#2A7F46' : // NFS East (green)
-                        '#E86A33' // NFS West (orange)
+                        '#4A5899' // NFS West (blue-purple)
                       }
                     />
                     <div>
@@ -180,7 +180,7 @@ const InstructorProfile = () => {
           <Card>
             <div className={instructor.schoolId === 349 ? 'bg-[#0A2463]' : // KFNA (blue)
                      instructor.schoolId === 350 ? 'bg-[#2A7F46]' : // NFS East (green) 
-                     'bg-[#E86A33]' // NFS West (orange)
+                     'bg-[#4A5899]' // NFS West (blue-purple)
                      }>
               <div className="p-6 flex items-center">
                 <div className="mr-4">
@@ -191,7 +191,7 @@ const InstructorProfile = () => {
                     schoolColor={
                       instructor.schoolId === 349 ? '#0A2463' : // KFNA (blue)
                       instructor.schoolId === 350 ? '#2A7F46' : // NFS East (green)
-                      '#E86A33' // NFS West (orange)
+                      '#4A5899' // NFS West (blue-purple)
                     }
                   />
                 </div>
