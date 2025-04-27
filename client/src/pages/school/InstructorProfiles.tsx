@@ -424,7 +424,7 @@ const SchoolInstructorProfiles = () => {
                             variant="ghost" 
                             size="sm" 
                             className={`text-${currentSchool?.name.includes("NFS East") ? "green" : 
-                                                currentSchool?.name.includes("NFS West") ? "orange" : 
+                                                currentSchool?.name.includes("NFS West") ? "purple" : 
                                                 "blue"}-600`}
                             onClick={() => handleViewInstructor(instructor)}
                           >
