@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { getCourseStatus } from '@/utils/courseStatusHelpers';
+import { getCourseStatus, calculateCourseProgress } from '@/utils/courseStatusHelpers';
 import { Course, School } from '@shared/schema';
 import {
   Card,
@@ -361,12 +361,12 @@ export default function Courses() {
                   <div className="w-full">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm font-medium text-gray-700">Course Progress</span>
-                      <span className="text-sm font-bold">{course.progress}%</span>
+                      <span className="text-sm font-bold">{calculateCourseProgress(course)}%</span>
                     </div>
                     <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div 
                         className={`h-full ${colors.progressColor}`}
-                        style={{ width: `${course.progress}%` }}
+                        style={{ width: `${calculateCourseProgress(course)}%` }}
                       />
                     </div>
                     <div className="flex justify-between items-center mt-3">
