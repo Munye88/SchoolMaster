@@ -299,24 +299,24 @@ const TestTracker = () => {
   // Mock instructor data with nationalities for the PowerBI visualization
   const mockInstructors: Instructor[] = [
     // American instructors (20 total)
-    { id: 1, name: "John Smith", nationality: "American", credentials: "MA TESOL", startDate: "2022-01-15", score: 92, courses: ["Aviation", "MMSC-223"], testsPassed: 24, testsFailed: 2 },
+    { id: 1, name: "John Smith", nationality: "American", credentials: "MA TESOL", startDate: "2022-01-15", score: 92, courses: ["Aviation", "Cadets"], testsPassed: 24, testsFailed: 2 },
     { id: 2, name: "Michael Johnson", nationality: "American", credentials: "MA Applied Linguistics", startDate: "2021-05-20", score: 89, courses: ["Aviation", "Technical English"], testsPassed: 18, testsFailed: 3 },
-    { id: 3, name: "Robert Williams", nationality: "American", credentials: "PhD Education", startDate: "2020-11-10", score: 94, courses: ["Aviation English II", "MMSC-224"], testsPassed: 30, testsFailed: 1 },
-    { id: 4, name: "David Miller", nationality: "American", credentials: "MA TESOL", startDate: "2022-03-05", score: 88, courses: ["Refresher", "MMSC-223"], testsPassed: 15, testsFailed: 2 },
+    { id: 3, name: "Robert Williams", nationality: "American", credentials: "PhD Education", startDate: "2020-11-10", score: 94, courses: ["Aviation English II", "Cadets"], testsPassed: 30, testsFailed: 1 },
+    { id: 4, name: "David Miller", nationality: "American", credentials: "MA TESOL", startDate: "2022-03-05", score: 88, courses: ["Refresher", "Cadets"], testsPassed: 15, testsFailed: 2 },
     { id: 5, name: "James Wilson", nationality: "American", credentials: "BA English, CELTA", startDate: "2021-08-12", score: 87, courses: ["Aviation", "Technical English"], testsPassed: 20, testsFailed: 4 },
     { id: 6, name: "Daniel Taylor", nationality: "American", credentials: "MA Linguistics", startDate: "2022-02-18", score: 91, courses: ["Aviation English II", "Refresher"], testsPassed: 22, testsFailed: 2 },
-    { id: 7, name: "Matthew Brown", nationality: "American", credentials: "MA TESOL", startDate: "2021-07-10", score: 90, courses: ["Aviation", "MMSC-224"], testsPassed: 21, testsFailed: 2 },
+    { id: 7, name: "Matthew Brown", nationality: "American", credentials: "MA TESOL", startDate: "2021-07-10", score: 90, courses: ["Aviation", "Cadets"], testsPassed: 21, testsFailed: 2 },
     
     // British instructors (15 total)
-    { id: 8, name: "William Thompson", nationality: "British", credentials: "MA TESOL", startDate: "2022-01-20", score: 90, courses: ["Technical English", "MMSC-224"], testsPassed: 19, testsFailed: 2 },
-    { id: 9, name: "Thomas Anderson", nationality: "British", credentials: "DELTA, BA English", startDate: "2021-06-15", score: 86, courses: ["Refresher", "MMSC-223"], testsPassed: 16, testsFailed: 3 },
+    { id: 8, name: "William Thompson", nationality: "British", credentials: "MA TESOL", startDate: "2022-01-20", score: 90, courses: ["Technical English", "Cadets"], testsPassed: 19, testsFailed: 2 },
+    { id: 9, name: "Thomas Anderson", nationality: "British", credentials: "DELTA, BA English", startDate: "2021-06-15", score: 86, courses: ["Refresher", "Cadets"], testsPassed: 16, testsFailed: 3 },
     { id: 10, name: "George Roberts", nationality: "British", credentials: "MA Applied Linguistics", startDate: "2020-09-12", score: 93, courses: ["Aviation", "Technical English"], testsPassed: 25, testsFailed: 1 },
     { id: 11, name: "Edward Phillips", nationality: "British", credentials: "CELTA, MA TESOL", startDate: "2022-04-10", score: 87, courses: ["Aviation English II", "Refresher"], testsPassed: 17, testsFailed: 3 },
-    { id: 12, name: "Charles Martin", nationality: "British", credentials: "MEd TESOL", startDate: "2021-10-05", score: 91, courses: ["Aviation", "MMSC-223"], testsPassed: 23, testsFailed: 1 },
+    { id: 12, name: "Charles Martin", nationality: "British", credentials: "MEd TESOL", startDate: "2021-10-05", score: 91, courses: ["Aviation", "Cadets"], testsPassed: 23, testsFailed: 1 },
     
     // Canadian instructors (10 total)
-    { id: 13, name: "Andrew Clark", nationality: "Canadian", credentials: "MEd TESOL", startDate: "2021-03-22", score: 89, courses: ["Aviation", "MMSC-223"], testsPassed: 21, testsFailed: 2 },
-    { id: 14, name: "Richard Mitchell", nationality: "Canadian", credentials: "MA Linguistics", startDate: "2020-10-05", score: 92, courses: ["Technical English", "MMSC-224"], testsPassed: 23, testsFailed: 1 },
+    { id: 13, name: "Andrew Clark", nationality: "Canadian", credentials: "MEd TESOL", startDate: "2021-03-22", score: 89, courses: ["Aviation", "Cadets"], testsPassed: 21, testsFailed: 2 },
+    { id: 14, name: "Richard Mitchell", nationality: "Canadian", credentials: "MA Linguistics", startDate: "2020-10-05", score: 92, courses: ["Technical English", "Cadets"], testsPassed: 23, testsFailed: 1 },
     { id: 15, name: "Peter Walker", nationality: "Canadian", credentials: "BA English, CELTA", startDate: "2022-02-01", score: 85, courses: ["Aviation English II", "Refresher"], testsPassed: 14, testsFailed: 3 }
   ];
   
@@ -381,7 +381,7 @@ const TestTracker = () => {
     {
       id: 6,
       studentName: "Ali Al-Zahrani",
-      courseName: "MMSC-223",
+      courseName: "Cadets",
       testDate: new Date("2024-03-10"),
       score: 55,
       passingScore: 45,
@@ -392,7 +392,7 @@ const TestTracker = () => {
     {
       id: 7,
       studentName: "Saad Al-Dosari",
-      courseName: "MMSC-223",
+      courseName: "Cadets",
       testDate: new Date("2024-02-22"),
       score: 48,
       passingScore: 45,
@@ -473,7 +473,7 @@ const TestTracker = () => {
     {
       id: 14,
       studentName: "Faisal Al-Shamari",
-      courseName: "MMSC-224",
+      courseName: "Cadets",
       testDate: new Date("2024-03-12"),
       score: 42,
       passingScore: 45,
@@ -506,7 +506,7 @@ const TestTracker = () => {
     {
       id: 17,
       studentName: "Faisal Al-Shamari",
-      courseName: "MMSC-224",
+      courseName: "Cadets",
       testDate: new Date("2024-02-15"),
       score: 40,
       passingScore: 45,
