@@ -129,6 +129,13 @@ const AnswerSheets = () => {
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [showInventoryUpdateDialog, setShowInventoryUpdateDialog] = useState(false);
   
+  // State for file upload
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadTitle, setUploadTitle] = useState("");
+  const [uploadType, setUploadType] = useState("inventory");
+  const [uploadSchool, setUploadSchool] = useState(selectedSchool?.id.toString() || "349");
+  const [uploadComments, setUploadComments] = useState("");
+  
   // State for sheet being edited or deleted
   const [currentSheet, setCurrentSheet] = useState<{
     id?: number;
