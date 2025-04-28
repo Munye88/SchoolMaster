@@ -159,7 +159,6 @@ const BookOrder = () => {
   const { selectedSchool } = useSchool();
   const [activeTab, setActiveTab] = useState('inventory');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLevel, setSelectedLevel] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [localBookInventory, setLocalBookInventory] = useState(bookInventory);
   const [showSchoolInventory, setShowSchoolInventory] = useState(true);
@@ -188,7 +187,7 @@ const BookOrder = () => {
     schoolId: number;
   }>({
     name: '',
-    level: 'Beginner',
+    level: '',
     quantity: 0,
     status: 'Out of Stock',
     schoolId: selectedSchool?.id || 349,
@@ -221,15 +220,14 @@ const BookOrder = () => {
     { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'purple' },
   ];
   
-  // Filter books by school, search query, level, and status
+  // Filter books by school, search query, and status
   const filteredBooks = localBookInventory.filter(book => {
     const matchesSchool = selectedSchool ? book.schoolId === selectedSchool.id : 
                          viewingSchoolId ? book.schoolId === viewingSchoolId : true;
     const matchesSearch = book.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesLevel = selectedLevel === 'all' || book.level === selectedLevel;
     const matchesStatus = selectedStatus === 'all' || book.status === selectedStatus;
     
-    return matchesSchool && matchesSearch && matchesLevel && matchesStatus;
+    return matchesSchool && matchesSearch && matchesStatus;
   });
   
   // Get books for a specific school
@@ -263,7 +261,7 @@ const BookOrder = () => {
     setShowAddBookDialog(false);
     setCurrentBook({
       name: '',
-      level: 'Beginner',
+      level: '',
       quantity: 0,
       status: 'Out of Stock',
       schoolId: selectedSchool?.id || 349,
@@ -841,7 +839,7 @@ const BookOrder = () => {
                               ))
                             ) : (
                               <TableRow>
-                                <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                                <TableCell colSpan={4} className="text-center py-8 text-gray-500">
                                   No books found matching your filters
                                 </TableCell>
                               </TableRow>
