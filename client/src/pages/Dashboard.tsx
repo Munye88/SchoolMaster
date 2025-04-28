@@ -486,8 +486,8 @@ const Dashboard = () => {
                           </div>
                           <div className="mt-3">
                             <div className="flex items-center justify-between text-xs text-red-700 mb-1">
-                              <span>Distribution</span>
-                              <span>{(dashboardStats.nationalityCounts.british/statistics.activeInstructors*100).toFixed(1)} %</span>
+                              <span>Distribution &nbsp;</span>
+                              <span>{(dashboardStats.nationalityCounts.british/statistics.activeInstructors*100).toFixed(1)}%</span>
                             </div>
                             <div className="w-full bg-red-200 rounded-full h-2 overflow-hidden">
                               <div 
@@ -559,7 +559,7 @@ const Dashboard = () => {
                 
                 {/* School Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* KNFA */}
+                  {/* KFNA */}
                   <div className="relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700"></div>
                     <div className="absolute -right-6 -top-6 w-24 h-24 opacity-20">
@@ -569,10 +569,10 @@ const Dashboard = () => {
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
                           <div className="w-3 h-3 rounded-full bg-white"></div>
-                          <h3 className="font-semibold">KNFA</h3>
+                          <h3 className="font-semibold">KFNA</h3>
                         </div>
                         <div className="bg-white text-blue-700 text-xs font-bold uppercase rounded-full px-2 py-0.5">
-                          Aviation
+                          Cadets
                         </div>
                       </div>
                       <div className="mt-3 flex items-baseline gap-1">
@@ -581,7 +581,7 @@ const Dashboard = () => {
                       </div>
                       <div className="mt-3">
                         <div className="flex items-center justify-between text-xs mb-1">
-                          <span>Program Distribution </span>
+                          <span>Program Distribution</span>
                           <span>100%</span>
                         </div>
                         <div className="w-full bg-blue-500/30 rounded-full h-2 overflow-hidden">
@@ -590,7 +590,7 @@ const Dashboard = () => {
                             style={{ width: '100%' }}
                           ></div>
                         </div>
-                        <div className="mt-2 text-xs opacity-90">Aviation Program</div>
+                        <div className="mt-2 text-xs opacity-90">Cadets Course</div>
                       </div>
                     </div>
                   </div>
@@ -617,26 +617,26 @@ const Dashboard = () => {
                       </div>
                       <div className="mt-3">
                         <div className="flex items-center justify-between text-xs mb-1">
-                          <span>Officers</span>
-                          <span>27 ({(27/48*100).toFixed(0)}%)</span>
+                          <span>Aviation</span>
+                          <span>27 ({(27/43*100).toFixed(0)}%)</span>
                         </div>
                         <div className="w-full bg-emerald-500/30 rounded-full h-2 overflow-hidden">
                           <div 
                             className="h-full bg-emerald-300 rounded-full" 
-                            style={{ width: `${(27/48*100).toFixed(0)}%` }}
+                            style={{ width: `${(27/43*100).toFixed(0)}%` }}
                           ></div>
                         </div>
-                        <div className="mt-2 text-xs">Technical English</div>
+                        <div className="mt-2 text-xs">Aviation Course</div>
                       </div>
                       <div className="mt-2">
                         <div className="flex items-center justify-between text-xs mb-1">
-                          <span>Refreshers</span>
-                          <span>21 ({(21/48*100).toFixed(0)}%)</span>
+                          <span>Refresher</span>
+                          <span>16 ({(16/43*100).toFixed(0)}%)</span>
                         </div>
                         <div className="w-full bg-emerald-500/30 rounded-full h-2 overflow-hidden">
                           <div 
                             className="h-full bg-white rounded-full" 
-                            style={{ width: `${(21/48*100).toFixed(0)}%` }}
+                            style={{ width: `${(16/43*100).toFixed(0)}%` }}
                           ></div>
                         </div>
                         <div className="mt-2 text-xs">Refresher Course</div>
@@ -666,7 +666,7 @@ const Dashboard = () => {
                       </div>
                       <div className="mt-3">
                         <div className="flex items-center justify-between text-xs mb-1">
-                          <span>Program Distribution </span>
+                          <span>Program Distribution</span>
                           <span>100%</span>
                         </div>
                         <div className="w-full bg-amber-500/30 rounded-full h-2 overflow-hidden">
@@ -675,7 +675,7 @@ const Dashboard = () => {
                             style={{ width: '100%' }}
                           ></div>
                         </div>
-                        <div className="mt-2 text-xs opacity-90">Cadets-223/224</div>
+                        <div className="mt-2 text-xs opacity-90">Refresher Course</div>
                       </div>
                     </div>
                   </div>

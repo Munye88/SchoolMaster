@@ -151,12 +151,40 @@ export function useDashboardStats(): DashboardStats {
         }).length
       };
       
+      // Update the student counts based on course data for more accurate display
+      // This ensures that Student Distribution by School reflects actual course data
+      if (students.length > 0) {
+        // Get courses by school
+        const kfnaCourses = courses.filter(c => c.schoolId === 349 && c.status === 'In Progress');
+        const nfsEastCourses = courses.filter(c => c.schoolId === 350 && c.status === 'In Progress');
+        const nfsWestCourses = courses.filter(c => c.schoolId === 351 && c.status === 'In Progress');
+        
+        // Calculate total students by school from the courses
+        const kfnaStudents = kfnaCourses.reduce((total, course) => total + (course.studentCount || 0), 0);
+        const nfsEastStudents = nfsEastCourses.reduce((total, course) => total + (course.studentCount || 0), 0);
+        const nfsWestStudents = nfsWestCourses.reduce((total, course) => total + (course.studentCount || 0), 0);
+        
+        // Update the cached student counts to reflect course data
+        cachedStudentCounts = {
+          totalStudents: kfnaStudents + nfsEastStudents + nfsWestStudents,
+          knfa: kfnaStudents,
+          nfsEast: nfsEastStudents,
+          nfsWest: nfsWestStudents
+        };
+      }
+      
       // Log the course details for debugging
       console.log("---------- COURSE STATUS DEBUG ----------");
       courses.forEach(c => {
+        const today = new Date().getTime();
+        const start = c.startDate ? new Date(c.startDate).getTime() : 0;
+        const end = c.endDate ? new Date(c.endDate).getTime() : 0;
+        
+        console.log(`Course ${c.name}: Today=${today}, Start=${start}, End=${end}`);
+        
         const isActive = c.status === 'Active' || 
-                (new Date() >= new Date(c.startDate) && 
-                (!c.endDate || new Date() <= new Date(c.endDate)) &&
+                (c.startDate && new Date() >= new Date(c.startDate) && 
+                (!c.endDate || (c.endDate && new Date() <= new Date(c.endDate))) &&
                 c.status !== 'Cancelled' && 
                 c.status !== 'Completed');
         
@@ -171,7 +199,7 @@ export function useDashboardStats(): DashboardStats {
       console.log("Active courses:", cachedCourseStats.activeCourses);
       console.log("Completed courses:", cachedCourseStats.completedCourses);
     }
-  }, [courses]);
+  }, [courses, students]);
   
   // Return combined statistics
   return {
