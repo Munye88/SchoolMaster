@@ -581,7 +581,7 @@ const Dashboard = () => {
                       </div>
                       <div className="mt-3">
                         <div className="flex items-center justify-between text-xs mb-1">
-                          <span>Program Distribution</span>
+                          <span>Program Distribution </span>
                           <span>100%</span>
                         </div>
                         <div className="w-full bg-blue-500/30 rounded-full h-2 overflow-hidden">
@@ -666,7 +666,7 @@ const Dashboard = () => {
                       </div>
                       <div className="mt-3">
                         <div className="flex items-center justify-between text-xs mb-1">
-                          <span>Program Distribution</span>
+                          <span>Program Distribution </span>
                           <span>100%</span>
                         </div>
                         <div className="w-full bg-amber-500/30 rounded-full h-2 overflow-hidden">
