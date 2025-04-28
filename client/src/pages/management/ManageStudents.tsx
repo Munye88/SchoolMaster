@@ -54,8 +54,7 @@ import { PlusCircle, Pencil, Trash2, Filter, Search, X } from "lucide-react";
 const COURSE_TYPES = [
   { id: 'aviation', name: 'Aviation', color: 'bg-blue-100 text-blue-800 border-blue-300' },
   { id: 'refresher', name: 'Refresher', color: 'bg-green-100 text-green-800 border-green-300' },
-  { id: 'mmsc', name: 'MMSC', color: 'bg-purple-100 text-purple-800 border-purple-300' },
-  { id: 'cadets', name: 'Cadets', color: 'bg-amber-100 text-amber-800 border-amber-300' },
+  { id: 'cadets', name: 'Cadets', color: 'bg-purple-100 text-purple-800 border-purple-300' },
 ];
 
 // Form validation schema

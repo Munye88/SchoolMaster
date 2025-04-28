@@ -375,7 +375,7 @@ export default function ManageCourses() {
                         <SelectContent>
                           <SelectItem value="Aviation">Aviation</SelectItem>
                           <SelectItem value="Refresher">Refresher</SelectItem>
-                          <SelectItem value="MMSC">MMSC</SelectItem>
+                          
                           <SelectItem value="Cadets">Cadets</SelectItem>
                         </SelectContent>
                       </Select>
@@ -613,7 +613,7 @@ export default function ManageCourses() {
                         <SelectContent>
                           <SelectItem value="Aviation">Aviation</SelectItem>
                           <SelectItem value="Refresher">Refresher</SelectItem>
-                          <SelectItem value="MMSC">MMSC</SelectItem>
+                          
                           <SelectItem value="Cadets">Cadets</SelectItem>
                         </SelectContent>
                       </Select>

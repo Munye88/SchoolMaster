@@ -675,7 +675,7 @@ const Dashboard = () => {
                             style={{ width: '100%' }}
                           ></div>
                         </div>
-                        <div className="mt-2 text-xs opacity-90">MMSC-223/224</div>
+                        <div className="mt-2 text-xs opacity-90">Cadets-223/224</div>
                       </div>
                     </div>
                   </div>
