@@ -456,7 +456,7 @@ const Dashboard = () => {
                           <div className="mt-3">
                             <div className="flex items-center justify-between text-xs text-blue-700 mb-1">
                               <span>Distribution </span>
-                              <span>{(dashboardStats.nationalityCounts.american/statistics.activeInstructors*100).toFixed(1)}%</span>
+                              <span>{(dashboardStats.nationalityCounts.american/statistics.activeInstructors*100).toFixed(1)} %</span>
                             </div>
                             <div className="w-full bg-blue-200 rounded-full h-2 overflow-hidden">
                               <div 
@@ -487,7 +487,7 @@ const Dashboard = () => {
                           <div className="mt-3">
                             <div className="flex items-center justify-between text-xs text-red-700 mb-1">
                               <span>Distribution </span>
-                              <span>{(dashboardStats.nationalityCounts.british/statistics.activeInstructors*100).toFixed(1)}%</span>
+                              <span>{(dashboardStats.nationalityCounts.british/statistics.activeInstructors*100).toFixed(1)} %</span>
                             </div>
                             <div className="w-full bg-red-200 rounded-full h-2 overflow-hidden">
                               <div 
@@ -518,7 +518,7 @@ const Dashboard = () => {
                           <div className="mt-3">
                             <div className="flex items-center justify-between text-xs text-emerald-700 mb-1">
                               <span>Distribution </span>
-                              <span>{(dashboardStats.nationalityCounts.canadian/statistics.activeInstructors*100).toFixed(1)}%</span>
+                              <span>{(dashboardStats.nationalityCounts.canadian/statistics.activeInstructors*100).toFixed(1)} %</span>
                             </div>
                             <div className="w-full bg-emerald-200 rounded-full h-2 overflow-hidden">
                               <div 
