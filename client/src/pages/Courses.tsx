@@ -46,7 +46,9 @@ const courseTypes = [
     name: "Refresher",
     duration: "Six months",
     benchmarks: [
-      { test: "ALCPT", score: "55" }
+      { test: "ALCPT", score: "70" },
+      { test: "ALCPT", score: "55" },
+      { test: "ALCPT", score: "50" }
     ]
   },
   {
