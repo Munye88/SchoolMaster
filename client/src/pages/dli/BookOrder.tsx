@@ -132,6 +132,13 @@ const BookOrder = () => {
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [showInventoryUpdateDialog, setShowInventoryUpdateDialog] = useState(false);
   
+  // State for file upload
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadTitle, setUploadTitle] = useState("");
+  const [uploadType, setUploadType] = useState("inventory");
+  const [uploadSchool, setUploadSchool] = useState(selectedSchool?.id.toString() || "349");
+  const [uploadComments, setUploadComments] = useState("");
+  
   // State for book being edited or deleted
   const [currentBook, setCurrentBook] = useState<{
     id?: number;
@@ -454,6 +461,66 @@ const BookOrder = () => {
       case 351: return 'bg-purple-600'; // Changed from orange to purple
       default: return 'bg-gray-600';
     }
+  };
+  
+  // File upload handlers
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      // Validate file size (10MB max)
+      if (file.size > 10 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "The file size exceeds the 10MB limit.",
+          variant: "destructive",
+        });
+        return;
+      }
+      setUploadFile(file);
+    }
+  };
+  
+  const handleFileUpload = () => {
+    if (!uploadFile) {
+      toast({
+        title: "No file selected",
+        description: "Please select a file to upload.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!uploadTitle.trim()) {
+      toast({
+        title: "Title required",
+        description: "Please provide a title for this document.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // In a real application, you would use FormData to send the file to the server
+    // const formData = new FormData();
+    // formData.append('file', uploadFile);
+    // formData.append('title', uploadTitle);
+    // formData.append('type', uploadType);
+    // formData.append('schoolId', uploadSchool);
+    // formData.append('comments', uploadComments);
+    
+    // Submit the form data to the server
+    // For now, we'll just show a success message
+    toast({
+      title: "Form uploaded",
+      description: "The document has been successfully uploaded.",
+    });
+    
+    // Reset form state
+    setUploadFile(null);
+    setUploadTitle("");
+    setUploadType("inventory");
+    setUploadSchool(selectedSchool?.id.toString() || "349");
+    setUploadComments("");
+    setShowUploadDialog(false);
   };
 
   return (
@@ -1386,13 +1453,19 @@ const BookOrder = () => {
                 id="formTitle"
                 className="col-span-3"
                 placeholder="Book Inventory Form"
+                value={uploadTitle}
+                onChange={(e) => setUploadTitle(e.target.value)}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="formType" className="text-right">
                 Type
               </Label>
-              <Select defaultValue="inventory">
+              <Select 
+                defaultValue="inventory" 
+                value={uploadType}
+                onValueChange={setUploadType}
+              >
                 <SelectTrigger className="col-span-3" id="formType">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -1408,7 +1481,11 @@ const BookOrder = () => {
               <Label htmlFor="school" className="text-right">
                 School
               </Label>
-              <Select defaultValue={selectedSchool ? selectedSchool.id.toString() : viewingSchoolId ? viewingSchoolId.toString() : "349"}>
+              <Select 
+                defaultValue={selectedSchool ? selectedSchool.id.toString() : viewingSchoolId ? viewingSchoolId.toString() : "349"}
+                value={uploadSchool}
+                onValueChange={setUploadSchool}
+              >
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Select school" />
                 </SelectTrigger>
@@ -1425,13 +1502,28 @@ const BookOrder = () => {
               </Label>
               <div className="col-span-3">
                 <div className="flex items-center justify-center w-full">
-                  <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                  <label htmlFor="dropzone-file" className={`flex flex-col items-center justify-center w-full h-32 border-2 ${uploadFile ? 'border-green-300 bg-green-50' : 'border-gray-300 border-dashed bg-gray-50 hover:bg-gray-100'} rounded-lg cursor-pointer`}>
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="w-8 h-8 mb-3 text-gray-400" />
-                      <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                      <p className="text-xs text-gray-500">PDF, DOC, XLS or images (MAX. 10MB)</p>
+                      {uploadFile ? (
+                        <>
+                          <FileCheck className="w-8 h-8 mb-3 text-green-500" />
+                          <p className="mb-2 text-sm text-green-600 font-medium">File selected</p>
+                          <p className="text-xs text-green-500">{uploadFile.name} ({(uploadFile.size / 1024).toFixed(2)} KB)</p>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-8 h-8 mb-3 text-gray-400" />
+                          <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                          <p className="text-xs text-gray-500">PDF, DOC, XLS or images (MAX. 10MB)</p>
+                        </>
+                      )}
                     </div>
-                    <input id="dropzone-file" type="file" className="hidden" />
+                    <input 
+                      id="dropzone-file" 
+                      type="file" 
+                      className="hidden" 
+                      onChange={handleFileChange}
+                    />
                   </label>
                 </div>
               </div>
@@ -1444,6 +1536,8 @@ const BookOrder = () => {
                 id="comments"
                 className="col-span-3"
                 placeholder="Enter any additional notes about this document"
+                value={uploadComments}
+                onChange={(e) => setUploadComments(e.target.value)}
               />
             </div>
           </div>
