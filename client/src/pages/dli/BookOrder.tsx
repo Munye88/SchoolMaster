@@ -52,59 +52,59 @@ import { BookText, CalendarDays, Search, Filter, Download, Printer, ArrowUpDown,
 // Mock data for book inventory - expanded to include more books for each school
 const bookInventory = [
   // KNFA Books
-  { id: 1, name: 'American Language Course Book 1', level: 'Beginner', quantity: 25, status: 'In Stock', schoolId: 349 },
-  { id: 2, name: 'American Language Course Book 2', level: 'Beginner', quantity: 30, status: 'In Stock', schoolId: 349 },
-  { id: 3, name: 'American Language Course Book 3', level: 'Elementary', quantity: 15, status: 'Low Stock', schoolId: 349 },
-  { id: 9, name: 'American Language Course Book 9', level: 'Advanced', quantity: 10, status: 'Low Stock', schoolId: 349 },
-  { id: 11, name: 'American Language Course Book 12', level: 'Advanced', quantity: 8, status: 'In Stock', schoolId: 349 },
-  { id: 13, name: 'American Language Course Book 15', level: 'Expert', quantity: 5, status: 'Low Stock', schoolId: 349 },
-  { id: 16, name: 'American Language Course Book 18', level: 'Expert', quantity: 2, status: 'Out of Stock', schoolId: 349 },
+  { id: 1, name: 'American Language Course Book 1', level: '', quantity: 25, status: 'In Stock', schoolId: 349 },
+  { id: 2, name: 'American Language Course Book 2', level: '', quantity: 30, status: 'In Stock', schoolId: 349 },
+  { id: 3, name: 'American Language Course Book 3', level: '', quantity: 15, status: 'Low Stock', schoolId: 349 },
+  { id: 9, name: 'American Language Course Book 9', level: '', quantity: 10, status: 'Low Stock', schoolId: 349 },
+  { id: 11, name: 'American Language Course Book 12', level: '', quantity: 8, status: 'In Stock', schoolId: 349 },
+  { id: 13, name: 'American Language Course Book 15', level: '', quantity: 5, status: 'Low Stock', schoolId: 349 },
+  { id: 16, name: 'American Language Course Book 18', level: '', quantity: 2, status: 'Out of Stock', schoolId: 349 },
   
   // NFS East Books - Updated from inventory spreadsheet on April 28, 2025
-  { id: 4, name: 'American Language Course Book 1', level: 'Beginner', quantity: 410, status: 'In Stock', schoolId: 350 },
-  { id: 5, name: 'American Language Course Book 2', level: 'Beginner', quantity: 488, status: 'In Stock', schoolId: 350 },
-  { id: 24, name: 'American Language Course Book 3', level: 'Elementary', quantity: 446, status: 'In Stock', schoolId: 350 },
-  { id: 25, name: 'American Language Course Book 4', level: 'Elementary', quantity: 392, status: 'In Stock', schoolId: 350 },
-  { id: 26, name: 'American Language Course Book 5', level: 'Intermediate', quantity: 563, status: 'In Stock', schoolId: 350 },
-  { id: 27, name: 'American Language Course Book 6', level: 'Intermediate', quantity: 374, status: 'In Stock', schoolId: 350 },
-  { id: 28, name: 'American Language Course Book 7', level: 'Upper Intermediate', quantity: 383, status: 'In Stock', schoolId: 350 },
-  { id: 29, name: 'American Language Course Book 8', level: 'Upper Intermediate', quantity: 460, status: 'In Stock', schoolId: 350 },
-  { id: 30, name: 'American Language Course Book 9', level: 'Advanced', quantity: 496, status: 'In Stock', schoolId: 350 },
-  { id: 31, name: 'American Language Course Book 10', level: 'Advanced', quantity: 515, status: 'In Stock', schoolId: 350 },
-  { id: 32, name: 'American Language Course Book 11', level: 'Advanced', quantity: 564, status: 'In Stock', schoolId: 350 },
-  { id: 33, name: 'American Language Course Book 12', level: 'Advanced', quantity: 457, status: 'In Stock', schoolId: 350 },
-  { id: 34, name: 'American Language Course Book 13', level: 'Advanced', quantity: 589, status: 'In Stock', schoolId: 350 },
-  { id: 35, name: 'American Language Course Book 14', level: 'Advanced', quantity: 653, status: 'In Stock', schoolId: 350 },
-  { id: 36, name: 'American Language Course Book 15', level: 'Expert', quantity: 551, status: 'In Stock', schoolId: 350 },
-  { id: 37, name: 'American Language Course Book 16', level: 'Expert', quantity: 569, status: 'In Stock', schoolId: 350 },
-  { id: 38, name: 'American Language Course Book 17', level: 'Expert', quantity: 181, status: 'In Stock', schoolId: 350 },
-  { id: 39, name: 'American Language Course Book 18', level: 'Expert', quantity: 257, status: 'In Stock', schoolId: 350 },
-  { id: 40, name: 'American Language Course Book 19', level: 'Expert', quantity: 168, status: 'In Stock', schoolId: 350 },
-  { id: 41, name: 'American Language Course Book 20', level: 'Master', quantity: 299, status: 'In Stock', schoolId: 350 },
-  { id: 42, name: 'American Language Course Book 21', level: 'Master', quantity: 180, status: 'In Stock', schoolId: 350 },
-  { id: 43, name: 'American Language Course Book 22', level: 'Master', quantity: 141, status: 'In Stock', schoolId: 350 },
-  { id: 44, name: 'American Language Course Book 23', level: 'Master', quantity: 204, status: 'In Stock', schoolId: 350 },
-  { id: 45, name: 'American Language Course Book 24', level: 'Master', quantity: 377, status: 'In Stock', schoolId: 350 },
-  { id: 46, name: 'American Language Course Book 25', level: 'Master', quantity: 270, status: 'In Stock', schoolId: 350 },
-  { id: 47, name: 'American Language Course Book 26', level: 'Master', quantity: 247, status: 'In Stock', schoolId: 350 },
-  { id: 48, name: 'American Language Course Book 27', level: 'Master', quantity: 250, status: 'In Stock', schoolId: 350 },
-  { id: 49, name: 'American Language Course Book 28', level: 'Master', quantity: 259, status: 'In Stock', schoolId: 350 },
-  { id: 50, name: 'American Language Course Book 29', level: 'Master', quantity: 223, status: 'In Stock', schoolId: 350 },
-  { id: 51, name: 'American Language Course Book 30', level: 'Master', quantity: 169, status: 'In Stock', schoolId: 350 },
-  { id: 52, name: 'American Language Course Book 31', level: 'Master', quantity: 184, status: 'In Stock', schoolId: 350 },
-  { id: 53, name: 'American Language Course Book 32', level: 'Master', quantity: 107, status: 'In Stock', schoolId: 350 },
-  { id: 54, name: 'American Language Course Book 33', level: 'Master', quantity: 111, status: 'In Stock', schoolId: 350 },
-  { id: 55, name: 'American Language Course Book 34', level: 'Master', quantity: 133, status: 'In Stock', schoolId: 350 },
+  { id: 4, name: 'American Language Course Book 1', level: '', quantity: 410, status: 'In Stock', schoolId: 350 },
+  { id: 5, name: 'American Language Course Book 2', level: '', quantity: 488, status: 'In Stock', schoolId: 350 },
+  { id: 24, name: 'American Language Course Book 3', level: '', quantity: 446, status: 'In Stock', schoolId: 350 },
+  { id: 25, name: 'American Language Course Book 4', level: '', quantity: 392, status: 'In Stock', schoolId: 350 },
+  { id: 26, name: 'American Language Course Book 5', level: '', quantity: 563, status: 'In Stock', schoolId: 350 },
+  { id: 27, name: 'American Language Course Book 6', level: '', quantity: 374, status: 'In Stock', schoolId: 350 },
+  { id: 28, name: 'American Language Course Book 7', level: '', quantity: 383, status: 'In Stock', schoolId: 350 },
+  { id: 29, name: 'American Language Course Book 8', level: '', quantity: 460, status: 'In Stock', schoolId: 350 },
+  { id: 30, name: 'American Language Course Book 9', level: '', quantity: 496, status: 'In Stock', schoolId: 350 },
+  { id: 31, name: 'American Language Course Book 10', level: '', quantity: 515, status: 'In Stock', schoolId: 350 },
+  { id: 32, name: 'American Language Course Book 11', level: '', quantity: 564, status: 'In Stock', schoolId: 350 },
+  { id: 33, name: 'American Language Course Book 12', level: '', quantity: 457, status: 'In Stock', schoolId: 350 },
+  { id: 34, name: 'American Language Course Book 13', level: '', quantity: 589, status: 'In Stock', schoolId: 350 },
+  { id: 35, name: 'American Language Course Book 14', level: '', quantity: 653, status: 'In Stock', schoolId: 350 },
+  { id: 36, name: 'American Language Course Book 15', level: '', quantity: 551, status: 'In Stock', schoolId: 350 },
+  { id: 37, name: 'American Language Course Book 16', level: '', quantity: 569, status: 'In Stock', schoolId: 350 },
+  { id: 38, name: 'American Language Course Book 17', level: '', quantity: 181, status: 'In Stock', schoolId: 350 },
+  { id: 39, name: 'American Language Course Book 18', level: '', quantity: 257, status: 'In Stock', schoolId: 350 },
+  { id: 40, name: 'American Language Course Book 19', level: '', quantity: 168, status: 'In Stock', schoolId: 350 },
+  { id: 41, name: 'American Language Course Book 20', level: '', quantity: 299, status: 'In Stock', schoolId: 350 },
+  { id: 42, name: 'American Language Course Book 21', level: '', quantity: 180, status: 'In Stock', schoolId: 350 },
+  { id: 43, name: 'American Language Course Book 22', level: '', quantity: 141, status: 'In Stock', schoolId: 350 },
+  { id: 44, name: 'American Language Course Book 23', level: '', quantity: 204, status: 'In Stock', schoolId: 350 },
+  { id: 45, name: 'American Language Course Book 24', level: '', quantity: 377, status: 'In Stock', schoolId: 350 },
+  { id: 46, name: 'American Language Course Book 25', level: '', quantity: 270, status: 'In Stock', schoolId: 350 },
+  { id: 47, name: 'American Language Course Book 26', level: '', quantity: 247, status: 'In Stock', schoolId: 350 },
+  { id: 48, name: 'American Language Course Book 27', level: '', quantity: 250, status: 'In Stock', schoolId: 350 },
+  { id: 49, name: 'American Language Course Book 28', level: '', quantity: 259, status: 'In Stock', schoolId: 350 },
+  { id: 50, name: 'American Language Course Book 29', level: '', quantity: 223, status: 'In Stock', schoolId: 350 },
+  { id: 51, name: 'American Language Course Book 30', level: '', quantity: 169, status: 'In Stock', schoolId: 350 },
+  { id: 52, name: 'American Language Course Book 31', level: '', quantity: 184, status: 'In Stock', schoolId: 350 },
+  { id: 53, name: 'American Language Course Book 32', level: '', quantity: 107, status: 'In Stock', schoolId: 350 },
+  { id: 54, name: 'American Language Course Book 33', level: '', quantity: 111, status: 'In Stock', schoolId: 350 },
+  { id: 55, name: 'American Language Course Book 34', level: '', quantity: 133, status: 'In Stock', schoolId: 350 },
   
   // NFS West Books
-  { id: 6, name: 'American Language Course Book 6', level: 'Intermediate', quantity: 18, status: 'In Stock', schoolId: 351 },
-  { id: 7, name: 'American Language Course Book 7', level: 'Upper Intermediate', quantity: 12, status: 'Low Stock', schoolId: 351 },
-  { id: 8, name: 'American Language Course Book 8', level: 'Upper Intermediate', quantity: 5, status: 'Low Stock', schoolId: 351 },
-  { id: 12, name: 'American Language Course Book 14', level: 'Advanced', quantity: 7, status: 'In Stock', schoolId: 351 },
-  { id: 15, name: 'American Language Course Book 17', level: 'Expert', quantity: 9, status: 'In Stock', schoolId: 351 },
-  { id: 18, name: 'American Language Course Book 23', level: 'Master', quantity: 3, status: 'Low Stock', schoolId: 351 },
-  { id: 20, name: 'American Language Course Book 28', level: 'Master', quantity: 0, status: 'Out of Stock', schoolId: 351 },
-  { id: 22, name: 'American Language Course Book 34', level: 'Master', quantity: 0, status: 'Out of Stock', schoolId: 351 },
+  { id: 6, name: 'American Language Course Book 6', level: '', quantity: 18, status: 'In Stock', schoolId: 351 },
+  { id: 7, name: 'American Language Course Book 7', level: '', quantity: 12, status: 'Low Stock', schoolId: 351 },
+  { id: 8, name: 'American Language Course Book 8', level: '', quantity: 5, status: 'Low Stock', schoolId: 351 },
+  { id: 12, name: 'American Language Course Book 14', level: '', quantity: 7, status: 'In Stock', schoolId: 351 },
+  { id: 15, name: 'American Language Course Book 17', level: '', quantity: 9, status: 'In Stock', schoolId: 351 },
+  { id: 18, name: 'American Language Course Book 23', level: '', quantity: 3, status: 'Low Stock', schoolId: 351 },
+  { id: 20, name: 'American Language Course Book 28', level: '', quantity: 0, status: 'Out of Stock', schoolId: 351 },
+  { id: 22, name: 'American Language Course Book 34', level: '', quantity: 0, status: 'Out of Stock', schoolId: 351 },
 ];
 
 // Mock data for inventory update history
@@ -118,40 +118,40 @@ const inventoryUpdateHistory = [
 
 // Mock data for book catalog - Complete list of all 34 books
 const bookCatalog = [
-  { id: 1, name: 'American Language Course Book 1', level: 'Beginner' },
-  { id: 2, name: 'American Language Course Book 2', level: 'Beginner' },
-  { id: 3, name: 'American Language Course Book 3', level: 'Elementary' },
-  { id: 4, name: 'American Language Course Book 4', level: 'Elementary' },
-  { id: 5, name: 'American Language Course Book 5', level: 'Intermediate' },
-  { id: 6, name: 'American Language Course Book 6', level: 'Intermediate' },
-  { id: 7, name: 'American Language Course Book 7', level: 'Upper Intermediate' },
-  { id: 8, name: 'American Language Course Book 8', level: 'Upper Intermediate' },
-  { id: 9, name: 'American Language Course Book 9', level: 'Advanced' },
-  { id: 10, name: 'American Language Course Book 10', level: 'Advanced' },
-  { id: 11, name: 'American Language Course Book 11', level: 'Advanced' },
-  { id: 12, name: 'American Language Course Book 12', level: 'Advanced' },
-  { id: 13, name: 'American Language Course Book 13', level: 'Advanced' },
-  { id: 14, name: 'American Language Course Book 14', level: 'Advanced' },
-  { id: 15, name: 'American Language Course Book 15', level: 'Expert' },
-  { id: 16, name: 'American Language Course Book 16', level: 'Expert' },
-  { id: 17, name: 'American Language Course Book 17', level: 'Expert' },
-  { id: 18, name: 'American Language Course Book 18', level: 'Expert' },
-  { id: 19, name: 'American Language Course Book 19', level: 'Expert' },
-  { id: 20, name: 'American Language Course Book 20', level: 'Master' },
-  { id: 21, name: 'American Language Course Book 21', level: 'Master' },
-  { id: 22, name: 'American Language Course Book 22', level: 'Master' },
-  { id: 23, name: 'American Language Course Book 23', level: 'Master' },
-  { id: 24, name: 'American Language Course Book 24', level: 'Master' },
-  { id: 25, name: 'American Language Course Book 25', level: 'Master' },
-  { id: 26, name: 'American Language Course Book 26', level: 'Master' },
-  { id: 27, name: 'American Language Course Book 27', level: 'Master' },
-  { id: 28, name: 'American Language Course Book 28', level: 'Master' },
-  { id: 29, name: 'American Language Course Book 29', level: 'Master' },
-  { id: 30, name: 'American Language Course Book 30', level: 'Master' },
-  { id: 31, name: 'American Language Course Book 31', level: 'Master' },
-  { id: 32, name: 'American Language Course Book 32', level: 'Master' },
-  { id: 33, name: 'American Language Course Book 33', level: 'Master' },
-  { id: 34, name: 'American Language Course Book 34', level: 'Master' },
+  { id: 1, name: 'American Language Course Book 1', level: '' },
+  { id: 2, name: 'American Language Course Book 2', level: '' },
+  { id: 3, name: 'American Language Course Book 3', level: '' },
+  { id: 4, name: 'American Language Course Book 4', level: '' },
+  { id: 5, name: 'American Language Course Book 5', level: '' },
+  { id: 6, name: 'American Language Course Book 6', level: '' },
+  { id: 7, name: 'American Language Course Book 7', level: '' },
+  { id: 8, name: 'American Language Course Book 8', level: '' },
+  { id: 9, name: 'American Language Course Book 9', level: '' },
+  { id: 10, name: 'American Language Course Book 10', level: '' },
+  { id: 11, name: 'American Language Course Book 11', level: '' },
+  { id: 12, name: 'American Language Course Book 12', level: '' },
+  { id: 13, name: 'American Language Course Book 13', level: '' },
+  { id: 14, name: 'American Language Course Book 14', level: '' },
+  { id: 15, name: 'American Language Course Book 15', level: '' },
+  { id: 16, name: 'American Language Course Book 16', level: '' },
+  { id: 17, name: 'American Language Course Book 17', level: '' },
+  { id: 18, name: 'American Language Course Book 18', level: '' },
+  { id: 19, name: 'American Language Course Book 19', level: '' },
+  { id: 20, name: 'American Language Course Book 20', level: '' },
+  { id: 21, name: 'American Language Course Book 21', level: '' },
+  { id: 22, name: 'American Language Course Book 22', level: '' },
+  { id: 23, name: 'American Language Course Book 23', level: '' },
+  { id: 24, name: 'American Language Course Book 24', level: '' },
+  { id: 25, name: 'American Language Course Book 25', level: '' },
+  { id: 26, name: 'American Language Course Book 26', level: '' },
+  { id: 27, name: 'American Language Course Book 27', level: '' },
+  { id: 28, name: 'American Language Course Book 28', level: '' },
+  { id: 29, name: 'American Language Course Book 29', level: '' },
+  { id: 30, name: 'American Language Course Book 30', level: '' },
+  { id: 31, name: 'American Language Course Book 31', level: '' },
+  { id: 32, name: 'American Language Course Book 32', level: '' },
+  { id: 33, name: 'American Language Course Book 33', level: '' },
+  { id: 34, name: 'American Language Course Book 34', level: '' },
 ];
 
 const BookOrder = () => {
@@ -1167,7 +1167,6 @@ const BookOrder = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[250px]">Book Name</TableHead>
-                      <TableHead>Level</TableHead>
                       <TableHead>School</TableHead>
                       <TableHead>Quantity</TableHead>
                       <TableHead>Status</TableHead>
@@ -1179,7 +1178,6 @@ const BookOrder = () => {
                       filteredBooks.map((book) => (
                         <TableRow key={book.id}>
                           <TableCell className="font-medium">{book.name}</TableCell>
-                          <TableCell>{book.level}</TableCell>
                           <TableCell>
                             {getSchoolById(book.schoolId)?.name}
                           </TableCell>
@@ -1309,28 +1307,7 @@ const BookOrder = () => {
                 placeholder="American Language Course Book X"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="level" className="text-right">
-                Level
-              </Label>
-              <Select
-                value={currentBook.level}
-                onValueChange={(value) => setCurrentBook({ ...currentBook, level: value })}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Beginner">Beginner</SelectItem>
-                  <SelectItem value="Elementary">Elementary</SelectItem>
-                  <SelectItem value="Intermediate">Intermediate</SelectItem>
-                  <SelectItem value="Upper Intermediate">Upper Intermediate</SelectItem>
-                  <SelectItem value="Advanced">Advanced</SelectItem>
-                  <SelectItem value="Expert">Expert</SelectItem>
-                  <SelectItem value="Master">Master</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="quantity" className="text-right">
                 Quantity
@@ -1393,28 +1370,7 @@ const BookOrder = () => {
                 onChange={(e) => setCurrentBook({ ...currentBook, name: e.target.value })}
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="editLevel" className="text-right">
-                Level
-              </Label>
-              <Select
-                value={currentBook.level}
-                onValueChange={(value) => setCurrentBook({ ...currentBook, level: value })}
-              >
-                <SelectTrigger className="col-span-3" id="editLevel">
-                  <SelectValue placeholder="Select level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Beginner">Beginner</SelectItem>
-                  <SelectItem value="Elementary">Elementary</SelectItem>
-                  <SelectItem value="Intermediate">Intermediate</SelectItem>
-                  <SelectItem value="Upper Intermediate">Upper Intermediate</SelectItem>
-                  <SelectItem value="Advanced">Advanced</SelectItem>
-                  <SelectItem value="Expert">Expert</SelectItem>
-                  <SelectItem value="Master">Master</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="editQuantity" className="text-right">
                 Quantity
