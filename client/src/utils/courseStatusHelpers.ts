@@ -28,6 +28,12 @@ export function calculateCourseProgress(course: Course): number {
       return 0;
     }
     
+    // Handle case where end date is before start date (incorrect data)
+    if (endDate < startDate) {
+      console.warn(`Course ${course.name} has end date before start date. Returning manual progress.`);
+      return course.progress;
+    }
+    
     // If course hasn't started yet
     if (today < startDate) {
       return 0;
@@ -134,6 +140,12 @@ export function calculateCourseStatus(course: Course): string {
     
     // Log for debugging
     console.log(`Course ${course.name}: Today=${todayTime}, Start=${startTime}, End=${endTime}`);
+
+    // Handle case where end date is before start date (incorrect data)
+    if (endTime && endTime < startTime) {
+      console.warn(`Course ${course.name} has end date before start date. Using database status.`);
+      return course.status;
+    }
     
     // Determine status based on time comparison
     if (endTime && todayTime > endTime) {
