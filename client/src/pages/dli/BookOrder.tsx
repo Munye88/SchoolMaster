@@ -60,14 +60,41 @@ const bookInventory = [
   { id: 13, name: 'American Language Course Book 15', level: 'Expert', quantity: 5, status: 'Low Stock', schoolId: 349 },
   { id: 16, name: 'American Language Course Book 18', level: 'Expert', quantity: 2, status: 'Out of Stock', schoolId: 349 },
   
-  // NFS East Books
-  { id: 4, name: 'American Language Course Book 4', level: 'Elementary', quantity: 8, status: 'Low Stock', schoolId: 350 },
-  { id: 5, name: 'American Language Course Book 5', level: 'Intermediate', quantity: 20, status: 'In Stock', schoolId: 350 },
-  { id: 10, name: 'American Language Course Book 10', level: 'Advanced', quantity: 3, status: 'Low Stock', schoolId: 350 },
-  { id: 14, name: 'American Language Course Book 16', level: 'Expert', quantity: 6, status: 'In Stock', schoolId: 350 },
-  { id: 17, name: 'American Language Course Book 21', level: 'Expert', quantity: 4, status: 'Low Stock', schoolId: 350 },
-  { id: 19, name: 'American Language Course Book 25', level: 'Master', quantity: 2, status: 'Low Stock', schoolId: 350 },
-  { id: 21, name: 'American Language Course Book 29', level: 'Master', quantity: 1, status: 'Low Stock', schoolId: 350 },
+  // NFS East Books - Updated from inventory spreadsheet on April 28, 2025
+  { id: 4, name: 'American Language Course Book 1', level: 'Beginner', quantity: 410, status: 'In Stock', schoolId: 350 },
+  { id: 5, name: 'American Language Course Book 2', level: 'Beginner', quantity: 488, status: 'In Stock', schoolId: 350 },
+  { id: 24, name: 'American Language Course Book 3', level: 'Elementary', quantity: 446, status: 'In Stock', schoolId: 350 },
+  { id: 25, name: 'American Language Course Book 4', level: 'Elementary', quantity: 392, status: 'In Stock', schoolId: 350 },
+  { id: 26, name: 'American Language Course Book 5', level: 'Intermediate', quantity: 563, status: 'In Stock', schoolId: 350 },
+  { id: 27, name: 'American Language Course Book 6', level: 'Intermediate', quantity: 374, status: 'In Stock', schoolId: 350 },
+  { id: 28, name: 'American Language Course Book 7', level: 'Upper Intermediate', quantity: 383, status: 'In Stock', schoolId: 350 },
+  { id: 29, name: 'American Language Course Book 8', level: 'Upper Intermediate', quantity: 460, status: 'In Stock', schoolId: 350 },
+  { id: 30, name: 'American Language Course Book 9', level: 'Advanced', quantity: 496, status: 'In Stock', schoolId: 350 },
+  { id: 31, name: 'American Language Course Book 10', level: 'Advanced', quantity: 515, status: 'In Stock', schoolId: 350 },
+  { id: 32, name: 'American Language Course Book 11', level: 'Advanced', quantity: 564, status: 'In Stock', schoolId: 350 },
+  { id: 33, name: 'American Language Course Book 12', level: 'Advanced', quantity: 457, status: 'In Stock', schoolId: 350 },
+  { id: 34, name: 'American Language Course Book 13', level: 'Advanced', quantity: 589, status: 'In Stock', schoolId: 350 },
+  { id: 35, name: 'American Language Course Book 14', level: 'Advanced', quantity: 653, status: 'In Stock', schoolId: 350 },
+  { id: 36, name: 'American Language Course Book 15', level: 'Expert', quantity: 551, status: 'In Stock', schoolId: 350 },
+  { id: 37, name: 'American Language Course Book 16', level: 'Expert', quantity: 569, status: 'In Stock', schoolId: 350 },
+  { id: 38, name: 'American Language Course Book 17', level: 'Expert', quantity: 181, status: 'In Stock', schoolId: 350 },
+  { id: 39, name: 'American Language Course Book 18', level: 'Expert', quantity: 257, status: 'In Stock', schoolId: 350 },
+  { id: 40, name: 'American Language Course Book 19', level: 'Expert', quantity: 168, status: 'In Stock', schoolId: 350 },
+  { id: 41, name: 'American Language Course Book 20', level: 'Master', quantity: 299, status: 'In Stock', schoolId: 350 },
+  { id: 42, name: 'American Language Course Book 21', level: 'Master', quantity: 180, status: 'In Stock', schoolId: 350 },
+  { id: 43, name: 'American Language Course Book 22', level: 'Master', quantity: 141, status: 'In Stock', schoolId: 350 },
+  { id: 44, name: 'American Language Course Book 23', level: 'Master', quantity: 204, status: 'In Stock', schoolId: 350 },
+  { id: 45, name: 'American Language Course Book 24', level: 'Master', quantity: 377, status: 'In Stock', schoolId: 350 },
+  { id: 46, name: 'American Language Course Book 25', level: 'Master', quantity: 270, status: 'In Stock', schoolId: 350 },
+  { id: 47, name: 'American Language Course Book 26', level: 'Master', quantity: 247, status: 'In Stock', schoolId: 350 },
+  { id: 48, name: 'American Language Course Book 27', level: 'Master', quantity: 250, status: 'In Stock', schoolId: 350 },
+  { id: 49, name: 'American Language Course Book 28', level: 'Master', quantity: 259, status: 'In Stock', schoolId: 350 },
+  { id: 50, name: 'American Language Course Book 29', level: 'Master', quantity: 223, status: 'In Stock', schoolId: 350 },
+  { id: 51, name: 'American Language Course Book 30', level: 'Master', quantity: 169, status: 'In Stock', schoolId: 350 },
+  { id: 52, name: 'American Language Course Book 31', level: 'Master', quantity: 184, status: 'In Stock', schoolId: 350 },
+  { id: 53, name: 'American Language Course Book 32', level: 'Master', quantity: 107, status: 'In Stock', schoolId: 350 },
+  { id: 54, name: 'American Language Course Book 33', level: 'Master', quantity: 111, status: 'In Stock', schoolId: 350 },
+  { id: 55, name: 'American Language Course Book 34', level: 'Master', quantity: 133, status: 'In Stock', schoolId: 350 },
   
   // NFS West Books
   { id: 6, name: 'American Language Course Book 6', level: 'Intermediate', quantity: 18, status: 'In Stock', schoolId: 351 },
@@ -89,7 +116,7 @@ const inventoryUpdateHistory = [
   { id: 105, date: '2024-11-05', books: 'ALC Books 8-10', quantity: 25, status: 'Received', schoolId: 350, notes: 'Inventory replenishment' },
 ];
 
-// Mock data for book catalog
+// Mock data for book catalog - Complete list of all 34 books
 const bookCatalog = [
   { id: 1, name: 'American Language Course Book 1', level: 'Beginner' },
   { id: 2, name: 'American Language Course Book 2', level: 'Beginner' },
@@ -101,18 +128,30 @@ const bookCatalog = [
   { id: 8, name: 'American Language Course Book 8', level: 'Upper Intermediate' },
   { id: 9, name: 'American Language Course Book 9', level: 'Advanced' },
   { id: 10, name: 'American Language Course Book 10', level: 'Advanced' },
-  { id: 11, name: 'American Language Course Book 12', level: 'Advanced' },
-  { id: 12, name: 'American Language Course Book 14', level: 'Advanced' },
-  { id: 13, name: 'American Language Course Book 15', level: 'Expert' },
-  { id: 14, name: 'American Language Course Book 16', level: 'Expert' },
-  { id: 15, name: 'American Language Course Book 17', level: 'Expert' },
-  { id: 16, name: 'American Language Course Book 18', level: 'Expert' },
-  { id: 17, name: 'American Language Course Book 21', level: 'Expert' },
-  { id: 18, name: 'American Language Course Book 23', level: 'Master' },
-  { id: 19, name: 'American Language Course Book 25', level: 'Master' },
-  { id: 20, name: 'American Language Course Book 28', level: 'Master' },
-  { id: 21, name: 'American Language Course Book 29', level: 'Master' },
-  { id: 22, name: 'American Language Course Book 34', level: 'Master' },
+  { id: 11, name: 'American Language Course Book 11', level: 'Advanced' },
+  { id: 12, name: 'American Language Course Book 12', level: 'Advanced' },
+  { id: 13, name: 'American Language Course Book 13', level: 'Advanced' },
+  { id: 14, name: 'American Language Course Book 14', level: 'Advanced' },
+  { id: 15, name: 'American Language Course Book 15', level: 'Expert' },
+  { id: 16, name: 'American Language Course Book 16', level: 'Expert' },
+  { id: 17, name: 'American Language Course Book 17', level: 'Expert' },
+  { id: 18, name: 'American Language Course Book 18', level: 'Expert' },
+  { id: 19, name: 'American Language Course Book 19', level: 'Expert' },
+  { id: 20, name: 'American Language Course Book 20', level: 'Master' },
+  { id: 21, name: 'American Language Course Book 21', level: 'Master' },
+  { id: 22, name: 'American Language Course Book 22', level: 'Master' },
+  { id: 23, name: 'American Language Course Book 23', level: 'Master' },
+  { id: 24, name: 'American Language Course Book 24', level: 'Master' },
+  { id: 25, name: 'American Language Course Book 25', level: 'Master' },
+  { id: 26, name: 'American Language Course Book 26', level: 'Master' },
+  { id: 27, name: 'American Language Course Book 27', level: 'Master' },
+  { id: 28, name: 'American Language Course Book 28', level: 'Master' },
+  { id: 29, name: 'American Language Course Book 29', level: 'Master' },
+  { id: 30, name: 'American Language Course Book 30', level: 'Master' },
+  { id: 31, name: 'American Language Course Book 31', level: 'Master' },
+  { id: 32, name: 'American Language Course Book 32', level: 'Master' },
+  { id: 33, name: 'American Language Course Book 33', level: 'Master' },
+  { id: 34, name: 'American Language Course Book 34', level: 'Master' },
 ];
 
 const BookOrder = () => {
@@ -1008,7 +1047,9 @@ const BookOrder = () => {
                       {getSchoolBooks(349).reduce((total, book) => total + book.quantity, 0)} books
                     </span>
                   </div>
-                  <Progress value={33} className="h-2 bg-blue-100" indicatorClassName="bg-blue-600" />
+                  <div className="h-2 bg-blue-100 w-full rounded-full overflow-hidden">
+                    <div className="h-full bg-blue-600" style={{ width: '33%' }}></div>
+                  </div>
                   
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">NFS East</span>
@@ -1016,7 +1057,9 @@ const BookOrder = () => {
                       {getSchoolBooks(350).reduce((total, book) => total + book.quantity, 0)} books
                     </span>
                   </div>
-                  <Progress value={33} className="h-2 bg-green-100" indicatorClassName="bg-green-600" />
+                  <div className="h-2 bg-green-100 w-full rounded-full overflow-hidden">
+                    <div className="h-full bg-green-600" style={{ width: '33%' }}></div>
+                  </div>
                   
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">NFS West</span>
@@ -1024,7 +1067,9 @@ const BookOrder = () => {
                       {getSchoolBooks(351).reduce((total, book) => total + book.quantity, 0)} books
                     </span>
                   </div>
-                  <Progress value={33} className="h-2 bg-orange-100" indicatorClassName="bg-orange-600" />
+                  <div className="h-2 bg-orange-100 w-full rounded-full overflow-hidden">
+                    <div className="h-full bg-orange-600" style={{ width: '33%' }}></div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
