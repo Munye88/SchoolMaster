@@ -1385,7 +1385,11 @@ const AlcptOrder = () => {
               <Label htmlFor="school" className="text-right">
                 School
               </Label>
-              <Select defaultValue={selectedSchool ? selectedSchool.id.toString() : viewingSchoolId ? viewingSchoolId.toString() : "349"}>
+              <Select 
+                defaultValue={selectedSchool ? selectedSchool.id.toString() : viewingSchoolId ? viewingSchoolId.toString() : "349"}
+                value={uploadSchool}
+                onValueChange={setUploadSchool}
+              >
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Select school" />
                 </SelectTrigger>
@@ -1402,13 +1406,35 @@ const AlcptOrder = () => {
               </Label>
               <div className="col-span-3">
                 <div className="flex items-center justify-center w-full">
-                  <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                  <label 
+                    htmlFor="dropzone-file" 
+                    className={`flex flex-col items-center justify-center w-full h-32 border-2 ${uploadFile ? 'border-emerald-300 bg-emerald-50' : 'border-gray-300 bg-gray-50'} border-dashed rounded-lg cursor-pointer hover:bg-gray-100`}
+                  >
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="w-8 h-8 mb-3 text-gray-400" />
-                      <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                      <p className="text-xs text-gray-500">PDF, DOC, XLS or images (MAX. 10MB)</p>
+                      {uploadFile ? (
+                        <>
+                          <CheckCircle className="w-8 h-8 mb-3 text-emerald-500" />
+                          <p className="mb-2 text-sm text-emerald-500">
+                            <span className="font-semibold">{uploadFile.name}</span>
+                          </p>
+                          <p className="text-xs text-emerald-500">
+                            {(uploadFile.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-8 h-8 mb-3 text-gray-400" />
+                          <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                          <p className="text-xs text-gray-500">PDF, DOC, XLS or images (MAX. 10MB)</p>
+                        </>
+                      )}
                     </div>
-                    <input id="dropzone-file" type="file" className="hidden" />
+                    <input 
+                      id="dropzone-file" 
+                      type="file" 
+                      className="hidden" 
+                      onChange={handleFileChange}
+                    />
                   </label>
                 </div>
               </div>
@@ -1421,6 +1447,8 @@ const AlcptOrder = () => {
                 id="comments"
                 className="col-span-3"
                 placeholder="Enter any additional notes about this document"
+                value={uploadComments}
+                onChange={(e) => setUploadComments(e.target.value)}
               />
             </div>
           </div>
@@ -1428,13 +1456,10 @@ const AlcptOrder = () => {
             <Button variant="outline" onClick={() => setShowUploadDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              toast({
-                title: "Form uploaded",
-                description: "The document has been successfully uploaded.",
-              });
-              setShowUploadDialog(false);
-            }}>
+            <Button 
+              onClick={handleFileUpload}
+              disabled={!uploadFile || !uploadTitle}
+            >
               Upload
             </Button>
           </DialogFooter>
