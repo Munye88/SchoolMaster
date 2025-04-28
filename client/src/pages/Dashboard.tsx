@@ -13,6 +13,7 @@ import { Link } from "wouter";
 import { format } from "date-fns";
 import { Calendar as CalendarComponent } from "@/components/dashboard/Calendar";
 import Notifications from "@/components/dashboard/Notifications";
+import UpcomingEvents from "@/components/dashboard/UpcomingEvents";
 import { useQuery } from "@tanstack/react-query";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip, Cell } from 'recharts';
 import { Input } from "@/components/ui/input";
@@ -697,55 +698,13 @@ const Dashboard = () => {
 
         {/* Right Column */}
         <div className="space-y-6">
-          {/* Upcoming Events (replacing Recent Activity) */}
-          <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg text-[#0A2463]">Upcoming Events</CardTitle>
-                <Link href="/events" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
-              </div>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="divide-y divide-gray-100">
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-sm">Student Days</h4>
-                    <span className="text-xs font-medium text-blue-600 px-2 py-0.5 bg-blue-50 rounded-full border border-blue-100">
-                      KFNA
-                    </span>
-                  </div>
-                  <div className="flex items-center text-gray-500 text-xs">
-                    <Calendar className="h-3 w-3 mr-1" />
-                    <span>April 28, 2025</span>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-sm">Instructor Meeting</h4>
-                    <span className="text-xs font-medium text-green-600 px-2 py-0.5 bg-green-50 rounded-full border border-green-100">
-                      NFS East
-                    </span>
-                  </div>
-                  <div className="flex items-center text-gray-500 text-xs">
-                    <Calendar className="h-3 w-3 mr-1" />
-                    <span>May 2, 2025</span>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium text-sm">ALCPT Testing</h4>
-                    <span className="text-xs font-medium text-purple-600 px-2 py-0.5 bg-purple-50 rounded-full border border-purple-100">
-                      NFS West
-                    </span>
-                  </div>
-                  <div className="flex items-center text-gray-500 text-xs">
-                    <Calendar className="h-3 w-3 mr-1" />
-                    <span>May 15, 2025</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Upcoming Events */}
+          <div className="relative">
+            <UpcomingEvents limit={3} />
+            <div className="absolute top-4 right-4">
+              <Link href="/events" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
+            </div>
+          </div>
 
 
 
