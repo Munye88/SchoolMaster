@@ -391,12 +391,14 @@ const Dashboard = () => {
                               <div className="mt-3">
                                 <div className={`flex items-center justify-between text-xs ${progressTextColor} mb-1`}>
                                   <span>Progress</span>
-                                  <span>{course.name === 'Cadets' && course.progress === 0 ? '0' : calculateCourseProgress(course)}%</span>
+                                  <span>
+                                    {course.name === 'Cadets' ? '0' : calculateCourseProgress(course)}%
+                                  </span>
                                 </div>
                                 <div className={`w-full ${progressBgColor} rounded-full h-2 overflow-hidden`}>
                                   <div 
                                     className={`h-full ${progressFillColor} rounded-full`} 
-                                    style={{ width: `${course.name === 'Cadets' && course.progress === 0 ? '0' : calculateCourseProgress(course)}%` }}
+                                    style={{ width: `${course.name === 'Cadets' ? '0' : calculateCourseProgress(course)}%` }}
                                   ></div>
                                 </div>
                                 <div className={`mt-2 text-xs ${labelColor}`}>
