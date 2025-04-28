@@ -889,7 +889,7 @@ Return ONLY a JSON array with this structure and nothing else:
                         </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-amber-600">{instructor.score}</div>
+                        <div className="text-xl font-bold text-amber-600">{instructor.score}</div>
                         <div className="text-xs text-gray-500">Score</div>
                       </div>
                     </div>
@@ -1034,15 +1034,15 @@ Return ONLY a JSON array with this structure and nothing else:
                         <div className="grid grid-cols-2 gap-2 mt-2">
                           <div className="p-2 bg-gray-50 rounded border border-gray-200">
                             <div className="text-xs text-gray-500">Overall Score</div>
-                            <div className="text-xl font-bold text-amber-600">{selectedInstructor.score}</div>
+                            <div className="text-lg font-bold text-amber-600">{selectedInstructor.score}</div>
                           </div>
                           <div className="p-2 bg-gray-50 rounded border border-gray-200">
                             <div className="text-xs text-gray-500">Attendance</div>
-                            <div className="text-xl font-bold text-green-600">{selectedInstructor.attendancePercentage}%</div>
+                            <div className="text-lg font-bold text-green-600">{selectedInstructor.attendancePercentage}%</div>
                           </div>
                           <div className="p-2 bg-gray-50 rounded border border-gray-200">
                             <div className="text-xs text-gray-500">Evaluation</div>
-                            <div className="text-xl font-bold text-blue-600">{selectedInstructor.evaluationScore}</div>
+                            <div className="text-lg font-bold text-blue-600">{selectedInstructor.evaluationScore}</div>
                           </div>
                         </div>
                       </div>
