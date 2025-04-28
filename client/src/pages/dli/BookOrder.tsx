@@ -1545,13 +1545,10 @@ const BookOrder = () => {
             <Button variant="outline" onClick={() => setShowUploadDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              toast({
-                title: "Form uploaded",
-                description: "The document has been successfully uploaded.",
-              });
-              setShowUploadDialog(false);
-            }}>
+            <Button 
+              onClick={handleFileUpload}
+              disabled={!uploadFile || !uploadTitle.trim()}
+            >
               Upload
             </Button>
           </DialogFooter>

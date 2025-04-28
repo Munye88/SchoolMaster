@@ -156,6 +156,13 @@ const AlcptOrder = () => {
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [showInventoryUpdateDialog, setShowInventoryUpdateDialog] = useState(false);
   
+  // State for file upload
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadTitle, setUploadTitle] = useState("");
+  const [uploadType, setUploadType] = useState("form");
+  const [uploadSchool, setUploadSchool] = useState(selectedSchool?.id.toString() || "349");
+  const [uploadComments, setUploadComments] = useState("");
+  
   // State for form being edited or deleted
   const [currentForm, setCurrentForm] = useState<{
     id?: number;
@@ -466,6 +473,40 @@ const AlcptOrder = () => {
       case 351: return 'bg-purple-600'; // Changed from orange to purple
       default: return 'bg-gray-600';
     }
+  };
+  
+  // Handle file selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setUploadFile(e.target.files[0]);
+    }
+  };
+  
+  // Handle file upload
+  const handleFileUpload = () => {
+    if (!uploadFile || !uploadTitle.trim()) {
+      toast({
+        title: "Missing information",
+        description: "Please provide a file and title before uploading.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Here you would typically upload to a server
+    // For now, we'll simulate a successful upload
+    
+    toast({
+      title: "Form uploaded",
+      description: "The document has been successfully uploaded.",
+    });
+    
+    // Reset form and close dialog
+    setUploadFile(null);
+    setUploadTitle("");
+    setUploadType("form");
+    setUploadComments("");
+    setShowUploadDialog(false);
   };
 
   return (
@@ -1316,13 +1357,19 @@ const AlcptOrder = () => {
                 id="formTitle"
                 className="col-span-3"
                 placeholder="ALCPT Inventory Document"
+                value={uploadTitle}
+                onChange={(e) => setUploadTitle(e.target.value)}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="formType" className="text-right">
                 Type
               </Label>
-              <Select defaultValue="inventory">
+              <Select 
+                defaultValue="inventory"
+                value={uploadType}
+                onValueChange={setUploadType}
+              >
                 <SelectTrigger className="col-span-3" id="formType">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
