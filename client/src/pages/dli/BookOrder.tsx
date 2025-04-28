@@ -160,6 +160,7 @@ const BookOrder = () => {
   const [activeTab, setActiveTab] = useState('inventory');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedLevel, setSelectedLevel] = useState('all');
   const [localBookInventory, setLocalBookInventory] = useState(bookInventory);
   const [showSchoolInventory, setShowSchoolInventory] = useState(true);
   
@@ -220,14 +221,15 @@ const BookOrder = () => {
     { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'purple' },
   ];
   
-  // Filter books by school, search query, and status
+  // Filter books by school, search query, status, and level
   const filteredBooks = localBookInventory.filter(book => {
     const matchesSchool = selectedSchool ? book.schoolId === selectedSchool.id : 
                          viewingSchoolId ? book.schoolId === viewingSchoolId : true;
     const matchesSearch = book.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = selectedStatus === 'all' || book.status === selectedStatus;
+    const matchesLevel = selectedLevel === 'all' || book.level === selectedLevel;
     
-    return matchesSchool && matchesSearch && matchesStatus;
+    return matchesSchool && matchesSearch && matchesStatus && matchesLevel;
   });
   
   // Get books for a specific school
