@@ -272,7 +272,7 @@ export default function ManageCourses() {
   const isLoading = isLoadingCourses || isLoadingSchools || isLoadingInstructors;
 
   // Get available course types
-  const courseTypes = ["Aviation", "Refresher", "MMSC", "Cadets"];
+  const courseTypes = ["Aviation", "Refresher", "Cadets"];
   
   // Get available statuses
   const statusOptions = ["Starting Soon", "In Progress", "Completed"];

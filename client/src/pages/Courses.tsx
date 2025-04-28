@@ -51,14 +51,6 @@ const courseTypes = [
   },
   {
     id: 3,
-    name: "MMSC",
-    duration: "Six months",
-    benchmarks: [
-      { test: "ALCPT", score: "45" }
-    ]
-  },
-  {
-    id: 4,
     name: "Cadets",
     duration: "Three months",
     benchmarks: [
@@ -107,7 +99,6 @@ export default function Courses() {
     const name = courseName.toLowerCase();
     if (name.includes("aviation")) return "bg-blue-500";
     if (name.includes("refresher")) return "bg-green-500";
-    if (name.includes("mmsc")) return "bg-amber-500";
     if (name.includes("cadet")) return "bg-purple-500";
     return "bg-gray-500";
   };
@@ -282,14 +273,6 @@ export default function Courses() {
                   borderColor: "border-green-100",
                   progressColor: "bg-green-600",
                   iconColor: "text-green-500",
-                };
-              if (name.includes("mmsc")) 
-                return {
-                  headerBg: "bg-gradient-to-r from-amber-600 to-amber-500",
-                  lightBg: "bg-amber-50",
-                  borderColor: "border-amber-100",
-                  progressColor: "bg-amber-600",
-                  iconColor: "text-amber-500",
                 };
               if (name.includes("cadet")) 
                 return {
