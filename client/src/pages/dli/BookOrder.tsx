@@ -803,7 +803,6 @@ const BookOrder = () => {
                           <TableHeader>
                             <TableRow>
                               <TableHead className="w-[300px]">Book Name</TableHead>
-                              <TableHead>Level</TableHead>
                               <TableHead>Quantity</TableHead>
                               <TableHead>Status</TableHead>
                               <TableHead className="text-right">Actions</TableHead>
@@ -814,7 +813,6 @@ const BookOrder = () => {
                               getSchoolBooks(viewingSchoolId).map((book) => (
                                 <TableRow key={book.id}>
                                   <TableCell className="font-medium">{book.name}</TableCell>
-                                  <TableCell>{book.level}</TableCell>
                                   <TableCell>{book.quantity}</TableCell>
                                   <TableCell>
                                     <Badge className={getStatusColor(book.status)}>
@@ -1133,21 +1131,7 @@ const BookOrder = () => {
                   />
                 </div>
                 
-                <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Levels</SelectItem>
-                    <SelectItem value="Beginner">Beginner</SelectItem>
-                    <SelectItem value="Elementary">Elementary</SelectItem>
-                    <SelectItem value="Intermediate">Intermediate</SelectItem>
-                    <SelectItem value="Upper Intermediate">Upper Intermediate</SelectItem>
-                    <SelectItem value="Advanced">Advanced</SelectItem>
-                    <SelectItem value="Expert">Expert</SelectItem>
-                    <SelectItem value="Master">Master</SelectItem>
-                  </SelectContent>
-                </Select>
+
                 
                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                   <SelectTrigger className="w-[180px]">
