@@ -16,7 +16,7 @@ import {
   type InterviewQuestion, type InsertInterviewQuestion, interviewQuestions
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, lt, gt, and, isNull, or, sql } from "drizzle-orm";
+import { eq, desc, lt, gt, gte, and, isNull, or, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User methods
@@ -526,8 +526,9 @@ export class MemStorage implements IStorage {
   
   async getUpcomingEvents(limit: number): Promise<Event[]> {
     const now = new Date();
+    // Use greater than or equal to include events starting today
     return Array.from(this.events.values())
-      .filter(event => event.start > now)
+      .filter(event => event.start >= now)
       .sort((a, b) => a.start.getTime() - b.start.getTime())
       .slice(0, limit);
   }
@@ -919,9 +920,12 @@ export class DatabaseStorage implements IStorage {
   
   async getUpcomingEvents(limit: number): Promise<Event[]> {
     const now = new Date();
+    
+    // Use gte instead of gt to include events that are happening today
+    // This ensures we don't miss events scheduled for the current day
     return db.select()
       .from(events)
-      .where(gt(events.start, now))
+      .where(gte(events.start, now))
       .orderBy(events.start)
       .limit(limit);
   }
