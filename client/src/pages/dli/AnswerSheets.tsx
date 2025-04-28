@@ -447,6 +447,61 @@ const AnswerSheets = () => {
       default: return 'bg-gray-600';
     }
   };
+  
+  // Handle file input change
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setUploadFile(e.target.files[0]);
+    }
+  };
+  
+  // Handle file upload
+  const handleFileUpload = () => {
+    // Check if required fields are provided
+    if (!uploadTitle.trim()) {
+      toast({
+        title: "Title is required",
+        description: "Please provide a title for the uploaded document.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!uploadFile) {
+      toast({
+        title: "File is required",
+        description: "Please select a file to upload.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Check file size (max 10MB)
+    if (uploadFile.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "File size must be less than 10MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // In a real app, you would upload the file to a server here
+    // For this demo, we'll simulate a successful upload
+    
+    // Reset the upload form
+    setUploadFile(null);
+    setUploadTitle("");
+    setUploadType("inventory");
+    setUploadSchool(selectedSchool?.id.toString() || "349");
+    setUploadComments("");
+    setShowUploadDialog(false);
+    
+    toast({
+      title: "Document uploaded successfully",
+      description: `${uploadTitle} has been added to the answer sheets repository.`,
+    });
+  };
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -1296,13 +1351,18 @@ const AnswerSheets = () => {
                 id="formTitle"
                 className="col-span-3"
                 placeholder="Answer Sheet Inventory Document"
+                value={uploadTitle}
+                onChange={(e) => setUploadTitle(e.target.value)}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="formType" className="text-right">
                 Type
               </Label>
-              <Select defaultValue="inventory">
+              <Select 
+                value={uploadType} 
+                onValueChange={setUploadType}
+              >
                 <SelectTrigger className="col-span-3" id="formType">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -1318,7 +1378,11 @@ const AnswerSheets = () => {
               <Label htmlFor="school" className="text-right">
                 School
               </Label>
-              <Select defaultValue={selectedSchool ? selectedSchool.id.toString() : viewingSchoolId ? viewingSchoolId.toString() : "349"}>
+              <Select 
+                value={uploadSchool}
+                onValueChange={setUploadSchool}
+                defaultValue={selectedSchool ? selectedSchool.id.toString() : viewingSchoolId ? viewingSchoolId.toString() : "349"}
+              >
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Select school" />
                 </SelectTrigger>
@@ -1335,13 +1399,28 @@ const AnswerSheets = () => {
               </Label>
               <div className="col-span-3">
                 <div className="flex items-center justify-center w-full">
-                  <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                  <label htmlFor="dropzone-file" className={`flex flex-col items-center justify-center w-full h-32 border-2 ${uploadFile ? 'border-green-300 bg-green-50' : 'border-gray-300 border-dashed bg-gray-50 hover:bg-gray-100'} rounded-lg cursor-pointer`}>
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="w-8 h-8 mb-3 text-gray-400" />
-                      <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                      <p className="text-xs text-gray-500">PDF, DOC, XLS or images (MAX. 10MB)</p>
+                      {uploadFile ? (
+                        <>
+                          <FileCheck className="w-8 h-8 mb-3 text-green-500" />
+                          <p className="mb-2 text-sm text-green-600 font-medium">File selected</p>
+                          <p className="text-xs text-green-500">{uploadFile.name} ({(uploadFile.size / 1024).toFixed(2)} KB)</p>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-8 h-8 mb-3 text-gray-400" />
+                          <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                          <p className="text-xs text-gray-500">PDF, DOC, XLS or images (MAX. 10MB)</p>
+                        </>
+                      )}
                     </div>
-                    <input id="dropzone-file" type="file" className="hidden" />
+                    <input 
+                      id="dropzone-file" 
+                      type="file" 
+                      className="hidden" 
+                      onChange={handleFileChange}
+                    />
                   </label>
                 </div>
               </div>
@@ -1354,6 +1433,8 @@ const AnswerSheets = () => {
                 id="comments"
                 className="col-span-3"
                 placeholder="Enter any additional notes about this document"
+                value={uploadComments}
+                onChange={(e) => setUploadComments(e.target.value)}
               />
             </div>
           </div>
@@ -1361,13 +1442,7 @@ const AnswerSheets = () => {
             <Button variant="outline" onClick={() => setShowUploadDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={() => {
-              toast({
-                title: "Form uploaded",
-                description: "The document has been successfully uploaded.",
-              });
-              setShowUploadDialog(false);
-            }}>
+            <Button onClick={handleFileUpload}>
               Upload
             </Button>
           </DialogFooter>
