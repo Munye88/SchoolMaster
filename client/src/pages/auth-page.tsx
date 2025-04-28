@@ -161,7 +161,10 @@ export default function AuthPage() {
               
               {/* Forgot Password */}
               <div className="mt-6 text-center">
-                <a href="#" className="text-sm text-[#00a2ff] hover:text-[#081f5c] hover:underline transition-colors">
+                <a 
+                  onClick={() => window.alert("Please contact the administrator at munyesufi1988@gmail.com to reset your password.")}
+                  className="text-sm text-[#00a2ff] hover:text-[#081f5c] hover:underline transition-colors cursor-pointer"
+                >
                   Forgot your password?
                 </a>
               </div>

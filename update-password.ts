@@ -14,19 +14,34 @@ async function hashPassword(password: string) {
 
 async function updatePassword() {
   try {
-    const newPassword = "Moon2025"; // Using username as password for simplicity
+    // Get username and new password from command line arguments
+    const args = process.argv.slice(2);
+    const username = args[0] || "Moon2025";
+    const newPassword = args[1] || "NewPassword2025!";
+    
+    if (args.length < 2) {
+      console.log("Usage: tsx update-password.ts <username> <newPassword>");
+      console.log(`Using default values: username="${username}", password="${newPassword}"`);
+    }
+    
     const hashedPassword = await hashPassword(newPassword);
     
     // Update the existing user's password
     const result = await db.update(users)
       .set({ password: hashedPassword })
-      .where(eq(users.username, "Moon2025"))
+      .where(eq(users.username, username))
       .returning();
     
     if (result.length > 0) {
       console.log("Password updated successfully for user:", result[0].username);
+      console.log("The user can now log in with their new password.");
     } else {
-      console.log("User not found");
+      console.log(`User "${username}" not found`);
+      console.log("Available users:");
+      
+      // Show available usernames for reference
+      const allUsers = await db.select({ username: users.username }).from(users);
+      allUsers.forEach(user => console.log(`- ${user.username}`));
     }
   } catch (error) {
     console.error("Error updating password:", error);
