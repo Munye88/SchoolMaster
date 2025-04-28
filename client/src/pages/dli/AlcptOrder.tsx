@@ -63,7 +63,8 @@ import {
   Upload, 
   FileUp, 
   School, 
-  ChevronDown 
+  ChevronDown,
+  CheckCircle
 } from 'lucide-react';
 
 // Mock data for ALCPT forms inventory
@@ -370,7 +371,7 @@ const AlcptOrder = () => {
           : item
       )
     );
-  };
+  }
   
   // Submit inventory update
   const submitInventoryUpdate = () => {
@@ -477,8 +478,44 @@ const AlcptOrder = () => {
   
   // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setUploadFile(e.target.files[0]);
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+    
+    // Check file size (max 10MB)
+    if (selectedFile.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "The file size should not exceed 10MB",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Check file type - accept documents and images
+    const validTypes = [
+      'application/pdf', 
+      'application/msword', 
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'image/jpeg',
+      'image/png'
+    ];
+    
+    if (!validTypes.includes(selectedFile.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a PDF, DOC, XLS or image file",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setUploadFile(selectedFile);
+    
+    // If no title set yet, use the filename as default
+    if (!uploadTitle) {
+      setUploadTitle(selectedFile.name.split('.')[0]);
     }
   };
   
