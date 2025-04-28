@@ -274,19 +274,100 @@ Return ONLY a JSON array with this structure and nothing else:
             }
           });
           
-          // Add fallback instructors if needed
+          // If no data was successfully parsed, analyze the data ourselves
           if (enhancedData.length === 0 && instructorQuery.data && instructorQuery.data.length > 0) {
-            // Add top 3 instructors as fallback
-            enhancedData.push(
-              ...instructorQuery.data.slice(0, 3).map((instructor, index) => ({
-                ...instructor,
-                score: 90 - (index * 5),
-                strengths: ["Teaching skills", "Communication", "Subject expertise"],
-                nominationReasons: "Outstanding instructor performance",
-                attendancePercentage: 95 - (index * 2),
-                evaluationScore: 88 - (index * 3)
-              }))
+            // Filter to get only instructors from the selected school
+            const schoolInstructors = instructorQuery.data.filter(
+              instructor => instructor.schoolId === selectedSchoolDetails?.id
             );
+            
+            if (schoolInstructors.length > 0) {
+              // Analyze these instructors using real data
+              const analyzedInstructors = schoolInstructors.map(instructor => {
+                // Get evaluations for this instructor
+                const instructorEvals = evaluations.data?.filter(e => e.instructorId === instructor.id) || [];
+                const avgEvalScore = instructorEvals.length > 0 
+                  ? instructorEvals.reduce((sum, e) => sum + e.score, 0) / instructorEvals.length 
+                  : 0;
+                  
+                // Get attendance for this instructor
+                const instructorAttendance = attendance.data?.filter(a => a.instructorId === instructor.id) || [];
+                const attendancePercentage = instructorAttendance.length > 0
+                  ? instructorAttendance.filter(a => 
+                      a.status.toLowerCase() === 'present').length / instructorAttendance.length * 100
+                  : 0;
+                  
+                // Calculate overall score based on category weights
+                let score = 0;
+                switch(selectedCategory) {
+                  case "Perfect Attendance":
+                    score = (attendancePercentage * 0.7) + (avgEvalScore * 0.3);
+                    break;
+                  case "Outstanding Performance":
+                    score = (avgEvalScore * 0.7) + (attendancePercentage * 0.3);
+                    break;
+                  case "Employee of the Month":
+                  default:
+                    score = (avgEvalScore * 0.5) + (attendancePercentage * 0.5);
+                    break;
+                }
+                
+                // Generate appropriate strengths based on data
+                const strengths = [];
+                if (attendancePercentage > 90) strengths.push("Excellent attendance record");
+                if (attendancePercentage > 80) strengths.push("Reliable and consistent presence");
+                if (avgEvalScore > 90) strengths.push("Outstanding teaching performance");
+                if (avgEvalScore > 80) strengths.push("Strong evaluation feedback");
+                if (avgEvalScore > 70) strengths.push("Effective instructional methods");
+                if (strengths.length === 0) strengths.push("Dedicated instructor");
+                
+                // Generate nomination reasons
+                const nominationReasons = `${instructor.name} has demonstrated ${
+                  avgEvalScore > 85 ? "exceptional" : "good"
+                } teaching performance with an evaluation score of ${avgEvalScore.toFixed(1)} and ${
+                  attendancePercentage > 90 ? "outstanding" : "consistent"
+                } attendance at ${attendancePercentage.toFixed(1)}%. ${
+                  selectedCategory === "Perfect Attendance" 
+                    ? "Their reliable presence has been instrumental to student success."
+                    : selectedCategory === "Outstanding Performance"
+                      ? "Their teaching quality has made a significant impact on student learning outcomes."
+                      : "Their overall contribution to the school has been excellent."
+                }`;
+                
+                return {
+                  ...instructor,
+                  score: parseFloat(score.toFixed(1)),
+                  strengths,
+                  nominationReasons,
+                  attendancePercentage: parseFloat(attendancePercentage.toFixed(1)),
+                  evaluationScore: parseFloat(avgEvalScore.toFixed(1))
+                };
+              });
+              
+              // Sort by appropriate criteria based on award type
+              let sortedInstructors;
+              switch(selectedCategory) {
+                case "Perfect Attendance":
+                  sortedInstructors = analyzedInstructors.sort((a, b) => 
+                    (b.attendancePercentage || 0) - (a.attendancePercentage || 0)
+                  );
+                  break;
+                case "Outstanding Performance":
+                  sortedInstructors = analyzedInstructors.sort((a, b) => 
+                    (b.evaluationScore || 0) - (a.evaluationScore || 0)
+                  );
+                  break;
+                case "Employee of the Month":
+                default:
+                  sortedInstructors = analyzedInstructors.sort((a, b) => 
+                    (b.score || 0) - (a.score || 0)
+                  );
+                  break;
+              }
+              
+              // Take top 3
+              enhancedData.push(...sortedInstructors.slice(0, 3));
+            }
           }
           
           setTopInstructors(enhancedData);
@@ -305,37 +386,111 @@ Return ONLY a JSON array with this structure and nothing else:
         } else {
           console.error("Could not extract valid JSON data from AI response", aiResponse);
           
-          // Don't show incomplete message, instead create valid data from instructors
+          // Rather than using mock data, let's properly analyze the instructors based on actual attendance and evaluation data
           
-          // Create mock data based on actual instructors
+          // Use a data-driven approach instead of static mock data
           if (instructorQuery.data && instructorQuery.data.length > 0) {
             const schoolInstructors = instructorQuery.data.filter(
               instructor => instructor.schoolId === selectedSchoolDetails?.id
             );
             
-            // Take up to 3 instructors
-            const topThree = schoolInstructors.slice(0, 3);
+            // Real analysis using actual data
+            const analyzedInstructors = schoolInstructors.map(instructor => {
+              // Get evaluations for this instructor
+              const instructorEvals = evaluations.data?.filter(e => e.instructorId === instructor.id) || [];
+              const avgEvalScore = instructorEvals.length > 0 
+                ? instructorEvals.reduce((sum, e) => sum + e.score, 0) / instructorEvals.length 
+                : 0;
+                
+              // Get attendance for this instructor
+              const instructorAttendance = attendance.data?.filter(a => a.instructorId === instructor.id) || [];
+              const attendancePercentage = instructorAttendance.length > 0
+                ? instructorAttendance.filter(a => 
+                    a.status.toLowerCase() === 'present').length / instructorAttendance.length * 100
+                : 0;
+                
+              // Calculate overall score based on category weights
+              let score = 0;
+              switch(selectedCategory) {
+                case "Perfect Attendance":
+                  score = (attendancePercentage * 0.7) + (avgEvalScore * 0.3);
+                  break;
+                case "Outstanding Performance":
+                  score = (avgEvalScore * 0.7) + (attendancePercentage * 0.3);
+                  break;
+                case "Employee of the Month":
+                default:
+                  score = (avgEvalScore * 0.5) + (attendancePercentage * 0.5);
+                  break;
+              }
+              
+              // Generate appropriate strengths based on data
+              const strengths = [];
+              if (attendancePercentage > 90) strengths.push("Excellent attendance record");
+              if (attendancePercentage > 80) strengths.push("Reliable and consistent presence");
+              if (avgEvalScore > 90) strengths.push("Outstanding teaching performance");
+              if (avgEvalScore > 80) strengths.push("Strong evaluation feedback");
+              if (avgEvalScore > 70) strengths.push("Effective instructional methods");
+              if (strengths.length === 0) strengths.push("Dedicated instructor");
+              
+              // Generate nomination reasons based on actual data
+              const nominationReasons = `${instructor.name} has demonstrated ${
+                avgEvalScore > 85 ? "exceptional" : "good"
+              } teaching performance with an evaluation score of ${avgEvalScore.toFixed(1)} and ${
+                attendancePercentage > 90 ? "outstanding" : "consistent"
+              } attendance at ${attendancePercentage.toFixed(1)}%. ${
+                selectedCategory === "Perfect Attendance" 
+                  ? "Their reliable presence has been instrumental to student success."
+                  : selectedCategory === "Outstanding Performance"
+                    ? "Their teaching quality has made a significant impact on student learning outcomes."
+                    : "Their overall contribution to the school has been excellent."
+              }`;
+              
+              return {
+                ...instructor,
+                score: parseFloat(score.toFixed(1)),
+                strengths,
+                nominationReasons,
+                attendancePercentage: parseFloat(attendancePercentage.toFixed(1)),
+                evaluationScore: parseFloat(avgEvalScore.toFixed(1))
+              };
+            });
             
-            const mockData = topThree.map((instructor, index) => ({
-              ...instructor,
-              score: 90 - (index * 5),
-              strengths: ["Teaching skills", "Communication", "Subject expertise"],
-              nominationReasons: "Outstanding instructor performance",
-              attendancePercentage: 95 - (index * 2),
-              evaluationScore: 88 - (index * 3)
-            }));
+            // Sort by appropriate criteria based on award type
+            let sortedInstructors;
+            switch(selectedCategory) {
+              case "Perfect Attendance":
+                sortedInstructors = analyzedInstructors.sort((a, b) => 
+                  (b.attendancePercentage || 0) - (a.attendancePercentage || 0)
+                );
+                break;
+              case "Outstanding Performance":
+                sortedInstructors = analyzedInstructors.sort((a, b) => 
+                  (b.evaluationScore || 0) - (a.evaluationScore || 0)
+                );
+                break;
+              case "Employee of the Month":
+              default:
+                sortedInstructors = analyzedInstructors.sort((a, b) => 
+                  (b.score || 0) - (a.score || 0)
+                );
+                break;
+            }
             
-            setTopInstructors(mockData);
-            setSelectedInstructor(mockData[0] || null);
+            // Take top 3
+            const topThree = sortedInstructors.slice(0, 3);
+            
+            setTopInstructors(topThree);
+            setSelectedInstructor(topThree[0] || null);
             
             // Update certificate data
-            if (mockData[0]) {
+            if (topThree[0]) {
               setCertificateData({
-                recipientName: mockData[0].name,
+                recipientName: topThree[0].name,
                 award: selectedCategory,
                 date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
                 school: selectedSchoolDetails?.name || "",
-                reason: "Outstanding instructor performance"
+                reason: topThree[0].nominationReasons
               });
             }
           }
