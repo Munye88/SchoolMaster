@@ -5,7 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { FileUp, Upload, CheckCircle, AlertCircle, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { extractFilename } from '@/utils/stringHelpers';
+import { extractFilename, formatBytes } from '@/utils/stringHelpers';
 
 interface BulkResumeUploadProps {
   onClose: () => void;
@@ -256,7 +256,7 @@ export default function BulkResumeUpload({ onClose, onSuccess, schoolId }: BulkR
                           {file.name}
                         </span>
                         <span className="text-xs text-gray-500">
-                          {Math.round(file.size / 1024)} KB
+                          {formatBytes(file.size)}
                         </span>
                       </div>
                       <Button 
