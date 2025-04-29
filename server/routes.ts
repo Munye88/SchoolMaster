@@ -1322,8 +1322,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`Created resumes directory: ${dirPath}`);
       }
       
-      // Create a unique filename
-      const fileName = `${Date.now()}-${req.file.originalname}`;
+      // Create a unique filename and preserve original extension
+      const originalExt = path.extname(req.file.originalname) || ''; 
+      const baseName = path.basename(req.file.originalname, originalExt);
+      const sanitizedBaseName = baseName.replace(/[^a-zA-Z0-9]/g, '-');
+      const fileName = `${Date.now()}-${sanitizedBaseName}${originalExt}`;
       const filePath = path.join(dirPath, fileName);
       
       // Write the buffer to disk
@@ -1332,7 +1335,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`File saved to: ${filePath}`);
       } catch (writeError) {
         console.error("Error writing file to disk:", writeError);
-        // We'll continue anyway and try to extract info from the buffer
+        return res.status(500).json({ 
+          error: "Failed to save the uploaded file", 
+          resumeUrl: null,
+          aiProvider: "File System Error"
+        });
       }
       
       // Generate a URL for the uploaded file (relative path)
@@ -1346,7 +1353,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       try {
-        // Skip external API calls and use our enhanced text extraction directly
+        // Import the text extraction utilities
         const { extractTextFromFile, extractCandidateInfoFromText } = await import('./utils/textAnalyzer');
         
         // Extract text from file
@@ -1357,25 +1364,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log("No text could be extracted from the file");
           return res.status(200).json({
             ...candidateInfo,
+            resumeUrl: fileUrl,
             aiProvider: "Text Extraction Failed"
           });
         }
         
         console.log(`Successfully extracted ${resumeText.length} characters of text from file`);
         
-        // Extract candidate info using our enhanced text pattern analysis
+        // Extract candidate info using text pattern analysis
+        console.log("Analyzing extracted text to find candidate information...");
         const extractedInfo = await extractCandidateInfoFromText(resumeText, filePath);
         
+        // Log which fields were successfully extracted
+        const extractedFields = Object.keys(extractedInfo).filter(key => 
+          extractedInfo[key] !== undefined && 
+          extractedInfo[key] !== null && 
+          extractedInfo[key] !== '' &&
+          key !== 'status'
+        );
+        
+        console.log(`Successfully extracted ${extractedFields.length} fields: ${extractedFields.join(', ')}`);
+        
+        // Merge extracted info with the basic info
         candidateInfo = {
+          ...candidateInfo,
           ...extractedInfo,
           resumeUrl: fileUrl
         };
         
-        // Return the extracted info with our analyzer as the provider
+        // Return the extracted info
         return res.status(200).json({
           ...candidateInfo,
           resumeUrl: fileUrl,
-          aiProvider: "Enhanced Pattern Analyzer"
+          aiProvider: extractedFields.length > 3 ? "Enhanced Pattern Analyzer" : "Basic Pattern Analyzer"
         });
       } catch (error) {
         console.error("Error in text analysis:", error);
@@ -1671,7 +1692,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
       }
       
-      const parsedData = insertCandidateSchema.partial().parse(updateData);
+      // Remove uploadDate if present - it will be handled by the database
+      if (updateData.uploadDate) {
+        delete updateData.uploadDate;
+      }
+      
+      // Use omit to explicitly exclude uploadDate from validation
+      const parsedData = insertCandidateSchema.partial().omit({ uploadDate: true }).parse(updateData);
       const updatedCandidate = await dbStorage.updateCandidate(candidateId, parsedData);
       
       if (!updatedCandidate) {

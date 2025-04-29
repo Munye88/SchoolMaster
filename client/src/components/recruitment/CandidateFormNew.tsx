@@ -425,9 +425,10 @@ export default function CandidateFormNew({
     try {
       // Resume should already be uploaded at this point
       // since we do it immediately when a file is selected
+      // Remove uploadDate from the data since it's handled by the server with defaultNow()  
       const candidateData = {
         ...data,
-        uploadDate: new Date(),
+        // We don't need to explicitly set uploadDate as it's handled by the database default
       };
 
       let candidateId: number;

@@ -425,37 +425,86 @@ export async function extractCandidateInfoFromText(
  */
 export async function extractTextFromFile(filePath: string): Promise<string> {
   try {
+    console.log(`Attempting to extract text from file: ${filePath}`);
+    
     if (!fs.existsSync(filePath)) {
       console.error(`File does not exist: ${filePath}`);
       return "";
     }
     
+    // Get file stats
+    const stats = fs.statSync(filePath);
+    console.log(`File size: ${Math.round(stats.size / 1024)} KB`);
+    
+    if (stats.size === 0) {
+      console.error('File is empty');
+      return "";
+    }
+    
     // Determine file type based on extension
     const extension = filePath.toLowerCase().split('.').pop() || '';
+    console.log(`File extension detected: ${extension}`);
+    
+    let extractedText = "";
     
     if (extension === 'pdf') {
       try {
-        // Try to use pdf-parse if available
+        console.log('Using pdf-parse for PDF extraction');
+        // Try to use pdf-parse for PDF files
         const pdfParse = (await import('pdf-parse')).default;
         const dataBuffer = fs.readFileSync(filePath);
         const pdfData = await pdfParse(dataBuffer);
-        return pdfData.text || "";
+        
+        extractedText = pdfData.text || "";
+        console.log(`PDF text extraction successful. Extracted ${extractedText.length} characters`);
+        
+        if (extractedText.length < 50) {
+          console.warn('PDF extraction returned very little text. Trying alternative method...');
+          // Additional extraction methods could be added here in the future
+        }
       } catch (pdfError) {
         console.error("Error using pdf-parse:", pdfError);
-        // If pdf-parse fails, fall back to reading as text
-        return fs.readFileSync(filePath, 'utf8');
+        console.log('Falling back to basic text extraction for PDF');
+        try {
+          // Try basic binary to text conversion as fallback
+          extractedText = fs.readFileSync(filePath, 'utf8');
+        } catch (readError) {
+          console.error('Fallback text extraction also failed:', readError);
+        }
       }
     } else if (['doc', 'docx'].includes(extension)) {
+      console.log('Attempting to extract text from Word document');
       // Basic handling for Word documents (reads as text, may have encoding issues)
-      return fs.readFileSync(filePath, 'utf8');
+      try {
+        extractedText = fs.readFileSync(filePath, 'utf8');
+        console.log(`Extracted ${extractedText.length} characters from Word document`);
+      } catch (docError) {
+        console.error('Error extracting text from Word document:', docError);
+      }
     } else if (['txt', 'md', 'rtf'].includes(extension)) {
+      console.log(`Extracting text from ${extension} file`);
       // Text files
-      return fs.readFileSync(filePath, 'utf8');
+      extractedText = fs.readFileSync(filePath, 'utf8');
+      console.log(`Extracted ${extractedText.length} characters from text file`);
     } else {
       // Unknown file type, try as text
       console.warn(`Unknown file extension: ${extension}, trying to read as text`);
-      return fs.readFileSync(filePath, 'utf8');
+      try {
+        extractedText = fs.readFileSync(filePath, 'utf8');
+        console.log(`Extracted ${extractedText.length} characters from unknown file type`);
+      } catch (unknownError) {
+        console.error('Error extracting text from unknown file type:', unknownError);
+      }
     }
+    
+    // Log the first 100 characters of extracted text for debugging
+    if (extractedText.length > 0) {
+      console.log(`Text extraction preview: ${extractedText.substring(0, 100)}...`);
+    } else {
+      console.warn('No text was extracted from the file');
+    }
+    
+    return extractedText;
   } catch (error) {
     console.error("Error extracting text from file:", error);
     return "";

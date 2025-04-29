@@ -19,7 +19,9 @@ import {
   Stars, 
   Brain, 
   ListFilter, 
-  Users 
+  Users,
+  FileUp,
+  Upload
 } from 'lucide-react';
 import CandidatesList from '@/components/recruitment/CandidatesList';
 import CandidateFormNew from '@/components/recruitment/CandidateFormNew';
