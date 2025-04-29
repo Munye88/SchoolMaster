@@ -172,7 +172,7 @@ export async function extractCandidateInfoFromResume(
       ];
       
       // Look for degree field near degree terms
-      const degreeSection = cleanText.match(/(?:degree|education|qualification)s?[^\n]{0,50}(.*?)(?:\n\n|\n[A-Z]|$)/is);
+      const degreeSection = cleanText.match(/(?:degree|education|qualification)s?[^\n]{0,50}(.*?)(?:\n\n|\n[A-Z]|$)/i);
       if (degreeSection && degreeSection[1]) {
         const section = degreeSection[1].toLowerCase();
         for (const field of educationFields) {

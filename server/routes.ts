@@ -1353,51 +1353,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       try {
-        // Import the text extraction utilities
-        const { extractTextFromFile, extractCandidateInfoFromText } = await import('./utils/textAnalyzer');
-        
-        // Extract text from file
-        console.log("Extracting text from file...");
-        const resumeText = await extractTextFromFile(filePath);
-        
-        if (!resumeText || resumeText.trim() === '') {
-          console.log("No text could be extracted from the file");
+        // First try the new advanced text analyzer for better extraction
+        try {
+          // Import the advanced text extraction utilities
+          const { extractTextFromFile, extractCandidateInfoFromResume } = await import('./utils/advancedTextAnalyzer');
+          
+          // Extract text from file
+          console.log("Extracting text from file...");
+          const resumeText = await extractTextFromFile(filePath);
+          
+          if (!resumeText || resumeText.trim() === '') {
+            console.log("No text could be extracted from the file");
+            return res.status(200).json({
+              ...candidateInfo,
+              resumeUrl: fileUrl,
+              aiProvider: "Text Extraction Failed"
+            });
+          }
+          
+          console.log(`Successfully extracted ${resumeText.length} characters of text from file`);
+          
+          // Extract candidate info using advanced text pattern analysis
+          console.log("Analyzing extracted text with advanced pattern recognition...");
+          const extractedInfo = await extractCandidateInfoFromResume(resumeText, filePath);
+          
+          // Log which fields were successfully extracted
+          const extractedFields = Object.keys(extractedInfo).filter(key => 
+            extractedInfo[key] !== undefined && 
+            extractedInfo[key] !== null && 
+            extractedInfo[key] !== '' &&
+            key !== 'status'
+          );
+          
+          console.log(`Successfully extracted ${extractedFields.length} fields: ${extractedFields.join(', ')}`);
+          
+          // Merge extracted info with the basic info
+          candidateInfo = {
+            ...candidateInfo,
+            ...extractedInfo,
+            resumeUrl: fileUrl
+          };
+          
+          // Return the extracted info
           return res.status(200).json({
             ...candidateInfo,
             resumeUrl: fileUrl,
-            aiProvider: "Text Extraction Failed"
+            aiProvider: "Advanced Pattern Recognition"
+          });
+        } catch (advancedAnalyzerError) {
+          console.error("Advanced text analyzer failed:", advancedAnalyzerError);
+          console.log("Falling back to standard text analyzer...");
+          
+          // Fall back to the original text analyzer if advanced one fails
+          const { extractTextFromFile, extractCandidateInfoFromText } = await import('./utils/textAnalyzer');
+          
+          // Extract text from file again
+          const resumeText = await extractTextFromFile(filePath);
+          
+          if (!resumeText || resumeText.trim() === '') {
+            console.log("No text could be extracted from the file");
+            return res.status(200).json({
+              ...candidateInfo,
+              resumeUrl: fileUrl,
+              aiProvider: "Text Extraction Failed"
+            });
+          }
+          
+          // Extract using original method
+          const extractedInfo = await extractCandidateInfoFromText(resumeText, filePath);
+          
+          // Log which fields were successfully extracted
+          const extractedFields = Object.keys(extractedInfo).filter(key => 
+            extractedInfo[key] !== undefined && 
+            extractedInfo[key] !== null && 
+            extractedInfo[key] !== '' &&
+            key !== 'status'
+          );
+          
+          console.log(`Fallback extracted ${extractedFields.length} fields: ${extractedFields.join(', ')}`);
+          
+          // Merge extracted info with the basic info
+          candidateInfo = {
+            ...candidateInfo,
+            ...extractedInfo,
+            resumeUrl: fileUrl
+          };
+          
+          // Return the extracted info
+          return res.status(200).json({
+            ...candidateInfo,
+            resumeUrl: fileUrl,
+            aiProvider: "Basic Pattern Analyzer (Fallback)"
           });
         }
-        
-        console.log(`Successfully extracted ${resumeText.length} characters of text from file`);
-        
-        // Extract candidate info using text pattern analysis
-        console.log("Analyzing extracted text to find candidate information...");
-        const extractedInfo = await extractCandidateInfoFromText(resumeText, filePath);
-        
-        // Log which fields were successfully extracted
-        const extractedFields = Object.keys(extractedInfo).filter(key => 
-          extractedInfo[key] !== undefined && 
-          extractedInfo[key] !== null && 
-          extractedInfo[key] !== '' &&
-          key !== 'status'
-        );
-        
-        console.log(`Successfully extracted ${extractedFields.length} fields: ${extractedFields.join(', ')}`);
-        
-        // Merge extracted info with the basic info
-        candidateInfo = {
-          ...candidateInfo,
-          ...extractedInfo,
-          resumeUrl: fileUrl
-        };
-        
-        // Return the extracted info
-        return res.status(200).json({
-          ...candidateInfo,
-          resumeUrl: fileUrl,
-          aiProvider: extractedFields.length > 3 ? "Enhanced Pattern Analyzer" : "Basic Pattern Analyzer"
-        });
       } catch (error) {
         console.error("Error in text analysis:", error);
         
