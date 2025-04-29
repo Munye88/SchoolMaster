@@ -15,6 +15,7 @@ interface ExtractedCandidateInfo {
   resumeUrl?: string;
   status?: string;
   nationality?: string;
+  [key: string]: any; // Add index signature to allow string indexing
 }
 
 /**
@@ -336,9 +337,18 @@ export async function extractCandidateInfoFromResume(
 
     // Calculate success metrics
     const requiredFields = ['name', 'email', 'phone', 'degree'];
-    const extractedFieldCount = requiredFields.filter(field => result[field]).length;
+    const extractedFieldCount = requiredFields.filter(field => 
+      result[field as keyof ExtractedCandidateInfo] !== undefined
+    ).length;
     
-    console.log(`Successfully extracted ${extractedFieldCount} fields: ${Object.keys(result).filter(k => k !== 'status' && result[k]).join(', ')}`);
+    // Get successful fields for logging
+    const successfulFields = Object.keys(result).filter(k => 
+      k !== 'status' && result[k as keyof ExtractedCandidateInfo] !== undefined &&
+      result[k as keyof ExtractedCandidateInfo] !== null && 
+      result[k as keyof ExtractedCandidateInfo] !== ''
+    );
+    
+    console.log(`Successfully extracted ${extractedFieldCount} fields: ${successfulFields.join(', ')}`);
     return result;
   } catch (error) {
     console.error('Error extracting candidate info from text:', error);
