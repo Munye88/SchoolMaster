@@ -116,8 +116,8 @@ export default function RecruitmentPage() {
 
   return (
     <div className="container mx-auto py-6 max-w-7xl">
-      <div className="flex justify-between items-center mb-6">
-        <div>
+      <div className="flex flex-col items-center justify-center mb-6 text-center">
+        <div className="mb-4">
           <h1 className="text-3xl font-bold text-primary">ELT Recruitment Hub</h1>
           <p className="text-muted-foreground mt-1">
             AI-powered recruitment management for ELT instructor candidates
