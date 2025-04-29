@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import CandidatesList from '@/components/recruitment/CandidatesList';
 import CandidateFormNew from '@/components/recruitment/CandidateFormNew';
+import BulkResumeUpload from '@/components/recruitment/BulkResumeUpload';
 import InterviewQuestionsList from '@/components/recruitment/InterviewQuestionsList';
 import EmptyState from '@/components/common/EmptyState';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,6 +43,7 @@ export default function RecruitmentPage() {
   const [showCandidateForm, setShowCandidateForm] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [isRankingCandidates, setIsRankingCandidates] = useState(false);
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
 
   // Fetch candidates
   const { data: candidates = [], isLoading: isLoadingCandidates } = useQuery({
@@ -116,8 +118,33 @@ export default function RecruitmentPage() {
     return (candidates.filter(c => c.status === status).length / totalCandidates) * 100;
   };
 
+  // Refresh data when needed
+  const refreshData = () => {
+    // Invalidate and refetch candidate data
+    queryClient.invalidateQueries({ queryKey: ['/api/candidates'] });
+    queryClient.invalidateQueries({ queryKey: ['/api/candidates/rank-candidates'] });
+    
+    // If we're on a school-specific view, also refresh that data
+    if (selectedSchool?.id) {
+      queryClient.invalidateQueries({ queryKey: [`/api/schools/${selectedSchool.id}/candidates`] });
+    }
+  };
+
   return (
     <div className="container mx-auto py-6 max-w-7xl">
+      {/* Bulk Upload Modal */}
+      {showBulkUpload && (
+        <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4">
+          <BulkResumeUpload 
+            onClose={() => setShowBulkUpload(false)}
+            onSuccess={() => {
+              refreshData();
+              setShowBulkUpload(false);
+            }}
+            schoolId={selectedSchool?.id}
+          />
+        </div>
+      )}
       <div className="flex flex-col items-center justify-center mb-6 text-center">
         <div className="mb-4">
           <h1 className="text-3xl font-bold text-primary">ELT Recruitment Hub</h1>
@@ -135,6 +162,15 @@ export default function RecruitmentPage() {
               Add Candidate
             </Button>
           )}
+          
+          <Button 
+            onClick={() => setShowBulkUpload(true)} 
+            variant="outline" 
+            className="gap-2"
+          >
+            <FileUp className="h-4 w-4" />
+            Bulk Upload
+          </Button>
         </div>
       </div>
 
