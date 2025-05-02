@@ -381,64 +381,6 @@ const Sidebar = () => {
                 </Link>
               </li>
               
-              {/* Training & Development - dropdown */}
-              <li>
-                <a href="#" onClick={handleToggleTraining} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
-                  (isActive("/training-development") || showTrainingLinks) && "bg-[#1334A3]/70 font-medium text-white",
-                  !isActive("/training-development") && !showTrainingLinks && "text-white"
-                )}>
-                  <div className="flex items-center">
-                    <Lightbulb className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
-                    {!collapsed && <span>Training</span>}
-                  </div>
-                  {!collapsed && <ChevronDown className={`w-4 h-4 text-blue-400 ${showTrainingLinks ? 'transform rotate-180' : ''}`} />}
-                </a>
-                
-                {showTrainingLinks && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
-                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
-                      Leadership Resources
-                    </li>
-                    <li>
-                      <Link href="/training-development/leadership-skills" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
-                        <BriefcaseBusiness className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
-                        Leadership Skills
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/training-development/communication-techniques" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
-                        <MessageSquare className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
-                        Communication
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/training-development/conflict-resolution" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
-                        <AlertTriangle className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
-                        Conflict Resolution
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/training-development/decision-making" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
-                        <BrainCircuit className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
-                        Decision Making
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/training-development/team-building" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
-                        <Users className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
-                        Team Building
-                      </Link>
-                    </li>
-                  </ul>
-                )}
-              </li>
-              
               {/* Activity Log - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleActivity} className={cn(
@@ -625,6 +567,64 @@ const Sidebar = () => {
                   <Award className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
                   {!collapsed && <span>Instructor Recognition</span>}
                 </Link>
+              </li>
+              
+              {/* Training & Development - dropdown */}
+              <li>
+                <a href="#" onClick={handleToggleTraining} className={cn(
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
+                  (isActive("/training-development") || showTrainingLinks) && "bg-[#1334A3]/70 font-medium text-white",
+                  !isActive("/training-development") && !showTrainingLinks && "text-white"
+                )}>
+                  <div className="flex items-center">
+                    <Lightbulb className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
+                    {!collapsed && <span>Training</span>}
+                  </div>
+                  {!collapsed && <ChevronDown className={`w-4 h-4 text-blue-400 ${showTrainingLinks ? 'transform rotate-180' : ''}`} />}
+                </a>
+                
+                {showTrainingLinks && !collapsed && (
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
+                      Leadership Resources
+                    </li>
+                    <li>
+                      <Link href="/training-development/leadership-skills" onClick={() => setShowTrainingLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <BriefcaseBusiness className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
+                        Leadership Skills
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/training-development/communication-techniques" onClick={() => setShowTrainingLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <MessageSquare className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
+                        Communication
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/training-development/conflict-resolution" onClick={() => setShowTrainingLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <AlertTriangle className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
+                        Conflict Resolution
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/training-development/decision-making" onClick={() => setShowTrainingLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <BrainCircuit className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
+                        Decision Making
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/training-development/team-building" onClick={() => setShowTrainingLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <Users className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
+                        Team Building
+                      </Link>
+                    </li>
+                  </ul>
+                )}
               </li>
             </ul>
           </div>
