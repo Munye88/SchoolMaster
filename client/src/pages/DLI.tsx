@@ -193,8 +193,8 @@ const DLI = () => {
       <div className="max-w-7xl mx-auto px-6 pb-8">
         <div className="bg-white rounded-xl shadow-lg border border-blue-100 overflow-hidden mb-8">
           {/* Colorful Tabs */}
-          <div className="border-b border-blue-100">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="border-b border-blue-100">
               <div className="flex justify-center py-4">
                 <TabsList className="bg-gray-100 p-1 rounded-full border border-gray-200 shadow-sm">
                   <TabsTrigger 
@@ -233,188 +233,188 @@ const DLI = () => {
                   />
                 </div>
               </div>
-            </Tabs>
-          </div>
-        
-          <TabsContent value="alcpt-forms" className="mt-0 px-4 py-6">
-            <Card className="border-blue-200 shadow-md overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-500 text-white pb-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle className="text-white text-xl">ALCPT Forms Inventory</CardTitle>
-                    <CardDescription className="text-blue-100">
-                      Track available forms and manage distribution
-                    </CardDescription>
+            </div>
+          
+            <TabsContent value="alcpt-forms" className="mt-0 px-4 py-6">
+              <Card className="border-blue-200 shadow-md overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-500 text-white pb-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle className="text-white text-xl">ALCPT Forms Inventory</CardTitle>
+                      <CardDescription className="text-blue-100">
+                        Track available forms and manage distribution
+                      </CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="secondary" size="sm" className="gap-1 bg-white/20 hover:bg-white/30 text-white border-0">
+                        <Filter className="h-4 w-4" /> Filter
+                      </Button>
+                      <Button variant="secondary" size="sm" className="gap-1 bg-white/20 hover:bg-white/30 text-white border-0">
+                        <ShoppingCart className="h-4 w-4" /> Order
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" className="gap-1 bg-white/20 hover:bg-white/30 text-white border-0">
-                      <Filter className="h-4 w-4" /> Filter
-                    </Button>
-                    <Button variant="secondary" size="sm" className="gap-1 bg-white/20 hover:bg-white/30 text-white border-0">
-                      <ShoppingCart className="h-4 w-4" /> Order
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader className="bg-blue-50">
-                    <TableRow>
-                      <TableHead className="w-[50px]">ID</TableHead>
-                      <TableHead>Form Number</TableHead>
-                      <TableHead className="text-center">Available Copies</TableHead>
-                      <TableHead>Last Ordered</TableHead>
-                      <TableHead className="text-center">Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredALCPTForms.map((form) => (
-                      <TableRow key={form.id} className="hover:bg-blue-50 cursor-pointer transition-colors">
-                        <TableCell className="font-medium">{form.id}</TableCell>
-                        <TableCell className="font-medium text-blue-700">{form.formNumber}</TableCell>
-                        <TableCell className="text-center">{form.availableCopies}</TableCell>
-                        <TableCell>{formatDate(form.lastOrdered)}</TableCell>
-                        <TableCell className="text-center">
-                          <Badge 
-                            variant="outline" 
-                            className={getInventoryStatusColor(form.availableCopies)}
-                          >
-                            {getInventoryStatus(form.availableCopies)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-800 hover:bg-blue-50">
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader className="bg-blue-50">
+                      <TableRow>
+                        <TableHead className="w-[50px]">ID</TableHead>
+                        <TableHead>Form Number</TableHead>
+                        <TableHead className="text-center">Available Copies</TableHead>
+                        <TableHead>Last Ordered</TableHead>
+                        <TableHead className="text-center">Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        
-          <TabsContent value="answer-sheets" className="mt-0 px-4 py-6">
-            <Card className="border-green-200 shadow-md overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-green-600 to-green-500 text-white pb-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle className="text-white text-xl">Answer Sheets Inventory</CardTitle>
-                    <CardDescription className="text-green-100">
-                      Manage answer sheets for different test types
-                    </CardDescription>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredALCPTForms.map((form) => (
+                        <TableRow key={form.id} className="hover:bg-blue-50 cursor-pointer transition-colors">
+                          <TableCell className="font-medium">{form.id}</TableCell>
+                          <TableCell className="font-medium text-blue-700">{form.formNumber}</TableCell>
+                          <TableCell className="text-center">{form.availableCopies}</TableCell>
+                          <TableCell>{formatDate(form.lastOrdered)}</TableCell>
+                          <TableCell className="text-center">
+                            <Badge 
+                              variant="outline" 
+                              className={getInventoryStatusColor(form.availableCopies)}
+                            >
+                              {getInventoryStatus(form.availableCopies)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-800 hover:bg-blue-50">
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          
+            <TabsContent value="answer-sheets" className="mt-0 px-4 py-6">
+              <Card className="border-green-200 shadow-md overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-green-600 to-green-500 text-white pb-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle className="text-white text-xl">Answer Sheets Inventory</CardTitle>
+                      <CardDescription className="text-green-100">
+                        Manage answer sheets for different test types
+                      </CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="secondary" size="sm" className="gap-1 bg-white/20 hover:bg-white/30 text-white border-0">
+                        <Filter className="h-4 w-4" /> Filter
+                      </Button>
+                      <Button variant="secondary" size="sm" className="gap-1 bg-white/20 hover:bg-white/30 text-white border-0">
+                        <Printer className="h-4 w-4" /> Print
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" className="gap-1 bg-white/20 hover:bg-white/30 text-white border-0">
-                      <Filter className="h-4 w-4" /> Filter
-                    </Button>
-                    <Button variant="secondary" size="sm" className="gap-1 bg-white/20 hover:bg-white/30 text-white border-0">
-                      <Printer className="h-4 w-4" /> Print
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader className="bg-green-50">
-                    <TableRow>
-                      <TableHead className="w-[50px]">ID</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead className="text-center">Available Copies</TableHead>
-                      <TableHead>Last Ordered</TableHead>
-                      <TableHead className="text-center">Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredAnswerSheets.map((sheet) => (
-                      <TableRow key={sheet.id} className="hover:bg-green-50 cursor-pointer transition-colors">
-                        <TableCell className="font-medium">{sheet.id}</TableCell>
-                        <TableCell className="font-medium text-green-700">{sheet.type}</TableCell>
-                        <TableCell className="text-center">{sheet.availableCopies}</TableCell>
-                        <TableCell>{formatDate(sheet.lastOrdered)}</TableCell>
-                        <TableCell className="text-center">
-                          <Badge 
-                            variant="outline" 
-                            className={getInventoryStatusColor(sheet.availableCopies)}
-                          >
-                            {getInventoryStatus(sheet.availableCopies)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" className="text-green-600 hover:text-green-800 hover:bg-green-50">
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader className="bg-green-50">
+                      <TableRow>
+                        <TableHead className="w-[50px]">ID</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead className="text-center">Available Copies</TableHead>
+                        <TableHead>Last Ordered</TableHead>
+                        <TableHead className="text-center">Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        
-          <TabsContent value="reference-books" className="mt-0 px-4 py-6">
-            <Card className="border-purple-200 shadow-md overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-purple-600 to-purple-500 text-white pb-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle className="text-white text-xl">Reference Books Inventory</CardTitle>
-                    <CardDescription className="text-purple-100">
-                      Track DLI reference materials and textbooks
-                    </CardDescription>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredAnswerSheets.map((sheet) => (
+                        <TableRow key={sheet.id} className="hover:bg-green-50 cursor-pointer transition-colors">
+                          <TableCell className="font-medium">{sheet.id}</TableCell>
+                          <TableCell className="font-medium text-green-700">{sheet.type}</TableCell>
+                          <TableCell className="text-center">{sheet.availableCopies}</TableCell>
+                          <TableCell>{formatDate(sheet.lastOrdered)}</TableCell>
+                          <TableCell className="text-center">
+                            <Badge 
+                              variant="outline" 
+                              className={getInventoryStatusColor(sheet.availableCopies)}
+                            >
+                              {getInventoryStatus(sheet.availableCopies)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="ghost" size="sm" className="text-green-600 hover:text-green-800 hover:bg-green-50">
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          
+            <TabsContent value="reference-books" className="mt-0 px-4 py-6">
+              <Card className="border-purple-200 shadow-md overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-purple-600 to-purple-500 text-white pb-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle className="text-white text-xl">Reference Books Inventory</CardTitle>
+                      <CardDescription className="text-purple-100">
+                        Track DLI reference materials and textbooks
+                      </CardDescription>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="secondary" size="sm" className="gap-1 bg-white/20 hover:bg-white/30 text-white border-0">
+                        <Filter className="h-4 w-4" /> Filter
+                      </Button>
+                      <Button variant="secondary" size="sm" className="gap-1 bg-white/20 hover:bg-white/30 text-white border-0">
+                        <BookTemplate className="h-4 w-4" /> Catalog
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" className="gap-1 bg-white/20 hover:bg-white/30 text-white border-0">
-                      <Filter className="h-4 w-4" /> Filter
-                    </Button>
-                    <Button variant="secondary" size="sm" className="gap-1 bg-white/20 hover:bg-white/30 text-white border-0">
-                      <BookTemplate className="h-4 w-4" /> Catalog
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader className="bg-purple-50">
-                    <TableRow>
-                      <TableHead className="w-[50px]">ID</TableHead>
-                      <TableHead>Title</TableHead>
-                      <TableHead className="text-center">Available Copies</TableHead>
-                      <TableHead>Last Ordered</TableHead>
-                      <TableHead className="text-center">Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredReferenceBooks.map((book) => (
-                      <TableRow key={book.id} className="hover:bg-purple-50 cursor-pointer transition-colors">
-                        <TableCell className="font-medium">{book.id}</TableCell>
-                        <TableCell className="font-medium text-purple-700">{book.title}</TableCell>
-                        <TableCell className="text-center">{book.availableCopies}</TableCell>
-                        <TableCell>{formatDate(book.lastOrdered)}</TableCell>
-                        <TableCell className="text-center">
-                          <Badge 
-                            variant="outline" 
-                            className={getInventoryStatusColor(book.availableCopies)}
-                          >
-                            {getInventoryStatus(book.availableCopies)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-800 hover:bg-purple-50">
-                            <BookOpen className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader className="bg-purple-50">
+                      <TableRow>
+                        <TableHead className="w-[50px]">ID</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead className="text-center">Available Copies</TableHead>
+                        <TableHead>Last Ordered</TableHead>
+                        <TableHead className="text-center">Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredReferenceBooks.map((book) => (
+                        <TableRow key={book.id} className="hover:bg-purple-50 cursor-pointer transition-colors">
+                          <TableCell className="font-medium">{book.id}</TableCell>
+                          <TableCell className="font-medium text-purple-700">{book.title}</TableCell>
+                          <TableCell className="text-center">{book.availableCopies}</TableCell>
+                          <TableCell>{formatDate(book.lastOrdered)}</TableCell>
+                          <TableCell className="text-center">
+                            <Badge 
+                              variant="outline" 
+                              className={getInventoryStatusColor(book.availableCopies)}
+                            >
+                              {getInventoryStatus(book.availableCopies)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-800 hover:bg-purple-50">
+                              <BookOpen className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       
         {/* Bottom Cards */}
