@@ -498,146 +498,91 @@ const Dashboard = () => {
 
 
           {/* Student Distribution */}
-          <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-lg text-[#0A2463]">Student Distribution by School</CardTitle>
+          <Card className="shadow-sm border border-gray-200">
+            <CardHeader className="p-4 pb-2 border-b border-gray-200">
+              <CardTitle className="text-2xl font-bold">Distribution by School</CardTitle>
             </CardHeader>
-            <CardContent className="p-4 pb-6">
-              <div className="grid grid-cols-1 gap-4">
-                {/* Overview and Total */}
-                <div className="bg-gradient-to-r from-[#0A2463] to-[#1A3473] rounded-lg shadow-md p-4 text-white">
+            <CardContent className="p-0">
+              <div>
+                {/* Total Students - Maroon/Burgundy header */}
+                <div className="bg-[#951B5C] p-4 text-white relative">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h3 className="text-sm font-semibold opacity-90 uppercase tracking-wider">Total Students</h3>
-                      <p className="text-3xl font-bold mt-1">{statistics.totalStudents}</p>
+                      <h3 className="text-lg font-bold uppercase tracking-wide">TOTAL STUDENTS</h3>
+                      <p className="text-6xl font-bold mt-1">{statistics.totalStudents}</p>
                     </div>
-                    <div className="bg-white/20 p-3 rounded-lg">
-                      <GraduationCap className="w-8 h-8 text-white" />
+                    <div className="absolute right-4 top-8">
+                      <GraduationCap className="w-14 h-14 text-white/30" />
                     </div>
                   </div>
                 </div>
                 
                 {/* School Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
                   {/* KFNA */}
-                  <div className="relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700"></div>
-                    <div className="absolute -right-6 -top-6 w-24 h-24 opacity-20">
-                      <GraduationCap className="w-full h-full text-white" />
+                  <div className="bg-[#E4424D] p-4 text-white">
+                    <div className="flex items-center mb-4">
+                      <Building className="w-6 h-6 mr-2 text-white" />
+                      <h3 className="text-2xl font-bold">KFNA</h3>
                     </div>
-                    <div className="relative p-4 text-white z-10">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-white"></div>
-                          <h3 className="font-semibold">KFNA</h3>
-                        </div>
-                        <div className="bg-white text-blue-700 text-xs font-bold uppercase rounded-full px-2 py-0.5">
-                          Cadets
-                        </div>
-                      </div>
-                      <div className="mt-3 flex items-baseline gap-1">
-                        <span className="text-3xl font-bold">{statistics.studentsBySchool.knfa}</span>
-                        <span className="text-sm font-medium">Cadets</span>
-                      </div>
-                      <div className="mt-3">
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span>Program Distribution</span>
-                          <span>100%</span>
-                        </div>
-                        <div className="w-full bg-blue-500/30 rounded-full h-2 overflow-hidden">
-                          <div 
-                            className="h-full bg-white rounded-full" 
-                            style={{ width: '100%' }}
-                          ></div>
-                        </div>
-                        <div className="mt-2 text-xs opacity-90">Cadets Course</div>
-                      </div>
+                    <div className="flex items-baseline gap-2 mb-4">
+                      <span className="text-5xl font-bold">{statistics.studentsBySchool.knfa}</span>
+                      <span className="text-xl font-medium">Cadets</span>
                     </div>
+                    <h4 className="text-lg font-medium mb-2">Program Distribution</h4>
+                    <div className="text-6xl font-bold mb-4">100%</div>
+                    <div className="text-lg font-medium">Cadets Course</div>
                   </div>
                   
                   {/* NFS East */}
-                  <div className="relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all">
-                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-emerald-700"></div>
-                    <div className="absolute -right-6 -top-6 w-24 h-24 opacity-20">
-                      <Users className="w-full h-full text-white" />
+                  <div className="bg-[#22A783] p-4 text-white">
+                    <div className="flex items-center mb-4">
+                      <Building className="w-6 h-6 mr-2 text-white" />
+                      <h3 className="text-2xl font-bold">NFS East</h3>
                     </div>
-                    <div className="relative p-4 text-white z-10">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-white"></div>
-                          <h3 className="font-semibold">NFS East</h3>
-                        </div>
-                        <div className="bg-white text-emerald-700 text-xs font-bold uppercase rounded-full px-2 py-0.5">
-                          Mixed
-                        </div>
+                    <div className="flex items-baseline gap-2 mb-4">
+                      <span className="text-5xl font-bold">{statistics.studentsBySchool.nfsEast}</span>
+                      <span className="text-xl font-medium">Students</span>
+                    </div>
+                    <h4 className="text-lg font-medium">MIXED</h4>
+                    <div className="mt-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-lg font-medium">Aviation</span>
+                        <span className="text-lg font-medium">27 (63%)</span>
                       </div>
-                      <div className="mt-3 flex items-baseline gap-1">
-                        <span className="text-3xl font-bold">{statistics.studentsBySchool.nfsEast}</span>
-                        <span className="text-sm font-medium">Students</span>
+                      <div className="w-full bg-white/20 rounded-full h-3 mb-4">
+                        <div 
+                          className="h-full bg-white/60 rounded-full" 
+                          style={{ width: '63%' }}
+                        ></div>
                       </div>
-                      <div className="mt-3">
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span>Aviation</span>
-                          <span>27 ({(27/43*100).toFixed(0)}%)</span>
-                        </div>
-                        <div className="w-full bg-emerald-500/30 rounded-full h-2 overflow-hidden">
-                          <div 
-                            className="h-full bg-emerald-300 rounded-full" 
-                            style={{ width: `${(27/43*100).toFixed(0)}%` }}
-                          ></div>
-                        </div>
-                        <div className="mt-2 text-xs">Aviation Course</div>
+                      
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-lg font-medium">Refresher</span>
+                        <span className="text-lg font-medium">16 (37%)</span>
                       </div>
-                      <div className="mt-2">
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span>Refresher</span>
-                          <span>16 ({(16/43*100).toFixed(0)}%)</span>
-                        </div>
-                        <div className="w-full bg-emerald-500/30 rounded-full h-2 overflow-hidden">
-                          <div 
-                            className="h-full bg-white rounded-full" 
-                            style={{ width: `${(16/43*100).toFixed(0)}%` }}
-                          ></div>
-                        </div>
-                        <div className="mt-2 text-xs">Refresher Course</div>
+                      <div className="w-full bg-white/20 rounded-full h-3 mb-4">
+                        <div 
+                          className="h-full bg-white/60 rounded-full" 
+                          style={{ width: '37%' }}
+                        ></div>
                       </div>
                     </div>
                   </div>
                   
                   {/* NFS West */}
-                  <div className="relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600"></div>
-                    <div className="absolute -right-6 -top-6 w-24 h-24 opacity-20">
-                      <UserPlus className="w-full h-full text-white" />
+                  <div className="bg-[#6247AA] p-4 text-white">
+                    <div className="flex items-center mb-4">
+                      <Building className="w-6 h-6 mr-2 text-white" />
+                      <h3 className="text-2xl font-bold">NFS West</h3>
                     </div>
-                    <div className="relative p-4 text-white z-10">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-white"></div>
-                          <h3 className="font-semibold">NFS West</h3>
-                        </div>
-                        <div className="bg-white text-blue-600 text-xs font-bold uppercase rounded-full px-2 py-0.5">
-                          Refresher
-                        </div>
-                      </div>
-                      <div className="mt-3 flex items-baseline gap-1">
-                        <span className="text-3xl font-bold">{statistics.studentsBySchool.nfsWest}</span>
-                        <span className="text-sm font-medium">Students</span>
-                      </div>
-                      <div className="mt-3">
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span>Program Distribution</span>
-                          <span>100%</span>
-                        </div>
-                        <div className="w-full bg-blue-500/30 rounded-full h-2 overflow-hidden">
-                          <div 
-                            className="h-full bg-white rounded-full" 
-                            style={{ width: '100%' }}
-                          ></div>
-                        </div>
-                        <div className="mt-2 text-xs opacity-90">Refresher Course</div>
-                      </div>
+                    <div className="flex items-baseline gap-2 mb-4">
+                      <span className="text-5xl font-bold">{statistics.studentsBySchool.nfsWest}</span>
+                      <span className="text-xl font-medium">Students</span>
                     </div>
+                    <h4 className="text-lg font-medium mb-2">Program Distribution</h4>
+                    <div className="text-6xl font-bold mb-4">100%</div>
+                    <div className="text-lg font-medium">Refresher Course</div>
                   </div>
                 </div>
               </div>
