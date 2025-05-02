@@ -352,7 +352,7 @@ const Dashboard = () => {
                     
                     // First check course type and student count for the three Refresher courses
                     if (course.name === 'Refresher' && course.studentCount === 93) {
-                      // First Refresher course - Lavender (light purple)
+                      // First Refresher course - Purple
                       fromColor = 'from-purple-100';
                       toColor = 'to-purple-100';
                       borderColor = 'border-purple-200';
@@ -363,9 +363,9 @@ const Dashboard = () => {
                       progressBgColor = 'bg-purple-200';
                       progressFillColor = 'bg-purple-500';
                       progressTextColor = 'text-purple-700';
-                    } 
+                    }
                     else if (course.name === 'Refresher' && course.studentCount === 8) {
-                      // Second Refresher course - Peach/Light Orange
+                      // Second Refresher course - Orange/Amber
                       fromColor = 'from-orange-100';
                       toColor = 'to-orange-100';
                       borderColor = 'border-orange-200';
