@@ -214,12 +214,12 @@ const Sidebar = () => {
                 </a>
                 
                 {showSchoolLinks === 'main' && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-100/90 to-blue-50/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
                     {schools.map(school => (
                       <li key={school.id}>
                         <button
                           onClick={() => handleSelectSchool(school)}
-                          className="w-full text-left px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white flex items-center transition-all group"
+                          className="w-full text-left px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 flex items-center transition-all group"
                         >
                           <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mr-2 opacity-60 group-hover:opacity-100 group-hover:scale-125 transition-all"></div>
                           {school.name}
@@ -539,15 +539,15 @@ const Sidebar = () => {
               {/* Manage - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleManage} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  (isActive("/management") || showManageLinks) && "bg-blue-900 font-medium text-white",
-                  !isActive("/management") && !showManageLinks && "text-gray-100"
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-100 group transition-all",
+                  (isActive("/management") || showManageLinks) && "bg-blue-200 font-medium text-[#2563EB]",
+                  !isActive("/management") && !showManageLinks && "text-[#2563EB]"
                 )}>
                   <div className="flex items-center">
-                    <Users className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                    <Users className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
                     {!collapsed && <span>Manage</span>}
                   </div>
-                  {!collapsed && <ChevronDown className={`w-4 h-4 ${showManageLinks ? 'transform rotate-180' : ''}`} />}
+                  {!collapsed && <ChevronDown className={`w-4 h-4 text-[#2563EB] ${showManageLinks ? 'transform rotate-180' : ''}`} />}
                 </a>
                 
                 {showManageLinks && !collapsed && (
@@ -609,11 +609,11 @@ const Sidebar = () => {
               {/* Instructor Recognition - standalone tab */}
               <li>
                 <Link href="/administration/instructor-recognition" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  isActive("/administration/instructor-recognition") && "bg-blue-900 font-medium text-white",
-                  !isActive("/administration/instructor-recognition") && "text-gray-100"
+                  "flex items-center p-2 rounded-lg hover:bg-blue-100 group transition-all",
+                  isActive("/administration/instructor-recognition") && "bg-blue-200 font-medium text-[#2563EB]",
+                  !isActive("/administration/instructor-recognition") && "text-[#2563EB]"
                 )}>
-                  <Award className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                  <Award className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
                   {!collapsed && <span>Instructor Recognition</span>}
                 </Link>
               </li>
@@ -621,8 +621,8 @@ const Sidebar = () => {
           </div>
           
           {/* Version info at bottom */}
-          <div className="p-4 border-t border-blue-800">
-            <div className="text-xs text-blue-400 text-center">
+          <div className="p-4 border-t border-blue-200">
+            <div className="text-xs text-blue-500 text-center">
               Version 1.2.0
             </div>
           </div>
