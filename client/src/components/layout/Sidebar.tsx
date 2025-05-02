@@ -190,11 +190,11 @@ const Sidebar = () => {
               {/* Dashboard */}
               <li>
                 <Link href="/" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  isActive("/") && "bg-blue-900 font-medium text-white",
-                  !isActive("/") && "text-gray-100"
+                  "flex items-center p-2 rounded-lg hover:bg-blue-100 group transition-all",
+                  isActive("/") && "bg-blue-200 font-medium text-[#2563EB]",
+                  !isActive("/") && "text-[#2563EB]"
                 )}>
-                  <Home className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                  <Home className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
                   {!collapsed && <span>Dashboard</span>}
                 </Link>
               </li>
@@ -202,15 +202,15 @@ const Sidebar = () => {
               {/* Schools - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleSchool} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  (isActive("/schools") || showSchoolLinks) && "bg-blue-900 font-medium text-white",
-                  !isActive("/schools") && !showSchoolLinks && "text-gray-100"
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-100 group transition-all",
+                  (isActive("/schools") || showSchoolLinks) && "bg-blue-200 font-medium text-[#2563EB]",
+                  !isActive("/schools") && !showSchoolLinks && "text-[#2563EB]"
                 )}>
                   <div className="flex items-center">
-                    <SchoolIcon className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                    <SchoolIcon className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
                     {!collapsed && <span>Schools</span>}
                   </div>
-                  {!collapsed && <ChevronDown className={`w-4 h-4 ${showSchoolLinks ? 'transform rotate-180' : ''}`} />}
+                  {!collapsed && <ChevronDown className={`w-4 h-4 text-[#2563EB] ${showSchoolLinks ? 'transform rotate-180' : ''}`} />}
                 </a>
                 
                 {showSchoolLinks === 'main' && !collapsed && (
@@ -304,11 +304,11 @@ const Sidebar = () => {
               {/* Courses */}
               <li>
                 <Link href="/courses" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  isActive("/courses") && "bg-blue-900 font-medium text-white",
-                  !isActive("/courses") && "text-gray-100"
+                  "flex items-center p-2 rounded-lg hover:bg-blue-100 group transition-all",
+                  isActive("/courses") && "bg-blue-200 font-medium text-[#2563EB]",
+                  !isActive("/courses") && "text-[#2563EB]"
                 )}>
-                  <BookOpen className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                  <BookOpen className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
                   {!collapsed && <span>Courses</span>}
                 </Link>
               </li>
@@ -316,15 +316,15 @@ const Sidebar = () => {
               {/* DLI - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleDLI} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  (isActive("/dli") || showDLILinks) && "bg-blue-900 font-medium text-white",
-                  !isActive("/dli") && !showDLILinks && "text-gray-100"
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-100 group transition-all",
+                  (isActive("/dli") || showDLILinks) && "bg-blue-200 font-medium text-[#2563EB]",
+                  !isActive("/dli") && !showDLILinks && "text-[#2563EB]"
                 )}>
                   <div className="flex items-center">
-                    <BookText className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                    <BookText className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
                     {!collapsed && <span>DLI</span>}
                   </div>
-                  {!collapsed && <ChevronDown className={`w-4 h-4 ${showDLILinks ? 'transform rotate-180' : ''}`} />}
+                  {!collapsed && <ChevronDown className={`w-4 h-4 text-[#2563EB] ${showDLILinks ? 'transform rotate-180' : ''}`} />}
                 </a>
                 
                 {showDLILinks && !collapsed && (
@@ -357,11 +357,11 @@ const Sidebar = () => {
               {/* Test Tracker */}
               <li>
                 <Link href="/test-tracker" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  isActive("/test-tracker") && "bg-blue-900 font-medium text-white",
-                  !isActive("/test-tracker") && "text-gray-100"
+                  "flex items-center p-2 rounded-lg hover:bg-blue-100 group transition-all",
+                  isActive("/test-tracker") && "bg-blue-200 font-medium text-[#2563EB]",
+                  !isActive("/test-tracker") && "text-[#2563EB]"
                 )}>
-                  <ListChecks className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                  <ListChecks className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
                   {!collapsed && <span>Test Tracker</span>}
                 </Link>
               </li>
@@ -369,11 +369,11 @@ const Sidebar = () => {
               {/* Reports */}
               <li>
                 <Link href="/reports" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  isActive("/reports") && "bg-blue-900 font-medium text-white",
-                  !isActive("/reports") && "text-gray-100"
+                  "flex items-center p-2 rounded-lg hover:bg-blue-100 group transition-all",
+                  isActive("/reports") && "bg-blue-200 font-medium text-[#2563EB]",
+                  !isActive("/reports") && "text-[#2563EB]"
                 )}>
-                  <BarChart2 className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                  <BarChart2 className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
                   {!collapsed && <span>Reports</span>}
                 </Link>
               </li>
@@ -381,15 +381,15 @@ const Sidebar = () => {
               {/* Training & Development - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleTraining} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  (isActive("/training-development") || showTrainingLinks) && "bg-blue-900 font-medium text-white",
-                  !isActive("/training-development") && !showTrainingLinks && "text-gray-100"
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-100 group transition-all",
+                  (isActive("/training-development") || showTrainingLinks) && "bg-blue-200 font-medium text-[#2563EB]",
+                  !isActive("/training-development") && !showTrainingLinks && "text-[#2563EB]"
                 )}>
                   <div className="flex items-center">
-                    <Lightbulb className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                    <Lightbulb className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
                     {!collapsed && <span>Training</span>}
                   </div>
-                  {!collapsed && <ChevronDown className={`w-4 h-4 ${showTrainingLinks ? 'transform rotate-180' : ''}`} />}
+                  {!collapsed && <ChevronDown className={`w-4 h-4 text-[#2563EB] ${showTrainingLinks ? 'transform rotate-180' : ''}`} />}
                 </a>
                 
                 {showTrainingLinks && !collapsed && (
@@ -439,15 +439,15 @@ const Sidebar = () => {
               {/* Activity Log - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleActivity} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  (isActive("/activity") || isActive("/action-log") || isActive("/quarterly-checkins") || showActivityLinks) && "bg-blue-900 font-medium text-white",
-                  !isActive("/activity") && !isActive("/action-log") && !isActive("/quarterly-checkins") && !showActivityLinks && "text-gray-100"
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-100 group transition-all",
+                  (isActive("/activity") || isActive("/action-log") || isActive("/quarterly-checkins") || showActivityLinks) && "bg-blue-200 font-medium text-[#2563EB]",
+                  !isActive("/activity") && !isActive("/action-log") && !isActive("/quarterly-checkins") && !showActivityLinks && "text-[#2563EB]"
                 )}>
                   <div className="flex items-center">
-                    <Activity className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                    <Activity className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
                     {!collapsed && <span>Activity Log</span>}
                   </div>
-                  {!collapsed && <ChevronDown className={`w-4 h-4 ${showActivityLinks ? 'transform rotate-180' : ''}`} />}
+                  {!collapsed && <ChevronDown className={`w-4 h-4 text-[#2563EB] ${showActivityLinks ? 'transform rotate-180' : ''}`} />}
                 </a>
                 
                 {showActivityLinks && !collapsed && (
@@ -473,11 +473,11 @@ const Sidebar = () => {
               {/* Recruitment */}
               <li>
                 <Link href="/recruitment" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  isActive("/recruitment") && "bg-blue-900 font-medium text-white",
-                  !isActive("/recruitment") && "text-gray-100"
+                  "flex items-center p-2 rounded-lg hover:bg-blue-100 group transition-all",
+                  isActive("/recruitment") && "bg-blue-200 font-medium text-[#2563EB]",
+                  !isActive("/recruitment") && "text-[#2563EB]"
                 )}>
-                  <Users className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                  <Users className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
                   {!collapsed && <span>Recruitment</span>}
                 </Link>
               </li>
@@ -485,15 +485,15 @@ const Sidebar = () => {
               {/* Administration - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleAdmin} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-800 group transition-all",
-                  (isActive("/administration") || showAdminLinks) && "bg-blue-900 font-medium text-white",
-                  !isActive("/administration") && !showAdminLinks && "text-gray-100"
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-100 group transition-all",
+                  (isActive("/administration") || showAdminLinks) && "bg-blue-200 font-medium text-[#2563EB]",
+                  !isActive("/administration") && !showAdminLinks && "text-[#2563EB]"
                 )}>
                   <div className="flex items-center">
-                    <Settings className={cn("w-5 h-5", collapsed ? "mx-auto" : "mr-3")} />
+                    <Settings className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
                     {!collapsed && <span>Administration</span>}
                   </div>
-                  {!collapsed && <ChevronDown className={`w-4 h-4 ${showAdminLinks ? 'transform rotate-180' : ''}`} />}
+                  {!collapsed && <ChevronDown className={`w-4 h-4 text-[#2563EB] ${showAdminLinks ? 'transform rotate-180' : ''}`} />}
                 </a>
                 
                 {showAdminLinks && !collapsed && (
