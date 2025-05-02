@@ -168,7 +168,13 @@ export default function Courses() {
   };
 
   // Function to check if a course is archived (completed more than 30 days ago)
+  // Since we don't have the isArchived column in the database yet, we'll determine it based on date
   const isArchived = (course: Course) => {
+    // First check the course status - only completed courses can be archived
+    const status = getCourseStatus(course);
+    if (status !== 'Completed') return false;
+    
+    // Then check if it's been more than 30 days since completion
     if (course.endDate) {
       const endDate = new Date(course.endDate);
       const today = new Date();
