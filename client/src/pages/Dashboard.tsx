@@ -4,7 +4,8 @@ import {
   User, UserCheck, Building, Activity, BarChart2, Trash2, Plus, UserPlus, Loader2,
   FileText, School, UserCircle
 } from "lucide-react";
-import { Course, Instructor, Student, TestResult, School as SchoolType, StaffAttendance, StaffLeave, Evaluation, Event } from "@shared/schema";
+import type { Course, Instructor, Student, TestResult, StaffAttendance, StaffLeave, Evaluation, Event } from "@shared/schema";
+import { schools } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -57,7 +58,7 @@ const Dashboard = () => {
     enabled: !selectedSchool || !!selectedSchool.id,
   });
 
-  const { data: schools = [] } = useQuery<School[]>({
+  const { data: schools = [] } = useQuery<any[]>({
     queryKey: ['/api/schools'],
   });
   
@@ -263,7 +264,7 @@ const Dashboard = () => {
                 {/* Course Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {courses.filter(c => c.status === "In Progress" || c.status === "Active").slice(0, 3).map(course => {
-                    const school = schools.find(s => s.id === course.schoolId);
+                    const school = schools.find((s: any) => s.id === course.schoolId);
                     let fromColor = 'from-blue-50';
                     let toColor = 'to-blue-100';
                     let borderColor = 'border-blue-200';

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Course, Instructor, Student, School } from '@shared/schema';
+import type { Course, Instructor, Student } from '@shared/schema';
+import { schools } from '@shared/schema';
 import { getCourseStatus } from "@/utils/courseStatusHelpers";
 
 interface NationalityCounts {
@@ -91,7 +92,7 @@ export function useDashboardStats(): DashboardStats {
   const { 
     data: schools = [], 
     isLoading: isLoadingSchools 
-  } = useQuery<School[]>({
+  } = useQuery<any[]>({
     queryKey: ['/api/schools'],
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -219,7 +220,7 @@ export function useDashboardStats(): DashboardStats {
     isLoadingCourses,
     
     // School statistics
-    schoolCount: schools.length || 3, // We know there are always 3 schools
+    schoolCount: (schools as any[]).length || 3, // We know there are always 3 schools
     isLoadingSchools
   };
 }
