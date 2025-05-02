@@ -250,27 +250,27 @@ const Dashboard = () => {
         </div>
 
         {/* Schools Card */}
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-md overflow-hidden border border-purple-200 group hover:shadow-lg transition-all duration-300 relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full transform translate-x-8 -translate-y-8"></div>
+        <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl shadow-md overflow-hidden border border-teal-200 group hover:shadow-lg transition-all duration-300 relative">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-teal-500/10 rounded-full transform translate-x-8 -translate-y-8"></div>
           <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-purple-700/70 font-medium mb-1">Schools</p>
-                <h3 className="text-3xl font-bold text-purple-800 flex items-baseline">
+                <p className="text-sm text-teal-700/70 font-medium mb-1">Schools</p>
+                <h3 className="text-3xl font-bold text-teal-800 flex items-baseline">
                   {statistics.totalSchools}
-                  <span className="text-purple-500 text-xs font-medium ml-2 bg-purple-100 px-1.5 py-0.5 rounded-full">Active</span>
+                  <span className="text-teal-500 text-xs font-medium ml-2 bg-teal-100 px-1.5 py-0.5 rounded-full">Active</span>
                 </h3>
               </div>
-              <div className="bg-purple-500 bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
-                <SchoolIcon className="h-6 w-6 text-purple-600" />
+              <div className="bg-teal-500 bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
+                <SchoolIcon className="h-6 w-6 text-teal-600" />
               </div>
             </div>
             <div className="mt-3 grid grid-cols-3 gap-1">
-              <div className="h-1.5 bg-purple-600 rounded-full"></div>
-              <div className="h-1.5 bg-purple-400 rounded-full"></div>
-              <div className="h-1.5 bg-purple-300 rounded-full"></div>
+              <div className="h-1.5 bg-teal-600 rounded-full"></div>
+              <div className="h-1.5 bg-teal-400 rounded-full"></div>
+              <div className="h-1.5 bg-teal-300 rounded-full"></div>
             </div>
-            <p className="text-xs text-purple-600 mt-2 flex items-center">
+            <p className="text-xs text-teal-600 mt-2 flex items-center">
               <ChevronRight className="h-3 w-3 mr-1" />
               KFNA, NFS East, NFS West
             </p>
@@ -646,7 +646,7 @@ const Dashboard = () => {
                   
                   {/* NFS West */}
                   <div className="relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all">
-                    <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600"></div>
                     <div className="absolute -right-6 -top-6 w-24 h-24 opacity-20">
                       <UserPlus className="w-full h-full text-white" />
                     </div>
@@ -656,7 +656,7 @@ const Dashboard = () => {
                           <div className="w-3 h-3 rounded-full bg-white"></div>
                           <h3 className="font-semibold">NFS West</h3>
                         </div>
-                        <div className="bg-white text-amber-600 text-xs font-bold uppercase rounded-full px-2 py-0.5">
+                        <div className="bg-white text-blue-600 text-xs font-bold uppercase rounded-full px-2 py-0.5">
                           Refresher
                         </div>
                       </div>
@@ -669,7 +669,7 @@ const Dashboard = () => {
                           <span>Program Distribution</span>
                           <span>100%</span>
                         </div>
-                        <div className="w-full bg-amber-500/30 rounded-full h-2 overflow-hidden">
+                        <div className="w-full bg-blue-500/30 rounded-full h-2 overflow-hidden">
                           <div 
                             className="h-full bg-white rounded-full" 
                             style={{ width: '100%' }}
