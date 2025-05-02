@@ -14,6 +14,7 @@ import { Link } from "wouter";
 import { format } from "date-fns";
 import { Calendar as CalendarComponent } from "@/components/dashboard/Calendar";
 import Notifications from "@/components/dashboard/Notifications";
+import StaticNotifications from "@/components/dashboard/StaticNotifications";
 import UpcomingEvents from "@/components/dashboard/UpcomingEvents";
 import StaticSchoolAnalyticsChart from "@/components/dashboard/StaticSchoolAnalyticsChart";
 import { useQuery } from "@tanstack/react-query";
@@ -746,23 +747,7 @@ const Dashboard = () => {
           <StaticSchoolAnalyticsChart />
 
           {/* Notifications Card */}
-          <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-lg text-[#0A2463]">Notifications</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
-              <Notifications 
-                limit={5} 
-                showFilter={false} 
-                instructors={instructors}
-                staffAttendance={staffAttendance}
-                staffLeave={staffLeave}
-                evaluations={evaluations}
-                courses={courses}
-                students={students}
-              />
-            </CardContent>
-          </Card>
+          <StaticNotifications />
         </div>
       </div>
     </div>
