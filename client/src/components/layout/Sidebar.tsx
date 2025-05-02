@@ -202,15 +202,15 @@ const Sidebar = () => {
               {/* Schools - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleSchool} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-100 group transition-all",
-                  (isActive("/schools") || showSchoolLinks) && "bg-blue-200 font-medium text-[#2563EB]",
-                  !isActive("/schools") && !showSchoolLinks && "text-[#2563EB]"
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
+                  (isActive("/schools") || showSchoolLinks) && "bg-blue-900/60 font-medium text-white",
+                  !isActive("/schools") && !showSchoolLinks && "text-white"
                 )}>
                   <div className="flex items-center">
-                    <SchoolIcon className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
+                    <SchoolIcon className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
                     {!collapsed && <span>Schools</span>}
                   </div>
-                  {!collapsed && <ChevronDown className={`w-4 h-4 text-[#2563EB] ${showSchoolLinks ? 'transform rotate-180' : ''}`} />}
+                  {!collapsed && <ChevronDown className={`w-4 h-4 text-blue-400 ${showSchoolLinks ? 'transform rotate-180' : ''}`} />}
                 </a>
                 
                 {showSchoolLinks === 'main' && !collapsed && (
@@ -304,11 +304,11 @@ const Sidebar = () => {
               {/* Courses */}
               <li>
                 <Link href="/courses" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-100 group transition-all",
-                  isActive("/courses") && "bg-blue-200 font-medium text-[#2563EB]",
-                  !isActive("/courses") && "text-[#2563EB]"
+                  "flex items-center p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
+                  isActive("/courses") && "bg-blue-900/60 font-medium text-white",
+                  !isActive("/courses") && "text-white"
                 )}>
-                  <BookOpen className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
+                  <BookOpen className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
                   {!collapsed && <span>Courses</span>}
                 </Link>
               </li>
@@ -316,15 +316,15 @@ const Sidebar = () => {
               {/* DLI - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleDLI} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-100 group transition-all",
-                  (isActive("/dli") || showDLILinks) && "bg-blue-200 font-medium text-[#2563EB]",
-                  !isActive("/dli") && !showDLILinks && "text-[#2563EB]"
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
+                  (isActive("/dli") || showDLILinks) && "bg-blue-900/60 font-medium text-white",
+                  !isActive("/dli") && !showDLILinks && "text-white"
                 )}>
                   <div className="flex items-center">
-                    <BookText className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
+                    <BookText className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
                     {!collapsed && <span>DLI</span>}
                   </div>
-                  {!collapsed && <ChevronDown className={`w-4 h-4 text-[#2563EB] ${showDLILinks ? 'transform rotate-180' : ''}`} />}
+                  {!collapsed && <ChevronDown className={`w-4 h-4 text-blue-400 ${showDLILinks ? 'transform rotate-180' : ''}`} />}
                 </a>
                 
                 {showDLILinks && !collapsed && (
