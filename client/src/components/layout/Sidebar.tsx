@@ -175,7 +175,7 @@ const Sidebar = () => {
           showMobileMenu ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="h-full bg-[#1A2A41] text-white flex flex-col shadow-xl">
+        <div className="h-full bg-[#0B1D51] text-white flex flex-col shadow-xl">
           {/* Toggle collapse button */}
           <button 
             onClick={() => setCollapsed(!collapsed)} 
@@ -190,8 +190,8 @@ const Sidebar = () => {
               {/* Dashboard */}
               <li>
                 <Link href="/" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
-                  isActive("/") && "bg-blue-900/60 font-medium text-white",
+                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
+                  isActive("/") && "bg-[#1334A3]/70 font-medium text-white",
                   !isActive("/") && "text-white"
                 )}>
                   <Home className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
@@ -202,8 +202,8 @@ const Sidebar = () => {
               {/* Schools - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleSchool} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
-                  (isActive("/schools") || showSchoolLinks) && "bg-blue-900/60 font-medium text-white",
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
+                  (isActive("/schools") || showSchoolLinks) && "bg-[#1334A3]/70 font-medium text-white",
                   !isActive("/schools") && !showSchoolLinks && "text-white"
                 )}>
                   <div className="flex items-center">
@@ -304,8 +304,8 @@ const Sidebar = () => {
               {/* Courses */}
               <li>
                 <Link href="/courses" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
-                  isActive("/courses") && "bg-blue-900/60 font-medium text-white",
+                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
+                  isActive("/courses") && "bg-[#1334A3]/70 font-medium text-white",
                   !isActive("/courses") && "text-white"
                 )}>
                   <BookOpen className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
@@ -360,8 +360,8 @@ const Sidebar = () => {
               {/* Test Tracker */}
               <li>
                 <Link href="/test-tracker" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
-                  isActive("/test-tracker") && "bg-blue-900/60 font-medium text-white",
+                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
+                  isActive("/test-tracker") && "bg-[#1334A3]/70 font-medium text-white",
                   !isActive("/test-tracker") && "text-white"
                 )}>
                   <ListChecks className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
@@ -372,8 +372,8 @@ const Sidebar = () => {
               {/* Reports */}
               <li>
                 <Link href="/reports" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
-                  isActive("/reports") && "bg-blue-900/60 font-medium text-white",
+                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
+                  isActive("/reports") && "bg-[#1334A3]/70 font-medium text-white",
                   !isActive("/reports") && "text-white"
                 )}>
                   <BarChart2 className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
@@ -384,8 +384,8 @@ const Sidebar = () => {
               {/* Training & Development - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleTraining} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
-                  (isActive("/training-development") || showTrainingLinks) && "bg-blue-900/60 font-medium text-white",
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
+                  (isActive("/training-development") || showTrainingLinks) && "bg-[#1334A3]/70 font-medium text-white",
                   !isActive("/training-development") && !showTrainingLinks && "text-white"
                 )}>
                   <div className="flex items-center">
@@ -442,8 +442,8 @@ const Sidebar = () => {
               {/* Activity Log - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleActivity} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
-                  (isActive("/activity") || isActive("/action-log") || isActive("/quarterly-checkins") || showActivityLinks) && "bg-blue-900/60 font-medium text-white",
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
+                  (isActive("/activity") || isActive("/action-log") || isActive("/quarterly-checkins") || showActivityLinks) && "bg-[#1334A3]/70 font-medium text-white",
                   !isActive("/activity") && !isActive("/action-log") && !isActive("/quarterly-checkins") && !showActivityLinks && "text-white"
                 )}>
                   <div className="flex items-center">
