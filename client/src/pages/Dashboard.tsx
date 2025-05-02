@@ -32,10 +32,15 @@ const Dashboard = () => {
     return savedTasks ? JSON.parse(savedTasks) : [
       { id: 1, text: 'Submit staff evaluations', done: false },
       { id: 2, text: 'Review test scores', done: true },
-      { id: 3, text: 'Order new books for KNFA', done: false },
+      { id: 3, text: 'Order new books for KFNA', done: false },
     ];
   });
   const [newTask, setNewTask] = useState('');
+  
+  // Save tasks to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('dashboard_tasks', JSON.stringify(tasks));
+  }, [tasks]);
   
   // HARDCODED STATISTICS
   // This ensures the dashboard always shows the expected values
@@ -141,9 +146,6 @@ const Dashboard = () => {
   };
   
   // Functions for to-do list
-  useEffect(() => {
-    localStorage.setItem('dashboard_tasks', JSON.stringify(tasks));
-  }, [tasks]);
   
   const addTask = () => {
     if (newTask.trim() !== '') {
@@ -685,13 +687,15 @@ const Dashboard = () => {
                       checkClass = 'bg-blue-500 text-white';
                       borderClass = 'border-blue-200';
                     } else if (task.text.toLowerCase().includes('order new books')) {
-                      // Task 3 - Order new books - Orange
+                      // Task 3 - Order new books - Orange/Green (matching screenshot)
                       checkClass = 'bg-green-500 text-white';
                       borderClass = 'border-orange-200';
                     } else {
-                      // Default for new tasks (toggle between these styles)
-                      checkClass = task.done ? 'bg-green-500 text-white' : 'bg-blue-500 text-white';
-                      borderClass = 'border-gray-200';
+                      // Default for new tasks (ensuring color consistency)
+                      // For new tasks, alternate between green and blue
+                      const taskId = parseInt(task.id.toString().slice(-1));
+                      checkClass = taskId % 2 === 0 ? 'bg-blue-500 text-white' : 'bg-green-500 text-white';
+                      borderClass = taskId % 3 === 0 ? 'border-orange-200' : 'border-blue-200';
                     }
                     
                     return (
