@@ -270,7 +270,7 @@ export default function Courses() {
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-sm font-medium text-blue-200">Total Courses</p>
-                    <p className="text-3xl font-bold">{stats.total}</p>
+                    <p className="text-3xl font-bold text-white">{stats.total}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
                     <BookOpen className="h-6 w-6" />
@@ -284,7 +284,7 @@ export default function Courses() {
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-sm font-medium text-blue-200">Active Courses</p>
-                    <p className="text-3xl font-bold">{stats.inProgress}</p>
+                    <p className="text-3xl font-bold text-white">{stats.inProgress}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
                     <Timer className="h-6 w-6" />
@@ -298,7 +298,7 @@ export default function Courses() {
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-sm font-medium text-blue-200">Total Students</p>
-                    <p className="text-3xl font-bold">{stats.totalStudents}</p>
+                    <p className="text-3xl font-bold text-white">{stats.totalStudents}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
                     <Users className="h-6 w-6" />
@@ -312,7 +312,7 @@ export default function Courses() {
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-sm font-medium text-blue-200">Completed Courses</p>
-                    <p className="text-3xl font-bold">{stats.completed}</p>
+                    <p className="text-3xl font-bold text-white">{stats.completed}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
                     <CheckCircle2 className="h-6 w-6" />
@@ -326,7 +326,7 @@ export default function Courses() {
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-sm font-medium text-blue-200">Archived Courses</p>
-                    <p className="text-3xl font-bold">{stats.archived}</p>
+                    <p className="text-3xl font-bold text-white">{stats.archived}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
                     <Archive className="h-6 w-6" />
