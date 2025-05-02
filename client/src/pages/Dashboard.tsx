@@ -136,10 +136,25 @@ const Dashboard = () => {
   // Log when component mounts/unmounts for debugging
   useEffect(() => {
     console.log("Dashboard mounted or updated with dynamic statistics");
+    
+    // Debug the actual values being used in the chart
+    console.log("CHART DATA VALUES:")
+    console.log("KFNA Instructors:", instructors.filter(i => i.schoolId === schools.find(s => s.code === 'KFNA')?.id).length);
+    console.log("NFS East Instructors:", instructors.filter(i => i.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id).length);
+    console.log("NFS West Instructors:", instructors.filter(i => i.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id).length);
+    
+    console.log("KFNA Courses:", courses.filter(c => c.schoolId === schools.find(s => s.code === 'KFNA')?.id && c.status !== 'Completed').length);
+    console.log("NFS East Courses:", courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id && c.status !== 'Completed').length);
+    console.log("NFS West Courses:", courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id && c.status !== 'Completed').length);
+    
+    console.log("KFNA Students:", statistics.studentsBySchool.knfa);
+    console.log("NFS East Students:", statistics.studentsBySchool.nfsEast);
+    console.log("NFS West Students:", statistics.studentsBySchool.nfsWest);
+    
     return () => {
       console.log("Dashboard unmounted");
     };
-  }, []);
+  }, [instructors, courses, schools, statistics]);
   
   const formatDate = (date: Date | string) => {
     return format(new Date(date), "MMM dd, yyyy");
