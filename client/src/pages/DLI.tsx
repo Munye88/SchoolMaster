@@ -5,62 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-// Custom book icons for each school
-const BookIcon = ({ color }: { color: string }) => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-// Circle indicator icon with different states
-const StatusCircle = ({ type }: { type: 'green' | 'yellow' | 'red' }) => {
-  const colors = {
-    green: "#22c55e",
-    yellow: "#f59e0b",
-    red: "#ef4444"
-  };
-  
-  const isNFSEast = type === 'green';
-  
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="7" fill={colors[type]} />
-      {/* Show check mark for green state */}
-      {type === 'green' && (
-        <path 
-          d="M5 8L7 10L11 6" 
-          stroke="white" 
-          strokeWidth="1.5" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-        />
-      )}
-      {/* Show exclamation mark for yellow and red states */}
-      {(type === 'yellow' || type === 'red') && (
-        <text 
-          x="8" 
-          y="12" 
-          fontFamily="Arial" 
-          fontSize="12" 
-          fontWeight="bold" 
-          textAnchor="middle" 
-          fill="white"
-        >
-          !
-        </text>
-      )}
-    </svg>
-  );
-};
-
 // Data for book inventory by school
 const schoolInventory = [
   {
     id: 349,
     name: "KFNA",
     code: "KFNA",
-    color: "blue",
+    color: "#2563eb",
     totalBooks: 95,
     inStock: 8,
     lowStock: 3,
@@ -70,7 +21,7 @@ const schoolInventory = [
     id: 350,
     name: "NFS East",
     code: "NFS_EAST",
-    color: "green",
+    color: "#22c55e",
     totalBooks: 11670,
     inStock: 11667,
     lowStock: 2,
@@ -80,7 +31,7 @@ const schoolInventory = [
     id: 351,
     name: "NFS West",
     code: "NFS_WEST",
-    color: "purple",
+    color: "#8b5cf6",
     totalBooks: 54,
     inStock: 50,
     lowStock: 1,
@@ -89,30 +40,29 @@ const schoolInventory = [
 ];
 
 const DLI = () => {
-  const { selectedSchool } = useSchool();
   const [showConsolidated, setShowConsolidated] = useState(false);
 
   return (
     <div className="flex-1 p-8 bg-white overflow-y-auto">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-navy-900">DLI Book Inventory Management</h1>
-          <p className="text-lg text-gray-600 mt-2">Track and manage book inventory across all schools</p>
-        </div>
-        
-        <div className="flex justify-end mb-8">
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="show-consolidated" className="text-gray-700 font-medium">
-              Show Consolidated
-            </Label>
-            <Switch 
-              id="show-consolidated" 
-              checked={showConsolidated} 
-              onCheckedChange={setShowConsolidated} 
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          {/* Header */}
+          <div>
+            <h1 className="text-[32px] font-bold text-[#0f172a]">DLI Book Inventory Management</h1>
+            <p className="text-gray-600 mt-1">Track and manage book inventory across all schools</p>
+          </div>
+          
+          {/* Toggle Switch */}
+          <div className="flex items-center space-x-3">
+            <span className="text-base font-medium text-gray-700">Show Consolidated</span>
+            <Switch
+              checked={showConsolidated}
+              onCheckedChange={setShowConsolidated}
             />
           </div>
         </div>
         
+        {/* School Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {schoolInventory.map((school) => (
             <SchoolCard key={school.id} school={school} />
@@ -124,80 +74,82 @@ const DLI = () => {
 };
 
 const SchoolCard = ({ school }: { school: typeof schoolInventory[0] }) => {
-  const getColor = (colorName: string) => {
-    switch (colorName) {
-      case 'blue': return {
-        border: '#2563eb',
-        button: '#2563eb',
-        icon: '#2563eb'
-      };
-      case 'green': return {
-        border: '#22c55e',
-        button: '#22c55e',
-        icon: '#22c55e'
-      };
-      case 'purple': return {
-        border: '#8b5cf6',
-        button: '#8b5cf6',
-        icon: '#8b5cf6'
-      };
-      default: return {
-        border: '#6b7280',
-        button: '#6b7280',
-        icon: '#6b7280'
-      };
-    }
-  };
-
-  const colors = getColor(school.color);
-  
   // Set unique label for NFS West
-  const inStockLabel = school.id === 351 ? "Stock" : "In Stock";
-
+  const stockLabel = school.id === 351 ? "Stock" : "In Stock";
+  
   return (
-    <Card className="overflow-hidden border border-2 rounded-lg" style={{ borderColor: colors.border }}>
+    <Card className="overflow-hidden border rounded-lg" style={{ borderColor: school.color }}>
       <CardContent className="p-6">
-        <div className="flex flex-col items-center mb-4">
-          <BookIcon color={colors.icon} />
-          <h2 className="text-2xl font-bold text-center">{school.name}</h2>
+        <div className="flex flex-col items-center mb-6">
+          {/* Book Icon */}
+          <BookIcon color={school.color} />
+          <h2 className="text-2xl font-bold text-center mt-2">{school.name}</h2>
           <p className="text-gray-500 text-sm">Total Inventory</p>
-          <p className="text-4xl font-bold mt-2">{school.totalBooks}</p>
+          <p className="text-4xl font-bold">{school.totalBooks}</p>
         </div>
         
-        <div className="space-y-3">
+        <div className="space-y-3 pt-2">
+          {/* In Stock Row */}
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <StatusCircle type="green" />
-              <span className="text-green-600 font-medium ml-2">{inStockLabel}</span>
+              <div className="w-4 h-4 rounded-full bg-green-500 mr-2 flex items-center justify-center">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 6L5 8L9 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <span className="text-green-600 font-medium">{stockLabel}</span>
             </div>
             <span className="font-semibold">{school.inStock}</span>
           </div>
           
+          {/* Low Stock Row */}
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <StatusCircle type="yellow" />
-              <span className="text-yellow-600 font-medium ml-2">Low Stock</span>
+              <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2 flex items-center justify-center">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 8v5" stroke="white" strokeWidth="3" strokeLinecap="round" />
+                  <circle cx="12" cy="17" r="1.5" fill="white" />
+                </svg>
+              </div>
+              <span className="text-yellow-500 font-medium">Low Stock</span>
             </div>
             <span className="font-semibold">{school.lowStock}</span>
           </div>
           
+          {/* Out of Stock Row */}
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <StatusCircle type="red" />
-              <span className="text-red-600 font-medium ml-2">Out of Stock</span>
+              <div className="w-4 h-4 rounded-full bg-red-500 mr-2 flex items-center justify-center">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 8v5" stroke="white" strokeWidth="3" strokeLinecap="round" />
+                  <circle cx="12" cy="17" r="1.5" fill="white" />
+                </svg>
+              </div>
+              <span className="text-red-500 font-medium">Out of Stock</span>
             </div>
             <span className="font-semibold">{school.outOfStock}</span>
           </div>
         </div>
         
         <Button 
-          className="w-full mt-6 font-medium text-white" 
-          style={{ backgroundColor: colors.button }}
+          className="w-full mt-6 py-2 text-white font-medium" 
+          style={{ backgroundColor: school.color }}
         >
           View Inventory
         </Button>
       </CardContent>
     </Card>
+  );
+};
+
+// Book icon component with different colors
+const BookIcon = ({ color }: { color: string }) => {
+  return (
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-1">
+      <path d="M12 5c1.915 0 3.597.28 5 .847V5c0-1.105-.893-2-1.998-2H4.998C3.893 3 3 3.895 3 5v14c0 1.105.893 2 1.998 2h10.004c1.105 0 1.998-.895 1.998-2v-.847A11.953 11.953 0 0 1 12 19c-1.915 0-3.597-.28-5-.847V5.847C8.403 5.28 10.085 5 12 5Z" fill={color} />
+      <path d="M17 5.5V14" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M17 16.75v1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 };
 
