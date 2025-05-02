@@ -604,16 +604,33 @@ const Notifications: React.FC<NotificationsProps> = ({
         </div>
       </div>}
       
-      {/* Notification list with scroll area - increased height */}
-      <ScrollArea className="h-[380px] w-full border-x border-b border-gray-200 rounded-b-xl bg-gray-50 shadow-inner">
-        <div className="space-y-3 p-3">
+      {/* Notification list - matching the static notification style */}
+      <div className="px-6">
+        <div className="space-y-4">
           {filteredNonDismissedAlerts.length > 0 ? (
             filteredNonDismissedAlerts.map((alert, index) => (
-              <NotificationCard 
-                key={`${alert.type}-${alert.id}-${index}`} 
-                alert={alert} 
-                onDismiss={handleDismissNotification} 
-              />
+              <div key={`${alert.type}-${alert.id}-${index}`} className="bg-[#F8FAFC] p-4 rounded-xl mb-4">
+                <div className="flex items-center gap-3 mb-1">
+                  {alert.priority === 'high' && (
+                    <div className="bg-amber-400 rounded-full w-6 h-6 flex items-center justify-center">
+                      <AlertCircle className="h-4 w-4 text-white" />
+                    </div>
+                  )}
+                  <span className="text-[#0B1D51] text-xl font-semibold">{alert.name}</span>
+                </div>
+                <p className="text-[#0B1D51] text-xl mt-3">{alert.reason}</p>
+                <div className="flex justify-between mt-2">
+                  <div className="bg-[#E3E9F7] px-4 py-1 rounded-full text-[#0B1D51] font-medium">
+                    {alert.timestamp ? (isToday(new Date(alert.timestamp)) ? 'Today' : format(new Date(alert.timestamp), 'MMM dd')) : 'Today'}
+                  </div>
+                  <button 
+                    onClick={() => handleDismissNotification(alert.id)}
+                    className="text-gray-500 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
             ))
           ) : (
             <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-md text-gray-500 animate-in fade-in duration-300">
@@ -627,7 +644,7 @@ const Notifications: React.FC<NotificationsProps> = ({
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 };
