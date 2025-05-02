@@ -266,15 +266,7 @@ export default function CourseDetails() {
                         {course.benchmark || "Not Set"}
                       </span>
                     </li>
-                    <li className="flex justify-between items-center">
-                      <div className="flex items-center">
-                        <FileText className={`h-4 w-4 mr-2 ${colors.iconColor}`} />
-                        <span className="text-sm font-medium">Course ID:</span>
-                      </div>
-                      <span className="text-sm bg-white px-3 py-1 rounded-full shadow-sm border border-gray-100">
-                        {course.id}
-                      </span>
-                    </li>
+
                   </ul>
                 </CardContent>
               </Card>
