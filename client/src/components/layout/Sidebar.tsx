@@ -335,21 +335,21 @@ const Sidebar = () => {
                     <li>
                       <Link href="/dli/book-order" onClick={() => setShowDLILinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <BookOpen className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
+                        <BookOpen className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
                         DLI Book Inventory
                       </Link>
                     </li>
                     <li>
                       <Link href="/dli/alcpt-order" onClick={() => setShowDLILinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <ListChecks className="h-4 w-4 mr-2 text-green-600 group-hover:text-green-700" />
+                        <ListChecks className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
                         ALCPT Forms
                       </Link>
                     </li>
                     <li>
                       <Link href="/dli/answer-sheets" onClick={() => setShowDLILinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <FileText className="h-4 w-4 mr-2 text-purple-600 group-hover:text-purple-700" />
+                        <FileText className="h-4 w-4 mr-2 text-purple-300 group-hover:text-purple-200" />
                         Answer Sheets
                       </Link>
                     </li>
