@@ -523,16 +523,16 @@ const Sidebar = () => {
                     </li>
                     <li>
                       <Link href="/administration/employee-handbook" onClick={() => setShowAdminLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <BookOpen className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <BookOpen className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Employee Handbook
                       </Link>
                     </li>
                     
                     <li>
                       <Link href="/administration/classroom-evaluation" onClick={() => setShowAdminLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <ClipboardCheck className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <ClipboardCheck className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Classroom Evaluation Guide
                       </Link>
                     </li>
@@ -557,53 +557,56 @@ const Sidebar = () => {
                 </a>
                 
                 {showManageLinks && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
+                      Management
+                    </li>
                     <li>
                       <Link href="/management/schools" onClick={() => setShowManageLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <Building2 className="h-4 w-4 mr-2 text-purple-300 group-hover:text-purple-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <Building2 className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Manage Schools
                       </Link>
                     </li>
                     <li>
                       <Link href="/management/instructors" onClick={() => setShowManageLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <UserCheck className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <UserCheck className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Manage Instructors
                       </Link>
                     </li>
                     <li>
                       <Link href="/management/students" onClick={() => setShowManageLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <GraduationCap className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <GraduationCap className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Manage Students
                       </Link>
                     </li>
                     <li>
                       <Link href="/management/courses" onClick={() => setShowManageLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <BookMarked className="h-4 w-4 mr-2 text-amber-300 group-hover:text-amber-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <BookMarked className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Manage Courses
                       </Link>
                     </li>
                     <li>
                       <Link href="/administration/manage-dashboard" onClick={() => setShowManageLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <LayoutDashboard className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <LayoutDashboard className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Manage Dashboard
                       </Link>
                     </li>
                     <li>
                       <Link href="/administration/users" onClick={() => setShowManageLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <UserCog className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <UserCog className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         User Management
                       </Link>
                     </li>
                     <li>
                       <Link href="/events" onClick={() => setShowManageLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <CalendarDays className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <CalendarDays className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Event Calendar
                       </Link>
                     </li>
