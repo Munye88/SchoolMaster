@@ -21,12 +21,14 @@ const NOTIFICATION_PANEL_HEIGHT = "h-[220px]";
 const NOTIFICATION_ANIMATION = "animate-in fade-in slide-in-from-right-3 duration-300";
 
 interface NotificationsProps {
-  instructors: Instructor[];
-  staffAttendance: StaffAttendance[];
-  staffLeave: StaffLeave[];
-  evaluations: Evaluation[];
+  instructors?: Instructor[];
+  staffAttendance?: StaffAttendance[];
+  staffLeave?: StaffLeave[];
+  evaluations?: Evaluation[];
   courses?: Course[];
   students?: Student[];
+  limit?: number;
+  showFilter?: boolean;
 }
 
 type NotificationType = 
@@ -231,12 +233,14 @@ const NotificationCard: React.FC<{
 };
 
 const Notifications: React.FC<NotificationsProps> = ({
-  instructors,
-  staffAttendance,
-  staffLeave,
-  evaluations,
+  instructors = [],
+  staffAttendance = [],
+  staffLeave = [],
+  evaluations = [],
   courses = [],
   students = [],
+  limit,
+  showFilter = true,
 }) => {
   const { selectedSchool } = useSchool();
   const [activeTab, setActiveTab] = useState<string>("all");
@@ -338,7 +342,8 @@ const Notifications: React.FC<NotificationsProps> = ({
     .map(course => {
       // Create Date objects (we know they're valid from the filter)
       const startDate = new Date(course.startDate);
-      const endDate = new Date(course.endDate);
+      // Handle nullable endDate
+      const endDate = course.endDate ? new Date(course.endDate) : new Date();
       const startDiff = differenceInDays(startDate, today);
       const endDiff = differenceInDays(endDate, today);
       
@@ -441,9 +446,14 @@ const Notifications: React.FC<NotificationsProps> = ({
   const filteredAlerts = getFilteredAlerts();
   
   // Filter out dismissed notifications
-  const filteredNonDismissedAlerts = filteredAlerts.filter(
+  let filteredNonDismissedAlerts = filteredAlerts.filter(
     alert => !dismissedNotifications.includes(alert.id)
   );
+  
+  // Apply limit if provided
+  if (limit && filteredNonDismissedAlerts.length > limit) {
+    filteredNonDismissedAlerts = filteredNonDismissedAlerts.slice(0, limit);
+  }
   
   // Clear all notifications
   const handleClearAllNotifications = () => {
@@ -524,8 +534,8 @@ const Notifications: React.FC<NotificationsProps> = ({
         </div>
       </div>
       
-      {/* Category tabs with colorful indicators */}
-      <div className="flex items-center justify-between p-2 bg-gray-50 border-x border-t border-gray-200">
+      {/* Category tabs with colorful indicators - only shown when showFilter is true */}
+      {showFilter && <div className="flex items-center justify-between p-2 bg-gray-50 border-x border-t border-gray-200">
         <div className="flex items-center w-full">
           <div className="flex-1 flex gap-1 overflow-x-auto py-1 px-1 scrollbar-none">
             <Button 
@@ -606,7 +616,7 @@ const Notifications: React.FC<NotificationsProps> = ({
             </Button>
           )}
         </div>
-      </div>
+      </div>}
       
       {/* Notification list with scroll area - increased height */}
       <ScrollArea className="h-[380px] w-full border-x border-b border-gray-200 rounded-b-xl bg-gray-50 shadow-inner">

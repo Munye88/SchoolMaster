@@ -740,9 +740,9 @@ const Dashboard = () => {
                         { name: 'Instructors', KFNA: instructors.filter(i => i.schoolId === schools.find(s => s.code === 'KFNA')?.id).length, 
                           'NFS East': instructors.filter(i => i.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id).length,
                           'NFS West': instructors.filter(i => i.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id).length },
-                        { name: 'Courses', KFNA: courses.filter(c => c.schoolId === schools.find(s => s.code === 'KFNA')?.id && !c.isCompleted).length, 
-                          'NFS East': courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id && !c.isCompleted).length,
-                          'NFS West': courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id && !c.isCompleted).length },
+                        { name: 'Courses', KFNA: courses.filter(c => c.schoolId === schools.find(s => s.code === 'KFNA')?.id && c.status !== 'Completed').length, 
+                          'NFS East': courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id && c.status !== 'Completed').length,
+                          'NFS West': courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id && c.status !== 'Completed').length },
                         { name: 'Students', KFNA: statistics.studentsBySchool.knfa, 'NFS East': statistics.studentsBySchool.nfsEast, 'NFS West': statistics.studentsBySchool.nfsWest },
                       ]}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
@@ -767,7 +767,16 @@ const Dashboard = () => {
               <CardTitle className="text-lg text-[#0A2463]">Notifications</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
-              <Notifications limit={5} showFilter={false} />
+              <Notifications 
+                limit={5} 
+                showFilter={false} 
+                instructors={instructors}
+                staffAttendance={staffAttendance}
+                staffLeave={staffLeave}
+                evaluations={evaluations}
+                courses={courses}
+                students={students}
+              />
             </CardContent>
           </Card>
         </div>
