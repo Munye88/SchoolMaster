@@ -44,9 +44,11 @@ const DLI = () => {
   return (
     <div className="flex-1 p-8 bg-white overflow-y-auto">
       <div className="max-w-7xl mx-auto">
-        <div className="w-full flex flex-col items-center justify-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 text-center">DLI Book Inventory Management</h1>
-          <p className="text-gray-600 mt-1 text-center">Track and manage book inventory across all schools</p>
+        <div className="flex justify-center mb-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900">DLI Book Inventory Management</h1>
+            <p className="text-gray-600 mt-1">Track and manage book inventory across all schools</p>
+          </div>
         </div>
 
         <div className="flex justify-end mb-6">
