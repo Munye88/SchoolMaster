@@ -230,56 +230,56 @@ const Sidebar = () => {
                 )}
                 
                 {showSchoolLinks && showSchoolLinks !== 'main' && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
-                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-700/50 mb-1">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-100/90 to-blue-50/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
                       {schools.find(s => s.code === showSchoolLinks)?.name} Documents
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/instructor-profiles`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <Users className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <Users className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Instructor Profiles
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/timetable`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <CalendarDays className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <CalendarDays className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Timetable
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/student-day-schedule`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <Clock className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <Clock className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Student Day Schedule
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/yearly-schedule`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <Calendar className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <Calendar className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Yearly Schedule
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/sop`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <FileText className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <FileText className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         SOP
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/staff-evaluations`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <ClipboardCheck className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <ClipboardCheck className="h-4 w-4 mr-2 text-green-600 group-hover:text-green-700" />
                         Staff Evaluations
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/staff-attendance`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <UserCheck className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <UserCheck className="h-4 w-4 mr-2 text-green-600 group-hover:text-green-700" />
                         Staff Attendance
                       </Link>
                     </li>
