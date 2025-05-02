@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { 
   GraduationCap, BookOpen, Users, Clock, Calendar, Check, X, ChevronRight,
   User, UserCheck, Building, Activity, BarChart2, Trash2, Plus, UserPlus, Loader2,
-  FileText, School, UserCircle
+  FileText, School, UserCircle, CheckCheck
 } from "lucide-react";
 import type { Course, Instructor, Student, TestResult, StaffAttendance, StaffLeave, Evaluation, Event } from "@shared/schema";
 import { schools } from "@shared/schema";
@@ -704,70 +704,76 @@ const Dashboard = () => {
                           onCheckedChange={() => toggleTaskDone(task.id)}
                         />
                         <label 
-                          htmlFor={`task-${task.id}`}
-                          className={`text-sm ${task.done ? 'line-through text-gray-400' : 'text-gray-700'}`}
+                          htmlFor={`task-${task.id}`} 
+                          className={`text-sm cursor-pointer ${task.done ? 'line-through text-gray-400' : 'text-gray-700'}`}
                         >
                           {task.text}
                         </label>
                       </div>
                       <button 
-                        onClick={() => deleteTask(task.id)}
-                        className="text-gray-400 hover:text-red-500 transition-colors"
+                        onClick={() => deleteTask(task.id)} 
+                        className="text-gray-400 hover:text-red-500"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   ))}
+                  
+                  {tasks.length === 0 && (
+                    <div className="text-center py-4 text-gray-500 text-sm">
+                      No tasks yet. Add one above!
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Stats Preview */}
-          <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-lg text-[#0A2463]">School Analytics</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="space-y-6">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-sm font-semibold text-gray-700">Resource Distribution</h3>
-                  </div>
-                  <div className="h-48">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={[
-                        { name: 'Instructors', KFNA: instructors.filter(i => i.schoolId === schools.find(s => s.code === 'KFNA')?.id).length, 
-                          'NFS East': instructors.filter(i => i.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id).length,
-                          'NFS West': instructors.filter(i => i.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id).length },
-                        { name: 'Courses', KFNA: courses.filter(c => c.schoolId === schools.find(s => s.code === 'KFNA')?.id && !c.isCompleted).length, 
-                          'NFS East': courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id && !c.isCompleted).length,
-                          'NFS West': courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id && !c.isCompleted).length },
-                        { name: 'Students', KFNA: statistics.studentsBySchool.knfa, 'NFS East': statistics.studentsBySchool.nfsEast, 'NFS West': statistics.studentsBySchool.nfsWest },
-                      ]}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend verticalAlign="top" />
-                        <Bar dataKey="KFNA" fill="#3B82F6" />
-                        <Bar dataKey="NFS East" fill="#10B981" />
-                        <Bar dataKey="NFS West" fill="#8B5CF6" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Notifications Card */}
+          {/* Notifications - moved under My Tasks */}
           <Card className="shadow-sm">
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-lg text-[#0A2463]">Notifications</CardTitle>
             </CardHeader>
-            <CardContent className="p-4">
-              <Notifications limit={5} showFilter={false} />
+            <CardContent className="p-0">
+              <div>
+                <Notifications
+                  instructors={instructors}
+                  staffAttendance={staffAttendance}
+                  staffLeave={staffLeave}
+                  evaluations={evaluations}
+                  courses={courses}
+                  students={students}
+                />
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Quick Links - moved to bottom */}
+          <Card className="shadow-sm mt-4">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-lg text-[#0A2463]">Quick Links</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="divide-y divide-gray-100">
+                <Link href="/instructor-lookup" className="flex items-center justify-between p-4 hover:bg-gray-50">
+                  <div className="flex items-center">
+                    <div className="bg-purple-100 p-2 rounded-lg mr-3">
+                      <User className="h-4 w-4 text-purple-600" />
+                    </div>
+                    <span className="text-sm font-medium">Instructor Lookup</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-gray-400" />
+                </Link>
+                <Link href="/courses" className="flex items-center justify-between p-4 hover:bg-gray-50">
+                  <div className="flex items-center">
+                    <div className="bg-blue-100 p-2 rounded-lg mr-3">
+                      <BookOpen className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <span className="text-sm font-medium">Course Management</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-gray-400" />
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>
