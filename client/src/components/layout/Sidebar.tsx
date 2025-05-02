@@ -230,7 +230,7 @@ const Sidebar = () => {
                 )}
                 
                 {showSchoolLinks && showSchoolLinks !== 'main' && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-100/90 to-blue-50/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
                     <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
                       {schools.find(s => s.code === showSchoolLinks)?.name} Documents
                     </li>
@@ -285,15 +285,15 @@ const Sidebar = () => {
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/book-inventory`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <BookOpen className="h-4 w-4 mr-2 text-amber-300 group-hover:text-amber-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <BookOpen className="h-4 w-4 mr-2 text-amber-600 group-hover:text-amber-700" />
                         Book Inventory
                       </Link>
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/staff-leave-tracker`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <CalendarX className="h-4 w-4 mr-2 text-red-300 group-hover:text-red-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <CalendarX className="h-4 w-4 mr-2 text-red-600 group-hover:text-red-700" />
                         Staff Leave Tracker
                       </Link>
                     </li>
@@ -328,25 +328,28 @@ const Sidebar = () => {
                 </a>
                 
                 {showDLILinks && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
+                      DLI Resources
+                    </li>
                     <li>
                       <Link href="/dli/book-order" onClick={() => setShowDLILinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <BookOpen className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <BookOpen className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         DLI Book Inventory
                       </Link>
                     </li>
                     <li>
                       <Link href="/dli/alcpt-order" onClick={() => setShowDLILinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <ListChecks className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <ListChecks className="h-4 w-4 mr-2 text-green-600 group-hover:text-green-700" />
                         ALCPT Forms
                       </Link>
                     </li>
                     <li>
                       <Link href="/dli/answer-sheets" onClick={() => setShowDLILinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <FileText className="h-4 w-4 mr-2 text-purple-300 group-hover:text-purple-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <FileText className="h-4 w-4 mr-2 text-purple-600 group-hover:text-purple-700" />
                         Answer Sheets
                       </Link>
                     </li>
@@ -451,7 +454,7 @@ const Sidebar = () => {
                 </a>
                 
                 {showActivityLinks && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
                     <li>
                       <Link href="/action-log" onClick={() => setShowActivityLinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
