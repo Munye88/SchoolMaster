@@ -328,27 +328,27 @@ const Sidebar = () => {
                 </a>
                 
                 {showDLILinks && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
-                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-700/50">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-700/50 mb-1 text-gray-100">
                       DLI Resources
                     </li>
                     <li>
                       <Link href="/dli/book-order" onClick={() => setShowDLILinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
                         <BookOpen className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         DLI Book Inventory
                       </Link>
                     </li>
                     <li>
                       <Link href="/dli/alcpt-order" onClick={() => setShowDLILinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
                         <ListChecks className="h-4 w-4 mr-2 text-green-600 group-hover:text-green-700" />
                         ALCPT Forms
                       </Link>
                     </li>
                     <li>
                       <Link href="/dli/answer-sheets" onClick={() => setShowDLILinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
                         <FileText className="h-4 w-4 mr-2 text-purple-600 group-hover:text-purple-700" />
                         Answer Sheets
                       </Link>
@@ -454,8 +454,8 @@ const Sidebar = () => {
                 </a>
                 
                 {showActivityLinks && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
-                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-700/50">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-700/50 mb-1 text-gray-100">
                       Activity Tracking
                     </li>
                     <li>
@@ -479,8 +479,8 @@ const Sidebar = () => {
               {/* Recruitment */}
               <li>
                 <Link href="/recruitment" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
-                  isActive("/recruitment") && "bg-blue-900/60 font-medium text-white",
+                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
+                  isActive("/recruitment") && "bg-[#1334A3]/70 font-medium text-white",
                   !isActive("/recruitment") && "text-white"
                 )}>
                   <Users className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
@@ -491,8 +491,8 @@ const Sidebar = () => {
               {/* Administration - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleAdmin} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
-                  (isActive("/administration") || showAdminLinks) && "bg-blue-900/60 font-medium text-white",
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
+                  (isActive("/administration") || showAdminLinks) && "bg-[#1334A3]/70 font-medium text-white",
                   !isActive("/administration") && !showAdminLinks && "text-white"
                 )}>
                   <div className="flex items-center">
@@ -545,8 +545,8 @@ const Sidebar = () => {
               {/* Manage - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleManage} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
-                  (isActive("/management") || showManageLinks) && "bg-blue-900/60 font-medium text-white",
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
+                  (isActive("/management") || showManageLinks) && "bg-[#1334A3]/70 font-medium text-white",
                   !isActive("/management") && !showManageLinks && "text-white"
                 )}>
                   <div className="flex items-center">
@@ -615,8 +615,8 @@ const Sidebar = () => {
               {/* Instructor Recognition - standalone tab */}
               <li>
                 <Link href="/administration/instructor-recognition" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
-                  isActive("/administration/instructor-recognition") && "bg-blue-900/60 font-medium text-white",
+                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
+                  isActive("/administration/instructor-recognition") && "bg-[#1334A3]/70 font-medium text-white",
                   !isActive("/administration/instructor-recognition") && "text-white"
                 )}>
                   <Award className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
