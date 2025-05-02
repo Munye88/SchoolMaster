@@ -350,8 +350,35 @@ const Dashboard = () => {
                     let progressFillColor = 'bg-blue-600';
                     let progressTextColor = 'text-blue-700';
                     
-                    // First check course type for Refresher courses
-                    if (course.name === 'Refresher') {
+                    // First check course type and student count for the three Refresher courses
+                    if (course.name === 'Refresher' && course.studentCount === 93) {
+                      // First Refresher course - Purple
+                      fromColor = 'from-purple-50';
+                      toColor = 'to-purple-100';
+                      borderColor = 'border-purple-200';
+                      bgColor = 'bg-purple-600/10';
+                      textColor = 'text-purple-900';
+                      valueColor = 'text-purple-700';
+                      labelColor = 'text-purple-600';
+                      progressBgColor = 'bg-purple-200';
+                      progressFillColor = 'bg-purple-600';
+                      progressTextColor = 'text-purple-700';
+                    } 
+                    else if (course.name === 'Refresher' && course.studentCount === 8) {
+                      // Second Refresher course - Orange/Amber
+                      fromColor = 'from-orange-50';
+                      toColor = 'to-orange-100';
+                      borderColor = 'border-orange-200';
+                      bgColor = 'bg-orange-600/10';
+                      textColor = 'text-orange-900';
+                      valueColor = 'text-orange-700';
+                      labelColor = 'text-orange-600';
+                      progressBgColor = 'bg-orange-200';
+                      progressFillColor = 'bg-orange-600';
+                      progressTextColor = 'text-orange-700';
+                    }
+                    else if (course.name === 'Refresher' && course.studentCount === 16) {
+                      // Third Refresher course - Green
                       fromColor = 'from-green-50';
                       toColor = 'to-green-100';
                       borderColor = 'border-green-200';
@@ -362,8 +389,8 @@ const Dashboard = () => {
                       progressBgColor = 'bg-green-200';
                       progressFillColor = 'bg-green-600';
                       progressTextColor = 'text-green-700';
-                    } 
-                    // Then check school if not a Refresher course
+                    }
+                    // Then check school if not one of the specific Refresher courses
                     else if (school?.name.includes('East')) {
                       fromColor = 'from-emerald-50';
                       toColor = 'to-emerald-100';
