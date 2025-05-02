@@ -16,7 +16,7 @@ import { Calendar as CalendarComponent } from "@/components/dashboard/Calendar";
 import Notifications from "@/components/dashboard/Notifications";
 import StaticNotifications from "@/components/dashboard/StaticNotifications";
 import UpcomingEvents from "@/components/dashboard/UpcomingEvents";
-import StaticSchoolAnalyticsChart from "@/components/dashboard/StaticSchoolAnalyticsChart";
+import QuickLinks from "@/components/dashboard/QuickLinks";
 import { useQuery } from "@tanstack/react-query";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip, Cell } from 'recharts';
 import { Input } from "@/components/ui/input";
@@ -743,8 +743,8 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* School Analytics Chart - Static version */}
-          <StaticSchoolAnalyticsChart />
+          {/* Quick Links */}
+          <QuickLinks />
 
           {/* Notifications Card */}
           <StaticNotifications />
