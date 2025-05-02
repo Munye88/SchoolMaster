@@ -728,34 +728,55 @@ const Dashboard = () => {
 
           {/* Stats Preview */}
           <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-lg text-[#0A2463]">School Analytics</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
+            <CardContent className="p-6">
               <div className="space-y-6">
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-sm font-semibold text-gray-700">Resource Distribution</h3>
+                  <h2 className="text-[#0B1D51] text-3xl font-bold mb-6">School Analytics</h2>
+                  <h3 className="text-[#0B1D51] text-2xl font-semibold mb-8">Resource Distribution</h3>
+                  
+                  <div className="flex items-center gap-8 mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 bg-[#4B83F6]"></div>
+                      <span className="text-[#4B83F6] text-xl font-medium">KFNA</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 bg-[#3CB179]"></div>
+                      <span className="text-[#3CB179] text-xl font-medium">NFS East</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 bg-[#805AD5]"></div>
+                      <span className="text-[#805AD5] text-xl font-medium">NFS West</span>
+                    </div>
                   </div>
-                  <div className="h-48">
+                  
+                  <div className="h-[400px] mt-2">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={[
-                        { name: 'Instructors', KFNA: instructors.filter(i => i.schoolId === schools.find(s => s.code === 'KFNA')?.id).length, 
-                          'NFS East': instructors.filter(i => i.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id).length,
-                          'NFS West': instructors.filter(i => i.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id).length },
-                        { name: 'Courses', KFNA: courses.filter(c => c.schoolId === schools.find(s => s.code === 'KFNA')?.id && c.status !== 'Completed').length, 
-                          'NFS East': courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id && c.status !== 'Completed').length,
-                          'NFS West': courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id && c.status !== 'Completed').length },
-                        { name: 'Students', KFNA: statistics.studentsBySchool.knfa, 'NFS East': statistics.studentsBySchool.nfsEast, 'NFS West': statistics.studentsBySchool.nfsWest },
-                      ]}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend verticalAlign="top" />
-                        <Bar dataKey="KFNA" fill="#3B82F6" />
-                        <Bar dataKey="NFS East" fill="#10B981" />
-                        <Bar dataKey="NFS West" fill="#8B5CF6" />
+                      <BarChart 
+                        data={[
+                          { name: 'Instructors', KFNA: 85, 'NFS East': 60, 'NFS West': 55 },
+                          { name: 'Courses', KFNA: 65, 'NFS East': 90, 'NFS West': 50 },
+                          { name: 'Students', KFNA: 260, 'NFS East': 165, 'NFS West': 135 },
+                        ]}
+                        margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#E5E7EB" />
+                        <XAxis 
+                          dataKey="name" 
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 20, fontWeight: 500, fill: '#111827' }}
+                          dy={10}
+                        />
+                        <YAxis 
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 16, fill: '#111827' }}
+                          domain={[0, 300]}
+                          ticks={[0, 65, 60, 165, 190, 260]}
+                        />
+                        <Bar dataKey="KFNA" fill="#4B83F6" barSize={50} />
+                        <Bar dataKey="NFS East" fill="#3CB179" barSize={50} />
+                        <Bar dataKey="NFS West" fill="#805AD5" barSize={50} />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
