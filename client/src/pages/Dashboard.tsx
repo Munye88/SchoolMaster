@@ -646,73 +646,73 @@ const Dashboard = () => {
 
           {/* To-Do List */}
           <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2 bg-green-500 text-white rounded-t-lg">
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg text-white">My Tasks</CardTitle>
+            <CardContent className="p-0">
+              <div className="p-4 pb-3">
+                <h2 className="text-xl font-semibold text-gray-800">My Tasks</h2>
               </div>
-            </CardHeader>
-            <CardContent className="p-4 pt-6">
-              <div className="space-y-4">
-                <div className="flex gap-2">
+              
+              <div className="px-4 pb-4">
+                <div className="flex mb-4 relative border rounded-md">
                   <Input 
                     value={newTask} 
                     onChange={(e) => setNewTask(e.target.value)}
                     placeholder="Add a new task..."
-                    className="flex-1"
+                    className="border-0 flex-1 py-6 rounded-md"
                     onKeyDown={(e) => e.key === 'Enter' && addTask()}
                   />
                   <Button 
                     onClick={addTask}
                     size="icon"
-                    variant="outline"
+                    variant="ghost"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
                   >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-5 w-5" />
                   </Button>
                 </div>
                 
-                <div className="space-y-2 max-h-60 overflow-y-auto">
+                <div className="space-y-3 max-h-[300px] overflow-y-auto">
                   {tasks.map(task => {
-                    // Define color based on task status
-                    const bgColor = task.done ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200';
-                    const iconColor = task.done ? 'text-green-600' : 'text-orange-600';
-                    const textColor = task.done ? 'text-green-800 line-through' : 'text-orange-800';
+                    // Determine the task color scheme and appearance
+                    let checkClass = '';
+                    let borderClass = '';
+                    
+                    if (task.text.toLowerCase().includes('submit staff')) {
+                      // Task 1 - Submit staff evaluations - Green
+                      checkClass = 'bg-green-500 text-white';
+                      borderClass = 'border-blue-200';
+                    } else if (task.text.toLowerCase().includes('review test')) {
+                      // Task 2 - Review test scores - Blue
+                      checkClass = 'bg-blue-500 text-white';
+                      borderClass = 'border-blue-200';
+                    } else if (task.text.toLowerCase().includes('order new books')) {
+                      // Task 3 - Order new books - Orange
+                      checkClass = 'bg-green-500 text-white';
+                      borderClass = 'border-orange-200';
+                    } else {
+                      // Default for new tasks (toggle between these styles)
+                      checkClass = task.done ? 'bg-green-500 text-white' : 'bg-blue-500 text-white';
+                      borderClass = 'border-gray-200';
+                    }
                     
                     return (
                       <div 
                         key={task.id} 
-                        className={`flex items-center justify-between p-3 rounded-md shadow-sm ${bgColor} transition-all duration-300`}
+                        className={`flex items-center justify-between py-4 px-3 rounded-md border ${borderClass}`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`${iconColor} w-5 h-5 flex-shrink-0`}>
-                            {task.done ? 
-                              <Check className="h-5 w-5" /> : 
-                              <Clock className="h-5 w-5" />
-                            }
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${checkClass}`}>
+                            <Check className="h-5 w-5" />
                           </div>
-                          <label 
-                            htmlFor={`task-${task.id}`}
-                            className={`text-sm ${textColor}`}
-                          >
+                          <span className="text-gray-800 text-lg font-medium">
                             {task.text}
-                          </label>
+                          </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <button 
-                            onClick={() => toggleTaskDone(task.id)}
-                            className={`p-1 rounded-md ${task.done ? 'bg-green-100 hover:bg-green-200' : 'bg-orange-100 hover:bg-orange-200'} transition-colors`}
-                          >
-                            {task.done ? 
-                              <X className="h-4 w-4 text-green-600" /> : 
-                              <Check className="h-4 w-4 text-orange-600" />
-                            }
-                          </button>
-                          <button 
-                            onClick={() => deleteTask(task.id)}
-                            className="p-1 rounded-md bg-red-100 hover:bg-red-200 text-red-500 transition-colors"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
+                        <button 
+                          onClick={() => deleteTask(task.id)}
+                          className="text-gray-400 hover:text-gray-600"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
                       </div>
                     );
                   })}

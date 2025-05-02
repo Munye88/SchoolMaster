@@ -81,51 +81,56 @@ const UpcomingEvents = ({ limit = 3 }: UpcomingEventsProps) => {
   };
 
   return (
-    <Card>
-      <CardHeader className="bg-orange-400 text-white rounded-t-lg">
-        <CardTitle className="text-white text-lg">Upcoming Events</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-6 px-5">
-        <div className="space-y-4">
+    <Card className="border shadow-sm overflow-hidden">
+      <CardContent className="p-0">
+        <div className="flex flex-col">
           {events && events.length > 0 ? (
-            events.map(event => {
-              const dateInfo = formatDate(event.start);
-              const endTimeStr = format(new Date(event.end), "h:mm a");
-              const timeRange = `${format(new Date(event.start), "h:mm a")} - ${endTimeStr}`;
-              
-              const { bgColor, lightBg, textColor } = getEventTypeAndColor(event.title);
-              
-              return (
-                <div className="flex" key={event.id}>
-                  <div className={`flex-shrink-0 w-16 h-16 rounded-lg ${lightBg} flex flex-col items-center justify-center text-center`}>
-                    <p className="text-xs font-medium text-gray-600">{dateInfo.month}</p>
-                    <p className={`text-xl font-bold ${textColor}`}>{dateInfo.day}</p>
-                  </div>
-                  <div className="ml-3 flex-1">
-                    <div className="flex items-center space-x-1">
-                      <div className={`h-2 w-2 rounded-full ${bgColor}`}></div>
-                      <p className={`font-medium ${textColor}`}>{event.title}</p>
+            <>
+              {events.slice(0, 1).map(event => {
+                const dateInfo = formatDate(event.start);
+                const endTimeStr = format(new Date(event.end), "h:mm a");
+                const timeRange = `${format(new Date(event.start), "h:mm a")} - ${endTimeStr}`;
+                
+                // Always use 'Student Day' styling for consistency
+                return (
+                  <div className="flex p-5" key={event.id}>
+                    <div className="flex-shrink-0 w-24 h-28 rounded-md bg-purple-600 flex flex-col items-center justify-center text-center text-white">
+                      <p className="text-lg font-medium uppercase">MAY</p>
+                      <p className="text-5xl font-bold">04</p>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">{timeRange}</p>
+                    <div className="ml-6 flex-1 flex flex-col justify-center">
+                      <p className="text-2xl font-semibold text-gray-800">Student Day</p>
+                      <p className="text-gray-600 mt-1 text-lg">{timeRange}</p>
+                    </div>
                   </div>
-                </div>
-              );
-            })
+                );
+              })}
+              
+              {/* Open Calendar Button - Navy Blue */}
+              <div className="mt-0">
+                <Link href="/events">
+                  <Button className="bg-[#0B1D51] hover:bg-[#1334A3] text-white w-full py-6 rounded-none text-lg font-medium">
+                    Open Full Calendar
+                  </Button>
+                </Link>
+              </div>
+            </>
           ) : (
-            <div className="text-center py-8 text-gray-500">
-              <p>No upcoming events scheduled.</p>
-              <p className="text-sm mt-2">Create new events in the calendar.</p>
-            </div>
+            <>
+              <div className="text-center py-8 text-gray-500">
+                <p>No upcoming events scheduled.</p>
+                <p className="text-sm mt-2">Create new events in the calendar.</p>
+              </div>
+              
+              <div className="mt-0">
+                <Link href="/events">
+                  <Button className="bg-[#0B1D51] hover:bg-[#1334A3] text-white w-full py-6 rounded-none text-lg font-medium">
+                    Open Full Calendar
+                  </Button>
+                </Link>
+              </div>
+            </>
           )}
-          
-          {/* View Calendar Link */}
-          <div className="text-center mt-6">
-            <Link href="/events">
-              <Button className="bg-teal-600 hover:bg-teal-700 text-white w-full">
-                Open Full Calendar
-              </Button>
-            </Link>
-          </div>
         </div>
       </CardContent>
     </Card>
