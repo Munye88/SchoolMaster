@@ -646,12 +646,12 @@ const Dashboard = () => {
 
           {/* To-Do List */}
           <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2">
+            <CardHeader className="p-4 pb-2 bg-green-500 text-white rounded-t-lg">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-lg text-[#0A2463]">My Tasks</CardTitle>
+                <CardTitle className="text-lg text-white">My Tasks</CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="p-4">
+            <CardContent className="p-4 pt-6">
               <div className="space-y-4">
                 <div className="flex gap-2">
                   <Input 

@@ -10,6 +10,49 @@ interface UpcomingEventsProps {
   limit?: number;
 }
 
+// Function to determine event type and color
+const getEventTypeAndColor = (title: string) => {
+  const titleLower = title.toLowerCase();
+  
+  // Define color mapping for different event types
+  if (titleLower.includes('student day') || titleLower.includes('student') || titleLower.includes('class')) {
+    return {
+      type: 'Student Day',
+      bgColor: 'bg-purple-500',
+      textColor: 'text-purple-700',
+      lightBg: 'bg-purple-100'
+    };
+  } else if (titleLower.includes('meeting') || titleLower.includes('conference')) {
+    return {
+      type: 'Meeting',
+      bgColor: 'bg-blue-500',
+      textColor: 'text-blue-700',
+      lightBg: 'bg-blue-100'
+    };
+  } else if (titleLower.includes('test') || titleLower.includes('exam') || titleLower.includes('assessment')) {
+    return {
+      type: 'Test',
+      bgColor: 'bg-green-500',
+      textColor: 'text-green-700',
+      lightBg: 'bg-green-100'
+    };
+  } else if (titleLower.includes('holiday') || titleLower.includes('break')) {
+    return {
+      type: 'Holiday',
+      bgColor: 'bg-red-500',
+      textColor: 'text-red-700',
+      lightBg: 'bg-red-100'
+    };
+  } else {
+    return {
+      type: 'Other',
+      bgColor: 'bg-amber-500',
+      textColor: 'text-amber-700',
+      lightBg: 'bg-amber-100'
+    };
+  }
+};
+
 const UpcomingEvents = ({ limit = 3 }: UpcomingEventsProps) => {
   const { data: events, isLoading } = useQuery<Event[]>({
     queryKey: ['/api/events/upcoming', { limit }],
@@ -39,10 +82,10 @@ const UpcomingEvents = ({ limit = 3 }: UpcomingEventsProps) => {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-[#0A2463] text-lg">Upcoming Events</CardTitle>
+      <CardHeader className="bg-orange-400 text-white rounded-t-lg">
+        <CardTitle className="text-white text-lg">Upcoming Events</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6 px-5">
         <div className="space-y-4">
           {events && events.length > 0 ? (
             events.map(event => {
@@ -50,15 +93,20 @@ const UpcomingEvents = ({ limit = 3 }: UpcomingEventsProps) => {
               const endTimeStr = format(new Date(event.end), "h:mm a");
               const timeRange = `${format(new Date(event.start), "h:mm a")} - ${endTimeStr}`;
               
+              const { bgColor, lightBg, textColor } = getEventTypeAndColor(event.title);
+              
               return (
                 <div className="flex" key={event.id}>
-                  <div className="flex-shrink-0 w-12 text-center">
-                    <p className="text-sm text-gray-500">{dateInfo.month}</p>
-                    <p className="text-xl font-bold text-[#0A2463]">{dateInfo.day}</p>
+                  <div className={`flex-shrink-0 w-16 h-16 rounded-lg ${lightBg} flex flex-col items-center justify-center text-center`}>
+                    <p className="text-xs font-medium text-gray-600">{dateInfo.month}</p>
+                    <p className={`text-xl font-bold ${textColor}`}>{dateInfo.day}</p>
                   </div>
-                  <div className="ml-4 border-l border-gray-200 pl-4">
-                    <p className="font-medium text-[#0A2463]">{event.title}</p>
-                    <p className="text-sm text-gray-500">{timeRange}</p>
+                  <div className="ml-3 flex-1">
+                    <div className="flex items-center space-x-1">
+                      <div className={`h-2 w-2 rounded-full ${bgColor}`}></div>
+                      <p className={`font-medium ${textColor}`}>{event.title}</p>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">{timeRange}</p>
                   </div>
                 </div>
               );
@@ -73,7 +121,7 @@ const UpcomingEvents = ({ limit = 3 }: UpcomingEventsProps) => {
           {/* View Calendar Link */}
           <div className="text-center mt-6">
             <Link href="/events">
-              <Button className="bg-[#0A2463] hover:bg-[#071A4A]">
+              <Button className="bg-teal-600 hover:bg-teal-700 text-white w-full">
                 Open Full Calendar
               </Button>
             </Link>
