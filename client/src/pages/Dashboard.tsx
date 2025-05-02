@@ -350,8 +350,21 @@ const Dashboard = () => {
                     let progressFillColor = 'bg-blue-600';
                     let progressTextColor = 'text-blue-700';
                     
-                    // Determine color based on school
-                    if (school?.name.includes('East')) {
+                    // First check course type for Refresher courses
+                    if (course.name === 'Refresher') {
+                      fromColor = 'from-green-50';
+                      toColor = 'to-green-100';
+                      borderColor = 'border-green-200';
+                      bgColor = 'bg-green-600/10';
+                      textColor = 'text-green-900';
+                      valueColor = 'text-green-700';
+                      labelColor = 'text-green-600';
+                      progressBgColor = 'bg-green-200';
+                      progressFillColor = 'bg-green-600';
+                      progressTextColor = 'text-green-700';
+                    } 
+                    // Then check school if not a Refresher course
+                    else if (school?.name.includes('East')) {
                       fromColor = 'from-emerald-50';
                       toColor = 'to-emerald-100';
                       borderColor = 'border-emerald-200';
