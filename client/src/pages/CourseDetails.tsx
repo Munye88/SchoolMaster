@@ -300,7 +300,7 @@ export default function CourseDetails() {
                         strokeWidth="3"
                         strokeLinecap="round"
                         fill="none"
-                        strokeDasharray={`${calculateCourseProgress(course)}, 100`}
+                        strokeDasharray={`${Math.round(calculateCourseProgress(course))}, 100`}
                         d="M18 2.0845
                         a 15.9155 15.9155 0 0 1 0 31.831
                         a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -312,12 +312,12 @@ export default function CourseDetails() {
                         textAnchor="middle"
                         fill={colors.borderTop}
                       >
-                        {calculateCourseProgress(course)}%
+                        {Math.round(calculateCourseProgress(course))}%
                       </text>
                     </svg>
                   </div>
                   <p className="text-sm text-gray-600 text-center">
-                    {calculateCourseProgress(course) < 100
+                    {Math.round(calculateCourseProgress(course)) < 100
                       ? "Course is in progress"
                       : "Course is complete"}
                   </p>
@@ -336,119 +336,14 @@ export default function CourseDetails() {
                     </div>
                   </div>
                   <div className="text-center mb-4">
-                    <h3 className="font-bold text-xl">{course.studentCount}</h3>
-                    <p className="text-sm text-gray-600">Total Students</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    <div className="bg-gray-50 p-2 rounded-md text-center">
-                      <p className="font-bold text-lg">{Math.round(course.studentCount * 0.9)}</p>
-                      <p className="text-xs text-gray-600">Active</p>
-                    </div>
-                    <div className="bg-gray-50 p-2 rounded-md text-center">
-                      <p className="font-bold text-lg">{Math.round(course.studentCount * 0.1)}</p>
-                      <p className="text-xs text-gray-600">On Leave</p>
-                    </div>
+                    <h3 className="font-bold text-3xl">{course.studentCount}</h3>
+                    <p className="text-sm text-gray-600 mt-1">Total Students</p>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Tabs for detailed information */}
-            <Tabs defaultValue="schedule" className="mt-8">
-              <TabsList className="w-full grid grid-cols-3 mb-6">
-                <TabsTrigger value="schedule">Schedule</TabsTrigger>
-                <TabsTrigger value="tests">Test Results</TabsTrigger>
-                <TabsTrigger value="instructors">Instructors</TabsTrigger>
-              </TabsList>
-
-              {/* Schedule Tab */}
-              <TabsContent value="schedule" className="border rounded-lg p-4">
-                <h3 className="text-xl font-semibold mb-4 flex items-center">
-                  <CalendarRange className="mr-2 h-5 w-5" />
-                  Weekly Schedule
-                </h3>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Day</TableHead>
-                      <TableHead>Time</TableHead>
-                      <TableHead>Topic</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {schedule.map((item, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{item.day}</TableCell>
-                        <TableCell>{item.time}</TableCell>
-                        <TableCell>{item.topic}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TabsContent>
-
-              {/* Test Results Tab */}
-              <TabsContent value="tests" className="border rounded-lg p-4">
-                <h3 className="text-xl font-semibold mb-4 flex items-center">
-                  <BarChart className="mr-2 h-5 w-5" />
-                  Test Results
-                </h3>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Test</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Score</TableHead>
-                      <TableHead>Passing Score</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {testResults.map((result) => (
-                      <TableRow key={result.id}>
-                        <TableCell className="font-medium">{result.testName}</TableCell>
-                        <TableCell>{formatDate(result.testDate)}</TableCell>
-                        <TableCell>{result.score}</TableCell>
-                        <TableCell>{result.passingScore}</TableCell>
-                        <TableCell>
-                          <Badge
-                            className={result.status === "Pass" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
-                            variant="outline"
-                          >
-                            {result.status}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TabsContent>
-
-              {/* Instructors Tab */}
-              <TabsContent value="instructors" className="border rounded-lg p-4">
-                <h3 className="text-xl font-semibold mb-4 flex items-center">
-                  <Users className="mr-2 h-5 w-5" />
-                  Course Instructors
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {instructors.map((instructor) => (
-                    <Card key={instructor.id} className="overflow-hidden">
-                      <CardContent className="p-4 flex items-center space-x-4">
-                        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-                          <span className="text-xl font-bold text-gray-600">
-                            {instructor.name.charAt(0)}
-                          </span>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold">{instructor.name}</h4>
-                          <p className="text-sm text-gray-600">{instructor.role}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
-            </Tabs>
+            {/* Additional Course Information Could Be Added Here */}
           </CardContent>
         </Card>
       </div>
