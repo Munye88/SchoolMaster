@@ -328,28 +328,28 @@ const Sidebar = () => {
                 </a>
                 
                 {showDLILinks && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-700/50">
-                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-700/50 mb-1 text-gray-100">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
                       DLI Resources
                     </li>
                     <li>
                       <Link href="/dli/book-order" onClick={() => setShowDLILinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <BookOpen className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <BookOpen className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         DLI Book Inventory
                       </Link>
                     </li>
                     <li>
                       <Link href="/dli/alcpt-order" onClick={() => setShowDLILinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <ListChecks className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <ListChecks className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         ALCPT Forms
                       </Link>
                     </li>
                     <li>
                       <Link href="/dli/answer-sheets" onClick={() => setShowDLILinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <FileText className="h-4 w-4 mr-2 text-purple-300 group-hover:text-purple-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <FileText className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Answer Sheets
                       </Link>
                     </li>
@@ -396,42 +396,42 @@ const Sidebar = () => {
                 </a>
                 
                 {showTrainingLinks && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-indigo-800/80 to-indigo-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
-                    <li className="px-3 py-1 text-xs font-medium border-b border-indigo-700/50 mb-1">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
                       Leadership Resources
                     </li>
                     <li>
                       <Link href="/training-development/leadership-skills" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-indigo-700/50 text-gray-100 hover:text-white transition-all group">
-                        <BriefcaseBusiness className="h-4 w-4 mr-2 text-indigo-300 group-hover:text-indigo-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <BriefcaseBusiness className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Leadership Skills
                       </Link>
                     </li>
                     <li>
                       <Link href="/training-development/communication-techniques" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-indigo-700/50 text-gray-100 hover:text-white transition-all group">
-                        <MessageSquare className="h-4 w-4 mr-2 text-indigo-300 group-hover:text-indigo-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <MessageSquare className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Communication
                       </Link>
                     </li>
                     <li>
                       <Link href="/training-development/conflict-resolution" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-indigo-700/50 text-gray-100 hover:text-white transition-all group">
-                        <AlertTriangle className="h-4 w-4 mr-2 text-indigo-300 group-hover:text-indigo-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <AlertTriangle className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Conflict Resolution
                       </Link>
                     </li>
                     <li>
                       <Link href="/training-development/decision-making" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-indigo-700/50 text-gray-100 hover:text-white transition-all group">
-                        <BrainCircuit className="h-4 w-4 mr-2 text-indigo-300 group-hover:text-indigo-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <BrainCircuit className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Decision Making
                       </Link>
                     </li>
                     <li>
                       <Link href="/training-development/team-building" onClick={() => setShowTrainingLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-indigo-700/50 text-gray-100 hover:text-white transition-all group">
-                        <Users className="h-4 w-4 mr-2 text-indigo-300 group-hover:text-indigo-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <Users className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Team Building
                       </Link>
                     </li>
@@ -454,21 +454,21 @@ const Sidebar = () => {
                 </a>
                 
                 {showActivityLinks && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-700/50">
-                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-700/50 mb-1 text-gray-100">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
                       Activity Tracking
                     </li>
                     <li>
                       <Link href="/action-log" onClick={() => setShowActivityLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <ClipboardList className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <ClipboardList className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Action Log
                       </Link>
                     </li>
                     <li>
                       <Link href="/quarterly-checkins" onClick={() => setShowActivityLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <CheckSquare className="h-4 w-4 mr-2 text-green-300 group-hover:text-green-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <CheckSquare className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Quarterly Check-ins
                       </Link>
                     </li>
@@ -503,21 +503,21 @@ const Sidebar = () => {
                 </a>
                 
                 {showAdminLinks && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
-                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-700/50 mb-1">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
                       Documentation
                     </li>
                     <li>
                       <Link href="/administration/instructor-performance-policy" onClick={() => setShowAdminLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <ClipboardCheck className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <ClipboardCheck className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Instructor Performance Policy
                       </Link>
                     </li>
                     <li>
                       <Link href="/administration/evaluation-guideline" onClick={() => setShowAdminLinks(false)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
-                        <CheckSquare className="h-4 w-4 mr-2 text-blue-300 group-hover:text-blue-200" />
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <CheckSquare className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Evaluation Guidelines
                       </Link>
                     </li>
