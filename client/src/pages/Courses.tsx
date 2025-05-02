@@ -43,7 +43,10 @@ import {
   ChevronRight,
   Bookmark,
   Calendar,
-  Trophy
+  Trophy,
+  Archive,
+  CalendarDays,
+  UserCircle2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PrintButton } from "@/components/ui/print-button";
@@ -114,17 +117,22 @@ export default function Courses() {
         getSchoolName(course.schoolId).toLowerCase().includes(searchQuery.toLowerCase())
       : true;
     
-    // Filter by status tab
+    // Filter based on whether we're in archive view
+    const archiveFilter = isArchiveView ? isArchived(course) : !isArchived(course);
+    
+    // Filter by status tab - only applies when not in archive view
     let statusFilter = true;
-    if (activeTab === 'inProgress') {
-      statusFilter = getCourseStatus(course) === 'In Progress';
-    } else if (activeTab === 'upcoming') {
-      statusFilter = getCourseStatus(course) === 'Upcoming';
-    } else if (activeTab === 'completed') {
-      statusFilter = getCourseStatus(course) === 'Completed';
+    if (!isArchiveView) {
+      if (activeTab === 'inProgress') {
+        statusFilter = getCourseStatus(course) === 'In Progress';
+      } else if (activeTab === 'upcoming') {
+        statusFilter = getCourseStatus(course) === 'Upcoming';
+      } else if (activeTab === 'completed') {
+        statusFilter = getCourseStatus(course) === 'Completed';
+      }
     }
     
-    return schoolFilter && searchFilter && statusFilter;
+    return schoolFilter && searchFilter && statusFilter && archiveFilter;
   });
 
   // Get school name by ID
@@ -159,6 +167,18 @@ export default function Courses() {
     }
   };
 
+  // Function to check if a course is archived (completed more than 30 days ago)
+  const isArchived = (course: Course) => {
+    if (course.endDate) {
+      const endDate = new Date(course.endDate);
+      const today = new Date();
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(today.getDate() - 30);
+      return endDate < thirtyDaysAgo;
+    }
+    return false;
+  };
+
   // Statistics for the summary cards
   const stats = {
     total: courses.length,
@@ -166,6 +186,7 @@ export default function Courses() {
     completed: courses.filter(c => getCourseStatus(c) === 'Completed').length,
     upcoming: courses.filter(c => getCourseStatus(c) === 'Upcoming').length,
     totalStudents: courses.reduce((acc, course) => acc + course.studentCount, 0),
+    archived: courses.filter(c => isArchived(c)).length,
   };
 
   // Get color scheme based on course name
@@ -542,12 +563,23 @@ export default function Courses() {
                               {getSchoolName(course.schoolId)}
                             </CardDescription>
                           </div>
-                          <Badge 
-                            className={`${getStatusBadgeClass(courseStatus)}`}
-                            variant="outline"
-                          >
-                            {courseStatus}
-                          </Badge>
+                          <div className="flex flex-col gap-1">
+                            {isArchiveView && (
+                              <Badge 
+                                className="bg-purple-100 text-purple-800 border-purple-200"
+                                variant="outline"
+                              >
+                                <Archive className="h-3 w-3 mr-1" />
+                                Archived
+                              </Badge>
+                            )}
+                            <Badge 
+                              className={`${getStatusBadgeClass(courseStatus)}`}
+                              variant="outline"
+                            >
+                              {courseStatus}
+                            </Badge>
+                          </div>
                         </div>
                       </CardHeader>
                       
@@ -672,12 +704,23 @@ export default function Courses() {
                               </div>
                             </TableCell>
                             <TableCell>
-                              <Badge 
-                                className={`${getStatusBadgeClass(courseStatus)}`}
-                                variant="outline"
-                              >
-                                {courseStatus}
-                              </Badge>
+                              <div className="flex flex-col gap-1">
+                                {isArchiveView && (
+                                  <Badge 
+                                    className="bg-purple-100 text-purple-800 border-purple-200"
+                                    variant="outline"
+                                  >
+                                    <Archive className="h-3 w-3 mr-1" />
+                                    Archived
+                                  </Badge>
+                                )}
+                                <Badge 
+                                  className={`${getStatusBadgeClass(courseStatus)}`}
+                                  variant="outline"
+                                >
+                                  {courseStatus}
+                                </Badge>
+                              </div>
                             </TableCell>
                             <TableCell>
                               <Link href={`/courses/${course.id}`}>
