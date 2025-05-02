@@ -542,27 +542,27 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Canadian */}
-                  <div className="relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-200">
-                    <div className="absolute -right-6 -top-6 w-24 h-24 bg-indigo-600/10 rounded-full"></div>
+                  <div className="relative overflow-hidden rounded-lg shadow-md group hover:shadow-lg transition-all bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200">
+                    <div className="absolute -right-6 -top-6 w-24 h-24 bg-purple-600/10 rounded-full"></div>
                     <div className="p-4">
                       <div className="flex justify-between items-center">
                         <div className="z-10">
                           <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-indigo-600"></div>
-                            <h3 className="font-semibold text-indigo-900">Canadian</h3>
+                            <div className="w-3 h-3 rounded-full bg-purple-600"></div>
+                            <h3 className="font-semibold text-purple-900">Canadian</h3>
                           </div>
                           <div className="mt-3 flex items-baseline gap-1">
-                            <span className="text-3xl font-bold text-indigo-700">{dashboardStats.nationalityCounts.canadian}</span>
-                            <span className="text-sm font-medium text-indigo-600">Instructors</span>
+                            <span className="text-3xl font-bold text-purple-700">{dashboardStats.nationalityCounts.canadian}</span>
+                            <span className="text-sm font-medium text-purple-600">Instructors</span>
                           </div>
                           <div className="mt-3">
-                            <div className="flex items-center justify-between text-xs text-indigo-700 mb-1">
+                            <div className="flex items-center justify-between text-xs text-purple-700 mb-1">
                               <span>Distribution &nbsp;</span>
                               <span>{(dashboardStats.nationalityCounts.canadian/statistics.activeInstructors*100).toFixed(1)}%</span>
                             </div>
-                            <div className="w-full bg-indigo-200 rounded-full h-2 overflow-hidden">
+                            <div className="w-full bg-purple-200 rounded-full h-2 overflow-hidden">
                               <div 
-                                className="h-full bg-indigo-600 rounded-full" 
+                                className="h-full bg-purple-600 rounded-full" 
                                 style={{ width: `${(dashboardStats.nationalityCounts.canadian/statistics.activeInstructors*100).toFixed(1)}%` }}
                               ></div>
                             </div>
