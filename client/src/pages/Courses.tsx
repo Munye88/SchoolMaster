@@ -259,7 +259,7 @@ export default function Courses() {
           </p>
           
           {/* Statistics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-8">
             <Card className="bg-white/10 backdrop-blur border-none shadow-lg">
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
@@ -311,6 +311,20 @@ export default function Courses() {
                   </div>
                   <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
                     <CheckCircle2 className="h-6 w-6" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white/10 backdrop-blur border-none shadow-lg">
+              <CardContent className="p-4">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-sm font-medium text-blue-200">Archived Courses</p>
+                    <p className="text-3xl font-bold">{stats.archived}</p>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
+                    <Archive className="h-6 w-6" />
                   </div>
                 </div>
               </CardContent>
