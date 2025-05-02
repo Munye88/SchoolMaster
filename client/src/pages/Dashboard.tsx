@@ -189,7 +189,7 @@ const Dashboard = () => {
       {/* Stats Overview - Modern Card Design */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6">
         {/* Students Card */}
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md overflow-hidden border border-blue-200 group hover:shadow-lg transition-all duration-300 relative">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md overflow-hidden border border-[#2563EB]/20 group hover:shadow-lg transition-all duration-300 relative">
           <div className="absolute top-0 right-0 w-24 h-24 bg-[#2563EB]/10 rounded-full transform translate-x-8 -translate-y-8"></div>
           <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
@@ -224,7 +224,7 @@ const Dashboard = () => {
         </div>
 
         {/* Instructors Card */}
-        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md overflow-hidden border border-green-200 group hover:shadow-lg transition-all duration-300 relative">
+        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md overflow-hidden border border-[#10B981]/20 group hover:shadow-lg transition-all duration-300 relative">
           <div className="absolute top-0 right-0 w-24 h-24 bg-[#10B981]/10 rounded-full transform translate-x-8 -translate-y-8"></div>
           <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
@@ -250,7 +250,7 @@ const Dashboard = () => {
         </div>
 
         {/* Schools Card */}
-        <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl shadow-md overflow-hidden border border-teal-200 group hover:shadow-lg transition-all duration-300 relative">
+        <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl shadow-md overflow-hidden border border-[#14B8A6]/20 group hover:shadow-lg transition-all duration-300 relative">
           <div className="absolute top-0 right-0 w-24 h-24 bg-[#14B8A6]/10 rounded-full transform translate-x-8 -translate-y-8"></div>
           <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
@@ -278,7 +278,7 @@ const Dashboard = () => {
         </div>
 
         {/* Courses Card */}
-        <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl shadow-md overflow-hidden border border-amber-200 group hover:shadow-lg transition-all duration-300 relative">
+        <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl shadow-md overflow-hidden border border-[#F59E0B]/20 group hover:shadow-lg transition-all duration-300 relative">
           <div className="absolute top-0 right-0 w-24 h-24 bg-[#F59E0B]/10 rounded-full transform translate-x-8 -translate-y-8"></div>
           <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
