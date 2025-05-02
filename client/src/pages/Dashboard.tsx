@@ -671,29 +671,52 @@ const Dashboard = () => {
                 </div>
                 
                 <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {tasks.map(task => (
-                    <div key={task.id} className="flex items-center justify-between p-3 bg-white rounded-md border border-gray-100 shadow-sm">
-                      <div className="flex items-center gap-3">
-                        <Checkbox 
-                          id={`task-${task.id}`} 
-                          checked={task.done} 
-                          onCheckedChange={() => toggleTaskDone(task.id)}
-                        />
-                        <label 
-                          htmlFor={`task-${task.id}`}
-                          className={`text-sm ${task.done ? 'line-through text-gray-400' : 'text-gray-700'}`}
-                        >
-                          {task.text}
-                        </label>
-                      </div>
-                      <button 
-                        onClick={() => deleteTask(task.id)}
-                        className="text-gray-400 hover:text-red-500 transition-colors"
+                  {tasks.map(task => {
+                    // Define color based on task status
+                    const bgColor = task.done ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200';
+                    const iconColor = task.done ? 'text-green-600' : 'text-orange-600';
+                    const textColor = task.done ? 'text-green-800 line-through' : 'text-orange-800';
+                    
+                    return (
+                      <div 
+                        key={task.id} 
+                        className={`flex items-center justify-between p-3 rounded-md shadow-sm ${bgColor} transition-all duration-300`}
                       >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
+                        <div className="flex items-center gap-3">
+                          <div className={`${iconColor} w-5 h-5 flex-shrink-0`}>
+                            {task.done ? 
+                              <Check className="h-5 w-5" /> : 
+                              <Clock className="h-5 w-5" />
+                            }
+                          </div>
+                          <label 
+                            htmlFor={`task-${task.id}`}
+                            className={`text-sm ${textColor}`}
+                          >
+                            {task.text}
+                          </label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button 
+                            onClick={() => toggleTaskDone(task.id)}
+                            className={`p-1 rounded-md ${task.done ? 'bg-green-100 hover:bg-green-200' : 'bg-orange-100 hover:bg-orange-200'} transition-colors`}
+                          >
+                            {task.done ? 
+                              <X className="h-4 w-4 text-green-600" /> : 
+                              <Check className="h-4 w-4 text-orange-600" />
+                            }
+                          </button>
+                          <button 
+                            onClick={() => deleteTask(task.id)}
+                            className="p-1 rounded-md bg-red-100 hover:bg-red-200 text-red-500 transition-colors"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                
                 </div>
               </div>
             </CardContent>
