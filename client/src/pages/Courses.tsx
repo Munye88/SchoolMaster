@@ -91,6 +91,7 @@ export default function Courses() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('all');
+  const [isArchiveView, setIsArchiveView] = useState<boolean>(false);
 
   // Get all courses
   const { data: courses = [], isLoading: isLoadingCourses } = useQuery<Course[]>({
@@ -302,26 +303,51 @@ export default function Courses() {
         <div className="bg-white rounded-lg shadow-md p-4 mb-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-2">Courses</h2>
-              <Tabs value={activeTab} onValueChange={setActiveTab as (value: string) => void} className="w-full">
-                <TabsList className="bg-gray-100">
-                  <TabsTrigger value="all" className="data-[state=active]:bg-white">
-                    All Courses
-                  </TabsTrigger>
-                  <TabsTrigger value="inProgress" className="data-[state=active]:bg-white">
-                    <Timer className="h-4 w-4 mr-1" />
-                    In Progress
-                  </TabsTrigger>
-                  <TabsTrigger value="upcoming" className="data-[state=active]:bg-white">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    Upcoming
-                  </TabsTrigger>
-                  <TabsTrigger value="completed" className="data-[state=active]:bg-white">
-                    <CheckCircle2 className="h-4 w-4 mr-1" />
-                    Completed
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="text-xl font-bold text-gray-800">{isArchiveView ? "Course Archive" : "Courses"}</h2>
+                <div className="flex gap-2">
+                  <Button 
+                    variant={isArchiveView ? "outline" : "default"} 
+                    size="sm"
+                    onClick={() => setIsArchiveView(false)}
+                    className={!isArchiveView ? "bg-blue-600" : ""}
+                  >
+                    <BookOpen className="h-4 w-4 mr-1" />
+                    Current Courses
+                  </Button>
+                  <Button 
+                    variant={isArchiveView ? "default" : "outline"} 
+                    size="sm"
+                    onClick={() => setIsArchiveView(true)}
+                    className={isArchiveView ? "bg-purple-600" : ""}
+                  >
+                    <Archive className="h-4 w-4 mr-1" />
+                    Archive
+                  </Button>
+                </div>
+              </div>
+              
+              {!isArchiveView && (
+                <Tabs value={activeTab} onValueChange={setActiveTab as (value: string) => void} className="w-full">
+                  <TabsList className="bg-gray-100">
+                    <TabsTrigger value="all" className="data-[state=active]:bg-white">
+                      All Courses
+                    </TabsTrigger>
+                    <TabsTrigger value="inProgress" className="data-[state=active]:bg-white">
+                      <Timer className="h-4 w-4 mr-1" />
+                      In Progress
+                    </TabsTrigger>
+                    <TabsTrigger value="upcoming" className="data-[state=active]:bg-white">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      Upcoming
+                    </TabsTrigger>
+                    <TabsTrigger value="completed" className="data-[state=active]:bg-white">
+                      <CheckCircle2 className="h-4 w-4 mr-1" />
+                      Completed
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              )}
             </div>
             
             <div className="flex flex-col sm:flex-row gap-3">
