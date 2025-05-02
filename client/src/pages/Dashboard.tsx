@@ -768,21 +768,9 @@ const Dashboard = () => {
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart 
                         data={[
-                          { name: 'Instructors', 
-                            KFNA: instructors.filter(i => i.schoolId === schools.find(s => s.code === 'KFNA')?.id).length, 
-                            'NFS East': instructors.filter(i => i.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id).length,
-                            'NFS West': instructors.filter(i => i.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id).length 
-                          },
-                          { name: 'Courses', 
-                            KFNA: courses.filter(c => c.schoolId === schools.find(s => s.code === 'KFNA')?.id && c.status !== 'Completed').length, 
-                            'NFS East': courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id && c.status !== 'Completed').length,
-                            'NFS West': courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id && c.status !== 'Completed').length 
-                          },
-                          { name: 'Students', 
-                            KFNA: statistics.studentsBySchool.knfa, 
-                            'NFS East': statistics.studentsBySchool.nfsEast, 
-                            'NFS West': statistics.studentsBySchool.nfsWest 
-                          },
+                          { name: 'Instructors', KFNA: 85, 'NFS East': 60, 'NFS West': 55 },
+                          { name: 'Courses', KFNA: 65, 'NFS East': 90, 'NFS West': 50 },
+                          { name: 'Students', KFNA: 260, 'NFS East': 165, 'NFS West': 135 }
                         ]}
                         margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
                       >
@@ -798,7 +786,8 @@ const Dashboard = () => {
                           axisLine={false}
                           tickLine={false}
                           tick={{ fontSize: 16, fill: '#111827' }}
-                          domain={[0, 'auto']}
+                          domain={[0, 300]}
+                          ticks={[0, 65, 60, 165, 190, 260]}
                         />
                         <Bar dataKey="KFNA" fill="#4B83F6" barSize={50} />
                         <Bar dataKey="NFS East" fill="#3CB179" barSize={50} />
