@@ -175,7 +175,7 @@ const Sidebar = () => {
           showMobileMenu ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="h-full bg-[#0A2463] text-white flex flex-col shadow-xl">
+        <div className="h-full bg-[#EFF6FE] text-[#1E4D9E] flex flex-col shadow-xl">
           {/* Toggle collapse button */}
           <button 
             onClick={() => setCollapsed(!collapsed)} 
