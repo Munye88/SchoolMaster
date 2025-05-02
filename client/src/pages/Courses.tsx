@@ -88,6 +88,23 @@ const courseTypes = [
   }
 ];
 
+// Function to check if a course is archived (completed more than 30 days ago)
+const checkIfArchived = (course: Course) => {
+  // First check the course status - only completed courses can be archived
+  const status = getCourseStatus(course);
+  if (status !== 'Completed') return false;
+  
+  // Then check if it's been more than 30 days since completion
+  if (course.endDate) {
+    const endDate = new Date(course.endDate);
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    return endDate < thirtyDaysAgo;
+  }
+  return false;
+};
+
 export default function Courses() {
   const [selectedSchool, setSelectedSchool] = useState<number | null>(null);
   const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
@@ -104,35 +121,6 @@ export default function Courses() {
   // Get schools for filtering
   const { data: schools = [], isLoading: isLoadingSchools } = useQuery<School[]>({
     queryKey: ["/api/schools"],
-  });
-
-  // Filter courses by selected criteria
-  const filteredCourses = courses.filter((course: Course) => {
-    // Filter by school
-    const schoolFilter = selectedSchool ? course.schoolId === selectedSchool : true;
-    
-    // Filter by search query
-    const searchFilter = searchQuery 
-      ? course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        getSchoolName(course.schoolId).toLowerCase().includes(searchQuery.toLowerCase())
-      : true;
-    
-    // Filter based on whether we're in archive view
-    const archiveFilter = isArchiveView ? isArchived(course) : !isArchived(course);
-    
-    // Filter by status tab - only applies when not in archive view
-    let statusFilter = true;
-    if (!isArchiveView) {
-      if (activeTab === 'inProgress') {
-        statusFilter = getCourseStatus(course) === 'In Progress';
-      } else if (activeTab === 'upcoming') {
-        statusFilter = getCourseStatus(course) === 'Upcoming';
-      } else if (activeTab === 'completed') {
-        statusFilter = getCourseStatus(course) === 'Completed';
-      }
-    }
-    
-    return schoolFilter && searchFilter && statusFilter && archiveFilter;
   });
 
   // Get school name by ID
@@ -167,23 +155,34 @@ export default function Courses() {
     }
   };
 
-  // Function to check if a course is archived (completed more than 30 days ago)
-  // Since we don't have the isArchived column in the database yet, we'll determine it based on date
-  const isArchived = (course: Course) => {
-    // First check the course status - only completed courses can be archived
-    const status = getCourseStatus(course);
-    if (status !== 'Completed') return false;
+  // Filter courses by selected criteria
+  const filteredCourses = courses.filter((course: Course) => {
+    // Filter by school
+    const schoolFilter = selectedSchool ? course.schoolId === selectedSchool : true;
     
-    // Then check if it's been more than 30 days since completion
-    if (course.endDate) {
-      const endDate = new Date(course.endDate);
-      const today = new Date();
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(today.getDate() - 30);
-      return endDate < thirtyDaysAgo;
+    // Filter by search query
+    const searchFilter = searchQuery 
+      ? course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        getSchoolName(course.schoolId).toLowerCase().includes(searchQuery.toLowerCase())
+      : true;
+    
+    // Filter based on whether we're in archive view
+    const archiveFilter = isArchiveView ? checkIfArchived(course) : !checkIfArchived(course);
+    
+    // Filter by status tab - only applies when not in archive view
+    let statusFilter = true;
+    if (!isArchiveView) {
+      if (activeTab === 'inProgress') {
+        statusFilter = getCourseStatus(course) === 'In Progress';
+      } else if (activeTab === 'upcoming') {
+        statusFilter = getCourseStatus(course) === 'Upcoming';
+      } else if (activeTab === 'completed') {
+        statusFilter = getCourseStatus(course) === 'Completed';
+      }
     }
-    return false;
-  };
+    
+    return schoolFilter && searchFilter && statusFilter && archiveFilter;
+  });
 
   // Statistics for the summary cards
   const stats = {
@@ -192,7 +191,7 @@ export default function Courses() {
     completed: courses.filter(c => getCourseStatus(c) === 'Completed').length,
     upcoming: courses.filter(c => getCourseStatus(c) === 'Upcoming').length,
     totalStudents: courses.reduce((acc, course) => acc + course.studentCount, 0),
-    archived: courses.filter(c => isArchived(c)).length,
+    archived: courses.filter(c => checkIfArchived(c)).length,
   };
 
   // Get color scheme based on course name
@@ -420,350 +419,261 @@ export default function Courses() {
                   </button>
                 </div>
                 
-                <PrintButton contentId="coursesContent" className="h-10" />
+                <select 
+                  className="bg-gray-100 border-none rounded-md px-3 text-sm text-gray-600 h-10 focus:ring-2 focus:ring-blue-500"
+                  value={selectedSchool || ''}
+                  onChange={(e) => setSelectedSchool(e.target.value ? parseInt(e.target.value) : null)}
+                >
+                  <option value="">All Schools</option>
+                  {schools.map((school) => (
+                    <option key={school.id} value={school.id}>
+                      {school.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
-          
-          <Separator className="my-4" />
-          
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-medium text-gray-700">Filter by School:</span>
-            <div className="flex flex-wrap gap-2">
-              <button 
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
-                  !selectedSchool 
-                    ? "bg-blue-100 text-blue-800" 
-                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                }`}
-                onClick={() => setSelectedSchool(null)}
-              >
-                All Schools
-              </button>
-              
-              {schools.map((school: School) => (
-                <button
-                  key={school.id}
-                  className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-all ${
-                    selectedSchool === school.id 
-                      ? school.code === "KFNA" ? "bg-blue-100 text-blue-800" 
-                        : school.code === "NFS_EAST" ? "bg-green-100 text-green-800"
-                        : "bg-purple-100 text-purple-800"
-                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                  }`}
-                  onClick={() => setSelectedSchool(school.id)}
-                >
-                  <SchoolIcon className="h-3 w-3" />
-                  {school.name}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
-        
-        {/* Course Types Information */}
-        <Accordion
-          type="single"
-          collapsible
-          className="mb-6 border rounded-lg shadow-sm overflow-hidden bg-white"
-          value={activeAccordion || ""}
-          onValueChange={setActiveAccordion}
-        >
-          <AccordionItem value="course-types" className="border-0">
-            <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
-              <span className="flex items-center">
-                <div className="mr-3 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center shadow-sm">
-                  <Bookmark className="h-4 w-4 text-blue-600" />
+
+        {/* Course Display - Grid View */}
+        {viewMode === 'grid' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCourses.length === 0 ? (
+              <div className="col-span-3 py-10 text-center">
+                <div className="inline-block p-3 rounded-full bg-gray-100 mb-4">
+                  <BookOpen className="h-8 w-8 text-gray-400" />
                 </div>
-                <span className="font-medium">Course Types and Benchmarks</span>
-              </span>
-            </AccordionTrigger>
-            <AccordionContent className="px-4 pb-4">
+                <h3 className="text-lg font-medium text-gray-900 mb-1">{isArchiveView ? "No archived courses found" : "No courses found"}</h3>
+                <p className="text-gray-500">{isArchiveView ? "There are no courses that have been completed more than 30 days ago." : "Try adjusting your filters or search criteria."}</p>
+              </div>
+            ) : (
+              filteredCourses.map((course) => {
+                const colorScheme = getColorScheme(course.name);
+                const progress = calculateCourseProgress(course);
+                const status = getCourseStatus(course);
+                const isCoursePastArchiveDate = checkIfArchived(course);
+                
+                return (
+                  <Link key={course.id} href={`/courses/${course.id}`}>
+                    <Card 
+                      className={`overflow-hidden transition-all duration-200 hover:shadow-lg cursor-pointer ${colorScheme.lightBg} border-0 shadow relative`}
+                      style={{ borderTop: `3px solid ${colorScheme.borderTop}` }}
+                    >
+                      {isCoursePastArchiveDate && (
+                        <div className="absolute top-2 right-2 z-10">
+                          <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 font-medium flex items-center gap-1">
+                            <Archive className="h-3 w-3" />
+                            Archived
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      <CardHeader className={`${colorScheme.headerBg} text-white pb-4 pt-6`}>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <CardTitle className="flex items-center gap-2 mb-1">
+                              {course.name}
+                              <Badge variant="outline" className={getStatusBadgeClass(status)}>
+                                {status}
+                              </Badge>
+                            </CardTitle>
+                            <CardDescription className="text-white/80 flex items-center gap-1">
+                              <SchoolIcon className="h-3.5 w-3.5" />
+                              {getSchoolName(course.schoolId)}
+                            </CardDescription>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      
+                      <CardContent className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center text-sm">
+                            <div className="flex items-center gap-1 text-gray-600">
+                              <CalendarRange className="h-4 w-4" />
+                              {formatDate(course.startDate)} - {formatDate(course.endDate || '')}
+                            </div>
+                            <div className="flex items-center gap-1 text-gray-600">
+                              <Users className="h-4 w-4" />
+                              {course.studentCount} students
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-sm font-medium">
+                              <span>Progress</span>
+                              <span>{Math.round(progress)}%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2.5">
+                              <div 
+                                className={`${colorScheme.progressColor} h-2.5 rounded-full`}
+                                style={{ width: `${progress}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Award className="h-4 w-4" />
+                            <span>Benchmark: {course.benchmark || 'Not specified'}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                      
+                      <CardFooter className="bg-white p-4 border-t flex justify-end">
+                        <Button variant="ghost" size="sm" className={`${colorScheme.iconColor} flex gap-1 items-center`}>
+                          View Details
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </Link>
+                );
+              })
+            )}
+          </div>
+        )}
+
+        {/* Course Display - List View */}
+        {viewMode === 'list' && (
+          <div className="bg-white rounded-lg border shadow overflow-hidden">
+            {filteredCourses.length === 0 ? (
+              <div className="py-10 text-center">
+                <div className="inline-block p-3 rounded-full bg-gray-100 mb-4">
+                  <BookOpen className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-1">{isArchiveView ? "No archived courses found" : "No courses found"}</h3>
+                <p className="text-gray-500">{isArchiveView ? "There are no courses that have been completed more than 30 days ago." : "Try adjusting your filters or search criteria."}</p>
+              </div>
+            ) : (
               <div className="overflow-x-auto">
                 <Table>
-                  <TableHeader>
+                  <TableHeader className="bg-gray-50">
                     <TableRow>
-                      <TableHead>Course Type</TableHead>
-                      <TableHead>Duration</TableHead>
-                      <TableHead>Benchmarks</TableHead>
+                      <TableHead>Course Name</TableHead>
+                      <TableHead>School</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Period</TableHead>
+                      <TableHead>Students</TableHead>
+                      <TableHead>Progress</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {courseTypes.map((type) => (
-                      <TableRow key={type.id}>
-                        <TableCell className="font-medium">{type.name}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center">
-                            <Clock className="mr-2 h-4 w-4 text-muted-foreground" />
-                            {type.duration}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-2">
-                            {type.benchmarks.map((benchmark, index) => {
-                              // Colorful badges based on test type
-                              const getTestColor = (test: string) => {
-                                switch(test.toLowerCase()) {
-                                  case 'alcpt': return 'bg-blue-100 text-blue-700 border-blue-200';
-                                  case 'ecl': return 'bg-amber-100 text-amber-700 border-amber-200';
-                                  case 'opi': return 'bg-purple-100 text-purple-700 border-purple-200';
-                                  default: return 'bg-gray-100 text-gray-700 border-gray-200';
-                                }
-                              };
-                              
-                              return (
-                                <Badge 
-                                  key={index} 
-                                  className={`flex items-center gap-1 px-3 py-1 ${getTestColor(benchmark.test)}`}
-                                  variant="outline"
-                                >
-                                  <Trophy className="h-3 w-3" />
-                                  <span className="font-medium">{benchmark.test}:</span> {benchmark.score}
-                                </Badge>
-                              );
-                            })}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {filteredCourses.map((course) => {
+                      const status = getCourseStatus(course);
+                      const progress = calculateCourseProgress(course);
+                      const colorScheme = getColorScheme(course.name);
+                      const isCoursePastArchiveDate = checkIfArchived(course);
+                      
+                      return (
+                        <TableRow key={course.id} className="hover:bg-gray-50">
+                          <TableCell className="font-medium flex items-center gap-2">
+                            <div className={`w-2 h-5 rounded-sm ${colorScheme.iconColor.replace('text', 'bg')}`}></div>
+                            {course.name}
+                            {isCoursePastArchiveDate && (
+                              <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 font-medium ml-2 flex items-center gap-1">
+                                <Archive className="h-3 w-3" />
+                                Archived
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1.5">
+                              <SchoolIcon className="h-4 w-4 text-gray-500" />
+                              {getSchoolName(course.schoolId)}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className={getStatusBadgeClass(status)}>
+                              {status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-sm text-gray-600">
+                            {formatDate(course.startDate)} - {formatDate(course.endDate || '')}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1.5">
+                              <Users className="h-4 w-4 text-gray-500" />
+                              <span>{course.studentCount}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2 w-24">
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div 
+                                  className={`${colorScheme.progressColor} h-2 rounded-full`}
+                                  style={{ width: `${progress}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-xs text-gray-600 font-medium whitespace-nowrap">{Math.round(progress)}%</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Link href={`/courses/${course.id}`} className="inline-block">
+                              <Button variant="ghost" size="sm" className={`${colorScheme.iconColor} flex gap-1 items-center`}>
+                                View
+                                <ChevronRight className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Course Type Information Section */}
+        <Accordion type="single" collapsible className="mt-8">
+          <AccordionItem value="course-types" className="border px-4 rounded-md bg-white">
+            <AccordionTrigger className="py-4">
+              <h3 className="text-lg font-medium flex items-center">
+                <Bookmark className="mr-2 h-5 w-5 text-blue-600" />
+                Course Type Information
+              </h3>
+            </AccordionTrigger>
+            <AccordionContent className="pb-4">
+              <div className="space-y-4">
+                {courseTypes.map((type) => (
+                  <div key={type.id} className="border rounded-md p-4 bg-gray-50">
+                    <h4 className="text-md font-semibold mb-2 flex items-center">
+                      <GraduationCap className="mr-2 h-4 w-4 text-blue-600" />
+                      {type.name} Course
+                    </h4>
+                    <div className="text-sm text-gray-600 mb-3">
+                      <p><span className="font-medium">Duration:</span> {type.duration}</p>
+                    </div>
+                    <div>
+                      <h5 className="text-sm font-semibold mb-2 flex items-center">
+                        <Trophy className="mr-1 h-3.5 w-3.5 text-amber-500" />
+                        Benchmarks
+                      </h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                        {type.benchmarks.map((benchmark, idx) => (
+                          <div key={idx} className="flex items-center bg-white p-2 rounded border">
+                            <div className={`w-1.5 h-5 rounded-sm ${benchmark.test === 'ALCPT' ? 'bg-blue-500' : benchmark.test === 'ECL' ? 'bg-purple-500' : 'bg-amber-500'}`}></div>
+                            <span className="ml-2 flex-1 text-gray-700 text-sm">{benchmark.test}</span>
+                            <Badge variant="outline" className="ml-auto">
+                              {benchmark.score}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
         
-        {/* No courses message */}
-        {filteredCourses.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-lg border shadow-sm">
-            <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="font-semibold text-xl mb-2">No Courses Found</h3>
-            <p className="text-gray-600 max-w-md mx-auto">
-              {searchQuery 
-                ? `No courses match your search "${searchQuery}". Try different keywords or clear the search.`
-                : selectedSchool 
-                  ? "There are no courses available for the selected school." 
-                  : "There are no courses available in the system."}
-            </p>
-            {(searchQuery || selectedSchool || activeTab !== 'all') && (
-              <Button 
-                variant="outline" 
-                className="mt-4"
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedSchool(null);
-                  setActiveTab('all');
-                }}
-              >
-                Clear All Filters
-              </Button>
-            )}
-          </div>
-        ) : (
-          <>
-            {/* Grid View */}
-            {viewMode === 'grid' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCourses.map((course: Course) => {
-                  const colors = getColorScheme(course.name);
-                  const courseStatus = getCourseStatus(course);
-                  
-                  return (
-                    <Card 
-                      key={course.id} 
-                      className="overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border-t-4 rounded-md"
-                      style={{ borderTopColor: colors.borderTop }}
-                    >
-                      <CardHeader className={`pb-3`}>
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="font-bold text-lg">{course.name}</CardTitle>
-                            <CardDescription className="flex items-center mt-1">
-                              <SchoolIcon className="h-3 w-3 mr-1" />
-                              {getSchoolName(course.schoolId)}
-                            </CardDescription>
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            {isArchiveView && (
-                              <Badge 
-                                className="bg-purple-100 text-purple-800 border-purple-200"
-                                variant="outline"
-                              >
-                                <Archive className="h-3 w-3 mr-1" />
-                                Archived
-                              </Badge>
-                            )}
-                            <Badge 
-                              className={`${getStatusBadgeClass(courseStatus)}`}
-                              variant="outline"
-                            >
-                              {courseStatus}
-                            </Badge>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      
-                      <CardContent className={`p-4 border-y ${colors.borderColor} ${colors.lightBg}`}>
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center text-gray-700">
-                            <CalendarRange className={`h-4 w-4 mr-2 ${colors.iconColor}`} />
-                            <span className="text-sm font-medium">Period:</span>
-                          </div>
-                          <span className="text-sm bg-white px-3 py-1 rounded-full shadow-sm border border-gray-100">
-                            {formatDate(course.startDate)} - {formatDate(course.endDate || "")}
-                          </span>
-                        </div>
-                        
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center text-gray-700">
-                            <Trophy className={`h-4 w-4 mr-2 ${colors.iconColor}`} />
-                            <span className="text-sm font-medium">Benchmark:</span>
-                          </div>
-                          <span className="text-sm font-medium px-3 py-1 bg-white rounded-full shadow-sm border border-gray-100">
-                            {course.benchmark || "Not set"}
-                          </span>
-                        </div>
-                      </CardContent>
-                      
-                      <CardFooter className="px-4 py-3 bg-white">
-                        <div className="w-full">
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm font-medium text-gray-700">Course Progress</span>
-                            <span className="text-sm font-bold">{calculateCourseProgress(course)}%</span>
-                          </div>
-                          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                            <div 
-                              className={`h-full ${colors.progressColor}`}
-                              style={{ width: `${calculateCourseProgress(course)}%` }}
-                            />
-                          </div>
-                          <div className="flex justify-between items-center mt-3">
-                            <div className="flex items-center">
-                              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                <GraduationCap className="h-4 w-4 text-gray-600" />
-                              </div>
-                              <span className="text-sm ml-2 font-medium text-gray-700">{course.studentCount} Students</span>
-                            </div>
-                            <Link href={`/courses/${course.id}`}>
-                              <Button 
-                                className={`text-sm font-medium text-white px-3 py-1.5 rounded-md`}
-                                size="sm"
-                                style={{
-                                  backgroundColor: colors.borderTop,
-                                }}
-                              >
-                                View Details
-                              </Button>
-                            </Link>
-                          </div>
-                        </div>
-                      </CardFooter>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
-            
-            {/* List View */}
-            {viewMode === 'list' && (
-              <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Course Name</TableHead>
-                        <TableHead>School</TableHead>
-                        <TableHead>Period</TableHead>
-                        <TableHead>Benchmark</TableHead>
-                        <TableHead>Students</TableHead>
-                        <TableHead>Progress</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredCourses.map((course) => {
-                        const colors = getColorScheme(course.name);
-                        const courseStatus = getCourseStatus(course);
-                        
-                        return (
-                          <TableRow key={course.id}>
-                            <TableCell className="font-medium">{course.name}</TableCell>
-                            <TableCell>
-                              <div className="flex items-center">
-                                <SchoolIcon className="h-3 w-3 mr-1" />
-                                {getSchoolName(course.schoolId)}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center">
-                                <CalendarRange className={`h-4 w-4 mr-1 ${colors.iconColor}`} />
-                                <span className="text-sm">
-                                  {formatDate(course.startDate)} - {formatDate(course.endDate || "")}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              {course.benchmark || "Not set"}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center">
-                                <Users className="h-4 w-4 mr-1 text-gray-500" />
-                                {course.studentCount}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center w-32">
-                                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden mr-2">
-                                  <div 
-                                    className={`h-full ${colors.progressColor}`}
-                                    style={{ width: `${calculateCourseProgress(course)}%` }}
-                                  />
-                                </div>
-                                <span className="text-xs font-medium">{calculateCourseProgress(course)}%</span>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex flex-col gap-1">
-                                {isArchiveView && (
-                                  <Badge 
-                                    className="bg-purple-100 text-purple-800 border-purple-200"
-                                    variant="outline"
-                                  >
-                                    <Archive className="h-3 w-3 mr-1" />
-                                    Archived
-                                  </Badge>
-                                )}
-                                <Badge 
-                                  className={`${getStatusBadgeClass(courseStatus)}`}
-                                  variant="outline"
-                                >
-                                  {courseStatus}
-                                </Badge>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Link href={`/courses/${course.id}`}>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  className={`${colors.iconColor} hover:${colors.lightBg}`}
-                                >
-                                  <ChevronRight className="h-4 w-4" />
-                                  Details
-                                </Button>
-                              </Link>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
-            )}
-          </>
-        )}
+        {/* Print Button */}
+        <div className="flex justify-end mt-6">
+          <PrintButton contentId="coursesContent" buttonText="Print Course List" />
+        </div>
       </div>
     </div>
   );
