@@ -190,15 +190,15 @@ const Dashboard = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6">
         {/* Students Card */}
         <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md overflow-hidden border border-blue-200 group hover:shadow-lg transition-all duration-300 relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full transform translate-x-8 -translate-y-8"></div>
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#2563EB]/10 rounded-full transform translate-x-8 -translate-y-8"></div>
           <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-blue-700/70 font-medium mb-1">Total Students</p>
-                <h3 className="text-3xl font-bold text-blue-800 flex items-baseline">
+                <p className="text-sm text-[#2563EB]/70 font-medium mb-1">Total Students</p>
+                <h3 className="text-3xl font-bold text-[#2563EB] flex items-baseline">
                   {dashboardStats.isLoadingStudents ? (
                     <span className="flex items-center">
-                      <Loader2 className="h-5 w-5 mr-2 animate-spin text-blue-600" /> 
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin text-[#2563EB]" /> 
                       Loading...
                     </span>
                   ) : (
@@ -209,14 +209,14 @@ const Dashboard = () => {
                   )}
                 </h3>
               </div>
-              <div className="bg-blue-500 bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
-                <GraduationCap className="h-6 w-6 text-blue-600" />
+              <div className="bg-[#2563EB] bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
+                <GraduationCap className="h-6 w-6 text-[#2563EB]" />
               </div>
             </div>
             <div className="mt-3 h-1.5 w-full bg-blue-200 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-500 rounded-full" style={{ width: "75%" }}></div>
+              <div className="h-full bg-[#2563EB] rounded-full" style={{ width: "75%" }}></div>
             </div>
-            <p className="text-xs text-blue-600 mt-2 flex items-center">
+            <p className="text-xs text-[#2563EB] mt-2 flex items-center">
               <ChevronRight className="h-3 w-3 mr-1" />
               75% of target enrollment
             </p>
@@ -225,24 +225,24 @@ const Dashboard = () => {
 
         {/* Instructors Card */}
         <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md overflow-hidden border border-green-200 group hover:shadow-lg transition-all duration-300 relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-full transform translate-x-8 -translate-y-8"></div>
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#10B981]/10 rounded-full transform translate-x-8 -translate-y-8"></div>
           <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-green-700/70 font-medium mb-1">Instructors</p>
-                <h3 className="text-3xl font-bold text-green-800 flex items-baseline">
+                <p className="text-sm text-[#10B981]/70 font-medium mb-1">Instructors</p>
+                <h3 className="text-3xl font-bold text-[#10B981] flex items-baseline">
                   {statistics.activeInstructors}
-                  <span className="text-green-500 text-xs font-medium ml-2 bg-green-100 px-1.5 py-0.5 rounded-full">100%</span>
+                  <span className="text-[#10B981] text-xs font-medium ml-2 bg-green-100 px-1.5 py-0.5 rounded-full">100%</span>
                 </h3>
               </div>
-              <div className="bg-green-500 bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
-                <UserCheck className="h-6 w-6 text-green-600" />
+              <div className="bg-[#10B981] bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
+                <UserCheck className="h-6 w-6 text-[#10B981]" />
               </div>
             </div>
             <div className="mt-3 h-1.5 w-full bg-green-200 rounded-full overflow-hidden">
-              <div className="h-full bg-green-500 rounded-full" style={{ width: "100%" }}></div>
+              <div className="h-full bg-[#10B981] rounded-full" style={{ width: "100%" }}></div>
             </div>
-            <p className="text-xs text-green-600 mt-2 flex items-center">
+            <p className="text-xs text-[#10B981] mt-2 flex items-center">
               <ChevronRight className="h-3 w-3 mr-1" />
               Full staff capacity
             </p>
@@ -251,26 +251,26 @@ const Dashboard = () => {
 
         {/* Schools Card */}
         <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl shadow-md overflow-hidden border border-teal-200 group hover:shadow-lg transition-all duration-300 relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-teal-500/10 rounded-full transform translate-x-8 -translate-y-8"></div>
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#14B8A6]/10 rounded-full transform translate-x-8 -translate-y-8"></div>
           <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-teal-700/70 font-medium mb-1">Schools</p>
-                <h3 className="text-3xl font-bold text-teal-800 flex items-baseline">
+                <p className="text-sm text-[#14B8A6]/70 font-medium mb-1">Schools</p>
+                <h3 className="text-3xl font-bold text-[#14B8A6] flex items-baseline">
                   {statistics.totalSchools}
-                  <span className="text-teal-500 text-xs font-medium ml-2 bg-teal-100 px-1.5 py-0.5 rounded-full">Active</span>
+                  <span className="text-[#14B8A6] text-xs font-medium ml-2 bg-teal-100 px-1.5 py-0.5 rounded-full">Active</span>
                 </h3>
               </div>
-              <div className="bg-teal-500 bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
-                <SchoolIcon className="h-6 w-6 text-teal-600" />
+              <div className="bg-[#14B8A6] bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
+                <SchoolIcon className="h-6 w-6 text-[#14B8A6]" />
               </div>
             </div>
             <div className="mt-3 grid grid-cols-3 gap-1">
-              <div className="h-1.5 bg-teal-600 rounded-full"></div>
-              <div className="h-1.5 bg-teal-400 rounded-full"></div>
-              <div className="h-1.5 bg-teal-300 rounded-full"></div>
+              <div className="h-1.5 bg-[#14B8A6] rounded-full"></div>
+              <div className="h-1.5 bg-[#14B8A6]/70 rounded-full"></div>
+              <div className="h-1.5 bg-[#14B8A6]/40 rounded-full"></div>
             </div>
-            <p className="text-xs text-teal-600 mt-2 flex items-center">
+            <p className="text-xs text-[#14B8A6] mt-2 flex items-center">
               <ChevronRight className="h-3 w-3 mr-1" />
               KFNA, NFS East, NFS West
             </p>
@@ -279,28 +279,28 @@ const Dashboard = () => {
 
         {/* Courses Card */}
         <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl shadow-md overflow-hidden border border-amber-200 group hover:shadow-lg transition-all duration-300 relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full transform translate-x-8 -translate-y-8"></div>
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#F59E0B]/10 rounded-full transform translate-x-8 -translate-y-8"></div>
           <div className="p-5 relative z-10">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-amber-700/70 font-medium mb-1">Courses</p>
-                <h3 className="text-3xl font-bold text-amber-800 flex items-baseline">
+                <p className="text-sm text-[#F59E0B]/70 font-medium mb-1">Courses</p>
+                <h3 className="text-3xl font-bold text-[#F59E0B] flex items-baseline">
                   {statistics.totalCourses}
-                  <span className="text-amber-500 text-xs font-medium ml-2 bg-amber-100 px-1.5 py-0.5 rounded-full">{statistics.activeCourses} active</span>
+                  <span className="text-[#F59E0B] text-xs font-medium ml-2 bg-amber-100 px-1.5 py-0.5 rounded-full">{statistics.activeCourses} active</span>
                 </h3>
               </div>
-              <div className="bg-amber-500 bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
-                <BookOpen className="h-6 w-6 text-amber-600" />
+              <div className="bg-[#F59E0B] bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
+                <BookOpen className="h-6 w-6 text-[#F59E0B]" />
               </div>
             </div>
             <div className="mt-3 flex space-x-1">
-              <div className="h-1.5 w-1/5 bg-amber-600 rounded-full"></div>
-              <div className="h-1.5 w-1/5 bg-amber-600 rounded-full"></div>
-              <div className="h-1.5 w-1/5 bg-amber-600 rounded-full"></div>
-              <div className="h-1.5 w-1/5 bg-amber-300 rounded-full"></div>
-              <div className="h-1.5 w-1/5 bg-amber-300 rounded-full"></div>
+              <div className="h-1.5 w-1/5 bg-[#F59E0B] rounded-full"></div>
+              <div className="h-1.5 w-1/5 bg-[#F59E0B] rounded-full"></div>
+              <div className="h-1.5 w-1/5 bg-[#F59E0B] rounded-full"></div>
+              <div className="h-1.5 w-1/5 bg-[#F59E0B]/60 rounded-full"></div>
+              <div className="h-1.5 w-1/5 bg-[#F59E0B]/60 rounded-full"></div>
             </div>
-            <p className="text-xs text-amber-600 mt-2 flex items-center">
+            <p className="text-xs text-[#F59E0B] mt-2 flex items-center">
               <ChevronRight className="h-3 w-3 mr-1" />
               {statistics.activeCourses} active, {statistics.completedCourses} completed
             </p>
