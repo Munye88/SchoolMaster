@@ -285,42 +285,27 @@ export default function CourseDetails() {
                   <CardTitle className="text-lg font-semibold">Course Progress</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center pb-6">
-                  <div className="w-32 h-32 relative mb-4">
-                    <svg className="w-full h-full" viewBox="0 0 36 36">
-                      <path
-                        className="stroke-current text-gray-200"
-                        strokeWidth="3"
-                        fill="none"
-                        d="M18 2.0845
-                        a 15.9155 15.9155 0 0 1 0 31.831
-                        a 15.9155 15.9155 0 0 1 0 -31.831"
-                      />
-                      <path
-                        className={`stroke-current ${colors.progressColor}`}
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        fill="none"
-                        strokeDasharray={`${Math.round(calculateCourseProgress(course))}, 100`}
-                        d="M18 2.0845
-                        a 15.9155 15.9155 0 0 1 0 31.831
-                        a 15.9155 15.9155 0 0 1 0 -31.831"
-                      />
-                      <text
-                        x="18"
-                        y="20.35"
-                        className="text-3xl font-bold"
-                        textAnchor="middle"
-                        fill={colors.borderTop}
+                  <div className="flex flex-col items-center justify-center w-full mb-6 text-center">
+                    <div className="w-40 h-40 rounded-full border-8 border-gray-100 flex items-center justify-center mb-4">
+                      <div 
+                        className="text-center font-bold text-5xl"
+                        style={{ color: colors.borderTop }}
                       >
                         {Math.round(calculateCourseProgress(course))}%
-                      </text>
-                    </svg>
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                      <div 
+                        className={colors.progressColor} 
+                        style={{ width: `${Math.round(calculateCourseProgress(course))}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-sm text-gray-600 text-center">
+                      {Math.round(calculateCourseProgress(course)) < 100
+                        ? "Course is in progress"
+                        : "Course is complete"}
+                    </p>
                   </div>
-                  <p className="text-sm text-gray-600 text-center">
-                    {Math.round(calculateCourseProgress(course)) < 100
-                      ? "Course is in progress"
-                      : "Course is complete"}
-                  </p>
                 </CardContent>
               </Card>
 
