@@ -768,9 +768,24 @@ const Dashboard = () => {
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart 
                         data={[
-                          { name: 'Instructors', KFNA: 85, 'NFS East': 60, 'NFS West': 55 },
-                          { name: 'Courses', KFNA: 65, 'NFS East': 90, 'NFS West': 50 },
-                          { name: 'Students', KFNA: 260, 'NFS East': 165, 'NFS West': 135 }
+                          { 
+                            name: 'Instructors', 
+                            KFNA: 26, 
+                            'NFS East': 19, 
+                            'NFS West': 28 
+                          },
+                          { 
+                            name: 'Courses', 
+                            KFNA: 1, 
+                            'NFS East': 3, 
+                            'NFS West': 2 
+                          },
+                          { 
+                            name: 'Students', 
+                            KFNA: 253, 
+                            'NFS East': 42, 
+                            'NFS West': 101 
+                          }
                         ]}
                         margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
                       >
@@ -787,7 +802,7 @@ const Dashboard = () => {
                           tickLine={false}
                           tick={{ fontSize: 16, fill: '#111827' }}
                           domain={[0, 300]}
-                          ticks={[0, 65, 60, 165, 190, 260]}
+                          ticks={[0, 25, 50, 100, 150, 200, 253]}
                         />
                         <Bar dataKey="KFNA" fill="#4B83F6" barSize={50} />
                         <Bar dataKey="NFS East" fill="#3CB179" barSize={50} />
