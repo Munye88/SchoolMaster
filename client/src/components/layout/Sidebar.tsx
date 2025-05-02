@@ -175,7 +175,7 @@ const Sidebar = () => {
           showMobileMenu ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="h-full bg-[#EFF6FE] text-[#1E4D9E] flex flex-col shadow-xl">
+        <div className="h-full bg-[#0A1929] text-white flex flex-col shadow-xl">
           {/* Toggle collapse button */}
           <button 
             onClick={() => setCollapsed(!collapsed)} 
@@ -190,11 +190,11 @@ const Sidebar = () => {
               {/* Dashboard */}
               <li>
                 <Link href="/" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-blue-100 group transition-all",
-                  isActive("/") && "bg-blue-200 font-medium text-[#2563EB]",
-                  !isActive("/") && "text-[#2563EB]"
+                  "flex items-center p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
+                  isActive("/") && "bg-blue-900/60 font-medium text-white",
+                  !isActive("/") && "text-white"
                 )}>
-                  <Home className={cn("w-5 h-5 text-[#2563EB]", collapsed ? "mx-auto" : "mr-3")} />
+                  <Home className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
                   {!collapsed && <span>Dashboard</span>}
                 </Link>
               </li>
@@ -455,6 +455,9 @@ const Sidebar = () => {
                 
                 {showActivityLinks && !collapsed && (
                   <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
+                      Activity Tracking
+                    </li>
                     <li>
                       <Link href="/action-log" onClick={() => setShowActivityLinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
