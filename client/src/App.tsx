@@ -7,6 +7,7 @@ import Dashboard from "@/pages/Dashboard";
 import InstructorProfile from "@/pages/InstructorProfile";
 import InstructorLookup from "@/pages/instructor/InstructorLookup";
 import Courses from "@/pages/Courses";
+import CourseDetails from "@/pages/CourseDetails";
 import TestTracker from "@/pages/TestTracker";
 import Reports from "@/pages/Reports";
 import Documents from "@/pages/Documents";
@@ -73,6 +74,7 @@ function Router() {
           <ProtectedRoute path="/instructors/:id" component={InstructorProfile} />
           <ProtectedRoute path="/instructor-lookup" component={InstructorLookup} />
           <ProtectedRoute path="/courses" component={Courses} />
+          <ProtectedRoute path="/courses/:id" component={CourseDetails} />
           <ProtectedRoute path="/dli" component={BookOrder} />
           <ProtectedRoute path="/dli/book-order" component={BookOrder} />
           <ProtectedRoute path="/dli/alcpt-order" component={AlcptOrder} />

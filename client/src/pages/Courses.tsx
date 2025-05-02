@@ -361,9 +361,11 @@ export default function Courses() {
                         </div>
                         <span className="text-sm ml-2 font-medium text-gray-700">{course.studentCount} Students</span>
                       </div>
-                      <button className={`text-sm font-medium text-white px-3 py-1.5 rounded-md ${colors.headerBg} shadow-sm`}>
-                        View Details
-                      </button>
+                      <Link href={`/courses/${course.id}`}>
+                        <button className={`text-sm font-medium text-white px-3 py-1.5 rounded-md ${colors.headerBg} shadow-sm`}>
+                          View Details
+                        </button>
+                      </Link>
                     </div>
                   </div>
                 </CardFooter>
