@@ -214,12 +214,12 @@ const Sidebar = () => {
                 </a>
                 
                 {showSchoolLinks === 'main' && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-100/90 to-blue-50/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-700/50">
                     {schools.map(school => (
                       <li key={school.id}>
                         <button
                           onClick={() => handleSelectSchool(school)}
-                          className="w-full text-left px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 flex items-center transition-all group"
+                          className="w-full text-left px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white flex items-center transition-all group"
                         >
                           <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mr-2 opacity-60 group-hover:opacity-100 group-hover:scale-125 transition-all"></div>
                           {school.name}
@@ -230,13 +230,13 @@ const Sidebar = () => {
                 )}
                 
                 {showSchoolLinks && showSchoolLinks !== 'main' && !collapsed && (
-                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
-                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
+                  <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-800/80 to-blue-900/80 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-700/50">
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-700/50 mb-1 text-gray-100">
                       {schools.find(s => s.code === showSchoolLinks)?.name} Documents
                     </li>
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/instructor-profiles`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-700/50 text-gray-100 hover:text-white transition-all group">
                         <Users className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         Instructor Profiles
                       </Link>
@@ -627,8 +627,8 @@ const Sidebar = () => {
           </div>
           
           {/* Version info at bottom */}
-          <div className="p-4 border-t border-blue-200">
-            <div className="text-xs text-blue-500 text-center">
+          <div className="p-4 border-t border-blue-800">
+            <div className="text-xs text-blue-400 text-center">
               Version 1.2.0
             </div>
           </div>
