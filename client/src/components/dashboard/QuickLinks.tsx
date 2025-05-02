@@ -8,7 +8,7 @@ const QuickLinks: React.FC = () => {
       <h2 className="text-[#0B1D51] text-3xl font-bold mb-8">Quick Links</h2>
       
       {/* Instructor Lookup Link */}
-      <Link href="/instructors">
+      <Link href="/instructor-lookup">
         <div className="flex items-center justify-between py-6 cursor-pointer hover:bg-gray-50 transition-colors">
           <div className="flex items-center">
             <div className="w-16 h-16 rounded-xl bg-purple-50 flex items-center justify-center mr-5">
