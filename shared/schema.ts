@@ -54,7 +54,7 @@ export const courses = pgTable("courses", {
   status: text("status").notNull(),
   progress: integer("progress").notNull(),
   benchmark: text("benchmark"),
-  isArchived: boolean("is_archived").notNull().default(false),
+  // Archive status is determined client-side based on course completion date
 });
 
 export const insertCourseSchema = createInsertSchema(courses).pick({
@@ -67,7 +67,6 @@ export const insertCourseSchema = createInsertSchema(courses).pick({
   status: true,
   progress: true,
   benchmark: true,
-  isArchived: true,
 });
 
 export const students = pgTable("students", {
