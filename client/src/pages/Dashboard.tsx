@@ -378,17 +378,17 @@ const Dashboard = () => {
                       progressTextColor = 'text-orange-700';
                     }
                     else if (course.name === 'Refresher' && course.studentCount === 16) {
-                      // Third Refresher course - Green
-                      fromColor = 'from-green-50';
-                      toColor = 'to-green-100';
-                      borderColor = 'border-green-200';
-                      bgColor = 'bg-green-600/10';
-                      textColor = 'text-green-900';
-                      valueColor = 'text-green-700';
-                      labelColor = 'text-green-600';
-                      progressBgColor = 'bg-green-200';
-                      progressFillColor = 'bg-green-600';
-                      progressTextColor = 'text-green-700';
+                      // Third Refresher course - Cyan
+                      fromColor = 'from-sky-50';
+                      toColor = 'to-sky-100';
+                      borderColor = 'border-sky-200';
+                      bgColor = 'bg-sky-600/10';
+                      textColor = 'text-sky-900';
+                      valueColor = 'text-sky-700';
+                      labelColor = 'text-sky-600';
+                      progressBgColor = 'bg-sky-200';
+                      progressFillColor = 'bg-sky-600';
+                      progressTextColor = 'text-sky-700';
                     }
                     // Then check school if not one of the specific Refresher courses
                     else if (school?.name.includes('East')) {
