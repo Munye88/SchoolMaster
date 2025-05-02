@@ -505,32 +505,18 @@ const Notifications: React.FC<NotificationsProps> = ({
   const notificationCount = filteredNonDismissedAlerts.length;
   
   return (
-    <div>
-      {/* Header with animation and gradient */}
-      <div className="bg-gradient-to-r from-[#0A2463] via-[#1A3473] to-[#0A2463] rounded-t-xl p-4 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzBoMnYyaC0yek0zMCAzMGgydjJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
-        <div className="absolute top-0 right-0 w-40 h-40 bg-blue-400/10 rounded-full transform translate-x-20 -translate-y-20 blur-2xl"></div>
-        
-        <div className="relative z-10 flex justify-between items-center">
-          <div>
-            <h3 className="text-sm font-semibold opacity-90 uppercase tracking-wider">Notifications</h3>
-            <p className="text-3xl font-bold mt-1 flex items-baseline">
-              {notificationCount}
-              <span className="ml-2 text-sm opacity-80">Active Alerts</span>
-            </p>
+    <div className="bg-white rounded-xl shadow-sm border-[1px] border-gray-100">
+      {/* Header that matches the static notification style */}
+      <div className="p-6">
+        <h2 className="text-[#0B1D51] text-3xl font-bold mb-8">Notifications</h2>
+      
+        {/* Active Alerts Header */}
+        <div className="flex justify-between items-center bg-[#F8FAFC] p-4 rounded-xl mb-4">
+          <div className="flex items-center">
+            <span className="text-[#0B1D51] text-2xl font-bold">{notificationCount}</span>
+            <span className="text-[#0B1D51] text-xl font-bold ml-3">ACTIVE ALERTS</span>
           </div>
-          
-          {/* Animated bell icon with pulse effect */}
-          <div className="bg-white/20 p-3 rounded-full backdrop-blur-sm shadow-inner border border-white/30">
-            <div className={`relative ${notificationCount > 0 ? 'animate-bounce' : ''}`}>
-              <Bell className="w-7 h-7 text-white" />
-              {notificationCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 border border-white flex items-center justify-center text-[10px] font-bold">
-                  {notificationCount > 9 ? '9+' : notificationCount}
-                </span>
-              )}
-            </div>
-          </div>
+          <Bell className="h-6 w-6 text-[#0B1D51]" />
         </div>
       </div>
       

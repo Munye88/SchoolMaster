@@ -746,8 +746,16 @@ const Dashboard = () => {
           {/* Quick Links */}
           <QuickLinks />
 
-          {/* Notifications Card */}
-          <StaticNotifications />
+          {/* Notifications Card - Using dynamic notifications */}
+          <Notifications 
+            instructors={instructors} 
+            staffAttendance={staffAttendance} 
+            staffLeave={staffLeave} 
+            evaluations={evaluations} 
+            courses={courses} 
+            students={students} 
+            limit={3} 
+          />
         </div>
       </div>
     </div>
