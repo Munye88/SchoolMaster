@@ -294,10 +294,13 @@ export default function CourseDetails() {
                         {Math.round(calculateCourseProgress(course))}%
                       </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                    <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
                       <div 
-                        className={colors.progressColor} 
-                        style={{ width: `${Math.round(calculateCourseProgress(course))}%` }}
+                        className="h-full rounded-full transition-all duration-300"
+                        style={{ 
+                          width: `${Math.round(calculateCourseProgress(course))}%`,
+                          backgroundColor: colors.borderTop
+                        }}
                       ></div>
                     </div>
                     <p className="text-sm text-gray-600 text-center">
