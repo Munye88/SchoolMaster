@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { 
   GraduationCap, BookOpen, Users, Clock, Calendar, Check, X, ChevronRight,
-  User, UserCheck, Building, Activity, BarChart2, Trash2, Plus, UserPlus, Loader2
+  User, UserCheck, Building, Activity, BarChart2, Trash2, Plus, UserPlus, Loader2,
+  FileText, School, UserCircle
 } from "lucide-react";
-import { School as SchoolIcon } from "lucide-react";
-import { Course, Instructor, Student, TestResult, School, StaffAttendance, StaffLeave, Evaluation, Event } from "@shared/schema";
+import { Course, Instructor, Student, TestResult, School as SchoolType, StaffAttendance, StaffLeave, Evaluation, Event } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -186,124 +186,49 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Stats Overview - Modern Card Design */}
+      {/* Stats Overview - Simple Card Design matching screenshot */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6">
         {/* Students Card */}
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md overflow-hidden border border-[#2563EB]/20 group hover:shadow-lg transition-all duration-300 relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[#2563EB]/10 rounded-full transform translate-x-8 -translate-y-8"></div>
-          <div className="p-5 relative z-10">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-[#2563EB]/70 font-medium mb-1">Total Students</p>
-                <h3 className="text-3xl font-bold text-[#2563EB] flex items-baseline">
-                  {dashboardStats.isLoadingStudents ? (
-                    <span className="flex items-center">
-                      <Loader2 className="h-5 w-5 mr-2 animate-spin text-[#2563EB]" /> 
-                      Loading...
-                    </span>
-                  ) : (
-                    <>
-                      {statistics.totalStudents}
-                      <span className="text-green-500 text-xs font-medium ml-2 bg-green-100 px-1.5 py-0.5 rounded-full">+3%</span>
-                    </>
-                  )}
-                </h3>
-              </div>
-              <div className="bg-[#2563EB] bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
-                <GraduationCap className="h-6 w-6 text-[#2563EB]" />
-              </div>
-            </div>
-            <div className="mt-3 h-1.5 w-full bg-blue-200 rounded-full overflow-hidden">
-              <div className="h-full bg-[#2563EB] rounded-full" style={{ width: "75%" }}></div>
-            </div>
-            <p className="text-xs text-[#2563EB] mt-2 flex items-center">
-              <ChevronRight className="h-3 w-3 mr-1" />
-              75% of target enrollment
-            </p>
+        <div className="bg-[#3B82F6] rounded-lg shadow-md text-white p-4 flex items-center">
+          <div className="text-white mr-4">
+            <Users className="h-10 w-10" />
+          </div>
+          <div>
+            <div className="text-5xl font-bold text-white">{statistics.totalStudents}</div>
+            <div className="uppercase text-sm mt-1">TOTAL STUDENTS</div>
           </div>
         </div>
 
         {/* Instructors Card */}
-        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md overflow-hidden border border-[#10B981]/20 group hover:shadow-lg transition-all duration-300 relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[#10B981]/10 rounded-full transform translate-x-8 -translate-y-8"></div>
-          <div className="p-5 relative z-10">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-[#10B981]/70 font-medium mb-1">Instructors</p>
-                <h3 className="text-3xl font-bold text-[#10B981] flex items-baseline">
-                  {statistics.activeInstructors}
-                  <span className="text-[#10B981] text-xs font-medium ml-2 bg-green-100 px-1.5 py-0.5 rounded-full">100%</span>
-                </h3>
-              </div>
-              <div className="bg-[#10B981] bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
-                <UserCheck className="h-6 w-6 text-[#10B981]" />
-              </div>
-            </div>
-            <div className="mt-3 h-1.5 w-full bg-green-200 rounded-full overflow-hidden">
-              <div className="h-full bg-[#10B981] rounded-full" style={{ width: "100%" }}></div>
-            </div>
-            <p className="text-xs text-[#10B981] mt-2 flex items-center">
-              <ChevronRight className="h-3 w-3 mr-1" />
-              Full staff capacity
-            </p>
+        <div className="bg-[#3BB99B] rounded-lg shadow-md text-white p-4 flex items-center">
+          <div className="text-white mr-4">
+            <UserCircle className="h-10 w-10" />
+          </div>
+          <div>
+            <div className="text-5xl font-bold text-white">{statistics.activeInstructors}</div>
+            <div className="uppercase text-sm mt-1">INSTRUCTORS</div>
           </div>
         </div>
 
         {/* Schools Card */}
-        <div className="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl shadow-md overflow-hidden border border-[#14B8A6]/20 group hover:shadow-lg transition-all duration-300 relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[#14B8A6]/10 rounded-full transform translate-x-8 -translate-y-8"></div>
-          <div className="p-5 relative z-10">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-[#14B8A6]/70 font-medium mb-1">Schools</p>
-                <h3 className="text-3xl font-bold text-[#14B8A6] flex items-baseline">
-                  {statistics.totalSchools}
-                  <span className="text-[#14B8A6] text-xs font-medium ml-2 bg-teal-100 px-1.5 py-0.5 rounded-full">Active</span>
-                </h3>
-              </div>
-              <div className="bg-[#14B8A6] bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
-                <SchoolIcon className="h-6 w-6 text-[#14B8A6]" />
-              </div>
-            </div>
-            <div className="mt-3 grid grid-cols-3 gap-1">
-              <div className="h-1.5 bg-[#14B8A6] rounded-full"></div>
-              <div className="h-1.5 bg-[#14B8A6]/70 rounded-full"></div>
-              <div className="h-1.5 bg-[#14B8A6]/40 rounded-full"></div>
-            </div>
-            <p className="text-xs text-[#14B8A6] mt-2 flex items-center">
-              <ChevronRight className="h-3 w-3 mr-1" />
-              KFNA, NFS East, NFS West
-            </p>
+        <div className="bg-[#4DB6AC] rounded-lg shadow-md text-white p-4 flex items-center">
+          <div className="text-white mr-4">
+            <School className="h-10 w-10" />
+          </div>
+          <div>
+            <div className="text-5xl font-bold text-white">{statistics.totalSchools}</div>
+            <div className="uppercase text-sm mt-1">SCHOOLS</div>
           </div>
         </div>
 
-        {/* Courses Card */}
-        <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl shadow-md overflow-hidden border border-[#F59E0B]/20 group hover:shadow-lg transition-all duration-300 relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[#F59E0B]/10 rounded-full transform translate-x-8 -translate-y-8"></div>
-          <div className="p-5 relative z-10">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-[#F59E0B]/70 font-medium mb-1">Courses</p>
-                <h3 className="text-3xl font-bold text-[#F59E0B] flex items-baseline">
-                  {statistics.totalCourses}
-                  <span className="text-[#F59E0B] text-xs font-medium ml-2 bg-amber-100 px-1.5 py-0.5 rounded-full">{statistics.activeCourses} active</span>
-                </h3>
-              </div>
-              <div className="bg-[#F59E0B] bg-opacity-15 p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
-                <BookOpen className="h-6 w-6 text-[#F59E0B]" />
-              </div>
-            </div>
-            <div className="mt-3 flex space-x-1">
-              <div className="h-1.5 w-1/5 bg-[#F59E0B] rounded-full"></div>
-              <div className="h-1.5 w-1/5 bg-[#F59E0B] rounded-full"></div>
-              <div className="h-1.5 w-1/5 bg-[#F59E0B] rounded-full"></div>
-              <div className="h-1.5 w-1/5 bg-[#F59E0B]/60 rounded-full"></div>
-              <div className="h-1.5 w-1/5 bg-[#F59E0B]/60 rounded-full"></div>
-            </div>
-            <p className="text-xs text-[#F59E0B] mt-2 flex items-center">
-              <ChevronRight className="h-3 w-3 mr-1" />
-              {statistics.activeCourses} active, {statistics.completedCourses} completed
-            </p>
+        {/* Courses Card - Double-width */}
+        <div className="bg-[#F59E0B] rounded-lg shadow-md text-white p-4 flex items-center">
+          <div className="text-white mr-4">
+            <FileText className="h-10 w-10" />
+          </div>
+          <div>
+            <div className="text-5xl font-bold text-white">{statistics.totalCourses}</div>
+            <div className="uppercase text-sm mt-1">COURSES</div>
           </div>
         </div>
       </div>
