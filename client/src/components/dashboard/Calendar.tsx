@@ -41,9 +41,22 @@ export function Calendar({ className }: CalendarProps) {
   const monthEnd = endOfMonth(currentMonth);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
   
+  // Day colors by day of week
+  const dayColors = [
+    { bg: 'bg-red-100', text: 'text-red-700', hover: 'hover:bg-red-200' }, // Sunday
+    { bg: 'bg-orange-100', text: 'text-orange-700', hover: 'hover:bg-orange-200' }, // Monday
+    { bg: 'bg-green-100', text: 'text-green-700', hover: 'hover:bg-green-200' }, // Tuesday
+    { bg: 'bg-blue-100', text: 'text-blue-700', hover: 'hover:bg-blue-200' }, // Wednesday
+    { bg: 'bg-green-100', text: 'text-green-700', hover: 'hover:bg-green-200' }, // Thursday
+    { bg: 'bg-blue-100', text: 'text-blue-700', hover: 'hover:bg-blue-200' }, // Friday
+    { bg: 'bg-purple-100', text: 'text-purple-700', hover: 'hover:bg-purple-200' }, // Saturday
+  ];
+
   const renderDay = (day: Date) => {
     const isCurrentMonth = isSameMonth(day, currentMonth);
     const isCurrentDay = isToday(day);
+    const dayOfWeek = day.getDay();
+    const { bg, text, hover } = dayColors[dayOfWeek];
     const dayEvents = events?.filter(event => isSameDay(new Date(event.start), day)) || [];
     const hasEvents = dayEvents.length > 0;
     
@@ -88,12 +101,12 @@ export function Calendar({ className }: CalendarProps) {
           {format(day, 'd')}
         </div>
         {hasEvents && (
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
+          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
             <div className="flex space-x-0.5">
-              {hasKnfaEvents && <div className="h-1 w-1 rounded-full bg-blue-500" />}
-              {hasNfsEastEvents && <div className="h-1 w-1 rounded-full bg-green-500" />}
-              {hasNfsWestEvents && <div className="h-1 w-1 rounded-full bg-purple-500" />}
-              {hasOtherEvents && <div className="h-1 w-1 rounded-full bg-gray-500" />}
+              {hasKnfaEvents && <div className="h-1.5 w-1.5 rounded-full bg-blue-600 shadow-sm" />}
+              {hasNfsEastEvents && <div className="h-1.5 w-1.5 rounded-full bg-green-600 shadow-sm" />}
+              {hasNfsWestEvents && <div className="h-1.5 w-1.5 rounded-full bg-purple-600 shadow-sm" />}
+              {hasOtherEvents && <div className="h-1.5 w-1.5 rounded-full bg-gray-600 shadow-sm" />}
             </div>
           </div>
         )}
@@ -106,10 +119,13 @@ export function Calendar({ className }: CalendarProps) {
         <div 
           key={day.toString()} 
           className={cn(
-            "h-10 w-10 flex items-center justify-center rounded-full text-sm relative",
-            !isCurrentMonth && "text-gray-400",
-            isCurrentDay && "bg-blue-100 font-bold text-blue-800",
-            "hover:bg-gray-100 cursor-pointer"
+            "h-10 w-10 flex items-center justify-center rounded-lg text-sm relative",
+            !isCurrentMonth && "opacity-40",
+            isCurrentMonth && bg,
+            isCurrentMonth && text,
+            isCurrentMonth && hover,
+            isCurrentDay && "ring-2 ring-blue-500 ring-offset-2 font-bold",
+            "cursor-pointer transition-all"
           )}
         >
           {dayContent}
@@ -124,11 +140,14 @@ export function Calendar({ className }: CalendarProps) {
           <TooltipTrigger asChild>
             <div 
               className={cn(
-                "h-10 w-10 flex items-center justify-center rounded-full text-sm relative",
-                !isCurrentMonth && "text-gray-400",
-                isCurrentDay && "bg-blue-100 font-bold text-blue-800",
+                "h-10 w-10 flex items-center justify-center rounded-lg text-sm relative",
+                !isCurrentMonth && "opacity-40",
+                isCurrentMonth && bg,
+                isCurrentMonth && text,
+                isCurrentMonth && hover,
+                isCurrentDay && "ring-2 ring-blue-500 ring-offset-2 font-bold",
                 hasEvents && !isCurrentDay && "font-semibold",
-                "hover:bg-gray-100 cursor-pointer"
+                "cursor-pointer transition-all"
               )}
             >
               {dayContent}
@@ -194,8 +213,16 @@ export function Calendar({ className }: CalendarProps) {
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="text-center text-xs font-medium text-gray-500">
+        {[
+          { day: 'Sun', color: 'text-red-500' },
+          { day: 'Mon', color: 'text-orange-500' },
+          { day: 'Tue', color: 'text-green-600' },
+          { day: 'Wed', color: 'text-blue-500' },
+          { day: 'Thu', color: 'text-green-600' },
+          { day: 'Fri', color: 'text-blue-700' },
+          { day: 'Sat', color: 'text-purple-600' }
+        ].map(({ day, color }) => (
+          <div key={day} className={`text-center text-xs font-medium ${color}`}>
             {day}
           </div>
         ))}
