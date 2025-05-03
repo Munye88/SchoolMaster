@@ -78,10 +78,9 @@ export function StandardInstructorAvatar({
     setImageError(true);
   };
   
-  // Construct the border color for the avatars to match the example
+  // Use a blue border for the avatar to match the screenshot
   const getBorderColor = () => {
-    // Match the border color to the example (blue border for all)
-    return "border-[#00AEEF]"; // Light blue border to match the example image
+    return "border-[#00AEEF]"; // Light blue border to match the screenshot
   };
   
   const containerClassName = `${sizeClasses[size]} rounded-full ${getBorderColor()} border-4 overflow-hidden flex items-center justify-center shadow-md flex-shrink-0 flex-grow-0 bg-white`;
