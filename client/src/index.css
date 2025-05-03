@@ -10,6 +10,15 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+  
+  /* Force white text in course header */
+  .course-header-title {
+    color: white !important;
+  }
+  
+  .course-header-subtitle {
+    color: white !important;
+  }
 }
 
 @layer utilities {
