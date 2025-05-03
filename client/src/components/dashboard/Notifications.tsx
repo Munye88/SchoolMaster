@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Set a smaller height for the notification panel to match other dashboard components
-const NOTIFICATION_PANEL_HEIGHT = "h-[140px]";
+const NOTIFICATION_PANEL_HEIGHT = "h-[120px]";
 
 // New animation classes for notifications
 const NOTIFICATION_ANIMATION = "animate-in fade-in slide-in-from-right-3 duration-300";
@@ -78,7 +78,7 @@ const NotificationCard: React.FC<{
         bgGradient: 'from-red-50 to-red-100',
         iconColor: 'text-red-100',
       };
-      alertIcon = <X className="h-5 w-5 mr-2 text-white" />;
+      alertIcon = <X className="h-4 w-4 mr-1 text-white" />;
       label = 'Absent Today';
       break;
     case 'leave':
@@ -90,7 +90,7 @@ const NotificationCard: React.FC<{
         bgGradient: 'from-amber-50 to-amber-100',
         iconColor: 'text-amber-100',
       };
-      alertIcon = <Calendar className="h-5 w-5 mr-2 text-white" />;
+      alertIcon = <Calendar className="h-4 w-4 mr-1 text-white" />;
       label = 'On Leave';
       break;
     case 'evaluation':
@@ -102,7 +102,7 @@ const NotificationCard: React.FC<{
         bgGradient: 'from-purple-50 to-purple-100',
         iconColor: 'text-purple-100',
       };
-      alertIcon = <AlertCircle className="h-5 w-5 mr-2 text-white" />;
+      alertIcon = <AlertCircle className="h-4 w-4 mr-1 text-white" />;
       label = 'Low Score';
       break;
     case 'student_change':
@@ -114,7 +114,7 @@ const NotificationCard: React.FC<{
         bgGradient: 'from-blue-50 to-blue-100',
         iconColor: 'text-blue-100',
       };
-      alertIcon = <GraduationCap className="h-5 w-5 mr-2 text-white" />;
+      alertIcon = <GraduationCap className="h-4 w-4 mr-1 text-white" />;
       label = 'Students';
       break;
     case 'staff_change':
@@ -126,7 +126,7 @@ const NotificationCard: React.FC<{
         bgGradient: 'from-green-50 to-green-100',
         iconColor: 'text-green-100',
       };
-      alertIcon = <UserPlus className="h-5 w-5 mr-2 text-white" />;
+      alertIcon = <UserPlus className="h-4 w-4 mr-1 text-white" />;
       label = 'Staff Update';
       break;
     case 'course_complete':
@@ -138,7 +138,7 @@ const NotificationCard: React.FC<{
         bgGradient: 'from-indigo-50 to-indigo-100',
         iconColor: 'text-indigo-100',
       };
-      alertIcon = <Award className="h-5 w-5 mr-2 text-white" />;
+      alertIcon = <Award className="h-4 w-4 mr-1 text-white" />;
       label = 'Course Update';
       break;
   }
@@ -189,11 +189,11 @@ const NotificationCard: React.FC<{
         </div>
         
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 z-10">
-            <div className="p-1.5 rounded-full bg-white/20 shadow-inner">
+          <div className="flex items-center gap-1 z-10">
+            <div className="p-1 rounded-full bg-white/20 shadow-inner">
               {alertIcon}
             </div>
-            <span className="font-bold">{alert.name}</span>
+            <span className="font-bold text-xs">{alert.name}</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full backdrop-blur-sm">
@@ -206,11 +206,11 @@ const NotificationCard: React.FC<{
       {/* Content area */}
       <div className={`p-2 bg-gradient-to-b ${colorScheme.bgGradient}`}>
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-700 font-medium">{alert.reason}</p>
+          <p className="text-xs text-gray-700 font-medium">{alert.reason}</p>
           
           {/* Dismiss button - always visible */}
           <button 
-            className="h-7 w-7 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center border border-gray-200 shadow-sm transition-colors duration-200"
+            className="h-6 w-6 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center border border-gray-200 shadow-sm transition-colors duration-200"
             onClick={(e) => {
               e.stopPropagation();
               onDismiss(alert.id);
