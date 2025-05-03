@@ -301,80 +301,80 @@ export default function Courses() {
   return (
     <div className="bg-gray-50 min-h-[calc(100vh-4rem)]">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-[#0A2463] to-blue-600 py-8">
+      <div className="bg-white py-8">
         <div className="container mx-auto px-4">
-          <h1 className="text-white text-2xl font-bold mb-2">Course Programs</h1>
-          <p className="text-white text-lg">
+          <h1 className="text-gray-800 text-2xl font-bold mb-2">Course Programs</h1>
+          <p className="text-gray-600 text-lg">
             Explore our comprehensive ELT programs across all schools
           </p>
           
           {/* Statistics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-8">
-            <Card className="bg-white/10 backdrop-blur border-none shadow-lg">
+            <Card className="bg-blue-50 border-none shadow-md">
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-white">Total Courses</p>
-                    <p className="text-3xl font-bold text-white">{stats.total}</p>
+                    <p className="text-sm font-medium text-blue-700">Total Courses</p>
+                    <p className="text-3xl font-bold text-blue-800">{stats.total}</p>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <BookOpen className="h-6 w-6" />
+                  <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                    <BookOpen className="h-6 w-6 text-blue-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/10 backdrop-blur border-none shadow-lg">
+            <Card className="bg-green-50 border-none shadow-md">
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-white">Active Courses</p>
-                    <p className="text-3xl font-bold text-white">{stats.inProgress}</p>
+                    <p className="text-sm font-medium text-green-700">Active Courses</p>
+                    <p className="text-3xl font-bold text-green-800">{stats.inProgress}</p>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <Timer className="h-6 w-6" />
+                  <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+                    <Timer className="h-6 w-6 text-green-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/10 backdrop-blur border-none shadow-lg">
+            <Card className="bg-amber-50 border-none shadow-md">
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-white">Total Students</p>
-                    <p className="text-3xl font-bold text-white">{stats.totalStudents}</p>
+                    <p className="text-sm font-medium text-amber-700">Total Students</p>
+                    <p className="text-3xl font-bold text-amber-800">{stats.totalStudents}</p>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <Users className="h-6 w-6" />
+                  <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
+                    <Users className="h-6 w-6 text-amber-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/10 backdrop-blur border-none shadow-lg">
+            <Card className="bg-indigo-50 border-none shadow-md">
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-white">Completed Courses</p>
-                    <p className="text-3xl font-bold text-white">{stats.completed}</p>
+                    <p className="text-sm font-medium text-indigo-700">Completed Courses</p>
+                    <p className="text-3xl font-bold text-indigo-800">{stats.completed}</p>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <CheckCircle2 className="h-6 w-6" />
+                  <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                    <CheckCircle2 className="h-6 w-6 text-indigo-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/10 backdrop-blur border-none shadow-lg">
+            <Card className="bg-purple-50 border-none shadow-md">
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-white">Archived Courses</p>
-                    <p className="text-3xl font-bold text-white">{stats.archived}</p>
+                    <p className="text-sm font-medium text-purple-700">Archived Courses</p>
+                    <p className="text-3xl font-bold text-purple-800">{stats.archived}</p>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <Archive className="h-6 w-6" />
+                  <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
+                    <Archive className="h-6 w-6 text-purple-600" />
                   </div>
                 </div>
               </CardContent>
