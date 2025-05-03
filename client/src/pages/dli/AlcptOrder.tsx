@@ -69,7 +69,7 @@ import {
 
 // Mock data for ALCPT forms inventory
 const alcptFormsInventory = [
-  // KNFA Forms
+  // KFNA Forms
   { id: 1, name: 'ALCPT Form 126', quantity: 25, status: 'In Stock', schoolId: 349 },
   { id: 2, name: 'ALCPT Form 127', quantity: 30, status: 'In Stock', schoolId: 349 },
   { id: 3, name: 'ALCPT Form 128', quantity: 15, status: 'Low Stock', schoolId: 349 },
@@ -191,7 +191,7 @@ const AlcptOrder = () => {
   // Get school by ID
   const getSchoolById = (id: number) => {
     switch (id) {
-      case 349: return { id: 349, name: 'KNFA', code: 'KNFA', color: 'blue' };
+      case 349: return { id: 349, name: 'KFNA', code: 'KFNA', color: 'blue' };
       case 350: return { id: 350, name: 'NFS East', code: 'NFS_EAST', color: 'green' };
       case 351: return { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'purple' };
       default: return null;
@@ -200,7 +200,7 @@ const AlcptOrder = () => {
   
   // List of schools
   const schools = [
-    { id: 349, name: 'KNFA', code: 'KNFA', color: 'blue' },
+    { id: 349, name: 'KFNA', code: 'KFNA', color: 'blue' },
     { id: 350, name: 'NFS East', code: 'NFS_EAST', color: 'green' },
     { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'purple' },
   ];
@@ -1007,7 +1007,7 @@ const AlcptOrder = () => {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">KNFA</span>
+                    <span className="text-sm font-medium">KFNA</span>
                     <span className="text-sm text-gray-500">
                       {getSchoolForms(349).reduce((total, form) => total + form.quantity, 0)} forms
                     </span>
@@ -1274,7 +1274,7 @@ const AlcptOrder = () => {
                   <SelectValue placeholder="Select school" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="349">KNFA</SelectItem>
+                  <SelectItem value="349">KFNA</SelectItem>
                   <SelectItem value="350">NFS East</SelectItem>
                   <SelectItem value="351">NFS West</SelectItem>
                 </SelectContent>
@@ -1336,7 +1336,7 @@ const AlcptOrder = () => {
                   <SelectValue placeholder="Select school" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="349">KNFA</SelectItem>
+                  <SelectItem value="349">KFNA</SelectItem>
                   <SelectItem value="350">NFS East</SelectItem>
                   <SelectItem value="351">NFS West</SelectItem>
                 </SelectContent>
@@ -1431,7 +1431,7 @@ const AlcptOrder = () => {
                   <SelectValue placeholder="Select school" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="349">KNFA</SelectItem>
+                  <SelectItem value="349">KFNA</SelectItem>
                   <SelectItem value="350">NFS East</SelectItem>
                   <SelectItem value="351">NFS West</SelectItem>
                 </SelectContent>

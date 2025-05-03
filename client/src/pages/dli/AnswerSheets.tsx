@@ -68,7 +68,7 @@ import {
 
 // Mock data for answer sheets inventory
 const answerSheetsInventory = [
-  // KNFA Sheets
+  // KFNA Sheets
   { id: 1, name: 'Answer Sheet Type A', quantity: 250, status: 'In Stock', schoolId: 349 },
   { id: 2, name: 'Answer Sheet Type B', quantity: 180, status: 'In Stock', schoolId: 349 },
   { id: 3, name: 'Answer Sheet Type C', quantity: 120, status: 'Low Stock', schoolId: 349 },
@@ -163,7 +163,7 @@ const AnswerSheets = () => {
   // Get school by ID
   const getSchoolById = (id: number) => {
     switch (id) {
-      case 349: return { id: 349, name: 'KNFA', code: 'KNFA', color: 'blue' };
+      case 349: return { id: 349, name: 'KFNA', code: 'KFNA', color: 'blue' };
       case 350: return { id: 350, name: 'NFS East', code: 'NFS_EAST', color: 'green' };
       case 351: return { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'purple' };
       default: return null;
@@ -172,7 +172,7 @@ const AnswerSheets = () => {
   
   // List of schools
   const schools = [
-    { id: 349, name: 'KNFA', code: 'KNFA', color: 'blue' },
+    { id: 349, name: 'KFNA', code: 'KFNA', color: 'blue' },
     { id: 350, name: 'NFS East', code: 'NFS_EAST', color: 'green' },
     { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'purple' },
   ];
@@ -964,7 +964,7 @@ const AnswerSheets = () => {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">KNFA</span>
+                    <span className="text-sm font-medium">KFNA</span>
                     <span className="text-sm text-gray-500">
                       {getSchoolSheets(349).reduce((total, sheet) => total + sheet.quantity, 0)} sheets
                     </span>
@@ -1231,7 +1231,7 @@ const AnswerSheets = () => {
                   <SelectValue placeholder="Select school" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="349">KNFA</SelectItem>
+                  <SelectItem value="349">KFNA</SelectItem>
                   <SelectItem value="350">NFS East</SelectItem>
                   <SelectItem value="351">NFS West</SelectItem>
                 </SelectContent>
@@ -1293,7 +1293,7 @@ const AnswerSheets = () => {
                   <SelectValue placeholder="Select school" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="349">KNFA</SelectItem>
+                  <SelectItem value="349">KFNA</SelectItem>
                   <SelectItem value="350">NFS East</SelectItem>
                   <SelectItem value="351">NFS West</SelectItem>
                 </SelectContent>
@@ -1387,7 +1387,7 @@ const AnswerSheets = () => {
                   <SelectValue placeholder="Select school" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="349">KNFA</SelectItem>
+                  <SelectItem value="349">KFNA</SelectItem>
                   <SelectItem value="350">NFS East</SelectItem>
                   <SelectItem value="351">NFS West</SelectItem>
                 </SelectContent>

@@ -51,7 +51,7 @@ import { BookText, CalendarDays, Search, Filter, Download, Printer, ArrowUpDown,
 
 // Mock data for book inventory - expanded to include more books for each school
 const bookInventory = [
-  // KNFA Books
+  // KFNA Books
   { id: 1, name: 'American Language Course Book 1', level: '', quantity: 25, status: 'In Stock', schoolId: 349 },
   { id: 2, name: 'American Language Course Book 2', level: '', quantity: 30, status: 'In Stock', schoolId: 349 },
   { id: 3, name: 'American Language Course Book 3', level: '', quantity: 15, status: 'Low Stock', schoolId: 349 },
@@ -207,7 +207,7 @@ const BookOrder = () => {
   // Get school by ID
   const getSchoolById = (id: number) => {
     switch (id) {
-      case 349: return { id: 349, name: 'KNFA', code: 'KNFA', color: 'blue' };
+      case 349: return { id: 349, name: 'KFNA', code: 'KFNA', color: 'blue' };
       case 350: return { id: 350, name: 'NFS East', code: 'NFS_EAST', color: 'green' };
       case 351: return { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'purple' };
       default: return null;
@@ -216,7 +216,7 @@ const BookOrder = () => {
   
   // List of schools
   const schools = [
-    { id: 349, name: 'KNFA', code: 'KNFA', color: 'blue' },
+    { id: 349, name: 'KFNA', code: 'KFNA', color: 'blue' },
     { id: 350, name: 'NFS East', code: 'NFS_EAST', color: 'green' },
     { id: 351, name: 'NFS West', code: 'NFS_WEST', color: 'purple' },
   ];
@@ -1040,7 +1040,7 @@ const BookOrder = () => {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">KNFA</span>
+                    <span className="text-sm font-medium">KFNA</span>
                     <span className="text-sm text-gray-500">
                       {getSchoolBooks(349).reduce((total, book) => total + book.quantity, 0)} books
                     </span>
@@ -1317,7 +1317,7 @@ const BookOrder = () => {
                   <SelectValue placeholder="Select school" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="349">KNFA</SelectItem>
+                  <SelectItem value="349">KFNA</SelectItem>
                   <SelectItem value="350">NFS East</SelectItem>
                   <SelectItem value="351">NFS West</SelectItem>
                 </SelectContent>
@@ -1380,7 +1380,7 @@ const BookOrder = () => {
                   <SelectValue placeholder="Select school" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="349">KNFA</SelectItem>
+                  <SelectItem value="349">KFNA</SelectItem>
                   <SelectItem value="350">NFS East</SelectItem>
                   <SelectItem value="351">NFS West</SelectItem>
                 </SelectContent>
@@ -1475,7 +1475,7 @@ const BookOrder = () => {
                   <SelectValue placeholder="Select school" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="349">KNFA</SelectItem>
+                  <SelectItem value="349">KFNA</SelectItem>
                   <SelectItem value="350">NFS East</SelectItem>
                   <SelectItem value="351">NFS West</SelectItem>
                 </SelectContent>
