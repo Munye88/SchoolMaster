@@ -333,14 +333,14 @@ const Sidebar = () => {
                       DLI Resources
                     </li>
                     <li>
-                      <Link href="/dli/book-inventory" onClick={() => setShowDLILinks(false)}
+                      <Link href="/dli/book-order" onClick={() => setShowDLILinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
                         <BookOpen className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
-                        Book Inventory
+                        DLI Book Inventory
                       </Link>
                     </li>
                     <li>
-                      <Link href="/dli/alcpt-form" onClick={() => setShowDLILinks(false)}
+                      <Link href="/dli/alcpt-order" onClick={() => setShowDLILinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
                         <ListChecks className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
                         ALCPT Forms

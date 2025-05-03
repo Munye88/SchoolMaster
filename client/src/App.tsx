@@ -31,9 +31,6 @@ import StaffLeaveTracker from "./pages/school/StaffLeaveTracker";
 import BookOrder from "./pages/dli/BookOrder";
 import AlcptOrder from "./pages/dli/AlcptOrder";
 import AnswerSheets from "./pages/dli/AnswerSheets";
-import BookInventoryNew from "./pages/dli/BookInventoryNew";
-import AlcptFormNew from "./pages/dli/AlcptFormNew";
-import AnswerSheetsNew from "./pages/dli/AnswerSheetsNew";
 import AuthPage from "./pages/auth-page";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AuthProvider } from "./hooks/use-auth";
@@ -79,11 +76,9 @@ function Router() {
           <ProtectedRoute path="/courses" component={Courses} />
           <ProtectedRoute path="/courses/:id" component={CourseDetails} />
           <ProtectedRoute path="/dli" component={DLI} />
-          <ProtectedRoute path="/dli/book-inventory" component={DLI} />
-          <ProtectedRoute path="/dli/alcpt-form" component={DLI} />
-          <ProtectedRoute path="/dli/answer-sheets" component={DLI} />
           <ProtectedRoute path="/dli/book-order" component={BookOrder} />
           <ProtectedRoute path="/dli/alcpt-order" component={AlcptOrder} />
+          <ProtectedRoute path="/dli/answer-sheets" component={AnswerSheets} />
           <ProtectedRoute path="/test-tracker" component={TestTracker} />
           <ProtectedRoute path="/reports" component={Reports} />
           <ProtectedRoute path="/documents" component={Documents} />
