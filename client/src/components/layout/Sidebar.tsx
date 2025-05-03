@@ -186,7 +186,7 @@ const Sidebar = () => {
           
           {/* Sidebar content */}
           <div className="flex-1 overflow-y-auto py-4 px-3">
-            <ul className="space-y-1">
+            <ul className="space-y-2">
               {/* Dashboard */}
               <li>
                 <Link href="/" className={cn(
@@ -316,8 +316,8 @@ const Sidebar = () => {
               {/* DLI - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleDLI} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-blue-900/40 group transition-all",
-                  (isActive("/dli") || showDLILinks) && "bg-blue-900/60 font-medium text-white",
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
+                  (isActive("/dli") || showDLILinks) && "bg-[#1334A3]/60 font-medium text-white before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-4/5 before:w-1 before:bg-blue-400 before:rounded-r",
                   !isActive("/dli") && !showDLILinks && "text-white"
                 )}>
                   <div className="flex items-center">
@@ -360,8 +360,8 @@ const Sidebar = () => {
               {/* Test Tracker */}
               <li>
                 <Link href="/test-tracker" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
-                  isActive("/test-tracker") && "bg-[#1334A3]/70 font-medium text-white",
+                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
+                  isActive("/test-tracker") && "bg-[#1334A3]/60 font-medium text-white before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-4/5 before:w-1 before:bg-blue-400 before:rounded-r",
                   !isActive("/test-tracker") && "text-white"
                 )}>
                   <ListChecks className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
@@ -372,8 +372,8 @@ const Sidebar = () => {
               {/* Reports */}
               <li>
                 <Link href="/reports" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
-                  isActive("/reports") && "bg-[#1334A3]/70 font-medium text-white",
+                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
+                  isActive("/reports") && "bg-[#1334A3]/60 font-medium text-white before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-4/5 before:w-1 before:bg-blue-400 before:rounded-r",
                   !isActive("/reports") && "text-white"
                 )}>
                   <BarChart2 className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
@@ -381,11 +381,16 @@ const Sidebar = () => {
                 </Link>
               </li>
               
+              {/* Divider */}
+              {!collapsed && <li className="py-1 px-2">
+                <div className="h-px bg-blue-900/30 w-full"></div>
+              </li>}
+
               {/* Activity Log - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleActivity} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
-                  (isActive("/activity") || isActive("/action-log") || isActive("/quarterly-checkins") || showActivityLinks) && "bg-[#1334A3]/70 font-medium text-white",
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
+                  (isActive("/activity") || isActive("/action-log") || isActive("/quarterly-checkins") || showActivityLinks) && "bg-[#1334A3]/60 font-medium text-white before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-4/5 before:w-1 before:bg-blue-400 before:rounded-r",
                   !isActive("/activity") && !isActive("/action-log") && !isActive("/quarterly-checkins") && !showActivityLinks && "text-white"
                 )}>
                   <div className="flex items-center">
@@ -421,8 +426,8 @@ const Sidebar = () => {
               {/* Recruitment */}
               <li>
                 <Link href="/recruitment" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
-                  isActive("/recruitment") && "bg-[#1334A3]/70 font-medium text-white",
+                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
+                  isActive("/recruitment") && "bg-[#1334A3]/60 font-medium text-white before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-4/5 before:w-1 before:bg-blue-400 before:rounded-r",
                   !isActive("/recruitment") && "text-white"
                 )}>
                   <Users className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
@@ -430,11 +435,16 @@ const Sidebar = () => {
                 </Link>
               </li>
               
+              {/* Divider */}
+              {!collapsed && <li className="py-1 px-2">
+                <div className="h-px bg-blue-900/30 w-full"></div>
+              </li>}
+
               {/* Administration - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleAdmin} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
-                  (isActive("/administration") || showAdminLinks) && "bg-[#1334A3]/70 font-medium text-white",
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
+                  (isActive("/administration") || showAdminLinks) && "bg-[#1334A3]/60 font-medium text-white before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-4/5 before:w-1 before:bg-blue-400 before:rounded-r",
                   !isActive("/administration") && !showAdminLinks && "text-white"
                 )}>
                   <div className="flex items-center">
@@ -487,8 +497,8 @@ const Sidebar = () => {
               {/* Manage - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleManage} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
-                  (isActive("/management") || showManageLinks) && "bg-[#1334A3]/70 font-medium text-white",
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
+                  (isActive("/management") || showManageLinks) && "bg-[#1334A3]/60 font-medium text-white before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-4/5 before:w-1 before:bg-blue-400 before:rounded-r",
                   !isActive("/management") && !showManageLinks && "text-white"
                 )}>
                   <div className="flex items-center">
