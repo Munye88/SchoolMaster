@@ -194,12 +194,57 @@ export default function Courses() {
     archived: courses.filter(c => checkIfArchived(c)).length,
   };
 
-  // Get color scheme based on course name
-  const getColorScheme = (courseName: string) => {
+  // Get color scheme based on course name and school
+  const getColorScheme = (courseName: string, schoolId?: number) => {
+    // School-based color schemes
+    if (schoolId) {
+      const schoolCode = getSchoolCode(schoolId);
+      
+      // KFNA: Red theme
+      if (schoolCode === 'KFNA') {
+        return {
+          headerBg: "bg-gradient-to-r from-red-700 to-red-500",
+          lightBg: "bg-red-50",
+          borderColor: "border-red-100",
+          progressColor: "bg-red-600",
+          iconColor: "text-red-500",
+          borderTop: "#E4424D",
+          accent: "red",
+        };
+      }
+      
+      // NFS East: Green theme
+      if (schoolCode === 'NFS_EAST') {
+        return {
+          headerBg: "bg-gradient-to-r from-emerald-700 to-emerald-500",
+          lightBg: "bg-emerald-50",
+          borderColor: "border-emerald-100",
+          progressColor: "bg-emerald-600",
+          iconColor: "text-emerald-500",
+          borderTop: "#22A783",
+          accent: "emerald",
+        };
+      }
+      
+      // NFS West: Purple theme
+      if (schoolCode === 'NFS_WEST') {
+        return {
+          headerBg: "bg-gradient-to-r from-violet-700 to-violet-500",
+          lightBg: "bg-violet-50",
+          borderColor: "border-violet-100",
+          progressColor: "bg-violet-600",
+          iconColor: "text-violet-500",
+          borderTop: "#6247AA",
+          accent: "violet",
+        };
+      }
+    }
+    
+    // Fall back to course-based color schemes if no school or unrecognized school
     const name = courseName.toLowerCase();
     if (name.includes("aviation")) 
       return {
-        headerBg: "bg-gradient-to-r from-blue-600 to-blue-500",
+        headerBg: "bg-gradient-to-r from-blue-700 to-blue-500",
         lightBg: "bg-blue-50",
         borderColor: "border-blue-100",
         progressColor: "bg-blue-600",
@@ -209,7 +254,7 @@ export default function Courses() {
       };
     if (name.includes("refresher")) 
       return {
-        headerBg: "bg-gradient-to-r from-green-600 to-green-500",
+        headerBg: "bg-gradient-to-r from-green-700 to-green-500",
         lightBg: "bg-green-50",
         borderColor: "border-green-100",
         progressColor: "bg-green-600",
@@ -219,7 +264,7 @@ export default function Courses() {
       };
     if (name.includes("cadet")) 
       return {
-        headerBg: "bg-gradient-to-r from-purple-600 to-purple-500",
+        headerBg: "bg-gradient-to-r from-purple-700 to-purple-500",
         lightBg: "bg-purple-50",
         borderColor: "border-purple-100",
         progressColor: "bg-purple-600",
@@ -228,7 +273,7 @@ export default function Courses() {
         accent: "purple",
       };
     return {
-      headerBg: "bg-gradient-to-r from-gray-600 to-gray-500",
+      headerBg: "bg-gradient-to-r from-gray-700 to-gray-500",
       lightBg: "bg-gray-50",
       borderColor: "border-gray-100",
       progressColor: "bg-gray-600",
@@ -258,8 +303,8 @@ export default function Courses() {
       {/* Hero Header */}
       <div className="bg-gradient-to-r from-[#0A2463] to-blue-600 text-white py-8">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl lg:text-4xl font-bold mb-2">Course Programs</h1>
-          <p className="text-blue-100 text-lg">
+          <h1 className="text-3xl lg:text-4xl font-bold mb-2 text-white">Course Programs</h1>
+          <p className="text-white text-lg">
             Explore our comprehensive ELT programs across all schools
           </p>
           
@@ -449,7 +494,7 @@ export default function Courses() {
               </div>
             ) : (
               filteredCourses.map((course) => {
-                const colorScheme = getColorScheme(course.name);
+                const colorScheme = getColorScheme(course.name, course.schoolId);
                 const progress = calculateCourseProgress(course);
                 const status = getCourseStatus(course);
                 const isCoursePastArchiveDate = checkIfArchived(course);
@@ -560,7 +605,7 @@ export default function Courses() {
                 </TableHeader>
                 <TableBody>
                   {filteredCourses.map((course) => {
-                    const colorScheme = getColorScheme(course.name);
+                    const colorScheme = getColorScheme(course.name, course.schoolId);
                     const progress = calculateCourseProgress(course);
                     const status = getCourseStatus(course);
                     const isCoursePastArchiveDate = checkIfArchived(course);
