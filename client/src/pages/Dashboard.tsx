@@ -435,7 +435,7 @@ const Dashboard = () => {
                         🇺🇸
                       </div>
                     </div>
-                    <div className="mt-4 mb-4">
+                    <div className="mt-3 mb-3">
                       <span className="text-5xl font-bold text-blue-950">{dashboardStats.nationalityCounts.american}</span>
                       <span className="text-xl font-medium text-blue-900 ml-2">Instructors</span>
                     </div>
@@ -454,7 +454,7 @@ const Dashboard = () => {
                   </div>
                   
                   {/* British */}
-                  <div className="rounded-lg shadow-sm bg-[#F0F9F5] p-5">
+                  <div className="rounded-lg shadow-sm bg-[#F0F9F5] p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center">
                         <div className="w-3 h-3 rounded-full bg-green-600 mr-2"></div>
@@ -464,7 +464,7 @@ const Dashboard = () => {
                         🇬🇧
                       </div>
                     </div>
-                    <div className="mt-4 mb-4">
+                    <div className="mt-3 mb-3">
                       <span className="text-5xl font-bold text-green-900">{dashboardStats.nationalityCounts.british}</span>
                       <span className="text-xl font-medium text-green-800 ml-2">Instructors</span>
                     </div>
@@ -483,7 +483,7 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Canadian */}
-                  <div className="rounded-lg shadow-sm bg-[#F5F2FA] p-5">
+                  <div className="rounded-lg shadow-sm bg-[#F5F2FA] p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center">
                         <div className="w-3 h-3 rounded-full bg-purple-600 mr-2"></div>
@@ -493,7 +493,7 @@ const Dashboard = () => {
                         🇨🇦
                       </div>
                     </div>
-                    <div className="mt-4 mb-4">
+                    <div className="mt-3 mb-3">
                       <span className="text-5xl font-bold text-purple-900">{dashboardStats.nationalityCounts.canadian}</span>
                       <span className="text-xl font-medium text-purple-800 ml-2">Instructors</span>
                     </div>
@@ -539,7 +539,7 @@ const Dashboard = () => {
                 {/* School Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* KFNA */}
-                  <div className="rounded-lg shadow-sm bg-[#FDE7E9] p-5">
+                  <div className="rounded-lg shadow-sm bg-[#FDE7E9] p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center">
                         <div className="w-3 h-3 rounded-full bg-[#E4424D] mr-2"></div>
@@ -549,7 +549,7 @@ const Dashboard = () => {
                         <Building className="w-7 h-7 text-[#E4424D]" />
                       </div>
                     </div>
-                    <div className="mt-4 mb-4">
+                    <div className="mt-3 mb-3">
                       <span className="text-5xl font-bold text-[#8F1D25]">{statistics.studentsBySchool.knfa}</span>
                       <span className="text-xl font-medium text-[#8F1D25] ml-2">Cadets</span>
                     </div>
@@ -568,7 +568,7 @@ const Dashboard = () => {
                   </div>
                   
                   {/* NFS East */}
-                  <div className="rounded-lg shadow-sm bg-[#E9F7F2] p-5">
+                  <div className="rounded-lg shadow-sm bg-[#E9F7F2] p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center">
                         <div className="w-3 h-3 rounded-full bg-[#22A783] mr-2"></div>
@@ -607,7 +607,7 @@ const Dashboard = () => {
                   </div>
                   
                   {/* NFS West */}
-                  <div className="rounded-lg shadow-sm bg-[#F0EDF7] p-5">
+                  <div className="rounded-lg shadow-sm bg-[#F0EDF7] p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center">
                         <div className="w-3 h-3 rounded-full bg-[#6247AA] mr-2"></div>
