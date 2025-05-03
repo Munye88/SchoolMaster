@@ -536,29 +536,26 @@ const Dashboard = () => {
                   </div>
                 </div>
                 
-                {/* School Cards */}
+                {/* School Cards - Matching Staff Nationality styling */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* KFNA */}
-                  <div className="rounded-lg shadow-sm bg-[#FDE7E9] p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-[#E4424D] mr-1"></div>
-                        <span className="text-base font-medium text-[#8F1D25]">KFNA</span>
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-[#FCCCD0] flex items-center justify-center text-center text-xl">
-                        <Building className="w-5 h-5 text-[#E4424D]" />
-                      </div>
+                  <div className="rounded-lg bg-rose-50 p-5">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-[#E4424D]"></div>
+                      <span className="text-sm font-medium text-[#8F1D25]">KFNA</span>
+                      <div className="flex-grow"></div>
+                      <Building className="text-[#E4424D] h-6 w-6" />
                     </div>
-                    <div className="mt-2 mb-2">
-                      <span className="text-3xl font-bold text-[#8F1D25]">{statistics.studentsBySchool.knfa}</span>
-                      <span className="text-base font-medium text-[#8F1D25] ml-2">Cadets</span>
+                    <div className="mt-2">
+                      <span className="text-5xl font-bold text-[#8F1D25]">{statistics.studentsBySchool.knfa}</span>
+                      <span className="text-sm text-[#8F1D25] ml-2">Cadets</span>
                     </div>
-                    <div>
-                      <div className="flex items-center justify-between text-sm text-[#8F1D25] mb-1">
+                    <div className="mt-2">
+                      <div className="flex justify-between text-xs text-[#8F1D25] mb-1">
                         <span>Distribution</span>
                         <span>100%</span>
                       </div>
-                      <div className="w-full bg-[#FCCCD0] rounded-full h-2.5 overflow-hidden">
+                      <div className="w-full bg-[#FCCCD0] rounded-full h-2">
                         <div 
                           className="h-full bg-[#E4424D] rounded-full" 
                           style={{ width: '100%' }}
@@ -568,65 +565,49 @@ const Dashboard = () => {
                   </div>
                   
                   {/* NFS East */}
-                  <div className="rounded-lg shadow-sm bg-[#E9F7F2] p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-[#22A783] mr-1"></div>
-                        <span className="text-base font-medium text-[#0E6E55]">NFS East</span>
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-[#C5EAE0] flex items-center justify-center text-center text-xl">
-                        <Building className="w-5 h-5 text-[#22A783]" />
-                      </div>
+                  <div className="rounded-lg bg-green-50 p-5">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-[#22A783]"></div>
+                      <span className="text-sm font-medium text-[#0E6E55]">NFS East</span>
+                      <div className="flex-grow"></div>
+                      <Building className="text-[#22A783] h-6 w-6" />
                     </div>
-                    <div className="mt-2 mb-2">
-                      <span className="text-3xl font-bold text-[#0E6E55]">{statistics.studentsBySchool.nfsEast}</span>
-                      <span className="text-base font-medium text-[#0E6E55] ml-2">Students</span>
+                    <div className="mt-2">
+                      <span className="text-5xl font-bold text-[#0E6E55]">{statistics.studentsBySchool.nfsEast}</span>
+                      <span className="text-sm text-[#0E6E55] ml-2">Students</span>
                     </div>
-                    <div>
-                      <div className="flex items-center justify-between text-sm text-[#0E6E55] mb-1">
-                        <span>Aviation</span>
-                        <span>63%</span>
+                    <div className="mt-2">
+                      <div className="flex justify-between text-xs text-[#0E6E55] mb-1">
+                        <span>Distribution</span>
+                        <span>100%</span>
                       </div>
-                      <div className="w-full bg-[#C5EAE0] rounded-full h-2.5 overflow-hidden mb-2">
+                      <div className="w-full bg-[#C5EAE0] rounded-full h-2">
                         <div 
                           className="h-full bg-[#22A783] rounded-full" 
-                          style={{ width: '63%' }}
-                        ></div>
-                      </div>
-                      <div className="flex items-center justify-between text-sm text-[#0E6E55] mb-1">
-                        <span>Refresher</span>
-                        <span>37%</span>
-                      </div>
-                      <div className="w-full bg-[#C5EAE0] rounded-full h-2.5 overflow-hidden">
-                        <div 
-                          className="h-full bg-[#22A783] rounded-full" 
-                          style={{ width: '37%' }}
+                          style={{ width: '100%' }}
                         ></div>
                       </div>
                     </div>
                   </div>
                   
                   {/* NFS West */}
-                  <div className="rounded-lg shadow-sm bg-[#F0EDF7] p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-[#6247AA] mr-1"></div>
-                        <span className="text-base font-medium text-[#402F70]">NFS West</span>
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-[#DCD3F0] flex items-center justify-center text-center text-xl">
-                        <Building className="w-5 h-5 text-[#6247AA]" />
-                      </div>
+                  <div className="rounded-lg bg-purple-50 p-5">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-[#6247AA]"></div>
+                      <span className="text-sm font-medium text-[#402F70]">NFS West</span>
+                      <div className="flex-grow"></div>
+                      <Building className="text-[#6247AA] h-6 w-6" />
                     </div>
-                    <div className="mt-2 mb-2">
-                      <span className="text-3xl font-bold text-[#402F70]">{statistics.studentsBySchool.nfsWest}</span>
-                      <span className="text-base font-medium text-[#402F70] ml-2">Students</span>
+                    <div className="mt-2">
+                      <span className="text-5xl font-bold text-[#402F70]">{statistics.studentsBySchool.nfsWest}</span>
+                      <span className="text-sm text-[#402F70] ml-2">Students</span>
                     </div>
-                    <div>
-                      <div className="flex items-center justify-between text-sm text-[#402F70] mb-1">
+                    <div className="mt-2">
+                      <div className="flex justify-between text-xs text-[#402F70] mb-1">
                         <span>Distribution</span>
                         <span>100%</span>
                       </div>
-                      <div className="w-full bg-[#DCD3F0] rounded-full h-2.5 overflow-hidden">
+                      <div className="w-full bg-[#DCD3F0] rounded-full h-2">
                         <div 
                           className="h-full bg-[#6247AA] rounded-full" 
                           style={{ width: '100%' }}
