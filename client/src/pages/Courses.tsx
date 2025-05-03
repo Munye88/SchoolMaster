@@ -301,10 +301,10 @@ export default function Courses() {
   return (
     <div className="bg-gray-50 min-h-[calc(100vh-4rem)]">
       {/* Hero Header */}
-      <div className="bg-gradient-to-r from-[#0A2463] to-blue-600 text-white py-8">
+      <div className="bg-gradient-to-r from-[#0A2463] to-blue-600 py-8">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl lg:text-4xl font-bold mb-2 text-white">Course Programs</h1>
-          <p className="text-white text-lg">
+          <h1 className="text-3xl lg:text-4xl font-bold mb-2 text-white" style={{color: 'white'}}>Course Programs</h1>
+          <p className="text-lg text-white" style={{color: 'white'}}>
             Explore our comprehensive ELT programs across all schools
           </p>
           
@@ -314,7 +314,7 @@ export default function Courses() {
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-blue-200">Total Courses</p>
+                    <p className="text-sm font-medium text-white">Total Courses</p>
                     <p className="text-3xl font-bold text-white">{stats.total}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
@@ -328,7 +328,7 @@ export default function Courses() {
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-blue-200">Active Courses</p>
+                    <p className="text-sm font-medium text-white">Active Courses</p>
                     <p className="text-3xl font-bold text-white">{stats.inProgress}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
@@ -342,7 +342,7 @@ export default function Courses() {
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-blue-200">Total Students</p>
+                    <p className="text-sm font-medium text-white">Total Students</p>
                     <p className="text-3xl font-bold text-white">{stats.totalStudents}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
@@ -356,7 +356,7 @@ export default function Courses() {
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-blue-200">Completed Courses</p>
+                    <p className="text-sm font-medium text-white">Completed Courses</p>
                     <p className="text-3xl font-bold text-white">{stats.completed}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
@@ -370,7 +370,7 @@ export default function Courses() {
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-blue-200">Archived Courses</p>
+                    <p className="text-sm font-medium text-white">Archived Courses</p>
                     <p className="text-3xl font-bold text-white">{stats.archived}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
