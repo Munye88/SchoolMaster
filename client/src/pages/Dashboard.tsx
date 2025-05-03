@@ -149,7 +149,7 @@ const Dashboard = () => {
     console.log("NFS East Courses:", courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id && c.status !== 'Completed').length);
     console.log("NFS West Courses:", courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id && c.status !== 'Completed').length);
     
-    console.log("KFNA Students:", statistics.studentsBySchool.kfna);
+    console.log("KFNA Students:", statistics.studentsBySchool.knfa);
     console.log("NFS East Students:", statistics.studentsBySchool.nfsEast);
     console.log("NFS West Students:", statistics.studentsBySchool.nfsWest);
     
@@ -550,7 +550,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <div className="mt-4 mb-4">
-                      <span className="text-5xl font-bold text-[#8F1D25]">{statistics.studentsBySchool.kfna}</span>
+                      <span className="text-5xl font-bold text-[#8F1D25]">{statistics.studentsBySchool.knfa}</span>
                       <span className="text-xl font-medium text-[#8F1D25] ml-2">Cadets</span>
                     </div>
                     <div>
