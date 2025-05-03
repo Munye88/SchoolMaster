@@ -282,121 +282,83 @@ const Dashboard = () => {
                 
                 {/* Course Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {courses.filter(c => c.status === "In Progress" || c.status === "Active").slice(0, 3).map(course => {
-                    const school = schools.find((s: any) => s.id === course.schoolId);
-                    let fromColor = 'from-blue-50';
-                    let toColor = 'to-blue-100';
-                    let borderColor = 'border-blue-200';
-                    let bgColor = 'bg-blue-600/10';
-                    let textColor = 'text-blue-900';
-                    let valueColor = 'text-blue-700';
-                    let labelColor = 'text-blue-600';
-                    let progressBgColor = 'bg-blue-200';
-                    let progressFillColor = 'bg-blue-600';
-                    let progressTextColor = 'text-blue-700';
-                    
-                    // First check course type and student count for the three Refresher courses
-                    if (course.name === 'Refresher' && course.studentCount === 93) {
-                      // First Refresher course - Light purple (lavender) from screenshot
-                      fromColor = 'from-[#F2EFFA]';
-                      toColor = 'to-[#F2EFFA]';
-                      borderColor = 'border-[#F2EFFA]';
-                      bgColor = 'bg-[#8E7CB0]';
-                      textColor = 'text-purple-900';
-                      valueColor = 'text-[#342355]';
-                      labelColor = 'text-purple-700';
-                      progressBgColor = 'bg-purple-200';
-                      progressFillColor = 'bg-[#8E7CB0]';
-                      progressTextColor = 'text-purple-700';
-                    }
-                    else if (course.name === 'Refresher' && course.studentCount === 8) {
-                      // Second Refresher course - Light orange/peach from screenshot
-                      fromColor = 'from-[#FDF4E7]';
-                      toColor = 'to-[#FDF4E7]';
-                      borderColor = 'border-[#FDF4E7]';
-                      bgColor = 'bg-[#D9843A]';
-                      textColor = 'text-[#733F10]';
-                      valueColor = 'text-[#733F10]';
-                      labelColor = 'text-[#733F10]';
-                      progressBgColor = 'bg-orange-200';
-                      progressFillColor = 'bg-[#D9843A]';
-                      progressTextColor = 'text-[#733F10]';
-                    }
-                    else if (course.name === 'Refresher' && course.studentCount === 16) {
-                      // Third Refresher course - Light mint green from screenshot
-                      fromColor = 'from-[#F0F9F5]';
-                      toColor = 'to-[#F0F9F5]';
-                      borderColor = 'border-[#F0F9F5]';
-                      bgColor = 'bg-[#4D9E7A]';
-                      textColor = 'text-[#194434]';
-                      valueColor = 'text-[#194434]';
-                      labelColor = 'text-[#194434]';
-                      progressBgColor = 'bg-green-200';
-                      progressFillColor = 'bg-[#4D9E7A]';
-                      progressTextColor = 'text-[#194434]';
-                    }
-                    // Then check school if not one of the specific Refresher courses
-                    else if (school?.name.includes('East')) {
-                      fromColor = 'from-emerald-50';
-                      toColor = 'to-emerald-100';
-                      borderColor = 'border-emerald-200';
-                      bgColor = 'bg-emerald-600/10';
-                      textColor = 'text-emerald-900';
-                      valueColor = 'text-emerald-700';
-                      labelColor = 'text-emerald-600';
-                      progressBgColor = 'bg-emerald-200';
-                      progressFillColor = 'bg-emerald-600';
-                      progressTextColor = 'text-emerald-700';
-                    } else if (school?.name.includes('West')) {
-                      fromColor = 'from-amber-50';
-                      toColor = 'to-amber-100';
-                      borderColor = 'border-amber-200';
-                      bgColor = 'bg-amber-600/10';
-                      textColor = 'text-amber-900';
-                      valueColor = 'text-amber-700';
-                      labelColor = 'text-amber-600';
-                      progressBgColor = 'bg-amber-200';
-                      progressFillColor = 'bg-amber-600';
-                      progressTextColor = 'text-amber-700';
-                    }
-                    
-                    // Calculate progress percentage - should be either 53% or 85% to match screenshot
-                    const progressPercent = course.studentCount === 16 ? 85 : 53;
-                    
-                    return (
-                      <div key={course.id} className={`rounded-lg shadow-sm group hover:shadow-lg transition-all ${fromColor}`}>
-                        <div className="p-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className={`w-6 h-6 rounded-full ${bgColor} flex items-center justify-center`}>
-                              <Check className={`w-3 h-3 text-white`} />
-                            </div>
-                            <span className={`text-base font-semibold ${textColor}`}>{course.name}</span>
-                          </div>
-                          
-                          <div className="flex items-baseline gap-2 mt-2 mb-2">
-                            <span className={`text-3xl font-bold ${valueColor}`}>{course.studentCount}</span>
-                            <span className={`text-base font-medium ${textColor}`}>Students</span>
-                          </div>
-                          
-                          <div>
-                            <div className={`flex items-center justify-between ${textColor} mb-1`}>
-                              <span>Progress</span>
-                              <span>{progressPercent}%</span>
-                            </div>
-                            <div className={`w-full ${progressBgColor} rounded-full h-2.5 overflow-hidden`}>
-                              <div 
-                                className={`h-full ${progressFillColor} rounded-full`} 
-                                style={{ width: `${progressPercent}%` }}
-                              ></div>
-                            </div>
-                            <div className={`mt-3 text-sm ${textColor}`}>
-                              {school?.name || "NFS West"} | Started: Jan 12, 2025
-                            </div>
-                          </div>
-                        </div>
+                  {/* Refresher Course 1 - Purple styling */}
+                  <div className="rounded-lg bg-purple-50 p-5">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-[#8E7CB0]"></div>
+                      <span className="text-sm font-medium text-[#342355]">Refresher</span>
+                      <div className="flex-grow"></div>
+                      <BookOpen className="text-[#8E7CB0] h-6 w-6" />
+                    </div>
+                    <div className="mt-2">
+                      <span className="text-5xl font-bold text-[#342355]">93</span>
+                      <span className="text-sm text-[#342355] ml-2">Students</span>
+                    </div>
+                    <div className="mt-2">
+                      <div className="flex justify-between text-xs text-[#342355] mb-1">
+                        <span>Progress</span>
+                        <span>53%</span>
                       </div>
-                    );
-                  })}
+                      <div className="w-full bg-purple-200 rounded-full h-2">
+                        <div 
+                          className="h-full bg-[#8E7CB0] rounded-full" 
+                          style={{ width: '53%' }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Refresher Course 2 - Orange styling */}
+                  <div className="rounded-lg bg-orange-50 p-5">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-[#D9843A]"></div>
+                      <span className="text-sm font-medium text-[#733F10]">Refresher</span>
+                      <div className="flex-grow"></div>
+                      <BookOpen className="text-[#D9843A] h-6 w-6" />
+                    </div>
+                    <div className="mt-2">
+                      <span className="text-5xl font-bold text-[#733F10]">8</span>
+                      <span className="text-sm text-[#733F10] ml-2">Students</span>
+                    </div>
+                    <div className="mt-2">
+                      <div className="flex justify-between text-xs text-[#733F10] mb-1">
+                        <span>Progress</span>
+                        <span>53%</span>
+                      </div>
+                      <div className="w-full bg-orange-200 rounded-full h-2">
+                        <div 
+                          className="h-full bg-[#D9843A] rounded-full" 
+                          style={{ width: '53%' }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Refresher Course 3 - Green styling */}
+                  <div className="rounded-lg bg-green-50 p-5">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-[#4D9E7A]"></div>
+                      <span className="text-sm font-medium text-[#194434]">Refresher</span>
+                      <div className="flex-grow"></div>
+                      <BookOpen className="text-[#4D9E7A] h-6 w-6" />
+                    </div>
+                    <div className="mt-2">
+                      <span className="text-5xl font-bold text-[#194434]">16</span>
+                      <span className="text-sm text-[#194434] ml-2">Students</span>
+                    </div>
+                    <div className="mt-2">
+                      <div className="flex justify-between text-xs text-[#194434] mb-1">
+                        <span>Progress</span>
+                        <span>85%</span>
+                      </div>
+                      <div className="w-full bg-green-200 rounded-full h-2">
+                        <div 
+                          className="h-full bg-[#4D9E7A] rounded-full" 
+                          style={{ width: '85%' }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
