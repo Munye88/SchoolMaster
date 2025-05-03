@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Set a smaller height for the notification panel to match other dashboard components
-const NOTIFICATION_PANEL_HEIGHT = "h-[160px]";
+const NOTIFICATION_PANEL_HEIGHT = "h-[140px]";
 
 // New animation classes for notifications
 const NOTIFICATION_ANIMATION = "animate-in fade-in slide-in-from-right-3 duration-300";
@@ -181,7 +181,7 @@ const NotificationCard: React.FC<{
       {getPriorityLabel()}
       
       {/* Header section with color based on notification type */}
-      <div className={`bg-gradient-to-r ${colorScheme.primary} p-3 text-white relative`}>
+      <div className={`bg-gradient-to-r ${colorScheme.primary} p-2 text-white relative`}>
         <div className="absolute inset-0 overflow-hidden opacity-10">
           <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/30"></div>
           <div className="absolute right-6 bottom-0 w-8 h-8 rounded-full bg-white/20"></div>
@@ -204,7 +204,7 @@ const NotificationCard: React.FC<{
       </div>
       
       {/* Content area */}
-      <div className={`p-3 bg-gradient-to-b ${colorScheme.bgGradient}`}>
+      <div className={`p-2 bg-gradient-to-b ${colorScheme.bgGradient}`}>
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-700 font-medium">{alert.reason}</p>
           

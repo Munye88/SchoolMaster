@@ -65,7 +65,7 @@ const UpcomingEvents = ({ limit = 3 }: UpcomingEventsProps) => {
           <CardTitle className="text-[#0A2463] text-lg">Upcoming Events</CardTitle>
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-[300px] w-full" />
+          <Skeleton className="h-[200px] w-full" />
         </CardContent>
       </Card>
     );
@@ -109,23 +109,23 @@ const UpcomingEvents = ({ limit = 3 }: UpcomingEventsProps) => {
               {/* Open Calendar Button - Navy Blue */}
               <div className="mt-0">
                 <Link href="/events">
-                  <Button className="bg-[#0B1D51] hover:bg-[#1334A3] text-white w-full py-6 rounded-none text-lg font-medium">
-                    Open Full Calendar
+                  <Button className="bg-[#0B1D51] hover:bg-[#1334A3] text-white w-full py-2 rounded-none text-sm font-medium">
+                    Open Calendar
                   </Button>
                 </Link>
               </div>
             </>
           ) : (
             <>
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-4 text-gray-500">
                 <p>No upcoming events scheduled.</p>
-                <p className="text-sm mt-2">Create new events in the calendar.</p>
+                <p className="text-xs mt-1">Create new events in the calendar.</p>
               </div>
               
               <div className="mt-0">
                 <Link href="/events">
-                  <Button className="bg-[#0B1D51] hover:bg-[#1334A3] text-white w-full py-6 rounded-none text-lg font-medium">
-                    Open Full Calendar
+                  <Button className="bg-[#0B1D51] hover:bg-[#1334A3] text-white w-full py-2 rounded-none text-sm font-medium">
+                    Open Calendar
                   </Button>
                 </Link>
               </div>
