@@ -627,17 +627,17 @@ const Dashboard = () => {
           {/* To-Do List */}
           <Card className="shadow-sm">
             <CardContent className="p-0">
-              <div className="p-3 pb-2">
+              <div className="p-3 pb-1">
                 <h2 className="text-lg font-semibold text-gray-800">My Tasks</h2>
               </div>
               
-              <div className="px-4 pb-4">
+              <div className="px-3 pb-3">
                 <div className="flex mb-4 relative border rounded-md">
                   <Input 
                     value={newTask} 
                     onChange={(e) => setNewTask(e.target.value)}
                     placeholder="Add a new task..."
-                    className="border-0 flex-1 py-3 rounded-md text-sm"
+                    className="border-0 flex-1 py-2 rounded-md text-xs"
                     onKeyDown={(e) => e.key === 'Enter' && addTask()}
                   />
                   <Button 
@@ -646,7 +646,7 @@ const Dashboard = () => {
                     variant="ghost"
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"
                   >
-                    <Plus className="h-5 w-5" />
+                    <Plus className="h-4 w-4" />
                   </Button>
                 </div>
                 
