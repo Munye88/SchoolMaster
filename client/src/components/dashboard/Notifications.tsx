@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Set a smaller height for the notification panel to match other dashboard components
-const NOTIFICATION_PANEL_HEIGHT = "h-[200px]";
+const NOTIFICATION_PANEL_HEIGHT = "h-[160px]";
 
 // New animation classes for notifications
 const NOTIFICATION_ANIMATION = "animate-in fade-in slide-in-from-right-3 duration-300";
@@ -507,11 +507,11 @@ const Notifications: React.FC<NotificationsProps> = ({
   return (
     <div className="bg-white rounded-xl shadow-sm border-[1px] border-gray-100">
       {/* Header that matches the static notification style */}
-      <div className="p-5">
-        <h2 className="text-[#0B1D51] text-3xl font-bold mb-6">Notifications</h2>
+      <div className="p-4">
+        <h2 className="text-[#0B1D51] text-2xl font-bold mb-4">Notifications</h2>
       
         {/* Active Alerts Header */}
-        <div className="flex justify-between items-center bg-[#F8FAFC] p-4 rounded-xl mb-4">
+        <div className="flex justify-between items-center bg-[#F8FAFC] p-3 rounded-xl mb-3">
           <div className="flex items-center">
             <span className="text-[#0B1D51] text-2xl font-bold">{notificationCount}</span>
             <span className="text-[#0B1D51] text-xl font-bold ml-3">ACTIVE ALERTS</span>
@@ -605,20 +605,20 @@ const Notifications: React.FC<NotificationsProps> = ({
       </div>}
       
       {/* Notification list - matching the static notification style */}
-      <div className="px-6">
+      <div className="px-4">
         <div className="space-y-4">
           {filteredNonDismissedAlerts.length > 0 ? (
             filteredNonDismissedAlerts.map((alert, index) => (
-              <div key={`${alert.type}-${alert.id}-${index}`} className="bg-[#F8FAFC] p-3 rounded-xl mb-3">
+              <div key={`${alert.type}-${alert.id}-${index}`} className="bg-[#F8FAFC] p-2 rounded-xl mb-2">
                 <div className="flex items-center gap-3 mb-1">
                   {alert.priority === 'high' && (
                     <div className="bg-amber-400 rounded-full w-6 h-6 flex items-center justify-center">
                       <AlertCircle className="h-4 w-4 text-white" />
                     </div>
                   )}
-                  <span className="text-[#0B1D51] text-xl font-semibold">{alert.name}</span>
+                  <span className="text-[#0B1D51] text-lg font-semibold">{alert.name}</span>
                 </div>
-                <p className="text-[#0B1D51] text-xl mt-2">{alert.reason}</p>
+                <p className="text-[#0B1D51] text-base mt-1">{alert.reason}</p>
                 <div className="flex justify-between mt-2">
                   <div className="bg-[#E3E9F7] px-4 py-1 rounded-full text-[#0B1D51] font-medium">
                     {alert.timestamp ? (isToday(new Date(alert.timestamp)) ? 'Today' : format(new Date(alert.timestamp), 'MMM dd')) : 'Today'}
