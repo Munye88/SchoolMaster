@@ -650,7 +650,7 @@ const Dashboard = () => {
                   </Button>
                 </div>
                 
-                <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                <div className="space-y-2 max-h-[200px] overflow-y-auto">
                   {tasks.map(task => {
                     // Determine the task color scheme and appearance
                     let checkClass = '';
@@ -679,13 +679,13 @@ const Dashboard = () => {
                     return (
                       <div 
                         key={task.id} 
-                        className={`flex items-center justify-between py-3 px-3 rounded-md border ${borderClass}`}
+                        className={`flex items-center justify-between py-2 px-2 rounded-md border ${borderClass}`}
                       >
                         <div className="flex items-center gap-2">
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center ${checkClass}`}>
-                            <Check className="h-4 w-4" />
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center ${checkClass}`}>
+                            <Check className="h-3 w-3" />
                           </div>
-                          <span className="text-gray-800 text-base font-medium">
+                          <span className="text-gray-800 text-sm font-normal">
                             {task.text}
                           </span>
                         </div>
@@ -693,7 +693,7 @@ const Dashboard = () => {
                           onClick={() => deleteTask(task.id)}
                           className="text-gray-400 hover:text-gray-600"
                         >
-                          <Trash2 className="h-5 w-5" />
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     );
