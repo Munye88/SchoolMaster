@@ -410,11 +410,11 @@ const Dashboard = () => {
             <CardContent className="p-4 pb-6">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Blue background from screenshot */}
-                <div className="bg-[#3046C5] rounded-lg shadow-md p-4 text-white">
+                <div className="bg-[#3046C5] rounded-lg shadow-md p-3 text-white">
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="text-xl font-semibold uppercase tracking-wider">TOTAL INSTRUCTORS</h3>
-                      <p className="text-5xl font-bold mt-1">{statistics.activeInstructors}</p>
+                      <p className="text-5xl font-bold mt-0">{statistics.activeInstructors}</p>
                     </div>
                     <div className="p-2 bg-[#4D5FC9] text-white rounded-lg">
                       <User className="w-9 h-9 text-white" />
@@ -524,11 +524,11 @@ const Dashboard = () => {
             <CardContent className="p-4 pb-6">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total */}
-                <div className="bg-[#951B5C] rounded-lg shadow-md p-4 text-white">
+                <div className="bg-[#951B5C] rounded-lg shadow-md p-3 text-white">
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="text-xl font-semibold uppercase tracking-wider">TOTAL STUDENTS</h3>
-                      <p className="text-5xl font-bold mt-1">{statistics.totalStudents}</p>
+                      <p className="text-5xl font-bold mt-0">{statistics.totalStudents}</p>
                     </div>
                     <div className="p-2 bg-[#A93F78] text-white rounded-lg">
                       <GraduationCap className="w-9 h-9 text-white" />
