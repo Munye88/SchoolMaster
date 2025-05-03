@@ -3,6 +3,7 @@ import { useSchool } from "@/hooks/useSchool";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { Link } from "wouter";
 
 // Data for book inventory by school
 const schoolInventory = [
