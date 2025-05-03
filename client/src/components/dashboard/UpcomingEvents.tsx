@@ -93,14 +93,14 @@ const UpcomingEvents = ({ limit = 3 }: UpcomingEventsProps) => {
                 
                 // Always use 'Student Day' styling for consistency
                 return (
-                  <div className="flex p-5" key={event.id}>
-                    <div className="flex-shrink-0 w-24 h-28 rounded-md bg-purple-600 flex flex-col items-center justify-center text-center text-white">
-                      <p className="text-lg font-medium uppercase">{dateInfo.month}</p>
-                      <p className="text-5xl font-bold">{dateInfo.day}</p>
+                  <div className="flex p-3" key={event.id}>
+                    <div className="flex-shrink-0 w-16 h-20 rounded-md bg-purple-600 flex flex-col items-center justify-center text-center text-white">
+                      <p className="text-sm font-medium uppercase">{dateInfo.month}</p>
+                      <p className="text-3xl font-bold">{dateInfo.day}</p>
                     </div>
-                    <div className="ml-6 flex-1 flex flex-col justify-center">
-                      <p className="text-2xl font-semibold text-gray-800">{event.title}</p>
-                      <p className="text-gray-600 mt-1 text-lg">{timeRange}</p>
+                    <div className="ml-4 flex-1 flex flex-col justify-center">
+                      <p className="text-base font-semibold text-gray-800">{event.title}</p>
+                      <p className="text-gray-600 mt-1 text-sm">{timeRange}</p>
                     </div>
                   </div>
                 );
