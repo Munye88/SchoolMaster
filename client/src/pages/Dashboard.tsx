@@ -265,7 +265,7 @@ const Dashboard = () => {
                 <Link href="/courses" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
               </div>
             </CardHeader>
-            <CardContent className="p-4 pb-6">
+            <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Green background from screenshot */}
                 <div className="bg-[#399165] rounded-lg shadow-md p-3 text-white">
@@ -373,7 +373,7 @@ const Dashboard = () => {
                             <span className={`text-xl font-semibold ${textColor}`}>{course.name}</span>
                           </div>
                           
-                          <div className="flex items-baseline gap-2 mt-3 mb-4">
+                          <div className="flex items-baseline gap-2 mt-2 mb-3">
                             <span className={`text-5xl font-bold ${valueColor}`}>{course.studentCount}</span>
                             <span className={`text-lg font-medium ${textColor}`}>Students</span>
                           </div>
@@ -407,7 +407,7 @@ const Dashboard = () => {
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-lg text-[#0A2463]">Staff Nationality</CardTitle>
             </CardHeader>
-            <CardContent className="p-4 pb-6">
+            <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Blue background from screenshot */}
                 <div className="bg-[#3046C5] rounded-lg shadow-md p-3 text-white">
@@ -521,7 +521,7 @@ const Dashboard = () => {
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-lg text-[#0A2463]">Distribution by School</CardTitle>
             </CardHeader>
-            <CardContent className="p-4 pb-6">
+            <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total */}
                 <div className="bg-[#951B5C] rounded-lg shadow-md p-3 text-white">
@@ -578,7 +578,7 @@ const Dashboard = () => {
                         <Building className="w-7 h-7 text-[#22A783]" />
                       </div>
                     </div>
-                    <div className="mt-4 mb-4">
+                    <div className="mt-3 mb-3">
                       <span className="text-5xl font-bold text-[#0E6E55]">{statistics.studentsBySchool.nfsEast}</span>
                       <span className="text-xl font-medium text-[#0E6E55] ml-2">Students</span>
                     </div>
@@ -617,7 +617,7 @@ const Dashboard = () => {
                         <Building className="w-7 h-7 text-[#6247AA]" />
                       </div>
                     </div>
-                    <div className="mt-4 mb-4">
+                    <div className="mt-3 mb-3">
                       <span className="text-5xl font-bold text-[#402F70]">{statistics.studentsBySchool.nfsWest}</span>
                       <span className="text-xl font-medium text-[#402F70] ml-2">Students</span>
                     </div>
