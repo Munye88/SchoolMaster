@@ -175,7 +175,7 @@ const Sidebar = () => {
           showMobileMenu ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        <div className="h-full bg-[#0B1D51] text-white flex flex-col shadow-xl">
+        <div className="h-full bg-gradient-to-b from-[#0B1D51] to-[#102469] text-white flex flex-col shadow-xl">
           {/* Toggle collapse button */}
           <button 
             onClick={() => setCollapsed(!collapsed)} 
@@ -190,8 +190,8 @@ const Sidebar = () => {
               {/* Dashboard */}
               <li>
                 <Link href="/" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
-                  isActive("/") && "bg-[#1334A3]/70 font-medium text-white",
+                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
+                  isActive("/") && "bg-[#1334A3]/60 font-medium text-white before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-4/5 before:w-1 before:bg-blue-400 before:rounded-r",
                   !isActive("/") && "text-white"
                 )}>
                   <Home className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
@@ -202,8 +202,8 @@ const Sidebar = () => {
               {/* Schools - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleSchool} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
-                  (isActive("/schools") || showSchoolLinks) && "bg-[#1334A3]/70 font-medium text-white",
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
+                  (isActive("/schools") || showSchoolLinks) && "bg-[#1334A3]/60 font-medium text-white before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-4/5 before:w-1 before:bg-blue-400 before:rounded-r",
                   !isActive("/schools") && !showSchoolLinks && "text-white"
                 )}>
                   <div className="flex items-center">
@@ -304,8 +304,8 @@ const Sidebar = () => {
               {/* Courses */}
               <li>
                 <Link href="/courses" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
-                  isActive("/courses") && "bg-[#1334A3]/70 font-medium text-white",
+                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
+                  isActive("/courses") && "bg-[#1334A3]/60 font-medium text-white before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-4/5 before:w-1 before:bg-blue-400 before:rounded-r",
                   !isActive("/courses") && "text-white"
                 )}>
                   <BookOpen className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
