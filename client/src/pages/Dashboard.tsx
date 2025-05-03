@@ -365,17 +365,17 @@ const Dashboard = () => {
                     
                     return (
                       <div key={course.id} className={`rounded-lg shadow-sm group hover:shadow-lg transition-all ${fromColor}`}>
-                        <div className="p-4">
+                        <div className="p-3">
                           <div className="flex items-center gap-2 mb-2">
-                            <div className={`w-7 h-7 rounded-full ${bgColor} flex items-center justify-center`}>
-                              <Check className={`w-4 h-4 text-white`} />
+                            <div className={`w-6 h-6 rounded-full ${bgColor} flex items-center justify-center`}>
+                              <Check className={`w-3 h-3 text-white`} />
                             </div>
-                            <span className={`text-xl font-semibold ${textColor}`}>{course.name}</span>
+                            <span className={`text-base font-semibold ${textColor}`}>{course.name}</span>
                           </div>
                           
-                          <div className="flex items-baseline gap-2 mt-2 mb-3">
-                            <span className={`text-5xl font-bold ${valueColor}`}>{course.studentCount}</span>
-                            <span className={`text-lg font-medium ${textColor}`}>Students</span>
+                          <div className="flex items-baseline gap-2 mt-2 mb-2">
+                            <span className={`text-3xl font-bold ${valueColor}`}>{course.studentCount}</span>
+                            <span className={`text-base font-medium ${textColor}`}>Students</span>
                           </div>
                           
                           <div>
@@ -454,19 +454,19 @@ const Dashboard = () => {
                   </div>
                   
                   {/* British */}
-                  <div className="rounded-lg shadow-sm bg-[#F0F9F5] p-4">
-                    <div className="flex items-center justify-between mb-2">
+                  <div className="rounded-lg shadow-sm bg-[#F0F9F5] p-3">
+                    <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-green-600 mr-2"></div>
-                        <span className="text-xl font-medium text-green-800">British</span>
+                        <div className="w-2 h-2 rounded-full bg-green-600 mr-1"></div>
+                        <span className="text-base font-medium text-green-800">British</span>
                       </div>
-                      <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-center text-2xl">
+                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-center text-xl">
                         🇬🇧
                       </div>
                     </div>
-                    <div className="mt-3 mb-3">
-                      <span className="text-5xl font-bold text-green-900">{dashboardStats.nationalityCounts.british}</span>
-                      <span className="text-xl font-medium text-green-800 ml-2">Instructors</span>
+                    <div className="mt-2 mb-2">
+                      <span className="text-3xl font-bold text-green-900">{dashboardStats.nationalityCounts.british}</span>
+                      <span className="text-base font-medium text-green-800 ml-2">Instructors</span>
                     </div>
                     <div>
                       <div className="flex items-center justify-between text-sm text-green-800 mb-1">
@@ -483,19 +483,19 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Canadian */}
-                  <div className="rounded-lg shadow-sm bg-[#F5F2FA] p-4">
-                    <div className="flex items-center justify-between mb-2">
+                  <div className="rounded-lg shadow-sm bg-[#F5F2FA] p-3">
+                    <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-purple-600 mr-2"></div>
-                        <span className="text-xl font-medium text-purple-800">Canadian</span>
+                        <div className="w-2 h-2 rounded-full bg-purple-600 mr-1"></div>
+                        <span className="text-base font-medium text-purple-800">Canadian</span>
                       </div>
-                      <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-center text-2xl">
+                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-center text-xl">
                         🇨🇦
                       </div>
                     </div>
-                    <div className="mt-3 mb-3">
-                      <span className="text-5xl font-bold text-purple-900">{dashboardStats.nationalityCounts.canadian}</span>
-                      <span className="text-xl font-medium text-purple-800 ml-2">Instructors</span>
+                    <div className="mt-2 mb-2">
+                      <span className="text-3xl font-bold text-purple-900">{dashboardStats.nationalityCounts.canadian}</span>
+                      <span className="text-base font-medium text-purple-800 ml-2">Instructors</span>
                     </div>
                     <div>
                       <div className="flex items-center justify-between text-sm text-purple-800 mb-1">
@@ -539,19 +539,19 @@ const Dashboard = () => {
                 {/* School Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* KFNA */}
-                  <div className="rounded-lg shadow-sm bg-[#FDE7E9] p-4">
-                    <div className="flex items-center justify-between mb-2">
+                  <div className="rounded-lg shadow-sm bg-[#FDE7E9] p-3">
+                    <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-[#E4424D] mr-2"></div>
-                        <span className="text-xl font-medium text-[#8F1D25]">KFNA</span>
+                        <div className="w-2 h-2 rounded-full bg-[#E4424D] mr-1"></div>
+                        <span className="text-base font-medium text-[#8F1D25]">KFNA</span>
                       </div>
-                      <div className="w-12 h-12 rounded-full bg-[#FCCCD0] flex items-center justify-center text-center">
-                        <Building className="w-7 h-7 text-[#E4424D]" />
+                      <div className="w-8 h-8 rounded-full bg-[#FCCCD0] flex items-center justify-center text-center">
+                        <Building className="w-5 h-5 text-[#E4424D]" />
                       </div>
                     </div>
-                    <div className="mt-3 mb-3">
-                      <span className="text-5xl font-bold text-[#8F1D25]">{statistics.studentsBySchool.knfa}</span>
-                      <span className="text-xl font-medium text-[#8F1D25] ml-2">Cadets</span>
+                    <div className="mt-2 mb-2">
+                      <span className="text-3xl font-bold text-[#8F1D25]">{statistics.studentsBySchool.knfa}</span>
+                      <span className="text-base font-medium text-[#8F1D25] ml-2">Cadets</span>
                     </div>
                     <div>
                       <div className="flex items-center justify-between text-sm text-[#8F1D25] mb-1">
@@ -568,19 +568,19 @@ const Dashboard = () => {
                   </div>
                   
                   {/* NFS East */}
-                  <div className="rounded-lg shadow-sm bg-[#E9F7F2] p-4">
-                    <div className="flex items-center justify-between mb-2">
+                  <div className="rounded-lg shadow-sm bg-[#E9F7F2] p-3">
+                    <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-[#22A783] mr-2"></div>
-                        <span className="text-xl font-medium text-[#0E6E55]">NFS East</span>
+                        <div className="w-2 h-2 rounded-full bg-[#22A783] mr-1"></div>
+                        <span className="text-base font-medium text-[#0E6E55]">NFS East</span>
                       </div>
-                      <div className="w-12 h-12 rounded-full bg-[#C5EAE0] flex items-center justify-center text-center">
-                        <Building className="w-7 h-7 text-[#22A783]" />
+                      <div className="w-8 h-8 rounded-full bg-[#C5EAE0] flex items-center justify-center text-center">
+                        <Building className="w-5 h-5 text-[#22A783]" />
                       </div>
                     </div>
-                    <div className="mt-3 mb-3">
-                      <span className="text-5xl font-bold text-[#0E6E55]">{statistics.studentsBySchool.nfsEast}</span>
-                      <span className="text-xl font-medium text-[#0E6E55] ml-2">Students</span>
+                    <div className="mt-2 mb-2">
+                      <span className="text-3xl font-bold text-[#0E6E55]">{statistics.studentsBySchool.nfsEast}</span>
+                      <span className="text-base font-medium text-[#0E6E55] ml-2">Students</span>
                     </div>
                     <div>
                       <div className="flex items-center justify-between text-sm text-[#0E6E55] mb-1">
@@ -607,19 +607,19 @@ const Dashboard = () => {
                   </div>
                   
                   {/* NFS West */}
-                  <div className="rounded-lg shadow-sm bg-[#F0EDF7] p-4">
-                    <div className="flex items-center justify-between mb-2">
+                  <div className="rounded-lg shadow-sm bg-[#F0EDF7] p-3">
+                    <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-[#6247AA] mr-2"></div>
-                        <span className="text-xl font-medium text-[#402F70]">NFS West</span>
+                        <div className="w-2 h-2 rounded-full bg-[#6247AA] mr-1"></div>
+                        <span className="text-base font-medium text-[#402F70]">NFS West</span>
                       </div>
-                      <div className="w-12 h-12 rounded-full bg-[#DCD3F0] flex items-center justify-center text-center">
-                        <Building className="w-7 h-7 text-[#6247AA]" />
+                      <div className="w-8 h-8 rounded-full bg-[#DCD3F0] flex items-center justify-center text-center">
+                        <Building className="w-5 h-5 text-[#6247AA]" />
                       </div>
                     </div>
-                    <div className="mt-3 mb-3">
-                      <span className="text-5xl font-bold text-[#402F70]">{statistics.studentsBySchool.nfsWest}</span>
-                      <span className="text-xl font-medium text-[#402F70] ml-2">Students</span>
+                    <div className="mt-2 mb-2">
+                      <span className="text-3xl font-bold text-[#402F70]">{statistics.studentsBySchool.nfsWest}</span>
+                      <span className="text-base font-medium text-[#402F70] ml-2">Students</span>
                     </div>
                     <div>
                       <div className="flex items-center justify-between text-sm text-[#402F70] mb-1">
@@ -666,8 +666,8 @@ const Dashboard = () => {
           {/* To-Do List */}
           <Card className="shadow-sm">
             <CardContent className="p-0">
-              <div className="p-4 pb-2">
-                <h2 className="text-xl font-semibold text-gray-800">My Tasks</h2>
+              <div className="p-3 pb-2">
+                <h2 className="text-lg font-semibold text-gray-800">My Tasks</h2>
               </div>
               
               <div className="px-4 pb-4">
@@ -676,7 +676,7 @@ const Dashboard = () => {
                     value={newTask} 
                     onChange={(e) => setNewTask(e.target.value)}
                     placeholder="Add a new task..."
-                    className="border-0 flex-1 py-5 rounded-md"
+                    className="border-0 flex-1 py-3 rounded-md text-sm"
                     onKeyDown={(e) => e.key === 'Enter' && addTask()}
                   />
                   <Button 
@@ -720,11 +720,11 @@ const Dashboard = () => {
                         key={task.id} 
                         className={`flex items-center justify-between py-3 px-3 rounded-md border ${borderClass}`}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${checkClass}`}>
-                            <Check className="h-5 w-5" />
+                        <div className="flex items-center gap-2">
+                          <div className={`w-6 h-6 rounded-full flex items-center justify-center ${checkClass}`}>
+                            <Check className="h-4 w-4" />
                           </div>
-                          <span className="text-gray-800 text-lg font-medium">
+                          <span className="text-gray-800 text-base font-medium">
                             {task.text}
                           </span>
                         </div>
