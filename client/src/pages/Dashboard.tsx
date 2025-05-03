@@ -545,7 +545,7 @@ const Dashboard = () => {
                         <div className="w-2 h-2 rounded-full bg-[#E4424D] mr-1"></div>
                         <span className="text-base font-medium text-[#8F1D25]">KFNA</span>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-[#FCCCD0] flex items-center justify-center text-center">
+                      <div className="w-8 h-8 rounded-full bg-[#FCCCD0] flex items-center justify-center text-center text-xl">
                         <Building className="w-5 h-5 text-[#E4424D]" />
                       </div>
                     </div>
@@ -574,7 +574,7 @@ const Dashboard = () => {
                         <div className="w-2 h-2 rounded-full bg-[#22A783] mr-1"></div>
                         <span className="text-base font-medium text-[#0E6E55]">NFS East</span>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-[#C5EAE0] flex items-center justify-center text-center">
+                      <div className="w-8 h-8 rounded-full bg-[#C5EAE0] flex items-center justify-center text-center text-xl">
                         <Building className="w-5 h-5 text-[#22A783]" />
                       </div>
                     </div>
@@ -613,7 +613,7 @@ const Dashboard = () => {
                         <div className="w-2 h-2 rounded-full bg-[#6247AA] mr-1"></div>
                         <span className="text-base font-medium text-[#402F70]">NFS West</span>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-[#DCD3F0] flex items-center justify-center text-center">
+                      <div className="w-8 h-8 rounded-full bg-[#DCD3F0] flex items-center justify-center text-center text-xl">
                         <Building className="w-5 h-5 text-[#6247AA]" />
                       </div>
                     </div>
