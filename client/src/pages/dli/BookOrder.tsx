@@ -565,10 +565,10 @@ const BookOrder = () => {
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">
+        <h1 className="text-3xl font-bold text-[#0B1D51]">
           DLI Book Inventory Management
         </h1>
-        <p className="text-gray-500 mt-2">
+        <p className="text-gray-600 mt-2">
           Track and manage book inventory across all schools
         </p>
       </div>
@@ -581,7 +581,7 @@ const BookOrder = () => {
           onClick={toggleSchoolView}
         >
           <School size={16} />
-          {showSchoolInventory ? 'Show Consolidated View' : 'Show School-by-School View'}
+          Show Consolidated View
         </Button>
       </div>
       
