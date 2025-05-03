@@ -115,12 +115,14 @@ const SchoolCard = ({ school }: { school: typeof schoolInventory[0] }) => {
           </div>
         </div>
         
-        <Button 
-          className="w-full mt-4 text-white font-medium py-1.5" 
-          style={{ backgroundColor: school.color }}
-        >
-          View Inventory
-        </Button>
+        <Link href={`/dli/book-order`}>
+          <Button 
+            className="w-full mt-4 text-white font-medium py-1.5" 
+            style={{ backgroundColor: school.color }}
+          >
+            View Inventory
+          </Button>
+        </Link>
       </CardContent>
     </Card>
   );

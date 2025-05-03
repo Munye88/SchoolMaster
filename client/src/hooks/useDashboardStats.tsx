@@ -112,7 +112,7 @@ export function useDashboardStats(): DashboardStats {
       // Update the cached counts
       cachedStudentCounts = {
         totalStudents: calculateStudentCount(),
-        knfa: calculateStudentCount(349),
+        knfa: calculateStudentCount(349), // School with ID 349 is KFNA
         nfsEast: calculateStudentCount(350),
         nfsWest: calculateStudentCount(351)
       };
@@ -168,7 +168,7 @@ export function useDashboardStats(): DashboardStats {
         // Update the cached student counts to reflect course data
         cachedStudentCounts = {
           totalStudents: kfnaStudents + nfsEastStudents + nfsWestStudents,
-          knfa: kfnaStudents,
+          knfa: kfnaStudents, // School with ID 349 is KFNA
           nfsEast: nfsEastStudents,
           nfsWest: nfsWestStudents
         };

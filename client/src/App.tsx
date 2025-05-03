@@ -75,7 +75,7 @@ function Router() {
           <ProtectedRoute path="/instructor-lookup" component={InstructorLookup} />
           <ProtectedRoute path="/courses" component={Courses} />
           <ProtectedRoute path="/courses/:id" component={CourseDetails} />
-          <ProtectedRoute path="/dli" component={BookOrder} />
+          <ProtectedRoute path="/dli" component={DLI} />
           <ProtectedRoute path="/dli/book-order" component={BookOrder} />
           <ProtectedRoute path="/dli/alcpt-order" component={AlcptOrder} />
           <ProtectedRoute path="/dli/answer-sheets" component={AnswerSheets} />
