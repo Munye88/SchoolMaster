@@ -259,7 +259,7 @@ const Dashboard = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* Current Courses */}
           <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2">
+            <CardHeader className="p-4 pb-1">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-lg text-[#0A2463]">Active Courses</CardTitle>
                 <Link href="/courses" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
@@ -404,7 +404,7 @@ const Dashboard = () => {
 
           {/* Staff Nationality */}
           <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2">
+            <CardHeader className="p-4 pb-1">
               <CardTitle className="text-lg text-[#0A2463]">Staff Nationality</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pb-5">
@@ -518,7 +518,7 @@ const Dashboard = () => {
 
           {/* Student Distribution */}
           <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2">
+            <CardHeader className="p-4 pb-1">
               <CardTitle className="text-lg text-[#0A2463]">Distribution by School</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pb-5">
@@ -641,7 +641,7 @@ const Dashboard = () => {
 
           {/* Calendar added at the bottom of Left Column */}
           <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-2">
+            <CardHeader className="p-4 pb-1">
               <CardTitle className="text-lg text-[#0A2463]">Calendar</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
@@ -666,7 +666,7 @@ const Dashboard = () => {
           {/* To-Do List */}
           <Card className="shadow-sm">
             <CardContent className="p-0">
-              <div className="p-4 pb-3">
+              <div className="p-4 pb-2">
                 <h2 className="text-xl font-semibold text-gray-800">My Tasks</h2>
               </div>
               
@@ -676,7 +676,7 @@ const Dashboard = () => {
                     value={newTask} 
                     onChange={(e) => setNewTask(e.target.value)}
                     placeholder="Add a new task..."
-                    className="border-0 flex-1 py-6 rounded-md"
+                    className="border-0 flex-1 py-5 rounded-md"
                     onKeyDown={(e) => e.key === 'Enter' && addTask()}
                   />
                   <Button 
@@ -718,7 +718,7 @@ const Dashboard = () => {
                     return (
                       <div 
                         key={task.id} 
-                        className={`flex items-center justify-between py-4 px-3 rounded-md border ${borderClass}`}
+                        className={`flex items-center justify-between py-3 px-3 rounded-md border ${borderClass}`}
                       >
                         <div className="flex items-center gap-3">
                           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${checkClass}`}>
