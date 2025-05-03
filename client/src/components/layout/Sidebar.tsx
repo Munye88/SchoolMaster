@@ -570,8 +570,8 @@ const Sidebar = () => {
               {/* Instructor Recognition - standalone tab */}
               <li>
                 <Link href="/administration/instructor-recognition" className={cn(
-                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
-                  isActive("/administration/instructor-recognition") && "bg-[#1334A3]/70 font-medium text-white",
+                  "flex items-center p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
+                  isActive("/administration/instructor-recognition") && "bg-[#1334A3]/60 font-medium text-white before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-4/5 before:w-1 before:bg-blue-400 before:rounded-r",
                   !isActive("/administration/instructor-recognition") && "text-white"
                 )}>
                   <Award className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
@@ -579,11 +579,16 @@ const Sidebar = () => {
                 </Link>
               </li>
               
+              {/* Divider */}
+              {!collapsed && <li className="py-1 px-2">
+                <div className="h-px bg-blue-900/30 w-full"></div>
+              </li>}
+
               {/* Training & Development - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleTraining} className={cn(
-                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/60 group transition-all",
-                  (isActive("/training-development") || showTrainingLinks) && "bg-[#1334A3]/70 font-medium text-white",
+                  "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
+                  (isActive("/training-development") || showTrainingLinks) && "bg-[#1334A3]/60 font-medium text-white before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-4/5 before:w-1 before:bg-blue-400 before:rounded-r",
                   !isActive("/training-development") && !showTrainingLinks && "text-white"
                 )}>
                   <div className="flex items-center">
