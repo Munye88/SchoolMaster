@@ -209,46 +209,46 @@ const Dashboard = () => {
       {/* Stats Overview - Simple Card Design matching screenshot */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6">
         {/* Students Card */}
-        <div className="bg-[#3B82F6] rounded-lg shadow-md text-white p-4 flex items-center">
-          <div className="text-white mr-4">
-            <Users className="h-10 w-10" />
+        <div className="bg-[#3B82F6] rounded-lg shadow-md text-white p-3 flex items-center">
+          <div className="text-white mr-3">
+            <Users className="h-9 w-9" />
           </div>
           <div>
             <div className="text-5xl font-bold text-white">{statistics.totalStudents}</div>
-            <div className="uppercase text-sm mt-1">TOTAL STUDENTS</div>
+            <div className="uppercase text-sm mt-0">TOTAL STUDENTS</div>
           </div>
         </div>
 
         {/* Instructors Card */}
-        <div className="bg-[#3BB99B] rounded-lg shadow-md text-white p-4 flex items-center">
-          <div className="text-white mr-4">
-            <UserCircle className="h-10 w-10" />
+        <div className="bg-[#3BB99B] rounded-lg shadow-md text-white p-3 flex items-center">
+          <div className="text-white mr-3">
+            <UserCircle className="h-9 w-9" />
           </div>
           <div>
             <div className="text-5xl font-bold text-white">{statistics.activeInstructors}</div>
-            <div className="uppercase text-sm mt-1">INSTRUCTORS</div>
+            <div className="uppercase text-sm mt-0">INSTRUCTORS</div>
           </div>
         </div>
 
         {/* Schools Card */}
-        <div className="bg-[#4DB6AC] rounded-lg shadow-md text-white p-4 flex items-center">
-          <div className="text-white mr-4">
-            <School className="h-10 w-10" />
+        <div className="bg-[#4DB6AC] rounded-lg shadow-md text-white p-3 flex items-center">
+          <div className="text-white mr-3">
+            <School className="h-9 w-9" />
           </div>
           <div>
             <div className="text-5xl font-bold text-white">{statistics.totalSchools}</div>
-            <div className="uppercase text-sm mt-1">SCHOOLS</div>
+            <div className="uppercase text-sm mt-0">SCHOOLS</div>
           </div>
         </div>
 
         {/* Courses Card - Double-width */}
-        <div className="bg-[#F59E0B] rounded-lg shadow-md text-white p-4 flex items-center">
-          <div className="text-white mr-4">
-            <FileText className="h-10 w-10" />
+        <div className="bg-[#F59E0B] rounded-lg shadow-md text-white p-3 flex items-center">
+          <div className="text-white mr-3">
+            <FileText className="h-9 w-9" />
           </div>
           <div>
             <div className="text-5xl font-bold text-white">{statistics.totalCourses}</div>
-            <div className="uppercase text-sm mt-1">COURSES</div>
+            <div className="uppercase text-sm mt-0">COURSES</div>
           </div>
         </div>
       </div>
@@ -268,14 +268,14 @@ const Dashboard = () => {
             <CardContent className="p-4 pb-6">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Green background from screenshot */}
-                <div className="bg-[#399165] rounded-lg shadow-md p-4 text-white">
+                <div className="bg-[#399165] rounded-lg shadow-md p-3 text-white">
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="text-xl font-semibold uppercase tracking-wider">ACTIVE COURSES</h3>
-                      <p className="text-5xl font-bold mt-1">{statistics.activeCourses}</p>
+                      <p className="text-5xl font-bold mt-0">{statistics.activeCourses}</p>
                     </div>
                     <div className="p-1">
-                      <BookOpen className="w-10 h-10 text-white" />
+                      <BookOpen className="w-9 h-9 text-white" />
                     </div>
                   </div>
                 </div>
@@ -365,7 +365,7 @@ const Dashboard = () => {
                     
                     return (
                       <div key={course.id} className={`rounded-lg shadow-sm group hover:shadow-lg transition-all ${fromColor}`}>
-                        <div className="p-5">
+                        <div className="p-4">
                           <div className="flex items-center gap-2 mb-2">
                             <div className={`w-7 h-7 rounded-full ${bgColor} flex items-center justify-center`}>
                               <Check className={`w-4 h-4 text-white`} />
@@ -373,7 +373,7 @@ const Dashboard = () => {
                             <span className={`text-xl font-semibold ${textColor}`}>{course.name}</span>
                           </div>
                           
-                          <div className="flex items-baseline gap-2 mt-4 mb-6">
+                          <div className="flex items-baseline gap-2 mt-3 mb-4">
                             <span className={`text-5xl font-bold ${valueColor}`}>{course.studentCount}</span>
                             <span className={`text-lg font-medium ${textColor}`}>Students</span>
                           </div>
@@ -425,7 +425,7 @@ const Dashboard = () => {
                 {/* Nationality Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* American */}
-                  <div className="rounded-lg shadow-sm bg-[#EEF5FD] p-5">
+                  <div className="rounded-lg shadow-sm bg-[#EEF5FD] p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center">
                         <div className="w-3 h-3 rounded-full bg-blue-600 mr-2"></div>
