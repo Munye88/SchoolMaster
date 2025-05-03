@@ -209,46 +209,46 @@ const Dashboard = () => {
       {/* Stats Overview - Simple Card Design matching screenshot */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6">
         {/* Students Card */}
-        <div className="bg-[#3B82F6] rounded-lg shadow-md text-white p-3 flex items-center">
-          <div className="text-white mr-3">
-            <Users className="h-9 w-9" />
+        <div className="bg-[#3B82F6] rounded-lg shadow-md text-white p-2 flex items-center">
+          <div className="text-white mr-2">
+            <Users className="h-7 w-7" />
           </div>
           <div>
-            <div className="text-5xl font-bold text-white">{statistics.totalStudents}</div>
-            <div className="uppercase text-sm mt-0">TOTAL STUDENTS</div>
+            <div className="text-3xl font-bold text-white">{statistics.totalStudents}</div>
+            <div className="uppercase text-xs mt-0">TOTAL STUDENTS</div>
           </div>
         </div>
 
         {/* Instructors Card */}
-        <div className="bg-[#3BB99B] rounded-lg shadow-md text-white p-3 flex items-center">
-          <div className="text-white mr-3">
-            <UserCircle className="h-9 w-9" />
+        <div className="bg-[#3BB99B] rounded-lg shadow-md text-white p-2 flex items-center">
+          <div className="text-white mr-2">
+            <UserCircle className="h-7 w-7" />
           </div>
           <div>
-            <div className="text-5xl font-bold text-white">{statistics.activeInstructors}</div>
-            <div className="uppercase text-sm mt-0">INSTRUCTORS</div>
+            <div className="text-3xl font-bold text-white">{statistics.activeInstructors}</div>
+            <div className="uppercase text-xs mt-0">INSTRUCTORS</div>
           </div>
         </div>
 
         {/* Schools Card */}
-        <div className="bg-[#4DB6AC] rounded-lg shadow-md text-white p-3 flex items-center">
-          <div className="text-white mr-3">
-            <School className="h-9 w-9" />
+        <div className="bg-[#4DB6AC] rounded-lg shadow-md text-white p-2 flex items-center">
+          <div className="text-white mr-2">
+            <School className="h-7 w-7" />
           </div>
           <div>
-            <div className="text-5xl font-bold text-white">{statistics.totalSchools}</div>
-            <div className="uppercase text-sm mt-0">SCHOOLS</div>
+            <div className="text-3xl font-bold text-white">{statistics.totalSchools}</div>
+            <div className="uppercase text-xs mt-0">SCHOOLS</div>
           </div>
         </div>
 
         {/* Courses Card - Double-width */}
-        <div className="bg-[#F59E0B] rounded-lg shadow-md text-white p-3 flex items-center">
-          <div className="text-white mr-3">
-            <FileText className="h-9 w-9" />
+        <div className="bg-[#F59E0B] rounded-lg shadow-md text-white p-2 flex items-center">
+          <div className="text-white mr-2">
+            <FileText className="h-7 w-7" />
           </div>
           <div>
-            <div className="text-5xl font-bold text-white">{statistics.totalCourses}</div>
-            <div className="uppercase text-sm mt-0">COURSES</div>
+            <div className="text-3xl font-bold text-white">{statistics.totalCourses}</div>
+            <div className="uppercase text-xs mt-0">COURSES</div>
           </div>
         </div>
       </div>
@@ -268,14 +268,14 @@ const Dashboard = () => {
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Green background from screenshot */}
-                <div className="bg-[#399165] rounded-lg shadow-md p-3 text-white">
+                <div className="bg-[#399165] rounded-lg shadow-md p-2 text-white">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h3 className="text-xl font-semibold uppercase tracking-wider">ACTIVE COURSES</h3>
-                      <p className="text-5xl font-bold mt-0">{statistics.activeCourses}</p>
+                      <h3 className="text-lg font-semibold uppercase tracking-wider">ACTIVE COURSES</h3>
+                      <p className="text-3xl font-bold mt-0">{statistics.activeCourses}</p>
                     </div>
                     <div className="p-1">
-                      <BookOpen className="w-9 h-9 text-white" />
+                      <BookOpen className="w-7 w-7 text-white" />
                     </div>
                   </div>
                 </div>
@@ -410,14 +410,14 @@ const Dashboard = () => {
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Blue background from screenshot */}
-                <div className="bg-[#3046C5] rounded-lg shadow-md p-3 text-white">
+                <div className="bg-[#3046C5] rounded-lg shadow-md p-2 text-white">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h3 className="text-xl font-semibold uppercase tracking-wider">TOTAL INSTRUCTORS</h3>
-                      <p className="text-5xl font-bold mt-0">{statistics.activeInstructors}</p>
+                      <h3 className="text-lg font-semibold uppercase tracking-wider">TOTAL INSTRUCTORS</h3>
+                      <p className="text-3xl font-bold mt-0">{statistics.activeInstructors}</p>
                     </div>
-                    <div className="p-2 bg-[#4D5FC9] text-white rounded-lg">
-                      <User className="w-9 h-9 text-white" />
+                    <div className="p-1 bg-[#4D5FC9] text-white rounded-lg">
+                      <User className="w-7 h-7 text-white" />
                     </div>
                   </div>
                 </div>
@@ -425,19 +425,19 @@ const Dashboard = () => {
                 {/* Nationality Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* American */}
-                  <div className="rounded-lg shadow-sm bg-[#EEF5FD] p-4">
-                    <div className="flex items-center justify-between mb-2">
+                  <div className="rounded-lg shadow-sm bg-[#EEF5FD] p-3">
+                    <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center">
-                        <div className="w-3 h-3 rounded-full bg-blue-600 mr-2"></div>
-                        <span className="text-xl font-medium text-blue-900">American</span>
+                        <div className="w-2 h-2 rounded-full bg-blue-600 mr-1"></div>
+                        <span className="text-base font-medium text-blue-900">American</span>
                       </div>
-                      <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-center text-2xl">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-center text-xl">
                         🇺🇸
                       </div>
                     </div>
-                    <div className="mt-3 mb-3">
-                      <span className="text-5xl font-bold text-blue-950">{dashboardStats.nationalityCounts.american}</span>
-                      <span className="text-xl font-medium text-blue-900 ml-2">Instructors</span>
+                    <div className="mt-2 mb-2">
+                      <span className="text-3xl font-bold text-blue-950">{dashboardStats.nationalityCounts.american}</span>
+                      <span className="text-base font-medium text-blue-900 ml-2">Instructors</span>
                     </div>
                     <div>
                       <div className="flex items-center justify-between text-sm text-blue-800 mb-1">
@@ -524,14 +524,14 @@ const Dashboard = () => {
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total */}
-                <div className="bg-[#951B5C] rounded-lg shadow-md p-3 text-white">
+                <div className="bg-[#951B5C] rounded-lg shadow-md p-2 text-white">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h3 className="text-xl font-semibold uppercase tracking-wider">TOTAL STUDENTS</h3>
-                      <p className="text-5xl font-bold mt-0">{statistics.totalStudents}</p>
+                      <h3 className="text-lg font-semibold uppercase tracking-wider">TOTAL STUDENTS</h3>
+                      <p className="text-3xl font-bold mt-0">{statistics.totalStudents}</p>
                     </div>
-                    <div className="p-2 bg-[#A93F78] text-white rounded-lg">
-                      <GraduationCap className="w-9 h-9 text-white" />
+                    <div className="p-1 bg-[#A93F78] text-white rounded-lg">
+                      <GraduationCap className="w-7 h-7 text-white" />
                     </div>
                   </div>
                 </div>
