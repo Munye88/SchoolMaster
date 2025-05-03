@@ -84,7 +84,7 @@ export function StandardInstructorAvatar({
     return "border-[#00AEEF]"; // Light blue border to match the example image
   };
   
-  const containerClassName = `${sizeClasses[size]} rounded-full ${getBorderColor()} border-4 overflow-hidden flex items-center justify-center shadow-md flex-shrink-0 flex-grow-0`;
+  const containerClassName = `${sizeClasses[size]} rounded-full ${getBorderColor()} border-4 overflow-hidden flex items-center justify-center shadow-md flex-shrink-0 flex-grow-0 bg-white`;
   
   return (
     <div className={containerClassName}>
@@ -93,12 +93,13 @@ export function StandardInstructorAvatar({
           <img
             src={imageSource}
             alt={name}
-            className="h-full w-full object-cover" 
+            className="h-full w-full object-cover bg-white" 
             style={{ 
               objectPosition: "center 15%", // Position higher to show faces properly
               transform: "scale(1)", // Don't scale down to ensure consistent size
               width: "100%",
-              height: "100%"
+              height: "100%",
+              backgroundColor: "white" // Force white background
             }}
             onError={handleImageError}
           />
