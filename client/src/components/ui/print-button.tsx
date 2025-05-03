@@ -8,6 +8,7 @@ interface PrintButtonProps {
   className?: string;
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
   children?: ReactNode;
+  buttonText?: string;
 }
 
 /**
@@ -25,7 +26,8 @@ export function PrintButton({
   customPrintFunction,
   className = '',
   variant = 'outline',
-  children
+  children,
+  buttonText
 }: PrintButtonProps) {
   const [isPrinting, setIsPrinting] = useState(false);
 
@@ -155,7 +157,7 @@ export function PrintButton({
       {children || (
         <>
           <Printer className="h-4 w-4" />
-          <span>Print</span>
+          <span>{buttonText || 'Print'}</span>
         </>
       )}
     </Button>
