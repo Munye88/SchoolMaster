@@ -303,8 +303,8 @@ export default function Courses() {
       {/* Hero Header */}
       <div className="bg-gradient-to-r from-[#0A2463] to-blue-600 py-8">
         <div className="container mx-auto px-4">
-          <h1 style={{color: '#FFFFFF', fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem'}}>Course Programs</h1>
-          <p style={{color: '#FFFFFF', fontSize: '1.125rem'}}>
+          <h1 className="text-white text-2xl font-bold mb-2">Course Programs</h1>
+          <p className="text-white text-lg">
             Explore our comprehensive ELT programs across all schools
           </p>
           
