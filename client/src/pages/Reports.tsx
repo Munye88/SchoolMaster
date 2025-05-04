@@ -59,9 +59,9 @@ const Reports = () => {
   ];
   
   const courseCompletionData = [
-    { name: 'Completed', value: 78.6, fill: '#4CB944' },
-    { name: 'In Progress', value: 15.4, fill: '#FF8811' },
-    { name: 'Not Started', value: 6.0, fill: '#E63946' }
+    { name: 'Completed', value: 25.0, fill: '#4CB944' },
+    { name: 'In Progress', value: 75.0, fill: '#FF8811' },
+    { name: 'Not Started', value: 0.0, fill: '#E63946' }
   ];
   
   const monthlyPerformanceData = [
