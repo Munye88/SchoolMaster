@@ -80,11 +80,11 @@ const Reports = () => {
   ];
   
   const instructorEvaluationData = [
-    { score: '95%+', count: 12, fill: '#4CB944' },
-    { score: '90-94%', count: 22, fill: '#85C88A' },
-    { score: '85-89%', count: 16, fill: '#FFB84C' },
-    { score: '80-84%', count: 8, fill: '#F16767' },
-    { score: '<80%', count: 2, fill: '#E63946' }
+    { score: '95%+', count: 5, fill: '#4CB944' },
+    { score: '90-94%', count: 5, fill: '#85C88A' },
+    { score: '85-89%', count: 17, fill: '#FFB84C' },
+    { score: '80-84%', count: 19, fill: '#F16767' },
+    { score: '<80%', count: 14, fill: '#E63946' }
   ];
   
   const attendanceData = [
@@ -233,10 +233,10 @@ const Reports = () => {
             </div>
           </CardHeader>
           <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-green-700">78.6%</div>
+            <div className="text-2xl font-bold text-green-700">25.0%</div>
             <div className="flex items-center mt-1">
               <ArrowUpRight className="h-3 w-3 text-green-500 mr-1" />
-              <span className="text-xs font-medium text-green-500">+3.2% </span>
+              <span className="text-xs font-medium text-green-500">+0.0% </span>
               <span className="text-xs text-gray-500 ml-1">since last month</span>
             </div>
           </CardContent>
