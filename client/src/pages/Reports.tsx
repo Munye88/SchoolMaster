@@ -533,135 +533,129 @@ const Reports = () => {
         </TabsContent>
         
         <TabsContent value="evaluations">
+          <div className="mb-4 flex items-center">
+            <div className="flex space-x-6">
+              <div className="flex items-center space-x-2">
+                <FileText className="h-4 w-4 text-blue-600" />
+                <span className="text-sm font-medium">Evaluation Distribution</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Award className="h-4 w-4 text-purple-600" />
+                <span className="text-sm font-medium">Evaluation Distribution</span>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* First card - Evaluation by Quarter */}
             <Card className="shadow-md hover:shadow-lg transition-all duration-300">
-              <CardHeader className="bg-gradient-to-r from-purple-50 to-white border-b border-purple-100">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-purple-100 rounded-full">
-                      <Award className="h-4 w-4 text-purple-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg font-semibold text-purple-900">Staff Evaluation by Quarter</CardTitle>
-                      <CardDescription>
-                        Track instructor evaluations and performance reviews
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <Filter className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Q1 2025</DropdownMenuItem>
-                      <DropdownMenuItem>Q2 2025</DropdownMenuItem>
-                      <DropdownMenuItem>Q3 2025</DropdownMenuItem>
-                      <DropdownMenuItem>Q4 2025</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+              <CardHeader className="border-b border-gray-200 pb-3">
+                <CardTitle className="text-xl font-bold text-gray-800">Evaluation by Quarter</CardTitle>
+                <CardDescription className="text-gray-600">
+                  Instructor evaluations and performance reviews
+                </CardDescription>
               </CardHeader>
-              <CardContent className="h-80 bg-gradient-to-b from-purple-50 to-white py-3 px-1">
-                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-purple-100 p-4">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={instructorEvaluationData}
-                      layout="vertical"
-                      margin={{ top: 20, right: 50, left: 80, bottom: 25 }}
+              <CardContent className="pt-4 h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={instructorEvaluationData}
+                    layout="vertical"
+                    margin={{ top: 5, right: 30, left: 50, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.2} />
+                    <XAxis type="number" domain={[0, 15]} label={{ value: 'Instructor Count', position: 'bottom', offset: 0 }} />
+                    <YAxis 
+                      type="category" 
+                      dataKey="score" 
+                      tick={{ fontSize: 12 }}
+                      width={50}
+                    />
+                    <Bar 
+                      dataKey="count" 
+                      name="Instructor Count" 
+                      radius={[0, 4, 4, 0]} 
                     >
-                      <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.2} />
-                      <XAxis type="number" domain={[0, 25]} />
-                      <YAxis 
-                        type="category" 
-                        dataKey="score" 
-                        tick={{ fontSize: 12 }}
-                        width={80}
-                      />
-                      <Tooltip
-                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                        formatter={(value) => [`${value} instructors`, '']}
-                      />
-                      <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                      <Bar 
-                        dataKey="count" 
-                        name="Instructor Count" 
-                        radius={[0, 4, 4, 0]} 
-                      >
-                        {instructorEvaluationData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+                      {instructorEvaluationData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
             
+            {/* Second card - Evaluation Distribution */}
             <Card className="shadow-md hover:shadow-lg transition-all duration-300">
-              <CardHeader className="bg-gradient-to-r from-rose-50 to-white border-b border-rose-100">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-rose-100 rounded-full">
-                      <PieChart className="h-4 w-4 text-rose-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg font-semibold text-rose-900">Evaluation Distribution</CardTitle>
-                      <CardDescription>
-                        Score distribution across all instructors
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" className="text-rose-700 hover:text-rose-900 hover:bg-rose-50">
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-rose-700 hover:text-rose-900 hover:bg-rose-50">
-                      <Download className="h-4 w-4" />
-                    </Button>
+              <CardHeader className="border-b border-gray-200 pb-3">
+                <CardTitle className="text-xl font-bold text-gray-800">Evaluation Distribution</CardTitle>
+                <CardDescription className="text-gray-600">
+                  Score distribution across all instructors
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-4 h-80">
+                <div className="h-full flex flex-col">
+                  <div className="flex-1">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsPieChart>
+                        <Pie
+                          data={instructorEvaluationData}
+                          cx="50%"
+                          cy="40%"
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="count"
+                        >
+                          {instructorEvaluationData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                          ))}
+                        </Pie>
+                        <Legend
+                          layout="horizontal"
+                          verticalAlign="bottom"
+                          align="center"
+                          formatter={(value, entry, index) => {
+                            return <span style={{ color: '#333', fontSize: '12px' }}>{instructorEvaluationData[index].score}</span>;
+                          }}
+                        />
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Third card - Report Summary */}
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="border-b border-gray-200 pb-3">
+                <CardTitle className="text-xl font-bold text-gray-800">Report Summary</CardTitle>
               </CardHeader>
-              <CardContent className="h-80 bg-gradient-to-b from-rose-50 to-white py-3 px-1">
-                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-rose-100 p-4">
-                  <div className="h-full flex flex-col">
-                    <div className="flex-1">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <RechartsPieChart>
-                          <Pie
-                            data={instructorEvaluationData}
-                            cx="50%"
-                            cy="40%"
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="count"
-                          >
-                            {instructorEvaluationData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.fill} />
-                            ))}
-                          </Pie>
-                          <Tooltip 
-                            formatter={(value) => [`${value} instructors`, '']} 
-                          />
-                        </RechartsPieChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <div className="grid grid-cols-5 gap-2 mt-4">
-                      {instructorEvaluationData.map((entry, index) => (
-                        <div key={index} className="flex flex-col items-center">
-                          <div className="flex items-center mb-1">
-                            <div 
-                              className="h-3 w-3 rounded-full mr-1" 
-                              style={{ backgroundColor: entry.fill }}
-                            />
-                            <span className="text-xs font-medium">{entry.score}</span>
-                          </div>
-                          <span className="text-xs font-bold">{entry.count}</span>
-                        </div>
-                      ))}
+              <CardContent className="pt-4">
+                <div className="space-y-4">
+                  <p className="text-gray-800 font-medium text-lg">
+                    76% of instructors received satisfactory or above ratings
+                  </p>
+                  <p className="text-gray-800 font-medium text-lg">
+                    Most recent evaluations are completed for 96% of staff
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Fourth card - Recommendations */}
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="border-b border-gray-200 pb-3">
+                <CardTitle className="text-xl font-bold text-gray-800">Recommendations</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="flex gap-4 items-start">
+                  <div className="bg-amber-50 p-3 rounded-full">
+                    <div className="w-8 h-8 flex items-center justify-center rounded-full bg-amber-100">
+                      <Award className="h-5 w-5 text-amber-600" />
                     </div>
                   </div>
+                  <p className="text-gray-800 font-medium">
+                    Conduct focused training for instructors needing improvement
+                  </p>
                 </div>
               </CardContent>
             </Card>
