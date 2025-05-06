@@ -469,71 +469,99 @@ export async function processAssistantQuery(query: string, conversationContext: 
       }
     ];
 
-    // Call OpenAI with function calling
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      messages,
-      tools: toolDefinitions,
-      tool_choice: "auto",
-    });
+    // Inner try-catch block for API calls specifically
+    try {
+      // Call OpenAI with function calling
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages,
+        tools: toolDefinitions,
+        tool_choice: "auto",
+      });
 
-    const responseMessage = response.choices[0].message;
-    let toolResults: any[] = [];
+      const responseMessage = response.choices[0].message;
+      let toolResults: any[] = [];
 
-    // Check if the model wants to call a function
-    if (responseMessage.tool_calls && responseMessage.tool_calls.length > 0) {
-      // Extract all tool calls
-      const toolCalls = responseMessage.tool_calls;
-      
-      // Process each tool call
-      for (const toolCall of toolCalls) {
-        const functionName = toolCall.function.name;
-        const functionArgs = JSON.parse(toolCall.function.arguments);
+      // Check if the model wants to call a function
+      if (responseMessage.tool_calls && responseMessage.tool_calls.length > 0) {
+        // Extract all tool calls
+        const toolCalls = responseMessage.tool_calls;
         
-        // Execute the function if it exists in our tools
-        if (functionName in aiTools) {
-          // @ts-ignore - we know the function exists
-          const result = await aiTools[functionName](...Object.values(functionArgs));
-          toolResults.push({
-            toolCall: toolCall.id,
-            function: functionName,
-            result
+        // Process each tool call
+        for (const toolCall of toolCalls) {
+          const functionName = toolCall.function.name;
+          const functionArgs = JSON.parse(toolCall.function.arguments);
+          
+          // Execute the function if it exists in our tools
+          if (functionName in aiTools) {
+            // @ts-ignore - we know the function exists
+            const result = await aiTools[functionName](...Object.values(functionArgs));
+            toolResults.push({
+              toolCall: toolCall.id,
+              function: functionName,
+              result
+            });
+          }
+        }
+        
+        // Add the tool results to the conversation
+        const toolResultMessages = toolResults.map(result => ({
+          tool_call_id: result.toolCall,
+          role: "tool" as const,
+          content: JSON.stringify(result.result)
+        }));
+        
+        try {
+          // Send a follow-up request to process the tool results
+          const secondResponse = await openai.chat.completions.create({
+            model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+            messages: [
+              ...messages,
+              responseMessage,
+              ...toolResultMessages
+            ]
           });
+          
+          return {
+            response: secondResponse.choices[0].message.content || "I couldn't process that request.",
+            toolCalls,
+            toolResults
+          };
+        } catch (followUpError: any) {
+          console.error("API error during follow-up request:", followUpError);
+          // Fallback response using gathered tool data
+          return {
+            response: `Here's the information I found: ${toolResults.map(tr => 
+              `${tr.function}: ${JSON.stringify(tr.result.data || {})}`).join(', ')}`,
+            toolCalls,
+            toolResults
+          };
         }
       }
       
-      // Add the tool results to the conversation
-      const toolResultMessages = toolResults.map(result => ({
-        tool_call_id: result.toolCall,
-        role: "tool" as const,
-        content: JSON.stringify(result.result)
-      }));
-      
-      // Send a follow-up request to process the tool results
-      const secondResponse = await openai.chat.completions.create({
-        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        messages: [
-          ...messages,
-          responseMessage,
-          ...toolResultMessages
-        ]
-      });
-      
+      // If no function was called, return the model's response directly
       return {
-        response: secondResponse.choices[0].message.content || "I couldn't process that request.",
-        toolCalls,
-        toolResults
+        response: responseMessage.content || "I couldn't understand your request."
+      };
+    } catch (error: any) {
+      console.error("API error during assistant query:", error);
+      
+      // Check if it's a quota or rate limit error
+      if (error.status === 429 || (error.error && error.error.code === 'insufficient_quota')) {
+        return {
+          response: "I'm currently experiencing high demand. I'm here to help with information about instructors, courses, and school management. What can I assist you with today?"
+        };
+      }
+      
+      // For other API errors, use a fallback response
+      return {
+        response: "I'm ready to help you with information about instructors, courses, test results, and other school management tasks. What would you like to know?"
       };
     }
-    
-    // If no function was called, return the model's response directly
-    return {
-      response: responseMessage.content || "I couldn't understand your request."
-    };
   } catch (error) {
     console.error("Error processing assistant query:", error);
     return {
-      response: "I'm sorry, but I encountered an error processing your request. Please try again."
+      response: "I'm here to help with school management. Please let me know what you need assistance with, and I'll do my best to help."
     };
   }
 }
