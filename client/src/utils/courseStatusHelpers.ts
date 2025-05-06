@@ -174,6 +174,15 @@ export function calculateCourseStatus(course: Course): string {
  * @returns Either the stored or calculated status
  */
 export function getCourseStatus(course: Course, useCalculated: boolean = true): string {
+  // Always respect stored status for Completed and Starting Soon
+  if (course.status === 'Completed') {
+    return 'Completed';
+  }
+  
+  if (course.status === 'Starting Soon') {
+    return 'Starting Soon';
+  }
+  
   if (!useCalculated) {
     return course.status;
   }
