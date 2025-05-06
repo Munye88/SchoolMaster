@@ -23,6 +23,7 @@ import {
   insertActionLogSchema,
   insertCandidateSchema,
   insertInterviewQuestionSchema,
+  insertStaffCounselingSchema,
   evaluations,
   courses,
   staffLeave,
@@ -31,6 +32,7 @@ import {
   candidates,
   interviewQuestions,
   staffAttendance,
+  staffCounseling,
   events
 } from "@shared/schema";
 import { setupAuth } from "./auth";

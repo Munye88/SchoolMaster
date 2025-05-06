@@ -1125,6 +1125,50 @@ export class DatabaseStorage implements IStorage {
   async deleteInterviewQuestion(id: number): Promise<void> {
     await db.delete(interviewQuestions).where(eq(interviewQuestions.id, id));
   }
+
+  // Staff Counseling methods
+  async getStaffCounselingRecords(): Promise<StaffCounseling[]> {
+    return db.select().from(staffCounseling);
+  }
+
+  async getStaffCounselingRecord(id: number): Promise<StaffCounseling | undefined> {
+    const [record] = await db.select().from(staffCounseling).where(eq(staffCounseling.id, id));
+    return record;
+  }
+
+  async getStaffCounselingBySchool(schoolId: number): Promise<StaffCounseling[]> {
+    return db.select().from(staffCounseling).where(eq(staffCounseling.schoolId, schoolId));
+  }
+
+  async getStaffCounselingByInstructor(instructorId: number): Promise<StaffCounseling[]> {
+    return db.select().from(staffCounseling).where(eq(staffCounseling.instructorId, instructorId));
+  }
+
+  async createStaffCounseling(counselingData: InsertStaffCounseling): Promise<StaffCounseling> {
+    const [record] = await db.insert(staffCounseling)
+      .values({
+        ...counselingData,
+        createdAt: new Date()
+      })
+      .returning();
+    return record;
+  }
+
+  async updateStaffCounseling(id: number, counselingData: Partial<InsertStaffCounseling>): Promise<StaffCounseling | undefined> {
+    const [updated] = await db
+      .update(staffCounseling)
+      .set({
+        ...counselingData,
+        updatedAt: new Date()
+      })
+      .where(eq(staffCounseling.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteStaffCounseling(id: number): Promise<void> {
+    await db.delete(staffCounseling).where(eq(staffCounseling.id, id));
+  }
 }
 
 // Switch from MemStorage to DatabaseStorage
