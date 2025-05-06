@@ -13,7 +13,8 @@ import {
   type StaffLeave, type InsertStaffLeave, staffLeave,
   type ActionLog, type InsertActionLog, actionLogs,
   type Candidate, type InsertCandidate, candidates,
-  type InterviewQuestion, type InsertInterviewQuestion, interviewQuestions
+  type InterviewQuestion, type InsertInterviewQuestion, interviewQuestions,
+  type StaffCounseling, type InsertStaffCounseling, staffCounseling
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, lt, gt, gte, and, isNull, or, sql } from "drizzle-orm";
@@ -113,6 +114,15 @@ export interface IStorage {
   createInterviewQuestion(question: InsertInterviewQuestion): Promise<InterviewQuestion>;
   updateInterviewQuestion(id: number, question: Partial<InsertInterviewQuestion>): Promise<InterviewQuestion | undefined>;
   deleteInterviewQuestion(id: number): Promise<void>;
+  
+  // Staff Counseling methods
+  getStaffCounselingRecords(): Promise<StaffCounseling[]>;
+  getStaffCounselingRecord(id: number): Promise<StaffCounseling | undefined>;
+  getStaffCounselingBySchool(schoolId: number): Promise<StaffCounseling[]>;
+  getStaffCounselingByInstructor(instructorId: number): Promise<StaffCounseling[]>;
+  createStaffCounseling(counseling: InsertStaffCounseling): Promise<StaffCounseling>;
+  updateStaffCounseling(id: number, counseling: Partial<InsertStaffCounseling>): Promise<StaffCounseling | undefined>;
+  deleteStaffCounseling(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -129,6 +139,7 @@ export class MemStorage implements IStorage {
   private staffAttendances: Map<number, StaffAttendance>;
   private candidates: Map<number, Candidate>;
   private interviewQuestions: Map<number, InterviewQuestion>;
+  private staffCounselings: Map<number, StaffCounseling>;
   
   private currentIds: {
     user: number;
@@ -144,6 +155,7 @@ export class MemStorage implements IStorage {
     staffAttendance: number;
     candidate: number;
     interviewQuestion: number;
+    staffCounseling: number;
   };
 
   constructor() {
@@ -160,6 +172,7 @@ export class MemStorage implements IStorage {
     this.staffAttendances = new Map();
     this.candidates = new Map();
     this.interviewQuestions = new Map();
+    this.staffCounselings = new Map();
     
     this.currentIds = {
       user: 1,
@@ -174,7 +187,8 @@ export class MemStorage implements IStorage {
       event: 1,
       staffAttendance: 1,
       candidate: 1,
-      interviewQuestion: 1
+      interviewQuestion: 1,
+      staffCounseling: 1
     };
     
     // Initialize with sample data
@@ -675,6 +689,47 @@ export class MemStorage implements IStorage {
   
   async deleteInterviewQuestion(id: number): Promise<void> {
     this.interviewQuestions.delete(id);
+  }
+
+  // Staff Counseling methods
+  async getStaffCounselingRecords(): Promise<StaffCounseling[]> {
+    return Array.from(this.staffCounselings.values());
+  }
+
+  async getStaffCounselingRecord(id: number): Promise<StaffCounseling | undefined> {
+    return this.staffCounselings.get(id);
+  }
+
+  async getStaffCounselingBySchool(schoolId: number): Promise<StaffCounseling[]> {
+    return Array.from(this.staffCounselings.values()).filter(
+      (counseling) => counseling.schoolId === schoolId
+    );
+  }
+
+  async getStaffCounselingByInstructor(instructorId: number): Promise<StaffCounseling[]> {
+    return Array.from(this.staffCounselings.values()).filter(
+      (counseling) => counseling.instructorId === instructorId
+    );
+  }
+
+  async createStaffCounseling(counseling: InsertStaffCounseling): Promise<StaffCounseling> {
+    const id = this.currentIds.staffCounseling++;
+    const staffCounseling: StaffCounseling = { ...counseling, id };
+    this.staffCounselings.set(id, staffCounseling);
+    return staffCounseling;
+  }
+
+  async updateStaffCounseling(id: number, counseling: Partial<InsertStaffCounseling>): Promise<StaffCounseling | undefined> {
+    const existing = await this.getStaffCounselingRecord(id);
+    if (!existing) return undefined;
+    
+    const updated = { ...existing, ...counseling };
+    this.staffCounselings.set(id, updated);
+    return updated;
+  }
+
+  async deleteStaffCounseling(id: number): Promise<void> {
+    this.staffCounselings.delete(id);
   }
 }
 
