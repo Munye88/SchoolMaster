@@ -2341,6 +2341,17 @@ const TestTracker = () => {
                           stroke="#4285F4" 
                           strokeWidth={2}
                           activeDot={{ r: 8 }}
+                          label={{
+                            position: 'top',
+                            formatter: (value: number) => `${value}`,
+                            fill: '#000',
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            backgroundColor: 'rgba(255,255,255,0.85)',
+                            padding: 5,
+                            border: '2px solid #666',
+                            borderRadius: 8
+                          }}
                         />
                         <Line 
                           type="monotone" 
@@ -2349,6 +2360,17 @@ const TestTracker = () => {
                           stroke="#34A853" 
                           strokeWidth={2}
                           activeDot={{ r: 8 }}
+                          label={{
+                            position: 'top',
+                            formatter: (value: number) => `${value}%`,
+                            fill: '#000',
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            backgroundColor: 'rgba(255,255,255,0.85)',
+                            padding: 5,
+                            border: '2px solid #666',
+                            borderRadius: 8
+                          }}
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -2389,6 +2411,13 @@ const TestTracker = () => {
                           stroke="#4285F4" 
                           strokeWidth={2}
                           activeDot={{ r: 8 }}
+                          label={{
+                            position: 'top',
+                            formatter: (value: number) => `${value}`,
+                            fill: '#000',
+                            fontSize: 18,
+                            fontWeight: 'bold'
+                          }}
                         />
                         <Line 
                           type="monotone" 
@@ -2397,6 +2426,13 @@ const TestTracker = () => {
                           stroke="#34A853" 
                           strokeWidth={2}
                           activeDot={{ r: 8 }}
+                          label={{
+                            position: 'top',
+                            formatter: (value: number) => `${value}%`,
+                            fill: '#000',
+                            fontSize: 18,
+                            fontWeight: 'bold'
+                          }}
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -2570,10 +2606,6 @@ const TestTracker = () => {
                           fill: '#000', 
                           fontSize: 22,
                           fontWeight: 'bold',
-                          backgroundColor: 'rgba(255,255,255,0.85)',
-                          padding: 5,
-                          border: '2px solid #666',
-                          borderRadius: 8,
                           stroke: '#fff',
                           strokeWidth: 2
                         }}
