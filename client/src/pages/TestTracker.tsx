@@ -2830,39 +2830,7 @@ const TestTracker = () => {
                         ))}
                       </Bar>
                       {/* Move percentage labels inside the bars for better readability */}
-                      {filteredTestData.map((entry, index) => (
-                        <g key={`label-group-${index}`}>
-                          <text 
-                            key={`value-shadow-${index}`}
-                            x={Math.min(entry.passingRate - 7, 92)} 
-                            y={index * 36 + 18} 
-                            textAnchor="end"
-                            dominantBaseline="middle"
-                            fill="#ffffff"
-                            fontSize="14"
-                            fontWeight="700"
-                            stroke="#000000"
-                            strokeWidth={3}
-                            strokeOpacity={0.3}
-                            paintOrder="stroke"
-                          >
-                            {entry.passingRate}%
-                          </text>
-                          <text 
-                            key={`label-${index}`}
-                            x={Math.min(entry.passingRate - 7, 92)} 
-                            y={index * 36 + 18} 
-                            textAnchor="end"
-                            dominantBaseline="middle"
-                            fill="#ffffff"
-                            fontSize="14"
-                            fontWeight="700"
-                            paintOrder="fill"
-                          >
-                            {entry.passingRate}%
-                          </text>
-                        </g>
-                      ))}
+                      {/* Removed percentage labels as requested */}
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
