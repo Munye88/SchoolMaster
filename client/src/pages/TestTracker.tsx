@@ -949,7 +949,7 @@ const TestTracker = () => {
     csvContent += "School,Students,Average Score,Pass Rate,Status\n";
     
     filteredTestData.forEach(data => {
-      const status = data.passingRate >= 70 ? "PASS" : "NEEDS IMPROVEMENT";
+      const status = data.passingRate >= (data.testType === 'Book' ? 66 : 70) ? "PASS" : "NEEDS IMPROVEMENT";
       csvContent += `${data.schoolName},${data.studentCount},${data.averageScore},${data.passingRate}%,${status}\n`;
     });
     
@@ -1126,8 +1126,8 @@ const TestTracker = () => {
                   <td>${data.averageScore}</td>
                   <td>${data.passingRate}%</td>
                   <td>
-                    <span class="${data.passingRate >= 70 ? 'pass-badge' : 'fail-badge'}">
-                      ${data.passingRate >= 70 ? 'PASS' : 'NEEDS IMPROVEMENT'}
+                    <span class="${data.passingRate >= (data.testType === 'Book' ? 66 : 70) ? 'pass-badge' : 'fail-badge'}">
+                      ${data.passingRate >= (data.testType === 'Book' ? 66 : 70) ? 'PASS' : 'NEEDS IMPROVEMENT'}
                     </span>
                   </td>
                 </tr>
