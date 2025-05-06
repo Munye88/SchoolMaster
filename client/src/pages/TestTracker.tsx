@@ -2273,7 +2273,7 @@ const TestTracker = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
-                <div className="h-80">
+                <div className="h-96">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={filteredTestData}
@@ -2363,7 +2363,7 @@ const TestTracker = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4">
-                  <div className="h-80">
+                  <div className="h-96">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart
                         data={allBookTestData.filter(data => data.schoolId.toString() === (selectedSchoolFilter === 'all' ? '349' : selectedSchoolFilter)).sort((a, b) => (a.cycle || 0) - (b.cycle || 0))}
@@ -2445,7 +2445,7 @@ const TestTracker = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4">
-                  <div className="h-80">
+                  <div className="h-96">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart
                         data={allMonthlyData.filter(data => 
@@ -2579,7 +2579,7 @@ const TestTracker = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
-                <div className="h-80">
+                <div className="h-96">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartPieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                       <defs>
@@ -2783,7 +2783,7 @@ const TestTracker = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
-                <div className="h-80">
+                <div className="h-96">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={filteredTestData}
