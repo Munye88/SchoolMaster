@@ -2670,6 +2670,67 @@ const TestTracker = () => {
                     </RechartPieChart>
                   </ResponsiveContainer>
                 </div>
+                <div className="mt-4 px-4">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="bg-purple-50">
+                        <th className="p-2 text-left text-sm font-semibold text-blue-900 border border-purple-100">School</th>
+                        <th className="p-2 text-center text-sm font-semibold text-blue-900 border border-purple-100">Students</th>
+                        <th className="p-2 text-center text-sm font-semibold text-blue-900 border border-purple-100">Distribution</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="bg-white">
+                        <td className="p-2 text-sm border border-gray-100 font-medium">KFNA</td>
+                        <td className="p-2 text-sm border border-gray-100 text-center font-semibold text-blue-600">
+                          {filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0}
+                        </td>
+                        <td className="p-2 text-sm border border-gray-100 text-center font-semibold text-blue-600">
+                          {Math.round((filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0) / (
+                            (filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0) + 
+                            (filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0) + 
+                            (filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0)
+                          ) * 100)}%
+                        </td>
+                      </tr>
+                      <tr className="bg-gray-50">
+                        <td className="p-2 text-sm border border-gray-100 font-medium">NFS East</td>
+                        <td className="p-2 text-sm border border-gray-100 text-center font-semibold text-green-600">
+                          {filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0}
+                        </td>
+                        <td className="p-2 text-sm border border-gray-100 text-center font-semibold text-green-600">
+                          {Math.round((filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0) / (
+                            (filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0) + 
+                            (filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0) + 
+                            (filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0)
+                          ) * 100)}%
+                        </td>
+                      </tr>
+                      <tr className="bg-white">
+                        <td className="p-2 text-sm border border-gray-100 font-medium">NFS West</td>
+                        <td className="p-2 text-sm border border-gray-100 text-center font-semibold text-orange-600">
+                          {filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0}
+                        </td>
+                        <td className="p-2 text-sm border border-gray-100 text-center font-semibold text-orange-600">
+                          {Math.round((filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0) / (
+                            (filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0) + 
+                            (filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0) + 
+                            (filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0)
+                          ) * 100)}%
+                        </td>
+                      </tr>
+                      <tr className="bg-gray-50">
+                        <td className="p-2 text-sm border border-gray-100 font-medium">Total</td>
+                        <td className="p-2 text-sm border border-gray-100 text-center font-semibold text-blue-800">
+                          {(filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0) + 
+                           (filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0) + 
+                           (filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0)}
+                        </td>
+                        <td className="p-2 text-sm border border-gray-100 text-center font-semibold text-blue-800">100%</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </CardContent>
             </Card>
             
@@ -2768,33 +2829,33 @@ const TestTracker = () => {
                           />
                         ))}
                       </Bar>
-                      {/* Custom rendering for percentage labels */}
+                      {/* Custom rendering for percentage labels - smaller and properly positioned */}
                       {filteredTestData.map((entry, index) => (
                         <g key={`label-group-${index}`}>
                           <text 
                             key={`value-shadow-${index}`}
-                            x={entry.passingRate + 3} 
+                            x={entry.passingRate + 5} 
                             y={index * 36 + 18} 
                             textAnchor="start"
                             dominantBaseline="middle"
                             fill="rgba(255,255,255,0.7)"
-                            fontSize="32"
-                            fontWeight="900"
+                            fontSize="14"
+                            fontWeight="700"
                             stroke="#ffffff"
-                            strokeWidth={8}
+                            strokeWidth={3}
                             paintOrder="stroke"
                           >
                             {entry.passingRate}%
                           </text>
                           <text 
                             key={`label-${index}`}
-                            x={entry.passingRate + 3} 
+                            x={entry.passingRate + 5} 
                             y={index * 36 + 18} 
                             textAnchor="start"
                             dominantBaseline="middle"
                             fill={entry.passingRate >= (entry.testType === 'Book' ? 66 : 70) ? "#34A853" : "#EA4335"}
-                            fontSize="32"
-                            fontWeight="900"
+                            fontSize="14"
+                            fontWeight="700"
                             paintOrder="fill"
                           >
                             {entry.passingRate}%
