@@ -91,8 +91,7 @@ const courseTypes = [
 // Function to check if a course is archived (completed more than 30 days ago)
 const checkIfArchived = (course: Course) => {
   // First check the course status - only completed courses can be archived
-  const status = getCourseStatus(course);
-  if (status !== 'Completed') return false;
+  if (course.status !== 'Completed') return false;
   
   // Then check if it's been more than 30 days since completion
   if (course.endDate) {
@@ -156,9 +155,10 @@ export default function Courses() {
   };
 
   // Add debugging for all courses
-  console.log("---------- ALL COURSES STATUS ----------");
+  console.log("---------- ALL COURSES STATUS & ARCHIVE STATE ----------");
   courses.forEach(course => {
-    console.log(`Course ${course.name} (ID: ${course.id}): Status=${course.status}`);
+    const isArchived = checkIfArchived(course);
+    console.log(`Course ${course.name} (ID: ${course.id}): Status=${course.status}, Archived=${isArchived}`);
   });
 
   // Filter courses by selected criteria
@@ -172,8 +172,12 @@ export default function Courses() {
         getSchoolName(course.schoolId).toLowerCase().includes(searchQuery.toLowerCase())
       : true;
     
+    // If we're on the completed tab, ignore archive status
+    const isCompletedTab = activeTab === 'completed';
+    
     // Filter based on whether we're in archive view
-    const archiveFilter = isArchiveView ? checkIfArchived(course) : !checkIfArchived(course);
+    // But if on completed tab, don't apply the archive filter
+    const archiveFilter = isCompletedTab ? true : (isArchiveView ? checkIfArchived(course) : !checkIfArchived(course));
     
     // Filter by status tab - only applies when not in archive view
     let statusFilter = true;
