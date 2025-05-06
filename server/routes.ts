@@ -37,6 +37,7 @@ import {
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
+import { processAssistantQuery } from "./services/aiAssistant";
 import { AIChatRequest } from "../client/src/lib/ai-types";
 import { initDatabase } from "./initDb";
 
@@ -1266,6 +1267,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
           role: "assistant",
           content: "I'm sorry, I encountered an error while processing your request. Please try again."
         }
+      });
+    }
+  });
+  
+  // AI Personal Assistant
+  app.post("/api/assistant/query", async (req, res) => {
+    try {
+      const { query, conversationContext } = req.body;
+      
+      if (!query || typeof query !== 'string') {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Invalid query. Please provide a valid query string.' 
+        });
+      }
+      
+      // Process the query through our AI assistant service
+      const result = await processAssistantQuery(query, conversationContext || []);
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "assistant_query",
+        description: `AI assistant query: "${query.substring(0, 50)}${query.length > 50 ? '...' : ''}"`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      return res.status(200).json({
+        success: true,
+        ...result
+      });
+    } catch (error) {
+      console.error('Error processing AI assistant query:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'An error occurred while processing your request. Please try again.'
       });
     }
   });

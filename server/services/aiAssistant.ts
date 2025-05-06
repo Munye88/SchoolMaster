@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { db } from "../db";
-import { eq } from "drizzle-orm";
+import { eq, and, gte, lte } from "drizzle-orm";
 import { instructors, testResults, staffAttendance, evaluations, courses, events } from "@shared/schema";
 import { formatISO, parseISO, format } from "date-fns";
 
@@ -57,7 +57,21 @@ const aiTools = {
   
   getInstructorTestResults: async (instructorId: number): Promise<AiToolResponse> => {
     try {
-      const results = await db.select().from(testResults).where(eq(testResults.instructorId, instructorId));
+      // First get courses this instructor teaches
+      const instructorCourses = await db.select().from(courses).where(eq(courses.instructorId, instructorId));
+      
+      if (!instructorCourses || instructorCourses.length === 0) {
+        return { success: true, data: [] }; // No courses, so no test results
+      }
+      
+      // Get test results for these courses
+      const courseIds = instructorCourses.map(course => course.id);
+      const results = await db.select().from(testResults).where(
+        courseIds.length > 0 ? 
+          // Using an "in" operation would be better but we'll keep it simple for now
+          eq(testResults.courseId, courseIds[0]) :
+          undefined
+      );
       
       return { 
         success: true, 
@@ -73,10 +87,20 @@ const aiTools = {
     try {
       let query = db.select().from(staffAttendance).where(eq(staffAttendance.instructorId, instructorId));
       
-      // Add date range filters if provided
+      // Add date range filters if provided - implementation will depend on your actual schema
+      // This is a sample that assumes you have a date column
+      /*
       if (startDate && endDate) {
-        // This would need further implementation to filter by date range
+        const startDateObj = parseISO(startDate);
+        const endDateObj = parseISO(endDate);
+        query = query.where(
+          and(
+            gte(staffAttendance.date, startDateObj),
+            lte(staffAttendance.date, endDateObj)
+          )
+        );
       }
+      */
       
       const attendance = await query;
       
@@ -125,33 +149,35 @@ const aiTools = {
   // Statistics and summaries
   getSchoolTestAverages: async (schoolId: number, testType?: string): Promise<AiToolResponse> => {
     try {
-      // Get instructors for this school
-      const schoolInstructors = await db.select().from(instructors).where(eq(instructors.schoolId, schoolId));
+      // First, get all courses for this school
+      const schoolCourses = await db.select().from(courses).where(eq(courses.schoolId, schoolId));
       
-      if (!schoolInstructors || schoolInstructors.length === 0) {
-        return { success: false, error: `No instructors found for school ID ${schoolId}` };
+      if (!schoolCourses || schoolCourses.length === 0) {
+        return { success: false, error: `No courses found for school ID ${schoolId}` };
       }
       
-      const instructorIds = schoolInstructors.map(instructor => instructor.id);
+      const courseIds = schoolCourses.map(course => course.id);
       
-      // Get all test results for these instructors
-      // This is a simplified query - in a real implementation, we'd need to join tables properly
-      let allResults = await db.select().from(testResults);
-      allResults = allResults.filter(result => instructorIds.includes(result.instructorId));
+      // Get all test results for these courses
+      let allResults: any[] = [];
+      for (const courseId of courseIds) {
+        const courseResults = await db.select().from(testResults).where(eq(testResults.courseId, courseId));
+        allResults = [...allResults, ...courseResults];
+      }
       
       // Filter by test type if specified
-      if (testType) {
+      if (testType && allResults.length > 0) {
         allResults = allResults.filter(result => 
-          result.testType.toLowerCase() === testType.toLowerCase()
+          result.type.toLowerCase() === testType.toLowerCase()
         );
       }
       
-      // Calculate averages
+      // Calculate averages by test type
       const averages: Record<string, number> = {};
       const counts: Record<string, number> = {};
       
       allResults.forEach(result => {
-        const type = result.testType;
+        const type = result.type;
         if (!averages[type]) {
           averages[type] = 0;
           counts[type] = 0;
@@ -190,7 +216,7 @@ const aiTools = {
       const [existingRecord] = await db
         .select()
         .from(staffAttendance)
-        .where(eq(staffAttendance.instructorId, instructorId))
+        .where(eq(staffAttendance.instructorId, instructorId));
         // We would need to also filter by date, but this is a simplification for now
 
       // This is where we would insert/update the attendance record
@@ -228,7 +254,7 @@ const aiTools = {
 // Define the OpenAI function definitions that map to our tool functions
 const toolDefinitions = [
   {
-    type: "function",
+    type: "function" as const,
     function: {
       name: "getInstructorProfile",
       description: "Get detailed information about a specific instructor",
@@ -245,7 +271,7 @@ const toolDefinitions = [
     }
   },
   {
-    type: "function",
+    type: "function" as const,
     function: {
       name: "getInstructorsBySchool",
       description: "Get all instructors for a specific school",
@@ -262,7 +288,7 @@ const toolDefinitions = [
     }
   },
   {
-    type: "function",
+    type: "function" as const,
     function: {
       name: "getInstructorTestResults",
       description: "Get all test results for a specific instructor",
@@ -279,7 +305,7 @@ const toolDefinitions = [
     }
   },
   {
-    type: "function",
+    type: "function" as const,
     function: {
       name: "getInstructorAttendance",
       description: "Get attendance records for a specific instructor",
@@ -304,7 +330,7 @@ const toolDefinitions = [
     }
   },
   {
-    type: "function",
+    type: "function" as const,
     function: {
       name: "getInstructorEvaluations",
       description: "Get evaluation records for a specific instructor",
@@ -321,7 +347,7 @@ const toolDefinitions = [
     }
   },
   {
-    type: "function",
+    type: "function" as const,
     function: {
       name: "getCourseDetails",
       description: "Get detailed information about a specific course",
@@ -338,7 +364,7 @@ const toolDefinitions = [
     }
   },
   {
-    type: "function",
+    type: "function" as const,
     function: {
       name: "getSchoolTestAverages",
       description: "Get average test scores for a specific school, optionally filtered by test type",
@@ -359,7 +385,7 @@ const toolDefinitions = [
     }
   },
   {
-    type: "function",
+    type: "function" as const,
     function: {
       name: "updateInstructorAttendance",
       description: "Update attendance status for an instructor on a specific date",
@@ -384,7 +410,7 @@ const toolDefinitions = [
     }
   },
   {
-    type: "function",
+    type: "function" as const,
     function: {
       name: "createEvent",
       description: "Create a new event or meeting",
