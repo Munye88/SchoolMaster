@@ -155,6 +155,12 @@ export default function Courses() {
     }
   };
 
+  // Add debugging for all courses
+  console.log("---------- ALL COURSES STATUS ----------");
+  courses.forEach(course => {
+    console.log(`Course ${course.name} (ID: ${course.id}): Status=${course.status}`);
+  });
+
   // Filter courses by selected criteria
   const filteredCourses = courses.filter((course: Course) => {
     // Filter by school
@@ -173,12 +179,11 @@ export default function Courses() {
     let statusFilter = true;
     if (!isArchiveView) {
       if (activeTab === 'inProgress') {
-        statusFilter = getCourseStatus(course) === 'In Progress';
+        statusFilter = course.status === 'In Progress';
       } else if (activeTab === 'upcoming') {
-        // Check for 'Starting Soon' instead of 'Upcoming'
-        statusFilter = getCourseStatus(course) === 'Starting Soon';
+        statusFilter = course.status === 'Starting Soon';
       } else if (activeTab === 'completed') {
-        statusFilter = getCourseStatus(course) === 'Completed';
+        statusFilter = course.status === 'Completed';
       }
     }
     
@@ -188,9 +193,9 @@ export default function Courses() {
   // Statistics for the summary cards
   const stats = {
     total: courses.length,
-    inProgress: courses.filter(c => getCourseStatus(c) === 'In Progress').length,
-    completed: courses.filter(c => getCourseStatus(c) === 'Completed').length,
-    upcoming: courses.filter(c => getCourseStatus(c) === 'Starting Soon').length,
+    inProgress: courses.filter(c => c.status === 'In Progress').length,
+    completed: courses.filter(c => c.status === 'Completed').length,
+    upcoming: courses.filter(c => c.status === 'Starting Soon').length,
     totalStudents: courses.reduce((acc, course) => acc + course.studentCount, 0),
     archived: courses.filter(c => checkIfArchived(c)).length,
   };
