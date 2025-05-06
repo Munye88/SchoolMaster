@@ -127,15 +127,19 @@ const StaffCounseling = () => {
 
   // Fetch instructors for this school
   const { data: instructors } = useQuery({
-    queryKey: ['/api/schools', schoolId, 'instructors'],
+    queryKey: ['/api/instructors'],
     queryFn: async () => {
-      if (!schoolId) return [];
-      const response = await fetch(`/api/schools/${schoolId}/instructors`);
+      const response = await fetch('/api/instructors');
       if (!response.ok) throw new Error('Failed to fetch instructors');
       return response.json();
-    },
-    enabled: !!schoolId
+    }
   });
+  
+  // Filter instructors for the current school
+  const schoolInstructors = useMemo(() => {
+    if (!instructors || !schoolId) return [];
+    return instructors.filter((instructor: Instructor) => instructor.schoolId === parseInt(schoolId));
+  }, [instructors, schoolId]);
 
   // Create mutation
   const createMutation = useMutation({
