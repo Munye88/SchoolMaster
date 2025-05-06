@@ -61,6 +61,7 @@ interface StaffCounseling {
   createdBy: number | null;
   createdAt: Date;
   updatedAt: Date | null;
+  instructorName?: string; // For joining with instructor data
 }
 
 interface Instructor {
@@ -70,6 +71,12 @@ interface Instructor {
   role: string | null;
   nationality: string;
   schoolId: number;
+}
+
+interface CounselingStats {
+  totalCounselings: number;
+  byType: Record<string, number>;
+  byInstructor: Record<number, { name: string, count: number }>;
 }
 
 const StaffCounseling = () => {

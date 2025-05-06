@@ -15,6 +15,7 @@ import { permanentFixNfsWestImages } from './migrations/permanent_fix_nfs_west_i
 import { addCompletedDateField } from './migrations/add_completed_date';
 import { addColumnsToEvaluations } from './migrations/add_columns_to_evaluations';
 import { addNotificationsTable } from './migrations/add_notifications_table';
+import { addStaffCounselingTable } from './migrations/add_staff_counseling_table';
 
 export async function initDatabase() {
   try {
@@ -145,6 +146,9 @@ export async function initDatabase() {
     
     // Add notifications table
     await addNotificationsTable();
+    
+    // Add staff counseling table
+    await addStaffCounselingTable();
     
     return true;
   } catch (error) {
