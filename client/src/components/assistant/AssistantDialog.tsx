@@ -54,11 +54,11 @@ export function AssistantDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="secondary" className="fixed bottom-4 right-4 rounded-full shadow-lg p-4 h-14 w-14">
+        <Button variant="default" className="fixed bottom-20 right-6 rounded-full shadow-lg h-14 flex items-center gap-2 px-4 bg-blue-600 hover:bg-blue-700 text-white">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
+            width="20"
+            height="20"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -66,10 +66,11 @@ export function AssistantDialog() {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path>
-            <path d="M12 9h.01"></path>
-            <path d="M12 12v4"></path>
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 16v-4"></path>
+            <path d="M12 8h.01"></path>
           </svg>
+          <span>AI Assistant</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md md:max-w-xl lg:max-w-2xl h-[80vh] p-0 gap-0">
