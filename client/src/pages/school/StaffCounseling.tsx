@@ -138,7 +138,7 @@ const StaffCounseling = () => {
   // Filter instructors for the current school
   const schoolInstructors = useMemo(() => {
     if (!instructors || !schoolId) return [];
-    return instructors.filter((instructor: Instructor) => instructor.schoolId === parseInt(schoolId));
+    return instructors.filter((instructor: Instructor) => instructor.schoolId === (typeof schoolId === 'string' ? parseInt(schoolId) : schoolId));
   }, [instructors, schoolId]);
 
   // Create mutation
@@ -323,7 +323,8 @@ const StaffCounseling = () => {
 
   // Get instructor name by ID
   const getInstructorName = (id: number) => {
-    const instructor = instructors?.find((i: Instructor) => i.id === id);
+    const instructor = schoolInstructors?.find((i: Instructor) => i.id === id) || 
+                     instructors?.find((i: Instructor) => i.id === id);
     return instructor?.name || 'Unknown';
   };
 
@@ -398,7 +399,7 @@ const StaffCounseling = () => {
     });
     
     return stats;
-  }, [counselingRecords, instructors]);
+  }, [counselingRecords, schoolInstructors]);
   
   // Prepare chart data
   const typeChartData = useMemo(() => {
