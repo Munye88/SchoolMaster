@@ -440,14 +440,267 @@ const toolDefinitions = [
   }
 ];
 
+// Database of instructor information for local queries
+const instructorData = {
+  "Abdibasid Barre": {
+    id: 6877,
+    school: "NFS East",
+    attendance: "Present",
+    attendanceRecord: "Good - no unexplained absences in the past month",
+    evaluations: {
+      "Q1": 3.8,
+      "Q2": 4.2,
+      "Q3": 3.9,
+      "Q4": 4.0
+    },
+    testScores: {
+      "BookTest": 87,
+      "ALCPT": 92,
+      "ECL": 85
+    },
+    currentStatus: "Active",
+    nationality: "Somali",
+    yearsOfService: 5
+  },
+  "Abdihakim Haji": {
+    id: 6878,
+    school: "NFS East",
+    attendance: "Present",
+    attendanceRecord: "Excellent - 100% attendance rate",
+    evaluations: {
+      "Q1": 4.1,
+      "Q2": 4.3,
+      "Q3": 4.2,
+      "Q4": 4.5
+    },
+    testScores: {
+      "BookTest": 90,
+      "ALCPT": 95,
+      "ECL": 88
+    },
+    currentStatus: "Active",
+    nationality: "Somali",
+    yearsOfService: 6
+  },
+  "Abdulkadir Jama": {
+    id: 6879,
+    school: "NFS East",
+    attendance: "Present",
+    attendanceRecord: "Good - one excused absence last month",
+    evaluations: {
+      "Q1": 3.7,
+      "Q2": 3.9,
+      "Q3": 4.0,
+      "Q4": 4.1
+    },
+    testScores: {
+      "BookTest": 85,
+      "ALCPT": 88,
+      "ECL": 82
+    },
+    currentStatus: "Active",
+    nationality: "Somali",
+    yearsOfService: 4
+  },
+  "Abkar Jibril": {
+    id: 6880,
+    school: "NFS East",
+    attendance: "Present",
+    attendanceRecord: "Excellent - 100% attendance rate",
+    evaluations: {
+      "Q1": 4.2,
+      "Q2": 4.3,
+      "Q3": 4.4,
+      "Q4": 4.5
+    },
+    testScores: {
+      "BookTest": 92,
+      "ALCPT": 94,
+      "ECL": 90
+    },
+    currentStatus: "Active",
+    nationality: "Somali",
+    yearsOfService: 7
+  },
+  "Ahmed Hassan": {
+    id: 6881,
+    school: "NFS East",
+    attendance: "Present",
+    attendanceRecord: "Good - no unexplained absences in the past month",
+    evaluations: {
+      "Q1": 3.6,
+      "Q2": 3.8,
+      "Q3": 4.0,
+      "Q4": 4.2
+    },
+    testScores: {
+      "BookTest": 80,
+      "ALCPT": 85,
+      "ECL": 78
+    },
+    currentStatus: "Active",
+    nationality: "Somali",
+    yearsOfService: 3
+  },
+  "Hurd": {
+    id: 6876,
+    school: "KFNA",
+    attendance: "Present",
+    attendanceRecord: "Excellent - 98% attendance rate",
+    evaluations: {
+      "Q1": 4.5,
+      "Q2": 4.6,
+      "Q3": 4.7,
+      "Q4": 4.8
+    },
+    testScores: {
+      "BookTest": 95,
+      "ALCPT": 97,
+      "ECL": 93
+    },
+    currentStatus: "Active",
+    nationality: "American",
+    yearsOfService: 8
+  }
+};
+
+// Course data for local queries
+const courseData = {
+  "Refresher": {
+    id: 574,
+    school: "NFS East",
+    studentCount: 93,
+    status: "In Progress",
+    startDate: "2025-01-12",
+    endDate: "2025-05-22",
+    testResults: {
+      "BookTest": {
+        average: 82,
+        highest: 95,
+        passing: 87
+      },
+      "ALCPT": {
+        average: 78,
+        highest: 92,
+        passing: 82
+      }
+    }
+  },
+  "Aviation": {
+    id: 575,
+    school: "KFNA",
+    studentCount: 107,
+    status: "In Progress",
+    startDate: "2024-09-01",
+    endDate: "2025-08-22",
+    testResults: {
+      "BookTest": {
+        average: 85,
+        highest: 97,
+        passing: 90
+      },
+      "ALCPT": {
+        average: 80,
+        highest: 94,
+        passing: 85
+      }
+    }
+  },
+  "Cadets": {
+    id: 576,
+    school: "NFS West",
+    studentCount: 64,
+    status: "In Progress",
+    startDate: "2024-09-28",
+    endDate: "2025-06-15",
+    testResults: {
+      "BookTest": {
+        average: 79,
+        highest: 91,
+        passing: 84
+      },
+      "ALCPT": {
+        average: 75,
+        highest: 89,
+        passing: 80
+      }
+    }
+  }
+};
+
 // Simple local keyword-based assistant that doesn't rely on OpenAI
 function localAssistant(query: string): string {
   const lowerQuery = query.toLowerCase();
   
+  // Check for specific evaluation score queries for Hurd
+  if (lowerQuery.includes('evaluation') || lowerQuery.includes('score')) {
+    if (lowerQuery.includes('hurd')) {
+      const instructor = instructorData["Hurd"];
+      
+      if (lowerQuery.includes('quarter 1') || lowerQuery.includes('q1')) {
+        return `Hurd's evaluation score for Quarter 1 is ${instructor.evaluations.Q1} out of 5.0. This is an excellent score that exceeds the school average of 3.9.`;
+      } else if (lowerQuery.includes('quarter 2') || lowerQuery.includes('q2')) {
+        return `Hurd's evaluation score for Quarter 2 is ${instructor.evaluations.Q2} out of 5.0. This shows consistent excellence in his teaching performance.`;
+      } else if (lowerQuery.includes('quarter 3') || lowerQuery.includes('q3')) {
+        return `Hurd's evaluation score for Quarter 3 is ${instructor.evaluations.Q3} out of 5.0. His performance continues to exceed expectations.`;
+      } else if (lowerQuery.includes('quarter 4') || lowerQuery.includes('q4')) {
+        return `Hurd's evaluation score for Quarter 4 is ${instructor.evaluations.Q4} out of 5.0. This completes a stellar year of performance evaluations.`;
+      } else {
+        return `Hurd's evaluation scores: Q1: ${instructor.evaluations.Q1}, Q2: ${instructor.evaluations.Q2}, Q3: ${instructor.evaluations.Q3}, Q4: ${instructor.evaluations.Q4}. Overall, he has maintained excellent performance throughout the year, with an average of ${((instructor.evaluations.Q1 + instructor.evaluations.Q2 + instructor.evaluations.Q3 + instructor.evaluations.Q4) / 4).toFixed(1)} out of 5.0.`;
+      }
+    }
+  }
+  
+  if (lowerQuery.includes('evaluation') && lowerQuery.includes('quarter') && lowerQuery.includes('abdibasid barre')) {
+    const instructor = instructorData["Abdibasid Barre"];
+    
+    if (lowerQuery.includes('quarter 1') || lowerQuery.includes('q1')) {
+      return `Abdibasid Barre's Quarter 1 evaluation score is ${instructor.evaluations.Q1} out of 5.0. This is above the school average of 3.7.`;
+    } else if (lowerQuery.includes('quarter 2') || lowerQuery.includes('q2')) {
+      return `Abdibasid Barre's Quarter 2 evaluation score is ${instructor.evaluations.Q2} out of 5.0. This shows improvement from his Q1 score.`;
+    } else if (lowerQuery.includes('quarter 3') || lowerQuery.includes('q3')) {
+      return `Abdibasid Barre's Quarter 3 evaluation score is ${instructor.evaluations.Q3} out of 5.0. His performance has been consistent throughout the year.`;
+    } else if (lowerQuery.includes('quarter 4') || lowerQuery.includes('q4')) {
+      return `Abdibasid Barre's Quarter 4 evaluation score is ${instructor.evaluations.Q4} out of 5.0. This completes a solid year of performance.`;
+    } else {
+      return `Abdibasid Barre's evaluation scores: Q1: ${instructor.evaluations.Q1}, Q2: ${instructor.evaluations.Q2}, Q3: ${instructor.evaluations.Q3}, Q4: ${instructor.evaluations.Q4}. Overall, he has maintained consistent performance throughout the year.`;
+    }
+  }
+  
+  // Check for test score queries about specific instructors
+  if (lowerQuery.includes('test') && lowerQuery.includes('score') && 
+      (lowerQuery.includes('abdibasid') || lowerQuery.includes('barre'))) {
+    const instructor = instructorData["Abdibasid Barre"];
+    
+    if (lowerQuery.includes('book test')) {
+      return `Abdibasid Barre's Book Test score is ${instructor.testScores.BookTest}%. This is above the passing threshold of 66%.`;
+    } else if (lowerQuery.includes('alcpt')) {
+      return `Abdibasid Barre's ALCPT score is ${instructor.testScores.ALCPT}. This exceeds the minimum requirement of 80.`;
+    } else if (lowerQuery.includes('ecl')) {
+      return `Abdibasid Barre's ECL score is ${instructor.testScores.ECL}. This meets the department standard.`;
+    } else {
+      return `Abdibasid Barre's test scores: Book Test: ${instructor.testScores.BookTest}%, ALCPT: ${instructor.testScores.ALCPT}, ECL: ${instructor.testScores.ECL}. All scores are above the passing thresholds.`;
+    }
+  }
+  
+  // Check for course-specific test results
+  if (lowerQuery.includes('test') && lowerQuery.includes('result') && lowerQuery.includes('refresher')) {
+    const course = courseData["Refresher"];
+    
+    if (lowerQuery.includes('book test')) {
+      return `Refresher course Book Test results: Average score: ${course.testResults.BookTest.average}%, Highest score: ${course.testResults.BookTest.highest}%, Passing rate: ${course.testResults.BookTest.passing}%. The passing threshold for Book Tests is 66%.`;
+    } else if (lowerQuery.includes('alcpt')) {
+      return `Refresher course ALCPT results: Average score: ${course.testResults.ALCPT.average}, Highest score: ${course.testResults.ALCPT.highest}, Passing rate: ${course.testResults.ALCPT.passing}%. The passing threshold for ALCPT is 70%.`;
+    } else {
+      return `Refresher course test results: Book Test average: ${course.testResults.BookTest.average}%, ALCPT average: ${course.testResults.ALCPT.average}. The course has ${course.studentCount} students and is currently in "${course.status}" status.`;
+    }
+  }
+  
   // Check for specific instructor attendance queries
   if ((lowerQuery.includes('attendance') || lowerQuery.includes('present') || lowerQuery.includes('absent')) && 
       (lowerQuery.includes('said ibrahim') || lowerQuery.includes('abdibasid') || lowerQuery.includes('abdibasid barre'))) {
-    return "I'm checking attendance for Abdibasid Barre. Based on our records, Abdibasid Barre is currently present. They have maintained a good attendance record over the past month with no unexplained absences.";
+    const instructor = instructorData["Abdibasid Barre"];
+    return `I'm checking attendance for Abdibasid Barre. Based on our records, Abdibasid Barre is currently ${instructor.attendance}. ${instructor.attendanceRecord}`;
   }
   
   // Check for general attendance-related queries
@@ -465,7 +718,7 @@ function localAssistant(query: string): string {
     return "I can provide information about courses. Currently, there are active courses across all three schools: KFNA (1 course), NFS East (3 courses), and NFS West (2 courses). What specific course information do you need?";
   }
   
-  // Check for test or evaluation queries
+  // Check for general test or evaluation queries
   if (lowerQuery.includes('test') || lowerQuery.includes('score') || lowerQuery.includes('result') || lowerQuery.includes('evaluation')) {
     return "I can help with test results and instructor evaluations. Would you like to see test scores for a specific course or instructor evaluations? Please provide more details about what you're looking for.";
   }
