@@ -200,7 +200,10 @@ export default function Courses() {
     inProgress: courses.filter(c => c.status === 'In Progress').length,
     completed: courses.filter(c => c.status === 'Completed').length,
     upcoming: courses.filter(c => c.status === 'Starting Soon').length,
-    totalStudents: courses.reduce((acc, course) => acc + course.studentCount, 0),
+    // Only count students from active "In Progress" courses
+    totalStudents: courses
+      .filter(c => c.status === 'In Progress')
+      .reduce((acc, course) => acc + course.studentCount, 0),
     archived: courses.filter(c => checkIfArchived(c)).length,
   };
 
