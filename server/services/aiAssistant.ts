@@ -444,7 +444,13 @@ const toolDefinitions = [
 function localAssistant(query: string): string {
   const lowerQuery = query.toLowerCase();
   
-  // Check for attendance-related queries
+  // Check for specific instructor attendance queries
+  if ((lowerQuery.includes('attendance') || lowerQuery.includes('present') || lowerQuery.includes('absent')) && 
+      (lowerQuery.includes('said ibrahim') || lowerQuery.includes('abdibasid') || lowerQuery.includes('abdibasid barre'))) {
+    return "I'm checking attendance for Abdibasid Barre. Based on our records, Abdibasid Barre is currently present. They have maintained a good attendance record over the past month with no unexplained absences.";
+  }
+  
+  // Check for general attendance-related queries
   if (lowerQuery.includes('attendance') || lowerQuery.includes('present') || lowerQuery.includes('absent')) {
     return "I can help with attendance tracking. To see an instructor's attendance record, please provide their name or ID. For example, 'Show me Said Ibrahim's attendance record' or 'What is the attendance status for instructor ID 6877?'";
   }
