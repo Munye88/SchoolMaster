@@ -46,7 +46,7 @@ import { Label } from '@/components/ui/label';
 import { queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useSchoolParam } from '@/hooks/use-school-param';
-import { Loader2, Pencil, Trash2, Filter, UserPlus, FileWarning } from 'lucide-react';
+import { AlertTriangle, Loader2, Pencil, Trash2, Filter, UserPlus, FileWarning, Users } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -351,18 +351,44 @@ const StaffCounseling = () => {
     }
   };
   
+  // Get counseling type color for badge
+  const getCounselingTypeColorBadge = (type: string) => {
+    switch (type) {
+      case 'Verbal Warning':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Written Warning':
+        return 'bg-orange-100 text-orange-800';
+      case 'Final Warning':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+  
   // Get background color for charts
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'Verbal Warning':
-        return '#EAB308';
+        return '#FFD166'; // Warm yellow
       case 'Written Warning':
-        return '#EA580C';
+        return '#F87171'; // Soft red
       case 'Final Warning':
-        return '#DC2626';
+        return '#DC2626'; // Deep red
       default:
         return '#6B7280';
     }
+  };
+  
+  // Get gradient colors for instructor chart
+  const getInstructorBarColor = (index: number) => {
+    const colors = [
+      '#22C55E', // Green
+      '#3B82F6', // Blue
+      '#A855F7', // Purple
+      '#EC4899', // Pink
+      '#F97316', // Orange
+    ];
+    return colors[index % colors.length];
   };
   
   // Calculate statistics from counseling records
@@ -431,11 +457,20 @@ const StaffCounseling = () => {
   return (
     <div className="container mx-auto py-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">
-          {schoolName} - Staff Counseling Records
-        </h1>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
-          Add New Counseling Record
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+            <FileWarning className="h-7 w-7 mr-3 text-indigo-600" />
+            Staff Counseling Records
+          </h1>
+          <p className="mt-1 text-gray-500 font-medium">
+            {schoolName} - View and manage counseling records for instructors
+          </p>
+        </div>
+        <Button 
+          onClick={() => setIsAddDialogOpen(true)}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md font-medium transition-all"
+        >
+          <UserPlus className="h-4 w-4 mr-2" /> Add New Counseling Record
         </Button>
       </div>
 
@@ -449,11 +484,14 @@ const StaffCounseling = () => {
           {counselingRecords && counselingRecords.length > 0 && (
             <>
               {/* Counseling Type Distribution */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold">Counseling by Type</CardTitle>
+              <Card className="shadow-lg">
+                <CardHeader className="border-b pb-3">
+                  <CardTitle className="text-lg font-semibold flex items-center">
+                    <AlertTriangle className="h-5 w-5 mr-2 text-amber-500" /> 
+                    Counseling by Type
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="flex justify-center">
+                <CardContent className="flex justify-center pt-4">
                   <div className="w-full h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -463,17 +501,47 @@ const StaffCounseling = () => {
                           cy="50%"
                           labelLine={true}
                           outerRadius={80}
+                          innerRadius={35}
+                          paddingAngle={4}
                           fill="#8884d8"
                           dataKey="value"
                           nameKey="name"
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                          label={({ name, percent }) => (
+                            <text 
+                              x={name.length > 12 ? -15 : 0} 
+                              y={0} 
+                              fill="#333" 
+                              textAnchor="middle" 
+                              dominantBaseline="central"
+                              style={{ fontWeight: 'bold', fontSize: '12px', textShadow: '0 0 3px white' }}
+                            >
+                              {`${(percent * 100).toFixed(0)}%`}
+                            </text>
+                          )}
                         >
                           {typeChartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={getTypeColor(entry.name)} />
+                            <Cell key={`cell-${index}`} fill={getTypeColor(entry.name)} stroke="#fff" strokeWidth={2} />
                           ))}
                         </Pie>
-                        <Legend />
-                        <RechartsTooltip formatter={(value) => [`${value} records`, 'Count']} />
+                        <Legend 
+                          layout="horizontal" 
+                          verticalAlign="bottom" 
+                          align="center"
+                          wrapperStyle={{
+                            paddingTop: '20px',
+                            fontSize: '12px',
+                            fontWeight: 'bold'
+                          }}
+                        />
+                        <RechartsTooltip 
+                          formatter={(value) => [`${value} records`, 'Count']} 
+                          contentStyle={{ 
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                            borderRadius: '6px',
+                            border: 'none',
+                            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                          }}
+                        />
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
@@ -481,32 +549,76 @@ const StaffCounseling = () => {
               </Card>
 
               {/* Top Instructors */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold">Top Instructors with Counseling Records</CardTitle>
+              <Card className="shadow-lg">
+                <CardHeader className="border-b pb-3">
+                  <CardTitle className="text-lg font-semibold flex items-center">
+                    <Users className="h-5 w-5 mr-2 text-blue-500" />
+                    Top Instructors with Counseling Records
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="flex justify-center">
+                <CardContent className="flex justify-center pt-4">
                   <div className="w-full h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         data={instructorChartData}
                         layout="vertical"
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        margin={{ top: 5, right: 30, left: 25, bottom: 5 }}
                       >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="number" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                        <XAxis 
+                          type="number" 
+                          tickLine={false}
+                          axisLine={false}
+                          tick={{ fill: '#4b5563', fontSize: 12 }}
+                        />
                         <YAxis
                           dataKey="name"
                           type="category"
-                          width={100}
+                          width={110}
                           tickFormatter={(value) =>
-                            value.length > 15 ? `${value.substring(0, 15)}...` : value
+                            value.length > 14 ? `${value.substring(0, 14)}...` : value
                           }
+                          tick={{ fill: '#4b5563', fontSize: 12 }}
+                          axisLine={false}
+                          tickLine={false}
                         />
-                        <RechartsTooltip formatter={(value) => [`${value} records`, 'Count']} />
-                        <Bar dataKey="count" fill="#0ea5e9">
+                        <RechartsTooltip 
+                          formatter={(value) => [`${value} records`, 'Count']} 
+                          cursor={{ fill: 'rgba(200, 200, 200, 0.1)' }}
+                          contentStyle={{ 
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                            borderRadius: '6px',
+                            border: 'none',
+                            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                          }}
+                        />
+                        <Bar 
+                          dataKey="count" 
+                          fill="#0ea5e9"
+                          radius={[0, 4, 4, 0]}
+                          barSize={24}
+                          label={(props) => {
+                            const { x, y, width, value } = props;
+                            return (
+                              <text 
+                                x={x + width + 5} 
+                                y={y + 12} 
+                                fill="#6b7280" 
+                                fontSize={10}
+                                textAnchor="start"
+                              >
+                                {value}
+                              </text>
+                            );
+                          }}
+                        >
                           {instructorChartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={`#${Math.floor(Math.random() * 16777215).toString(16)}`} />
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={getInstructorBarColor(index)}
+                              stroke="#fff"
+                              strokeWidth={1}
+                            />
                           ))}
                         </Bar>
                       </BarChart>
@@ -521,16 +633,19 @@ const StaffCounseling = () => {
 
       {!isLoading && (
         <div className="mb-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Counseling Records</CardTitle>
+          <Card className="shadow-lg">
+            <CardHeader className="flex flex-row items-center justify-between border-b pb-3">
+              <CardTitle className="flex items-center">
+                <FileWarning className="h-5 w-5 mr-2 text-indigo-500" />
+                Counseling Records
+              </CardTitle>
               <div className="flex items-center space-x-2">
-                <Label htmlFor="filter-instructor" className="mr-2">Filter by Instructor:</Label>
+                <Label htmlFor="filter-instructor" className="mr-2 font-medium">Filter by Instructor:</Label>
                 <Select
                   value={selectedInstructorId}
                   onValueChange={(value) => setSelectedInstructorId(value)}
                 >
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-[220px] bg-white border-gray-300">
                     <SelectValue placeholder="All Instructors" />
                   </SelectTrigger>
                   <SelectContent>
@@ -544,86 +659,110 @@ const StaffCounseling = () => {
                 </Select>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-4">
               {filteredCounselingRecords && filteredCounselingRecords.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Instructor</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Comments</TableHead>
-                      <TableHead>Attachment</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredCounselingRecords.map((counseling: StaffCounseling) => (
-                      <TableRow key={counseling.id}>
-                        <TableCell>{formatDate(counseling.counselingDate)}</TableCell>
-                        <TableCell>{getInstructorName(counseling.instructorId)}</TableCell>
-                        <TableCell className={getCounselingTypeColor(counseling.counselingType)}>
-                          {counseling.counselingType}
-                        </TableCell>
-                        <TableCell className="max-w-xs truncate">{counseling.comments}</TableCell>
-                        <TableCell>
-                          {counseling.attachmentUrl ? (
-                            <a 
-                              href={counseling.attachmentUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
-                            >
-                              View Document
-                            </a>
-                          ) : (
-                            'None'
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => openEditDialog(counseling)}
-                            >
-                              <Pencil className="h-4 w-4 mr-1" /> Edit
-                            </Button>
-                            
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="sm">
-                                  <Trash2 className="h-4 w-4 mr-1" /> Delete
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete the counseling record.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => deleteMutation.mutate(counseling.id)}
-                                  >
-                                    Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
-                        </TableCell>
+                <div className="rounded-lg overflow-hidden border border-gray-200">
+                  <Table>
+                    <TableHeader className="bg-gray-50">
+                      <TableRow>
+                        <TableHead className="font-semibold text-gray-700">Date</TableHead>
+                        <TableHead className="font-semibold text-gray-700">Instructor</TableHead>
+                        <TableHead className="font-semibold text-gray-700">Type</TableHead>
+                        <TableHead className="font-semibold text-gray-700">Comments</TableHead>
+                        <TableHead className="font-semibold text-gray-700">Attachment</TableHead>
+                        <TableHead className="text-right font-semibold text-gray-700">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredCounselingRecords.map((counseling: StaffCounseling, index) => (
+                        <TableRow 
+                          key={counseling.id}
+                          className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                        >
+                          <TableCell className="font-medium">{formatDate(counseling.counselingDate)}</TableCell>
+                          <TableCell>{getInstructorName(counseling.instructorId)}</TableCell>
+                          <TableCell>
+                            <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getCounselingTypeColorBadge(counseling.counselingType)}`}>
+                              {counseling.counselingType}
+                            </span>
+                          </TableCell>
+                          <TableCell className="max-w-xs truncate">{counseling.comments}</TableCell>
+                          <TableCell>
+                            {counseling.attachmentUrl ? (
+                              <a 
+                                href={counseling.attachmentUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="flex items-center text-blue-600 hover:text-blue-800 font-medium"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                View
+                              </a>
+                            ) : (
+                              <span className="text-gray-500 text-sm">None</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end space-x-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => openEditDialog(counseling)}
+                                className="bg-white hover:bg-gray-50 text-gray-700 border-gray-300"
+                              >
+                                <Pencil className="h-4 w-4 mr-1" /> Edit
+                              </Button>
+                              
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="destructive" size="sm">
+                                    <Trash2 className="h-4 w-4 mr-1" /> Delete
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      This action cannot be undone. This will permanently delete the counseling record.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => deleteMutation.mutate(counseling.id)}
+                                    >
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  {counselingRecords && counselingRecords.length > 0 
-                    ? 'No counseling records found for the selected instructor.'
-                    : 'No counseling records found. Click "Add New Counseling Record" to create one.'}
+                <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                  <FileWarning className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-700 mb-1">
+                    No counseling records found
+                  </h3>
+                  <p className="text-gray-500 mb-4">
+                    {counselingRecords && counselingRecords.length > 0 
+                      ? 'Try selecting a different instructor or add a new record.'
+                      : 'Start by adding a new counseling record.'}
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsAddDialogOpen(true)}
+                    className="bg-white"
+                  >
+                    <UserPlus className="h-4 w-4 mr-2" /> Add New Counseling Record
+                  </Button>
                 </div>
               )}
             </CardContent>
