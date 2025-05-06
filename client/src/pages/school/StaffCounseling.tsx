@@ -674,7 +674,7 @@ const StaffCounseling = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredCounselingRecords.map((counseling: StaffCounseling, index) => (
+                      {filteredCounselingRecords.map((counseling: StaffCounseling, index: number) => (
                         <TableRow 
                           key={counseling.id}
                           className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
@@ -773,16 +773,19 @@ const StaffCounseling = () => {
       {/* Add Counseling Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="sm:max-w-[525px]">
-          <DialogHeader>
-            <DialogTitle>Add New Counseling Record</DialogTitle>
-            <DialogDescription>
+          <DialogHeader className="border-b pb-3">
+            <DialogTitle className="flex items-center text-xl">
+              <UserPlus className="h-5 w-5 mr-2 text-indigo-500" />
+              Add New Counseling Record
+            </DialogTitle>
+            <DialogDescription className="text-gray-500">
               Enter the details for the new staff counseling record.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-5 py-5">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="instructorId" className="text-right">
+                <Label htmlFor="instructorId" className="text-right font-medium text-gray-700">
                   Instructor
                 </Label>
                 <Select
@@ -790,7 +793,7 @@ const StaffCounseling = () => {
                   value={formData.instructorId}
                   onValueChange={(value) => handleSelectChange('instructorId', value)}
                 >
-                  <SelectTrigger className="col-span-3">
+                  <SelectTrigger className="col-span-3 bg-white">
                     <SelectValue placeholder="Select an instructor" />
                   </SelectTrigger>
                   <SelectContent>
@@ -803,7 +806,7 @@ const StaffCounseling = () => {
                 </Select>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="counselingType" className="text-right">
+                <Label htmlFor="counselingType" className="text-right font-medium text-gray-700">
                   Type
                 </Label>
                 <Select
@@ -813,18 +816,33 @@ const StaffCounseling = () => {
                     handleSelectChange('counselingType', value)
                   }
                 >
-                  <SelectTrigger className="col-span-3">
+                  <SelectTrigger className="col-span-3 bg-white">
                     <SelectValue placeholder="Select a type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Verbal Warning">Verbal Warning</SelectItem>
-                    <SelectItem value="Written Warning">Written Warning</SelectItem>
-                    <SelectItem value="Final Warning">Final Warning</SelectItem>
+                    <SelectItem value="Verbal Warning">
+                      <div className="flex items-center">
+                        <span className="h-2 w-2 rounded-full bg-yellow-400 mr-2"></span>
+                        Verbal Warning
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="Written Warning">
+                      <div className="flex items-center">
+                        <span className="h-2 w-2 rounded-full bg-orange-500 mr-2"></span>
+                        Written Warning
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="Final Warning">
+                      <div className="flex items-center">
+                        <span className="h-2 w-2 rounded-full bg-red-600 mr-2"></span>
+                        Final Warning
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="counselingDate" className="text-right">
+                <Label htmlFor="counselingDate" className="text-right font-medium text-gray-700">
                   Date
                 </Label>
                 <Input
@@ -833,11 +851,11 @@ const StaffCounseling = () => {
                   type="date"
                   value={formData.counselingDate}
                   onChange={handleInputChange}
-                  className="col-span-3"
+                  className="col-span-3 bg-white border-gray-300"
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="comments" className="text-right">
+              <div className="grid grid-cols-4 items-start gap-4 pt-1">
+                <Label htmlFor="comments" className="text-right font-medium text-gray-700 pt-2">
                   Comments
                 </Label>
                 <Textarea
@@ -845,34 +863,49 @@ const StaffCounseling = () => {
                   name="comments"
                   value={formData.comments}
                   onChange={handleInputChange}
-                  className="col-span-3"
-                  rows={3}
+                  className="col-span-3 bg-white border-gray-300 min-h-[120px]"
+                  placeholder="Enter any additional details or notes about this counseling session..."
+                  rows={4}
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="attachment" className="text-right">
+                <Label htmlFor="attachment" className="text-right font-medium text-gray-700">
                   Attachment
                 </Label>
-                <Input
-                  id="attachment"
-                  type="file"
-                  onChange={handleFileChange}
-                  className="col-span-3"
-                />
+                <div className="col-span-3">
+                  <Input
+                    id="attachment"
+                    type="file"
+                    onChange={handleFileChange}
+                    className="bg-white border-gray-300"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    You can upload documentation related to this counseling record (PDF, DOC, JPG).
+                  </p>
+                </div>
               </div>
             </div>
-            <DialogFooter>
-              <Button type="button" variant="secondary" onClick={() => setIsAddDialogOpen(false)}>
+            <DialogFooter className="border-t pt-4 mt-2">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsAddDialogOpen(false)}
+                className="border-gray-300 bg-white text-gray-700"
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={createMutation.isPending}>
+              <Button 
+                type="submit" 
+                disabled={createMutation.isPending}
+                className="bg-indigo-600 hover:bg-indigo-700"
+              >
                 {createMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Saving...
                   </>
                 ) : (
-                  'Save'
+                  'Save Record'
                 )}
               </Button>
             </DialogFooter>
@@ -883,16 +916,19 @@ const StaffCounseling = () => {
       {/* Edit Counseling Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[525px]">
-          <DialogHeader>
-            <DialogTitle>Edit Counseling Record</DialogTitle>
-            <DialogDescription>
+          <DialogHeader className="border-b pb-3">
+            <DialogTitle className="flex items-center text-xl">
+              <Pencil className="h-5 w-5 mr-2 text-indigo-500" />
+              Edit Counseling Record
+            </DialogTitle>
+            <DialogDescription className="text-gray-500">
               Update the details for the staff counseling record.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleEditSubmit}>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-5 py-5">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="instructorId" className="text-right">
+                <Label htmlFor="instructorId" className="text-right font-medium text-gray-700">
                   Instructor
                 </Label>
                 <Select
@@ -900,7 +936,7 @@ const StaffCounseling = () => {
                   value={formData.instructorId}
                   onValueChange={(value) => handleSelectChange('instructorId', value)}
                 >
-                  <SelectTrigger className="col-span-3">
+                  <SelectTrigger className="col-span-3 bg-white">
                     <SelectValue placeholder="Select an instructor" />
                   </SelectTrigger>
                   <SelectContent>
@@ -913,7 +949,7 @@ const StaffCounseling = () => {
                 </Select>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="counselingType" className="text-right">
+                <Label htmlFor="counselingType" className="text-right font-medium text-gray-700">
                   Type
                 </Label>
                 <Select
@@ -923,18 +959,33 @@ const StaffCounseling = () => {
                     handleSelectChange('counselingType', value)
                   }
                 >
-                  <SelectTrigger className="col-span-3">
+                  <SelectTrigger className="col-span-3 bg-white">
                     <SelectValue placeholder="Select a type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Verbal Warning">Verbal Warning</SelectItem>
-                    <SelectItem value="Written Warning">Written Warning</SelectItem>
-                    <SelectItem value="Final Warning">Final Warning</SelectItem>
+                    <SelectItem value="Verbal Warning">
+                      <div className="flex items-center">
+                        <span className="h-2 w-2 rounded-full bg-yellow-400 mr-2"></span>
+                        Verbal Warning
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="Written Warning">
+                      <div className="flex items-center">
+                        <span className="h-2 w-2 rounded-full bg-orange-500 mr-2"></span>
+                        Written Warning
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="Final Warning">
+                      <div className="flex items-center">
+                        <span className="h-2 w-2 rounded-full bg-red-600 mr-2"></span>
+                        Final Warning
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="counselingDate" className="text-right">
+                <Label htmlFor="counselingDate" className="text-right font-medium text-gray-700">
                   Date
                 </Label>
                 <Input
@@ -943,11 +994,11 @@ const StaffCounseling = () => {
                   type="date"
                   value={formData.counselingDate}
                   onChange={handleInputChange}
-                  className="col-span-3"
+                  className="col-span-3 bg-white border-gray-300"
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="comments" className="text-right">
+              <div className="grid grid-cols-4 items-start gap-4 pt-1">
+                <Label htmlFor="comments" className="text-right font-medium text-gray-700 pt-2">
                   Comments
                 </Label>
                 <Textarea
@@ -955,12 +1006,13 @@ const StaffCounseling = () => {
                   name="comments"
                   value={formData.comments}
                   onChange={handleInputChange}
-                  className="col-span-3"
-                  rows={3}
+                  className="col-span-3 bg-white border-gray-300 min-h-[120px]"
+                  placeholder="Enter any additional details or notes about this counseling session..."
+                  rows={4}
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="attachment" className="text-right">
+                <Label htmlFor="attachment" className="text-right font-medium text-gray-700">
                   Attachment
                 </Label>
                 <div className="col-span-3">
@@ -968,18 +1020,22 @@ const StaffCounseling = () => {
                     id="attachment"
                     type="file"
                     onChange={handleFileChange}
+                    className="bg-white border-gray-300"
                   />
                   {currentCounseling?.attachmentUrl && (
-                    <div className="mt-2 text-sm">
+                    <div className="mt-2">
                       <a 
                         href={currentCounseling.attachmentUrl} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
+                        className="flex items-center text-blue-600 hover:text-blue-800 font-medium"
                       >
-                        Current attachment
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        View current attachment
                       </a>
-                      <p className="text-gray-500 text-xs mt-1">
+                      <p className="text-gray-500 text-xs mt-1 ml-5">
                         Uploading a new file will replace the current one
                       </p>
                     </div>
@@ -987,18 +1043,27 @@ const StaffCounseling = () => {
                 </div>
               </div>
             </div>
-            <DialogFooter>
-              <Button type="button" variant="secondary" onClick={() => setIsEditDialogOpen(false)}>
+            <DialogFooter className="border-t pt-4 mt-2">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsEditDialogOpen(false)}
+                className="border-gray-300 bg-white text-gray-700"
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={updateMutation.isPending}>
+              <Button 
+                type="submit" 
+                disabled={updateMutation.isPending}
+                className="bg-indigo-600 hover:bg-indigo-700"
+              >
                 {updateMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Updating...
                   </>
                 ) : (
-                  'Update'
+                  'Update Record'
                 )}
               </Button>
             </DialogFooter>
