@@ -2568,9 +2568,12 @@ const TestTracker = () => {
                           position: 'right', 
                           formatter: (value: number) => `${value}%`, 
                           fill: '#000', 
-                          fontSize: 13,
+                          fontSize: 16,
                           fontWeight: 'bold',
-                          offset: 15
+                          offset: 15,
+                          stroke: '#fff',
+                          strokeWidth: 2,
+                          textShadow: '0 0 3px #fff'
                         }}
                         animationDuration={1200}
                       >
@@ -2591,11 +2594,11 @@ const TestTracker = () => {
                   <div className="grid grid-cols-2 gap-8 bg-gray-50 p-3 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 rounded-md bg-gradient-to-r from-[#34A853] to-[#4FC26B] shadow-sm"></div>
-                      <span className="text-sm font-medium text-gray-700">Pass {selectedTestType === 'Book' ? "(≥66%)" : "(≥70%)"}</span>
+                      <span className="text-sm font-medium text-gray-700">Pass {selectedTestType === 'Book' ? "(≥66%)" : ""}</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 rounded-md bg-gradient-to-r from-[#EA4335] to-[#FF6A5E] shadow-sm"></div>
-                      <span className="text-sm font-medium text-gray-700">Fail {selectedTestType === 'Book' ? "(Below 66%)" : "(Below 70%)"}</span>
+                      <span className="text-sm font-medium text-gray-700">Fail {selectedTestType === 'Book' ? "(Below 66%)" : ""}</span>
                     </div>
                   </div>
                 </div>
