@@ -2565,15 +2565,17 @@ const TestTracker = () => {
                         name="Pass Rate (%)" 
                         radius={[4, 4, 4, 4]}
                         label={{ 
-                          position: 'right', 
+                          position: 'insideRight', 
                           formatter: (value: number) => `${value}%`, 
                           fill: '#000', 
-                          fontSize: 16,
+                          fontSize: 22,
                           fontWeight: 'bold',
-                          offset: 15,
+                          backgroundColor: 'rgba(255,255,255,0.85)',
+                          padding: 5,
+                          border: '2px solid #666',
+                          borderRadius: 8,
                           stroke: '#fff',
-                          strokeWidth: 2,
-                          textShadow: '0 0 3px #fff'
+                          strokeWidth: 2
                         }}
                         animationDuration={1200}
                       >
