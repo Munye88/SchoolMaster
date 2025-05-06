@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -46,7 +46,20 @@ import { Label } from '@/components/ui/label';
 import { queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useSchoolParam } from '@/hooks/use-school-param';
-import { Loader2, Pencil, Trash2 } from 'lucide-react';
+import { Loader2, Pencil, Trash2, Filter, UserPlus, FileWarning } from 'lucide-react';
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  Legend,
+  ResponsiveContainer
+} from 'recharts';
 import { format } from 'date-fns';
 
 // Type definitions
@@ -89,6 +102,7 @@ const StaffCounseling = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [currentCounseling, setCurrentCounseling] = useState<StaffCounseling | null>(null);
+  const [selectedInstructorId, setSelectedInstructorId] = useState<string>('all');
   
   // Form state
   const [formData, setFormData] = useState({
@@ -305,7 +319,7 @@ const StaffCounseling = () => {
 
   // Get instructor name by ID
   const getInstructorName = (id: number) => {
-    const instructor = instructors?.find(i => i.id === id);
+    const instructor = instructors?.find((i: Instructor) => i.id === id);
     return instructor?.name || 'Unknown';
   };
 
@@ -331,6 +345,83 @@ const StaffCounseling = () => {
         return '';
     }
   };
+  
+  // Get background color for charts
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'Verbal Warning':
+        return '#EAB308';
+      case 'Written Warning':
+        return '#EA580C';
+      case 'Final Warning':
+        return '#DC2626';
+      default:
+        return '#6B7280';
+    }
+  };
+  
+  // Calculate statistics from counseling records
+  const counselingStats = useMemo(() => {
+    if (!counselingRecords || counselingRecords.length === 0) {
+      return {
+        totalCounselings: 0,
+        byType: {},
+        byInstructor: {}
+      } as CounselingStats;
+    }
+    
+    const stats: CounselingStats = {
+      totalCounselings: counselingRecords.length,
+      byType: {},
+      byInstructor: {}
+    };
+    
+    counselingRecords.forEach((record: StaffCounseling) => {
+      // Count by type
+      if (!stats.byType[record.counselingType]) {
+        stats.byType[record.counselingType] = 0;
+      }
+      stats.byType[record.counselingType]++;
+      
+      // Count by instructor
+      if (!stats.byInstructor[record.instructorId]) {
+        stats.byInstructor[record.instructorId] = {
+          name: getInstructorName(record.instructorId),
+          count: 0
+        };
+      }
+      stats.byInstructor[record.instructorId].count++;
+    });
+    
+    return stats;
+  }, [counselingRecords, instructors]);
+  
+  // Prepare chart data
+  const typeChartData = useMemo(() => {
+    return Object.entries(counselingStats.byType).map(([type, count]) => ({
+      name: type,
+      value: count
+    }));
+  }, [counselingStats.byType]);
+  
+  const instructorChartData = useMemo(() => {
+    return Object.entries(counselingStats.byInstructor)
+      .map(([id, { name, count }]) => ({
+        name,
+        count
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5); // Top 5 instructors
+  }, [counselingStats.byInstructor]);
+  
+  // Filter counseling records based on selected instructor
+  const filteredCounselingRecords = useMemo(() => {
+    if (!counselingRecords) return [];
+    if (selectedInstructorId === 'all') return counselingRecords;
+    return counselingRecords.filter(
+      (record: StaffCounseling) => record.instructorId.toString() === selectedInstructorId
+    );
+  }, [counselingRecords, selectedInstructorId]);
 
   return (
     <div className="container mx-auto py-6">
@@ -348,92 +439,191 @@ const StaffCounseling = () => {
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Counseling Records</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {counselingRecords && counselingRecords.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Instructor</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Comments</TableHead>
-                    <TableHead>Attachment</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {counselingRecords.map((counseling: StaffCounseling) => (
-                    <TableRow key={counseling.id}>
-                      <TableCell>{formatDate(counseling.counselingDate)}</TableCell>
-                      <TableCell>{getInstructorName(counseling.instructorId)}</TableCell>
-                      <TableCell className={getCounselingTypeColor(counseling.counselingType)}>
-                        {counseling.counselingType}
-                      </TableCell>
-                      <TableCell className="max-w-xs truncate">{counseling.comments}</TableCell>
-                      <TableCell>
-                        {counseling.attachmentUrl ? (
-                          <a 
-                            href={counseling.attachmentUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                            View Document
-                          </a>
-                        ) : (
-                          'None'
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end space-x-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => openEditDialog(counseling)}
-                          >
-                            <Pencil className="h-4 w-4 mr-1" /> Edit
-                          </Button>
-                          
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="destructive" size="sm">
-                                <Trash2 className="h-4 w-4 mr-1" /> Delete
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This action cannot be undone. This will permanently delete the counseling record.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => deleteMutation.mutate(counseling.id)}
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                No counseling records found. Click "Add New Counseling Record" to create one.
+        <div className="grid gap-6 md:grid-cols-2 mb-6">
+          {/* Statistics Cards */}
+          {counselingRecords && counselingRecords.length > 0 && (
+            <>
+              {/* Counseling Type Distribution */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">Counseling by Type</CardTitle>
+                </CardHeader>
+                <CardContent className="flex justify-center">
+                  <div className="w-full h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={typeChartData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={true}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                          nameKey="name"
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {typeChartData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={getTypeColor(entry.name)} />
+                          ))}
+                        </Pie>
+                        <Legend />
+                        <RechartsTooltip formatter={(value) => [`${value} records`, 'Count']} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Top Instructors */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">Top Instructors with Counseling Records</CardTitle>
+                </CardHeader>
+                <CardContent className="flex justify-center">
+                  <div className="w-full h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={instructorChartData}
+                        layout="vertical"
+                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis type="number" />
+                        <YAxis
+                          dataKey="name"
+                          type="category"
+                          width={100}
+                          tickFormatter={(value) =>
+                            value.length > 15 ? `${value.substring(0, 15)}...` : value
+                          }
+                        />
+                        <RechartsTooltip formatter={(value) => [`${value} records`, 'Count']} />
+                        <Bar dataKey="count" fill="#0ea5e9">
+                          {instructorChartData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={`#${Math.floor(Math.random() * 16777215).toString(16)}`} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          )}
+        </div>
+      )}
+
+      {!isLoading && (
+        <div className="mb-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Counseling Records</CardTitle>
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="filter-instructor" className="mr-2">Filter by Instructor:</Label>
+                <Select
+                  value={selectedInstructorId}
+                  onValueChange={(value) => setSelectedInstructorId(value)}
+                >
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="All Instructors" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Instructors</SelectItem>
+                    {instructors?.map((instructor: Instructor) => (
+                      <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                        {instructor.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent>
+              {filteredCounselingRecords && filteredCounselingRecords.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Instructor</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Comments</TableHead>
+                      <TableHead>Attachment</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredCounselingRecords.map((counseling: StaffCounseling) => (
+                      <TableRow key={counseling.id}>
+                        <TableCell>{formatDate(counseling.counselingDate)}</TableCell>
+                        <TableCell>{getInstructorName(counseling.instructorId)}</TableCell>
+                        <TableCell className={getCounselingTypeColor(counseling.counselingType)}>
+                          {counseling.counselingType}
+                        </TableCell>
+                        <TableCell className="max-w-xs truncate">{counseling.comments}</TableCell>
+                        <TableCell>
+                          {counseling.attachmentUrl ? (
+                            <a 
+                              href={counseling.attachmentUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              View Document
+                            </a>
+                          ) : (
+                            'None'
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end space-x-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => openEditDialog(counseling)}
+                            >
+                              <Pencil className="h-4 w-4 mr-1" /> Edit
+                            </Button>
+                            
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="destructive" size="sm">
+                                  <Trash2 className="h-4 w-4 mr-1" /> Delete
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the counseling record.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => deleteMutation.mutate(counseling.id)}
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  {counselingRecords && counselingRecords.length > 0 
+                    ? 'No counseling records found for the selected instructor.'
+                    : 'No counseling records found. Click "Add New Counseling Record" to create one.'}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* Add Counseling Dialog */}
