@@ -183,6 +183,10 @@ const BasicNavbar = () => {
                         className="block px-4 py-2 text-sm hover:bg-gray-100 font-medium text-[#0A2463]">
                         Staff Leave Tracker
                       </Link>
+                      <Link href={`/schools/${showSchoolLinks}/staff-counseling`} onClick={() => setShowSchoolLinks(null)}
+                        className="block px-4 py-2 text-sm hover:bg-gray-100">
+                        Staff Counseling
+                      </Link>
                     </div>
                   </div>
                 )}

@@ -28,6 +28,7 @@ import StaffEvaluations from "./pages/school/StaffEvaluationsNew";
 import StaffAttendance from "./pages/school/StaffAttendance";
 import SchoolBookInventory from "./pages/school/BookInventory";
 import StaffLeaveTracker from "./pages/school/StaffLeaveTracker";
+import StaffCounseling from "./pages/school/StaffCounseling";
 import BookOrder from "./pages/dli/BookOrder";
 import AlcptOrder from "./pages/dli/AlcptOrder";
 import AnswerSheets from "./pages/dli/AnswerSheets";
@@ -122,6 +123,7 @@ function Router() {
           <ProtectedRoute path="/schools/:schoolCode/staff-attendance" component={StaffAttendance} />
           <ProtectedRoute path="/schools/:schoolCode/book-inventory" component={SchoolBookInventory} />
           <ProtectedRoute path="/schools/:schoolCode/staff-leave-tracker" component={StaffLeaveTracker} />
+          <ProtectedRoute path="/schools/:schoolCode/staff-counseling" component={StaffCounseling} />
           
           {/* Fallback to 404 */}
           <Route component={NotFound} />
