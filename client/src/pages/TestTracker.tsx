@@ -2409,14 +2409,18 @@ const TestTracker = () => {
                           dataKey="averageScore" 
                           name="Average Score" 
                           stroke="#4285F4" 
-                          strokeWidth={2}
-                          activeDot={{ r: 8 }}
+                          strokeWidth={3}
+                          dot={{ r: 6, strokeWidth: 2, fill: "#fff" }}
+                          activeDot={{ r: 10, stroke: "#4285F4", strokeWidth: 2 }}
                           label={{
                             position: 'top',
                             formatter: (value: number) => `${value}`,
-                            fill: '#000',
-                            fontSize: 18,
-                            fontWeight: 'bold'
+                            fill: '#4285F4',
+                            fontSize: 22,
+                            fontWeight: 'bold',
+                            stroke: '#ffffff',
+                            strokeWidth: 3,
+                            dy: -8
                           }}
                         />
                         <Line 
@@ -2424,14 +2428,18 @@ const TestTracker = () => {
                           dataKey="passingRate" 
                           name="Passing Rate" 
                           stroke="#34A853" 
-                          strokeWidth={2}
-                          activeDot={{ r: 8 }}
+                          strokeWidth={3}
+                          dot={{ r: 6, strokeWidth: 2, fill: "#fff" }}
+                          activeDot={{ r: 10, stroke: "#34A853", strokeWidth: 2 }}
                           label={{
                             position: 'top',
                             formatter: (value: number) => `${value}%`,
-                            fill: '#000',
-                            fontSize: 18,
-                            fontWeight: 'bold'
+                            fill: '#34A853',
+                            fontSize: 22,
+                            fontWeight: 'bold',
+                            stroke: '#ffffff',
+                            strokeWidth: 3,
+                            dy: -8
                           }}
                         />
                       </LineChart>
@@ -2496,12 +2504,19 @@ const TestTracker = () => {
                             (filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0) + 
                             (filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0)
                           )) * 100);
-                          return `${percent}%`;
+                          return {
+                            fontSize: 22,
+                            fontWeight: 'bold',
+                            fill: '#000000',
+                            stroke: '#ffffff',
+                            strokeWidth: 3,
+                            value: `${percent}%`
+                          };
                         }}
                       >
-                        <Cell fill="#4285F4" stroke="#fff" strokeWidth={3} />
-                        <Cell fill="#34A853" stroke="#fff" strokeWidth={3} />
-                        <Cell fill="#FBBC05" stroke="#fff" strokeWidth={3} />
+                        <Cell fill="url(#kfnaGradient)" stroke="#fff" strokeWidth={4} />
+                        <Cell fill="url(#nfsEastGradient)" stroke="#fff" strokeWidth={4} />
+                        <Cell fill="url(#nfsWestGradient)" stroke="#fff" strokeWidth={4} />
                       </Pie>
                       <Tooltip 
                         contentStyle={{ 
@@ -2509,9 +2524,12 @@ const TestTracker = () => {
                           borderRadius: '8px',
                           boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                           border: 'none',
-                          padding: '12px'
+                          padding: '12px',
+                          fontSize: '14px',
+                          fontWeight: 'bold'
                         }}
                         formatter={(value) => [`${value} students`, 'Count']}
+                        itemStyle={{ color: '#000' }}
                       />
                       <Legend 
                         layout="horizontal" 
@@ -2556,6 +2574,18 @@ const TestTracker = () => {
                           <stop offset="0%" stopColor="#EA4335" />
                           <stop offset="100%" stopColor="#FF6A5E" />
                         </linearGradient>
+                        <linearGradient id="kfnaGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#4285F4" />
+                          <stop offset="100%" stopColor="#3B71CA" />
+                        </linearGradient>
+                        <linearGradient id="nfsEastGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#34A853" />
+                          <stop offset="100%" stopColor="#14A44D" />
+                        </linearGradient>
+                        <linearGradient id="nfsWestGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#FF8811" />
+                          <stop offset="100%" stopColor="#E89E10" />
+                        </linearGradient>
                         <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
                           <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.2"/>
                         </filter>
@@ -2599,15 +2629,15 @@ const TestTracker = () => {
                       <Bar 
                         dataKey="passingRate" 
                         name="Pass Rate (%)" 
-                        radius={[4, 4, 4, 4]}
+                        radius={[6, 6, 6, 6]}
                         label={{ 
                           position: 'insideRight', 
                           formatter: (value: number) => `${value}%`, 
-                          fill: '#000', 
-                          fontSize: 22,
+                          fill: '#000000', 
+                          fontSize: 24,
                           fontWeight: 'bold',
-                          stroke: '#fff',
-                          strokeWidth: 2
+                          stroke: '#ffffff',
+                          strokeWidth: 3
                         }}
                         animationDuration={1200}
                       >
@@ -2617,7 +2647,7 @@ const TestTracker = () => {
                             fill={entry.passingRate >= (entry.testType === 'Book' ? 66 : 70) ? "url(#passGradient)" : "url(#failGradient)"}
                             filter="url(#shadow)"
                             stroke="#fff"
-                            strokeWidth={1}
+                            strokeWidth={2}
                           />
                         ))}
                       </Bar>
