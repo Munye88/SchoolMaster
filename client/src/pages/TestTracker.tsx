@@ -539,7 +539,7 @@ const TestTracker = () => {
       schoolName: 'KNFA',
       studentCount: Math.floor(Math.random() * 10) + 20,
       averageScore: Math.floor(Math.random() * 15) + 75,
-      passingScore: 75,
+      passingScore: 66,
       passingRate: Math.floor(Math.random() * 20) + 75
     },
     // NFS East (schoolId: 350)
@@ -552,7 +552,7 @@ const TestTracker = () => {
       schoolName: 'NFS East',
       studentCount: Math.floor(Math.random() * 10) + 18,
       averageScore: Math.floor(Math.random() * 15) + 72,
-      passingScore: 75, 
+      passingScore: 66, 
       passingRate: Math.floor(Math.random() * 20) + 70
     },
     // NFS West (schoolId: 351)
@@ -565,7 +565,7 @@ const TestTracker = () => {
       schoolName: 'NFS West',
       studentCount: Math.floor(Math.random() * 10) + 15,
       averageScore: Math.floor(Math.random() * 15) + 70,
-      passingScore: 75,
+      passingScore: 66,
       passingRate: Math.floor(Math.random() * 20) + 65
     }
   ]).flat();
@@ -736,7 +736,7 @@ const TestTracker = () => {
             // Calculate average score and passing rate
             let totalScore = 0;
             let passingCount = 0;
-            const passingScore = 75; // Default passing score for Book Test
+            const passingScore = 66; // Default passing score for Book Test
             
             jsonData.forEach((row: any) => {
               // Assuming the Excel has a column named 'Score' or similar
@@ -2577,7 +2577,7 @@ const TestTracker = () => {
                         {filteredTestData.map((entry, index) => (
                           <Cell 
                             key={`cell-${index}`} 
-                            fill={entry.passingRate >= 70 ? "url(#passGradient)" : "url(#failGradient)"}
+                            fill={entry.passingRate >= (entry.testType === 'Book' ? 66 : 70) ? "url(#passGradient)" : "url(#failGradient)"}
                             filter="url(#shadow)"
                             stroke="#fff"
                             strokeWidth={1}
@@ -2591,11 +2591,11 @@ const TestTracker = () => {
                   <div className="grid grid-cols-2 gap-8 bg-gray-50 p-3 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 rounded-md bg-gradient-to-r from-[#34A853] to-[#4FC26B] shadow-sm"></div>
-                      <span className="text-sm font-medium text-gray-700">Pass (≥70%)</span>
+                      <span className="text-sm font-medium text-gray-700">Pass {selectedTestType === 'Book' ? "(≥66%)" : "(≥70%)"}</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 rounded-md bg-gradient-to-r from-[#EA4335] to-[#FF6A5E] shadow-sm"></div>
-                      <span className="text-sm font-medium text-gray-700">Fail (Below 70%)</span>
+                      <span className="text-sm font-medium text-gray-700">Fail {selectedTestType === 'Book' ? "(Below 66%)" : "(Below 70%)"}</span>
                     </div>
                   </div>
                 </div>
