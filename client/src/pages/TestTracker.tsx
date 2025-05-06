@@ -2327,50 +2327,42 @@ const TestTracker = () => {
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart
                         data={allBookTestData.filter(data => data.schoolId.toString() === (selectedSchoolFilter === 'all' ? '349' : selectedSchoolFilter)).sort((a, b) => (a.cycle || 0) - (b.cycle || 0))}
-                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                        margin={{ top: 30, right: 30, left: 20, bottom: 10 }}
                       >
-                        <CartesianGrid strokeDasharray="3 3" />
+                        <defs>
+                          <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#4285F4" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#4285F4" stopOpacity={0.3}/>
+                          </linearGradient>
+                          <linearGradient id="rateGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#34A853" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#34A853" stopOpacity={0.3}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
                         <XAxis dataKey="cycle" label={{ value: 'Cycle', position: 'insideBottomRight', offset: -5 }} />
                         <YAxis domain={[0, 100]} />
-                        <Tooltip />
+                        <Tooltip formatter={(value) => [value, '']} />
                         <Legend />
                         <Line 
-                          type="monotone" 
+                          type="monotoneX" 
                           dataKey="averageScore" 
                           name="Average Score" 
                           stroke="#4285F4" 
-                          strokeWidth={2}
-                          activeDot={{ r: 8 }}
-                          label={{
-                            position: 'top',
-                            formatter: (value: number) => `${value}`,
-                            fill: '#000',
-                            fontSize: 18,
-                            fontWeight: 'bold',
-                            backgroundColor: 'rgba(255,255,255,0.85)',
-                            padding: 5,
-                            border: '2px solid #666',
-                            borderRadius: 8
-                          }}
+                          strokeWidth={4}
+                          fill="url(#scoreGradient)"
+                          dot={{ r: 8, fill: "#ffffff", stroke: "#4285F4", strokeWidth: 3 }}
+                          activeDot={{ r: 10, fill: "#ffffff", stroke: "#4285F4", strokeWidth: 3 }}
                         />
                         <Line 
-                          type="monotone" 
+                          type="monotoneX" 
                           dataKey="passingRate" 
                           name="Passing Rate" 
                           stroke="#34A853" 
-                          strokeWidth={2}
-                          activeDot={{ r: 8 }}
-                          label={{
-                            position: 'top',
-                            formatter: (value: number) => `${value}%`,
-                            fill: '#000',
-                            fontSize: 18,
-                            fontWeight: 'bold',
-                            backgroundColor: 'rgba(255,255,255,0.85)',
-                            padding: 5,
-                            border: '2px solid #666',
-                            borderRadius: 8
-                          }}
+                          strokeWidth={4}
+                          fill="url(#rateGradient)"
+                          dot={{ r: 8, fill: "#ffffff", stroke: "#34A853", strokeWidth: 3 }}
+                          activeDot={{ r: 10, fill: "#ffffff", stroke: "#34A853", strokeWidth: 3 }}
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -2405,43 +2397,78 @@ const TestTracker = () => {
                         <Tooltip />
                         <Legend />
                         <Line 
-                          type="monotone" 
+                          type="monotoneX" 
                           dataKey="averageScore" 
                           name="Average Score" 
                           stroke="#4285F4" 
-                          strokeWidth={3}
-                          dot={{ r: 6, strokeWidth: 2, fill: "#fff" }}
-                          activeDot={{ r: 10, stroke: "#4285F4", strokeWidth: 2 }}
-                          label={{
-                            position: 'top',
-                            formatter: (value: number) => `${value}`,
-                            fill: '#4285F4',
-                            fontSize: 22,
-                            fontWeight: 'bold',
-                            stroke: '#ffffff',
+                          strokeWidth={4}
+                          dot={{
+                            r: 8,
                             strokeWidth: 3,
-                            dy: -8
+                            fill: "#ffffff",
+                            stroke: "#4285F4"
+                          }}
+                          activeDot={{
+                            r: 12,
+                            stroke: "#4285F4",
+                            strokeWidth: 3,
+                            fill: "#ffffff"
                           }}
                         />
                         <Line 
-                          type="monotone" 
+                          type="monotoneX" 
                           dataKey="passingRate" 
                           name="Passing Rate" 
                           stroke="#34A853" 
-                          strokeWidth={3}
-                          dot={{ r: 6, strokeWidth: 2, fill: "#fff" }}
-                          activeDot={{ r: 10, stroke: "#34A853", strokeWidth: 2 }}
-                          label={{
-                            position: 'top',
-                            formatter: (value: number) => `${value}%`,
-                            fill: '#34A853',
-                            fontSize: 22,
-                            fontWeight: 'bold',
-                            stroke: '#ffffff',
+                          strokeWidth={4}
+                          dot={{
+                            r: 8,
                             strokeWidth: 3,
-                            dy: -8
+                            fill: "#ffffff",
+                            stroke: "#34A853"
+                          }}
+                          activeDot={{
+                            r: 12,
+                            stroke: "#34A853",
+                            strokeWidth: 3,
+                            fill: "#ffffff"
                           }}
                         />
+                        {/* Add custom rendered labels instead of using label prop */}
+                        {allBookTestData
+                          .filter(data => data.schoolId.toString() === (selectedSchoolFilter === 'all' ? '349' : selectedSchoolFilter))
+                          .sort((a, b) => (a.cycle || 0) - (b.cycle || 0))
+                          .map((entry, index) => (
+                            <g key={`label-${index}`}>
+                              <text 
+                                x={index * (100 / allBookTestData.length) + (50 / allBookTestData.length)}  
+                                y={100 - entry.averageScore - 15} 
+                                textAnchor="middle"
+                                fill="#4285F4"
+                                fontSize="26"
+                                fontWeight="bold"
+                                stroke="#ffffff"
+                                strokeWidth={4}
+                                paintOrder="stroke"
+                              >
+                                {entry.averageScore}
+                              </text>
+                              <text 
+                                x={index * (100 / allBookTestData.length) + (50 / allBookTestData.length)} 
+                                y={100 - entry.passingRate - 15} 
+                                textAnchor="middle"
+                                fill="#34A853"
+                                fontSize="26"
+                                fontWeight="bold"
+                                stroke="#ffffff"
+                                strokeWidth={4}
+                                paintOrder="stroke"
+                              >
+                                {entry.passingRate}%
+                              </text>
+                            </g>
+                          ))
+                        }
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
@@ -2460,7 +2487,7 @@ const TestTracker = () => {
               <CardContent className="pt-4">
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartPieChart>
+                    <RechartPieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                       <defs>
                         <filter id="glow" height="300%" width="300%" x="-100%" y="-100%">
                           <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -2470,7 +2497,10 @@ const TestTracker = () => {
                           </feMerge>
                         </filter>
                         <filter id="shadow">
-                          <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.3"/>
+                          <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.4"/>
+                        </filter>
+                        <filter id="textShadow">
+                          <feDropShadow dx="0" dy="1" stdDeviation="1" floodOpacity="0.5" floodColor="rgba(0,0,0,0.5)"/>
                         </filter>
                       </defs>
                       <Pie
@@ -2492,32 +2522,73 @@ const TestTracker = () => {
                         cy="50%"
                         labelLine={false}
                         outerRadius={110}
-                        innerRadius={60}
-                        paddingAngle={2}
+                        innerRadius={70}
+                        paddingAngle={4}
                         dataKey="value"
                         startAngle={90}
                         endAngle={-270}
                         filter="url(#shadow)"
-                        label={(entry) => {
-                          const percent = Math.round((entry.value / (
-                            (filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0) + 
-                            (filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0) + 
-                            (filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0)
-                          )) * 100);
-                          return {
-                            fontSize: 22,
-                            fontWeight: 'bold',
-                            fill: '#000000',
-                            stroke: '#ffffff',
-                            strokeWidth: 3,
-                            value: `${percent}%`
-                          };
-                        }}
+                        label={false} // Remove default labels for custom rendering below
                       >
                         <Cell fill="url(#kfnaGradient)" stroke="#fff" strokeWidth={4} />
                         <Cell fill="url(#nfsEastGradient)" stroke="#fff" strokeWidth={4} />
                         <Cell fill="url(#nfsWestGradient)" stroke="#fff" strokeWidth={4} />
                       </Pie>
+                      {/* Custom rendering for the percentage labels */}
+                      <text 
+                        x="50%" 
+                        y="35%" 
+                        textAnchor="middle" 
+                        dominantBaseline="middle"
+                        fill="#4285F4"
+                        fontSize="26"
+                        fontWeight="900"
+                        stroke="#ffffff"
+                        strokeWidth={6}
+                        paintOrder="stroke"
+                      >
+                        {Math.round((filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0) / (
+                          (filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0) + 
+                          (filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0) + 
+                          (filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0)
+                        ) * 100)}%
+                      </text>
+                      <text 
+                        x="75%" 
+                        y="60%" 
+                        textAnchor="middle" 
+                        dominantBaseline="middle"
+                        fill="#34A853"
+                        fontSize="26"
+                        fontWeight="900"
+                        stroke="#ffffff"
+                        strokeWidth={6}
+                        paintOrder="stroke"
+                      >
+                        {Math.round((filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0) / (
+                          (filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0) + 
+                          (filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0) + 
+                          (filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0)
+                        ) * 100)}%
+                      </text>
+                      <text 
+                        x="25%" 
+                        y="60%" 
+                        textAnchor="middle" 
+                        dominantBaseline="middle"
+                        fill="#FF8811"
+                        fontSize="26"
+                        fontWeight="900"
+                        stroke="#ffffff"
+                        strokeWidth={6}
+                        paintOrder="stroke"
+                      >
+                        {Math.round((filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0) / (
+                          (filteredTestData.find(d => d.schoolId === 349)?.studentCount || 0) + 
+                          (filteredTestData.find(d => d.schoolId === 350)?.studentCount || 0) + 
+                          (filteredTestData.find(d => d.schoolId === 351)?.studentCount || 0)
+                        ) * 100)}%
+                      </text>
                       <Tooltip 
                         contentStyle={{ 
                           backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -2525,7 +2596,7 @@ const TestTracker = () => {
                           boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                           border: 'none',
                           padding: '12px',
-                          fontSize: '14px',
+                          fontSize: '16px',
                           fontWeight: 'bold'
                         }}
                         formatter={(value) => [`${value} students`, 'Count']}
@@ -2629,16 +2700,8 @@ const TestTracker = () => {
                       <Bar 
                         dataKey="passingRate" 
                         name="Pass Rate (%)" 
-                        radius={[6, 6, 6, 6]}
-                        label={{ 
-                          position: 'insideRight', 
-                          formatter: (value: number) => `${value}%`, 
-                          fill: '#000000', 
-                          fontSize: 24,
-                          fontWeight: 'bold',
-                          stroke: '#ffffff',
-                          strokeWidth: 3
-                        }}
+                        radius={[8, 8, 8, 8]}
+                        label={false} // Removing default label for custom rendering
                         animationDuration={1200}
                       >
                         {filteredTestData.map((entry, index) => (
@@ -2651,6 +2714,24 @@ const TestTracker = () => {
                           />
                         ))}
                       </Bar>
+                      {/* Custom rendering for percentage labels */}
+                      {filteredTestData.map((entry, index) => (
+                        <text 
+                          key={`label-${index}`}
+                          x={entry.passingRate + 3} 
+                          y={index * 36 + 18} 
+                          textAnchor="start"
+                          dominantBaseline="middle"
+                          fill={entry.passingRate >= (entry.testType === 'Book' ? 66 : 70) ? "#34A853" : "#EA4335"}
+                          fontSize="28"
+                          fontWeight="900"
+                          stroke="#ffffff"
+                          strokeWidth={6}
+                          paintOrder="stroke"
+                        >
+                          {entry.passingRate}%
+                        </text>
+                      ))}
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
