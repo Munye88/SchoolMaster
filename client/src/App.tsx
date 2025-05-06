@@ -36,7 +36,6 @@ import AuthPage from "./pages/auth-page";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AuthProvider } from "./hooks/use-auth";
 import { useAuth } from "@/hooks/use-auth";
-import { AIChatbot } from "@/components/ai/AIChatbot";
 import { SchoolProvider } from "@/hooks/useSchool";
 import { AssistantDialog } from "@/components/assistant/AssistantDialog";
 
@@ -141,9 +140,6 @@ function App() {
       <AuthProvider>
         <SchoolProvider>
           <Router />
-          <div id="ai-chatbot-container" className="fixed bottom-6 right-6 z-[1000]">
-            <AIChatbot />
-          </div>
           <AssistantDialog />
         </SchoolProvider>
       </AuthProvider>
