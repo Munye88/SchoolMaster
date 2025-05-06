@@ -2787,7 +2787,7 @@ const TestTracker = () => {
                       <YAxis 
                         type="category" 
                         dataKey="schoolName" 
-                        width={100} 
+                        width={150} 
                         tick={{ fontSize: 13, fontWeight: 'bold' }}
                         axisLine={{ stroke: '#e0e0e0' }}
                         tickLine={{ stroke: '#e0e0e0' }}
@@ -2829,31 +2829,32 @@ const TestTracker = () => {
                           />
                         ))}
                       </Bar>
-                      {/* Custom rendering for percentage labels - smaller and properly positioned */}
+                      {/* Move percentage labels inside the bars for better readability */}
                       {filteredTestData.map((entry, index) => (
                         <g key={`label-group-${index}`}>
                           <text 
                             key={`value-shadow-${index}`}
-                            x={entry.passingRate + 5} 
+                            x={Math.min(entry.passingRate - 7, 92)} 
                             y={index * 36 + 18} 
-                            textAnchor="start"
+                            textAnchor="end"
                             dominantBaseline="middle"
-                            fill="rgba(255,255,255,0.7)"
+                            fill="#ffffff"
                             fontSize="14"
                             fontWeight="700"
-                            stroke="#ffffff"
+                            stroke="#000000"
                             strokeWidth={3}
+                            strokeOpacity={0.3}
                             paintOrder="stroke"
                           >
                             {entry.passingRate}%
                           </text>
                           <text 
                             key={`label-${index}`}
-                            x={entry.passingRate + 5} 
+                            x={Math.min(entry.passingRate - 7, 92)} 
                             y={index * 36 + 18} 
-                            textAnchor="start"
+                            textAnchor="end"
                             dominantBaseline="middle"
-                            fill={entry.passingRate >= (entry.testType === 'Book' ? 66 : 70) ? "#34A853" : "#EA4335"}
+                            fill="#ffffff"
                             fontSize="14"
                             fontWeight="700"
                             paintOrder="fill"
