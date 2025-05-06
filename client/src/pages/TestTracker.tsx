@@ -2367,6 +2367,32 @@ const TestTracker = () => {
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
+                  <div className="mt-4">
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="bg-blue-50">
+                            <th className="p-2 text-left text-sm font-semibold text-blue-900 border border-blue-100">Cycle</th>
+                            <th className="p-2 text-center text-sm font-semibold text-blue-900 border border-blue-100">Average Score</th>
+                            <th className="p-2 text-center text-sm font-semibold text-green-900 border border-blue-100">Passing Rate</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {allBookTestData
+                            .filter(data => data.schoolId.toString() === (selectedSchoolFilter === 'all' ? '349' : selectedSchoolFilter))
+                            .sort((a, b) => (a.cycle || 0) - (b.cycle || 0))
+                            .map((entry, index) => (
+                              <tr key={`data-row-${index}`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                <td className="p-2 text-sm border border-gray-100 text-center">{entry.cycle}</td>
+                                <td className="p-2 text-sm border border-gray-100 font-semibold text-blue-600 text-center">{entry.averageScore}</td>
+                                <td className="p-2 text-sm border border-gray-100 font-semibold text-green-600 text-center">{entry.passingRate}%</td>
+                              </tr>
+                            ))
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ) : (
@@ -2386,15 +2412,25 @@ const TestTracker = () => {
                           data.schoolId.toString() === (selectedSchoolFilter === 'all' ? '349' : selectedSchoolFilter) &&
                           data.testType === selectedTestType
                         )}
-                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                        margin={{ top: 30, right: 30, left: 20, bottom: 10 }}
                       >
-                        <CartesianGrid strokeDasharray="3 3" />
+                        <defs>
+                          <linearGradient id="monthScoreGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#4285F4" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#4285F4" stopOpacity={0.3}/>
+                          </linearGradient>
+                          <linearGradient id="monthRateGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#34A853" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#34A853" stopOpacity={0.3}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
                         <XAxis 
                           dataKey="month" 
                           label={{ value: 'Month', position: 'insideBottomRight', offset: -5 }}
                         />
                         <YAxis domain={[0, 100]} />
-                        <Tooltip />
+                        <Tooltip formatter={(value) => [value, '']} />
                         <Legend />
                         <Line 
                           type="monotoneX" 
@@ -2402,18 +2438,9 @@ const TestTracker = () => {
                           name="Average Score" 
                           stroke="#4285F4" 
                           strokeWidth={4}
-                          dot={{
-                            r: 8,
-                            strokeWidth: 3,
-                            fill: "#ffffff",
-                            stroke: "#4285F4"
-                          }}
-                          activeDot={{
-                            r: 12,
-                            stroke: "#4285F4",
-                            strokeWidth: 3,
-                            fill: "#ffffff"
-                          }}
+                          fill="url(#monthScoreGradient)"
+                          dot={{ r: 8, fill: "#ffffff", stroke: "#4285F4", strokeWidth: 3 }}
+                          activeDot={{ r: 10, fill: "#ffffff", stroke: "#4285F4", strokeWidth: 3 }}
                         />
                         <Line 
                           type="monotoneX" 
@@ -2421,56 +2448,83 @@ const TestTracker = () => {
                           name="Passing Rate" 
                           stroke="#34A853" 
                           strokeWidth={4}
-                          dot={{
-                            r: 8,
-                            strokeWidth: 3,
-                            fill: "#ffffff",
-                            stroke: "#34A853"
-                          }}
-                          activeDot={{
-                            r: 12,
-                            stroke: "#34A853",
-                            strokeWidth: 3,
-                            fill: "#ffffff"
-                          }}
+                          fill="url(#monthRateGradient)"
+                          dot={{ r: 8, fill: "#ffffff", stroke: "#34A853", strokeWidth: 3 }}
+                          activeDot={{ r: 10, fill: "#ffffff", stroke: "#34A853", strokeWidth: 3 }}
                         />
-                        {/* Add custom rendered labels instead of using label prop */}
-                        {allBookTestData
-                          .filter(data => data.schoolId.toString() === (selectedSchoolFilter === 'all' ? '349' : selectedSchoolFilter))
-                          .sort((a, b) => (a.cycle || 0) - (b.cycle || 0))
-                          .map((entry, index) => (
-                            <g key={`label-${index}`}>
-                              <text 
-                                x={index * (100 / allBookTestData.length) + (50 / allBookTestData.length)}  
-                                y={100 - entry.averageScore - 15} 
-                                textAnchor="middle"
-                                fill="#4285F4"
-                                fontSize="26"
-                                fontWeight="bold"
-                                stroke="#ffffff"
-                                strokeWidth={4}
-                                paintOrder="stroke"
-                              >
-                                {entry.averageScore}
-                              </text>
-                              <text 
-                                x={index * (100 / allBookTestData.length) + (50 / allBookTestData.length)} 
-                                y={100 - entry.passingRate - 15} 
-                                textAnchor="middle"
-                                fill="#34A853"
-                                fontSize="26"
-                                fontWeight="bold"
-                                stroke="#ffffff"
-                                strokeWidth={4}
-                                paintOrder="stroke"
-                              >
-                                {entry.passingRate}%
-                              </text>
-                            </g>
-                          ))
+                        {/* Add custom labels for monthly data */}
+                        {allMonthlyData
+                          .filter(data => 
+                            data.schoolId.toString() === (selectedSchoolFilter === 'all' ? '349' : selectedSchoolFilter) &&
+                            data.testType === selectedTestType
+                          )
+                          .map((entry, index, array) => {
+                            // Calculate positions based on the index and total length
+                            const monthsCount = array.length;
+                            const xPosition = index * (100 / (monthsCount - 1 || 1));
+                            
+                            return (
+                              <g key={`monthly-label-${index}`}>
+                                <text 
+                                  x={`${xPosition}%`}
+                                  y={100 - entry.averageScore - 15} 
+                                  textAnchor="middle"
+                                  fill="#4285F4"
+                                  fontSize="26"
+                                  fontWeight="bold"
+                                  stroke="#ffffff"
+                                  strokeWidth={4}
+                                  paintOrder="stroke"
+                                >
+                                  {entry.averageScore}
+                                </text>
+                                <text 
+                                  x={`${xPosition}%`}
+                                  y={100 - entry.passingRate - 15} 
+                                  textAnchor="middle"
+                                  fill="#34A853"
+                                  fontSize="26"
+                                  fontWeight="bold"
+                                  stroke="#ffffff"
+                                  strokeWidth={4}
+                                  paintOrder="stroke"
+                                >
+                                  {entry.passingRate}%
+                                </text>
+                              </g>
+                            );
+                          })
                         }
                       </LineChart>
                     </ResponsiveContainer>
+                  </div>
+                  <div className="mt-4">
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="bg-green-50">
+                            <th className="p-2 text-left text-sm font-semibold text-blue-900 border border-green-100">Month</th>
+                            <th className="p-2 text-center text-sm font-semibold text-blue-900 border border-green-100">Average Score</th>
+                            <th className="p-2 text-center text-sm font-semibold text-green-900 border border-green-100">Passing Rate</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {allMonthlyData
+                            .filter(data => 
+                              data.schoolId.toString() === (selectedSchoolFilter === 'all' ? '349' : selectedSchoolFilter) &&
+                              data.testType === selectedTestType
+                            )
+                            .map((entry, index) => (
+                              <tr key={`monthly-row-${index}`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                <td className="p-2 text-sm border border-gray-100 text-center">{entry.month}</td>
+                                <td className="p-2 text-sm border border-gray-100 font-semibold text-blue-600 text-center">{entry.averageScore}</td>
+                                <td className="p-2 text-sm border border-gray-100 font-semibold text-green-600 text-center">{entry.passingRate}%</td>
+                              </tr>
+                            ))
+                          }
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -2716,34 +2770,80 @@ const TestTracker = () => {
                       </Bar>
                       {/* Custom rendering for percentage labels */}
                       {filteredTestData.map((entry, index) => (
-                        <text 
-                          key={`label-${index}`}
-                          x={entry.passingRate + 3} 
-                          y={index * 36 + 18} 
-                          textAnchor="start"
-                          dominantBaseline="middle"
-                          fill={entry.passingRate >= (entry.testType === 'Book' ? 66 : 70) ? "#34A853" : "#EA4335"}
-                          fontSize="28"
-                          fontWeight="900"
-                          stroke="#ffffff"
-                          strokeWidth={6}
-                          paintOrder="stroke"
-                        >
-                          {entry.passingRate}%
-                        </text>
+                        <g key={`label-group-${index}`}>
+                          <text 
+                            key={`value-shadow-${index}`}
+                            x={entry.passingRate + 3} 
+                            y={index * 36 + 18} 
+                            textAnchor="start"
+                            dominantBaseline="middle"
+                            fill="rgba(255,255,255,0.7)"
+                            fontSize="32"
+                            fontWeight="900"
+                            stroke="#ffffff"
+                            strokeWidth={8}
+                            paintOrder="stroke"
+                          >
+                            {entry.passingRate}%
+                          </text>
+                          <text 
+                            key={`label-${index}`}
+                            x={entry.passingRate + 3} 
+                            y={index * 36 + 18} 
+                            textAnchor="start"
+                            dominantBaseline="middle"
+                            fill={entry.passingRate >= (entry.testType === 'Book' ? 66 : 70) ? "#34A853" : "#EA4335"}
+                            fontSize="32"
+                            fontWeight="900"
+                            paintOrder="fill"
+                          >
+                            {entry.passingRate}%
+                          </text>
+                        </g>
                       ))}
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="mt-6 flex justify-center">
+                <div className="mt-4">
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-orange-50">
+                          <th className="p-2 text-left text-sm font-semibold text-blue-900 border border-orange-100">School</th>
+                          <th className="p-2 text-center text-sm font-semibold text-green-900 border border-orange-100">Passing Rate</th>
+                          <th className="p-2 text-center text-sm font-semibold text-blue-900 border border-orange-100">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredTestData.map((entry, index) => (
+                          <tr key={`bar-row-${index}`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                            <td className="p-2 text-sm border border-gray-100">{entry.schoolName}</td>
+                            <td className="p-2 text-sm border border-gray-100 font-semibold text-center">
+                              <span className={entry.passingRate >= (entry.testType === 'Book' ? 66 : 70) ? "text-green-600" : "text-red-600"}>
+                                {entry.passingRate}%
+                              </span>
+                            </td>
+                            <td className="p-2 text-sm border border-gray-100 text-center">
+                              <span className={`px-2 py-1 rounded-full text-xs font-semibold ${entry.passingRate >= (entry.testType === 'Book' ? 66 : 70) ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                                {entry.passingRate >= (entry.testType === 'Book' ? 66 : 70) ? "Pass" : "Fail"}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <div className="mt-4 flex justify-center">
                   <div className="grid grid-cols-2 gap-8 bg-gray-50 p-3 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 rounded-md bg-gradient-to-r from-[#34A853] to-[#4FC26B] shadow-sm"></div>
-                      <span className="text-sm font-medium text-gray-700">Pass {selectedTestType === 'Book' ? "(≥66%)" : ""}</span>
+                      <span className="text-sm font-medium text-gray-700">Pass {selectedTestType === 'Book' ? "(≥66%)" : "(≥70%)"}</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 rounded-md bg-gradient-to-r from-[#EA4335] to-[#FF6A5E] shadow-sm"></div>
-                      <span className="text-sm font-medium text-gray-700">Fail {selectedTestType === 'Book' ? "(Below 66%)" : ""}</span>
+                      <span className="text-sm font-medium text-gray-700">Fail {selectedTestType === 'Book' ? "(Below 66%)" : "(Below 70%)"}</span>
                     </div>
                   </div>
                 </div>
