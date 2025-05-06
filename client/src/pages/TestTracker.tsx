@@ -2309,6 +2309,46 @@ const TestTracker = () => {
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
+                <div className="mt-4">
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-blue-50">
+                          <th className="p-2 text-left text-sm font-semibold text-blue-900 border border-blue-100">School</th>
+                          <th className="p-2 text-center text-sm font-semibold text-blue-900 border border-blue-100">Average Score</th>
+                          <th className="p-2 text-center text-sm font-semibold text-green-900 border border-blue-100">Pass Rate (%)</th>
+                          <th className="p-2 text-center text-sm font-semibold text-amber-700 border border-blue-100">Student Count</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredTestData.map((entry, index) => (
+                          <tr key={`school-row-${index}`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                            <td className="p-2 text-sm border border-gray-100">{entry.schoolName}</td>
+                            <td className="p-2 text-sm border border-gray-100 font-semibold text-blue-600 text-center">{entry.averageScore}</td>
+                            <td className="p-2 text-sm border border-gray-100 font-semibold text-green-600 text-center">{entry.passingRate}%</td>
+                            <td className="p-2 text-sm border border-gray-100 font-semibold text-amber-700 text-center">{entry.studentCount}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div className="mt-4 flex justify-center">
+                  <div className="grid grid-cols-3 gap-4 bg-gray-50 p-3 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded-md bg-[#4285F4] shadow-sm"></div>
+                      <span className="text-xs font-medium text-gray-700">Average Score</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded-md bg-[#34A853] shadow-sm"></div>
+                      <span className="text-xs font-medium text-gray-700">Pass Rate (%)</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded-md bg-[#FBBC05] shadow-sm"></div>
+                      <span className="text-xs font-medium text-gray-700">Student Count</span>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
             
