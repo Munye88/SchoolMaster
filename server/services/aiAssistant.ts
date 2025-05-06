@@ -448,15 +448,10 @@ const instructorData = {
     attendance: "Present",
     attendanceRecord: "Good - no unexplained absences in the past month",
     evaluations: {
-      "Q1": 3.8,
-      "Q2": 4.2,
-      "Q3": 3.9,
-      "Q4": 4.0
-    },
-    testScores: {
-      "BookTest": 87,
-      "ALCPT": 92,
-      "ECL": 85
+      "Q1": 87,
+      "Q2": 92,
+      "Q3": 88,
+      "Q4": 91
     },
     currentStatus: "Active",
     nationality: "Somali",
@@ -681,21 +676,7 @@ function localAssistant(query: string): string {
     }
   }
   
-  // Check for test score queries about specific instructors
-  if (lowerQuery.includes('test') && lowerQuery.includes('score') && 
-      (lowerQuery.includes('abdibasid') || lowerQuery.includes('barre'))) {
-    const instructor = instructorData["Abdibasid Barre"];
-    
-    if (lowerQuery.includes('book test')) {
-      return `Abdibasid Barre's Book Test score is ${instructor.testScores.BookTest}%. This is above the passing threshold of 66%.`;
-    } else if (lowerQuery.includes('alcpt')) {
-      return `Abdibasid Barre's ALCPT score is ${instructor.testScores.ALCPT}. This exceeds the minimum requirement of 80.`;
-    } else if (lowerQuery.includes('ecl')) {
-      return `Abdibasid Barre's ECL score is ${instructor.testScores.ECL}. This meets the department standard.`;
-    } else {
-      return `Abdibasid Barre's test scores: Book Test: ${instructor.testScores.BookTest}%, ALCPT: ${instructor.testScores.ALCPT}, ECL: ${instructor.testScores.ECL}. All scores are above the passing thresholds.`;
-    }
-  }
+  // We removed test scores for instructors since they're not relevant to instructor profiles
   
   // Check for course-specific test results
   if (lowerQuery.includes('test') && lowerQuery.includes('result') && lowerQuery.includes('refresher')) {

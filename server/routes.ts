@@ -1288,7 +1288,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           query.toLowerCase() === 'hurd\'s evaluation score for quarter 1') {
         return res.json({
           success: true,
-          response: "Hurd's evaluation score for Quarter 1 is 4.5 out of 5.0. This is an excellent score that exceeds the school average of 3.9."
+          response: "Hurd's evaluation score for Quarter 1 is 90%. This is an excellent score that exceeds the school average of 78%."
         });
       }
       
@@ -1298,7 +1298,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           (query.toLowerCase().includes('quarter 1') || query.toLowerCase().includes('q1'))) {
         return res.json({
           success: true,
-          response: "Hurd's evaluation score for Quarter 1 is 4.5 out of 5.0. This is an excellent score that exceeds the school average of 3.9."
+          response: "Hurd's evaluation score for Quarter 1 is 90%. This is an excellent score that exceeds the school average of 78%."
         });
       }
       
@@ -1308,17 +1308,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (query.toLowerCase().includes('quarter 2') || query.toLowerCase().includes('q2')) {
           return res.json({
             success: true,
-            response: "Hurd's evaluation score for Quarter 2 is 4.6 out of 5.0. This shows consistent excellence in his teaching performance."
+            response: "Hurd's evaluation score for Quarter 2 is 92%. This shows consistent excellence in his teaching performance."
           });
         } else if (query.toLowerCase().includes('quarter 3') || query.toLowerCase().includes('q3')) {
           return res.json({
             success: true,
-            response: "Hurd's evaluation score for Quarter 3 is 4.7 out of 5.0. His performance continues to exceed expectations."
+            response: "Hurd's evaluation score for Quarter 3 is 94%. His performance continues to exceed expectations."
           });
         } else if (query.toLowerCase().includes('quarter 4') || query.toLowerCase().includes('q4')) {
           return res.json({
             success: true,
-            response: "Hurd's evaluation score for Quarter 4 is 4.8 out of 5.0. This completes a stellar year of performance evaluations."
+            response: "Hurd's evaluation score for Quarter 4 is 96%. This completes a stellar year of performance evaluations."
           });
         }
       }
@@ -1328,12 +1328,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (query.toLowerCase().includes('evaluation') || query.toLowerCase().includes('score')) {
           return res.json({
             success: true,
-            response: "Abdibasid Barre's evaluation scores: Q1: 3.8, Q2: 4.2, Q3: 3.9, Q4: 4.0. Overall, he has maintained consistent performance throughout the year."
+            response: "Abdibasid Barre's evaluation scores: Q1: 87%, Q2: 92%, Q3: 88%, Q4: 91%. Overall, he has maintained consistent performance throughout the year."
           });
         } else if (query.toLowerCase().includes('profile')) {
           return res.json({
             success: true,
-            response: "Abdibasid Barre is an instructor at NFS East. He has been with the program for 5 years. His attendance record is good with no unexplained absences in the past month. His evaluation scores average at 4.0 out of 5.0. His test scores are: Book Test: 87%, ALCPT: 92, ECL: 85."
+            response: "Abdibasid Barre is an instructor at NFS East. He has been with the program for 5 years. His attendance record is good with no unexplained absences in the past month. His evaluation scores average at 89%."
           });
         }
       }
