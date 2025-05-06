@@ -297,6 +297,13 @@ const Sidebar = () => {
                         Staff Leave Tracker
                       </Link>
                     </li>
+                    <li>
+                      <Link href={`/schools/${showSchoolLinks}/staff-counseling`} onClick={() => setShowSchoolLinks(null)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <MessageSquare className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
+                        Staff Counseling
+                      </Link>
+                    </li>
                   </ul>
                 )}
               </li>
