@@ -534,7 +534,7 @@ const StaffCounseling = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Instructors</SelectItem>
-                    {schoolInstructors?.map((instructor: Instructor) => (
+                    {instructors?.map((instructor: Instructor) => (
                       <SelectItem key={instructor.id} value={instructor.id.toString()}>
                         {instructor.name}
                       </SelectItem>
@@ -654,7 +654,7 @@ const StaffCounseling = () => {
                     <SelectValue placeholder="Select an instructor" />
                   </SelectTrigger>
                   <SelectContent>
-                    {schoolInstructors?.map((instructor: Instructor) => (
+                    {instructors?.map((instructor: Instructor) => (
                       <SelectItem key={instructor.id} value={instructor.id.toString()}>
                         {instructor.name}
                       </SelectItem>
@@ -764,7 +764,7 @@ const StaffCounseling = () => {
                     <SelectValue placeholder="Select an instructor" />
                   </SelectTrigger>
                   <SelectContent>
-                    {schoolInstructors?.map((instructor: Instructor) => (
+                    {instructors?.map((instructor: Instructor) => (
                       <SelectItem key={instructor.id} value={instructor.id.toString()}>
                         {instructor.name}
                       </SelectItem>
