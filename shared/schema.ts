@@ -489,6 +489,51 @@ export const actionLogsRelations = relations(actionLogs, ({ one }) => ({
 export type ActionLog = typeof actionLogs.$inferSelect;
 export type InsertActionLog = z.infer<typeof insertActionLogSchema>;
 
+// Staff Counseling System
+export const staffCounseling = pgTable("staff_counseling", {
+  id: serial("id").primaryKey(),
+  instructorId: integer("instructor_id").notNull().references(() => instructors.id),
+  schoolId: integer("school_id").notNull().references(() => schools.id),
+  counselingType: text("counseling_type", { 
+    enum: ["Verbal Warning", "Written Warning", "Final Warning"] 
+  }).notNull(),
+  counselingDate: date("counseling_date").notNull(),
+  comments: text("comments"),
+  attachmentUrl: text("attachment_url"),
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+});
+
+export const insertStaffCounselingSchema = createInsertSchema(staffCounseling).pick({
+  instructorId: true,
+  schoolId: true,
+  counselingType: true,
+  counselingDate: true,
+  comments: true,
+  attachmentUrl: true,
+  createdBy: true,
+  updatedAt: true
+});
+
+export const staffCounselingRelations = relations(staffCounseling, ({ one }) => ({
+  instructor: one(instructors, {
+    fields: [staffCounseling.instructorId],
+    references: [instructors.id]
+  }),
+  school: one(schools, {
+    fields: [staffCounseling.schoolId],
+    references: [schools.id]
+  }),
+  creator: one(users, {
+    fields: [staffCounseling.createdBy],
+    references: [users.id]
+  })
+}));
+
+export type StaffCounseling = typeof staffCounseling.$inferSelect;
+export type InsertStaffCounseling = z.infer<typeof insertStaffCounselingSchema>;
+
 // Recruitment System
 export const candidates = pgTable("candidates", {
   id: serial("id").primaryKey(),
@@ -592,6 +637,7 @@ export const schoolsRelations = relations(schools, ({ many }) => ({
   documents: many(documents),
   events: many(events),
   candidates: many(candidates),
+  staffCounseling: many(staffCounseling),
 }));
 
 export type Candidate = typeof candidates.$inferSelect;
