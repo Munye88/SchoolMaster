@@ -175,7 +175,8 @@ export default function Courses() {
       if (activeTab === 'inProgress') {
         statusFilter = getCourseStatus(course) === 'In Progress';
       } else if (activeTab === 'upcoming') {
-        statusFilter = getCourseStatus(course) === 'Upcoming';
+        // Check for 'Starting Soon' instead of 'Upcoming'
+        statusFilter = getCourseStatus(course) === 'Starting Soon';
       } else if (activeTab === 'completed') {
         statusFilter = getCourseStatus(course) === 'Completed';
       }
@@ -189,7 +190,7 @@ export default function Courses() {
     total: courses.length,
     inProgress: courses.filter(c => getCourseStatus(c) === 'In Progress').length,
     completed: courses.filter(c => getCourseStatus(c) === 'Completed').length,
-    upcoming: courses.filter(c => getCourseStatus(c) === 'Upcoming').length,
+    upcoming: courses.filter(c => getCourseStatus(c) === 'Starting Soon').length,
     totalStudents: courses.reduce((acc, course) => acc + course.studentCount, 0),
     archived: courses.filter(c => checkIfArchived(c)).length,
   };
