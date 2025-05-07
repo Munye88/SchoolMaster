@@ -27,6 +27,15 @@ export async function chatWithMoonsAssistant(request: MoonsAssistantRequest) {
   try {
     console.log("Processing chat with Moon's Assistant:", request.message);
     
+    // Check if OpenAI API key is valid
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.trim() === '') {
+      console.error("ERROR: Missing or empty OPENAI_API_KEY");
+      return {
+        role: "assistant",
+        content: "Sorry, I'm currently unable to process your request due to a configuration issue. Please contact the system administrator."
+      };
+    }
+    
     const messages: ChatCompletionMessageParam[] = [
       {
         role: "system",
@@ -38,40 +47,82 @@ export async function chatWithMoonsAssistant(request: MoonsAssistantRequest) {
       }
     ];
     
-    // Add conversation history if provided
-    if (request.conversation && request.conversation.length > 0) {
+    // Add conversation history if provided - with careful validation
+    if (request.conversation && Array.isArray(request.conversation) && request.conversation.length > 0) {
       console.log("Adding conversation history:", request.conversation.length, "messages");
+      
       // Make sure each message has a valid role format for OpenAI API
-      const validConversation = request.conversation.map(msg => {
-        return {
-          role: msg.role === 'user' || msg.role === 'assistant' || msg.role === 'system' 
-            ? msg.role 
-            : 'user',
-          content: msg.content || ''
-        };
-      });
-      messages.push(...validConversation);
+      for (const msg of request.conversation) {
+        // Ensure we have valid role and content
+        if (!msg || !msg.role || !msg.content) continue;
+        
+        const validContent = typeof msg.content === 'string' ? msg.content : '';
+        
+        if (validContent.trim() === '') continue;
+        
+        if (msg.role === 'user') {
+          messages.push({
+            role: 'user',
+            content: validContent
+          });
+        } else if (msg.role === 'assistant') {
+          messages.push({
+            role: 'assistant',
+            content: validContent
+          });
+        } else if (msg.role === 'system') {
+          messages.push({
+            role: 'system',
+            content: validContent
+          });
+        }
+      }
     }
     
-    // Add the user's message
+    // Add the user's message - with validation
     messages.push({
       role: "user",
-      content: request.message
+      content: request.message || "Hello"
     });
     
-    console.log("Calling OpenAI with", messages.length, "messages");
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages,
-    });
-    
-    console.log("Received OpenAI response");
-    const result = {
-      role: "assistant",
-      content: response.choices[0].message.content || "I don't have a response for that question."
-    };
-    console.log("Returning result:", result);
-    return result;
+    try {
+      console.log("Calling OpenAI with", messages.length, "messages");
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages,
+        temperature: 0.7,
+        max_tokens: 800,
+      });
+      
+      console.log("Received OpenAI response successfully");
+      
+      if (response && response.choices && response.choices.length > 0 && response.choices[0].message) {
+        const assistantResponse = response.choices[0].message.content || 
+          "I'm sorry, I couldn't generate a response to your query.";
+          
+        const result = {
+          role: "assistant",
+          content: assistantResponse
+        };
+        
+        console.log("Returning successful result");
+        return result;
+      } else {
+        console.error("OpenAI response is missing choices or message content");
+        return {
+          role: "assistant", 
+          content: "I apologize, but I received an empty response from the AI service. Please try again with a different question."
+        };
+      }
+    } catch (openaiError) {
+      console.error("OpenAI API Error:", openaiError);
+      
+      // Return a user-friendly error message
+      return {
+        role: "assistant",
+        content: "I apologize, but I encountered an error while processing your request. This could be due to temporary issues with the AI service. Please try again in a moment."
+      };
+    }
   } catch (error) {
     console.error("Error with Moon's Assistant chat:", error);
     return {

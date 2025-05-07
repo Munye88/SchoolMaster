@@ -41,10 +41,19 @@ export function useMoonsAssistant() {
       setIsTyping(true);
 
       try {
+        console.log('Sending message to Moon Assistant with conversation length:', conversation.length);
+        
         const response = await apiRequest('POST', '/api/moons-assistant/chat', {
           message,
           conversation,
         });
+        
+        // Check for non-JSON responses (like HTML error pages)
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Non-JSON response from Moon Assistant API:', contentType);
+          throw new Error('Received non-JSON response from server. Please try again.');
+        }
         
         const responseData: MoonsAssistantResponse = await response.json();
         console.log('Moon Assistant response:', responseData);
@@ -60,6 +69,7 @@ export function useMoonsAssistant() {
           setMessages((prev) => [...prev, assistantMessage]);
           return responseData;
         } else {
+          console.error('Moon Assistant error response:', responseData.error);
           throw new Error(responseData.error || 'Failed to get response from Moon\'s Assistant');
         }
       } catch (error) {
