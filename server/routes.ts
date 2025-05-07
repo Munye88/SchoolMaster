@@ -1351,6 +1351,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             school: "NFS East",
             nationality: "Somali",
             attendance: "Good - one excused absence last month",
+            absenceDate: "April 23, 2025",
+            absenceReason: "Family medical appointment",
+            absenceType: "Excused",
             evaluations: {
               q1: 85,
               q2: 88,
@@ -1435,12 +1438,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
           }
           
-          // Handle attendance in follow-up question
-          if (lowerQuery.includes('attendance') || lowerQuery.includes('absent')) {
-            return res.json({
-              success: true,
-              response: `${instructor.name}'s attendance record is ${instructor.attendance}.`
-            });
+          // Handle attendance or absence questions in follow-up
+          if (lowerQuery.includes('attendance') || lowerQuery.includes('absent') || lowerQuery.includes('excused')) {
+            // If asking about specific date or day
+            if (lowerQuery.includes('day') || lowerQuery.includes('date') || lowerQuery.includes('when')) {
+              if (instructor.absenceDate) {
+                return res.json({
+                  success: true,
+                  response: `${instructor.name} was ${instructor.absenceType.toLowerCase()} on ${instructor.absenceDate} for a ${instructor.absenceReason.toLowerCase()}.`
+                });
+              } else {
+                return res.json({
+                  success: true,
+                  response: `${instructor.name} has no recorded absences in the last month.`
+                });
+              }
+            } else {
+              // General attendance info
+              return res.json({
+                success: true,
+                response: `${instructor.name}'s attendance record is ${instructor.attendance}.`
+              });
+            }
           }
         }
       }
@@ -1490,12 +1509,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
           }
           
-          // Handle attendance queries
-          if (lowerQuery.includes('attendance') || lowerQuery.includes('absent') || lowerQuery.includes('present')) {
-            return res.json({
-              success: true,
-              response: `${instructor.name}'s attendance record is ${instructor.attendance}.`
-            });
+          // Handle attendance or absence queries directly
+          if (lowerQuery.includes('attendance') || lowerQuery.includes('absent') || lowerQuery.includes('present') || lowerQuery.includes('excused')) {
+            // If specifically asking about dates/days
+            if (lowerQuery.includes('day') || lowerQuery.includes('date') || lowerQuery.includes('when')) {
+              if (instructor.absenceDate) {
+                return res.json({
+                  success: true,
+                  response: `${instructor.name} was ${instructor.absenceType.toLowerCase()} on ${instructor.absenceDate} for a ${instructor.absenceReason.toLowerCase()}.`
+                });
+              } else {
+                return res.json({
+                  success: true,
+                  response: `${instructor.name} has no recorded absences in the last month.`
+                });
+              }
+            } else {
+              // General attendance query
+              return res.json({
+                success: true,
+                response: `${instructor.name}'s attendance record is ${instructor.attendance}.`
+              });
+            }
           }
           
           // If just instructor name is mentioned without specific query
