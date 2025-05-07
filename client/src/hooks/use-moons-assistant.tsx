@@ -11,8 +11,8 @@ export type MoonsAssistantMessage = {
 
 export type MoonsAssistantResponse = {
   success: boolean;
-  message: string;
-  role: string;
+  message: string; // This is the content from the assistant
+  role: string;    // This will be "assistant"
   error?: string;
 };
 
