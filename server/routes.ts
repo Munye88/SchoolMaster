@@ -1283,6 +1283,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
+      // Add specialized handlers for specific calendar/student-related questions
+      let lowerQuery = query.toLowerCase();
+      
+      // Handle student day calendar requests specifically
+      if (lowerQuery.includes('add') && lowerQuery.includes('student day') && lowerQuery.includes('calendar')) {
+        // Check if it's for a specific school
+        let schoolName = "";
+        if (lowerQuery.includes('nfs east')) {
+          schoolName = "NFS East";
+        } else if (lowerQuery.includes('nfs west')) {
+          schoolName = "NFS West";
+        } else if (lowerQuery.includes('kfna')) {
+          schoolName = "KFNA";
+        } else {
+          schoolName = "the selected school";
+        }
+        
+        return res.json({
+          success: true,
+          response: `Yes, you can add a student day to the calendar for ${schoolName}. Go to the Calendar page and click "Create New Event". Select "Student Day" as the event type, choose the date, and make sure to select ${schoolName} as the location. This will appear on the calendar for all instructors at that school.`
+        });
+      }
+      
       // Extract last messages for context
       let recentContext = "";
       let lastMentionedInstructor = "";
@@ -1413,7 +1436,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       // Create a flexible query response system
-      const lowerQuery = query.toLowerCase();
       
       // Check for pronouns referring to previous context
       if ((lowerQuery.includes('his') || lowerQuery.includes('her') || lowerQuery.includes('their')) && lastMentionedInstructor) {
