@@ -38,6 +38,7 @@ import { AuthProvider } from "./hooks/use-auth";
 import { useAuth } from "@/hooks/use-auth";
 import { SchoolProvider } from "@/hooks/useSchool";
 import { AssistantDialog } from "@/components/assistant/AssistantDialog";
+import { MoonsAssistantDialog } from "@/components/assistant/MoonsAssistantDialog";
 
 // Admin pages
 import StaffLeaveApproval from "./pages/administration/staff-leave";
@@ -50,6 +51,7 @@ import ManageSchools from "./pages/management/ManageSchools";
 import ManageInstructors from "./pages/management/ManageInstructorsNew";
 import ManageStudents from "./pages/management/ManageStudents";
 import ManageCourses from "./pages/management/ManageCoursesFixed";
+import { MoonsAssistantTest } from "./components/assistant/MoonsAssistantTest";
 
 function SidebarWithAuth() {
   const { user } = useAuth();
@@ -107,6 +109,9 @@ function Router() {
           <ProtectedRoute path="/training-development/decision-making" component={TrainingDevelopment} />
           <ProtectedRoute path="/training-development/team-building" component={TrainingDevelopment} />
           
+          {/* Test Route for Moon's Assistant */}
+          <ProtectedRoute path="/test-moons-assistant" component={MoonsAssistantTest} />
+          
           {/* Management routes */}
           <ProtectedRoute path="/management/schools" component={ManageSchools} />
           <ProtectedRoute path="/management/instructors" component={ManageInstructors} />
@@ -140,7 +145,10 @@ function App() {
       <AuthProvider>
         <SchoolProvider>
           <Router />
+          {/* Old AI Assistant - will be removed once Moon's Assistant is fully implemented */}
           <AssistantDialog />
+          {/* New Moon's Assistant - the replacement for the original AI assistant */}
+          <MoonsAssistantDialog />
         </SchoolProvider>
       </AuthProvider>
     </QueryClientProvider>
