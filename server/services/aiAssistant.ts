@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { ChatCompletionMessageParam } from "openai/resources";
 import { db } from "../db";
 import { eq, and, gte, lte } from "drizzle-orm";
 import { instructors, testResults, staffAttendance, evaluations, courses, events } from "@shared/schema";
@@ -16,10 +17,9 @@ export type AiToolResponse = {
   error?: string;
 };
 
-// Define type for Moon's Assistant chat request
 export type MoonsAssistantRequest = {
   message: string;
-  conversation?: Array<{role: string, content: string}>;
+  conversation?: ChatCompletionMessageParam[];
 };
 
 // New function to handle chat with Moon's Assistant
@@ -27,7 +27,7 @@ export async function chatWithMoonsAssistant(request: MoonsAssistantRequest) {
   try {
     console.log("Processing chat with Moon's Assistant:", request.message);
     
-    const messages = [
+    const messages: ChatCompletionMessageParam[] = [
       {
         role: "system",
         content: 
@@ -66,12 +66,6 @@ export async function chatWithMoonsAssistant(request: MoonsAssistantRequest) {
     };
   }
 }
-
-// Define type for Moon's Assistant chat request
-export type MoonsAssistantRequest = {
-  message: string;
-  conversation?: Array<{role: string, content: string}>;
-};
 
 // Tool functions that the assistant can use to perform tasks
 const aiTools = {
