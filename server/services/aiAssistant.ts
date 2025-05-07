@@ -16,6 +16,63 @@ export type AiToolResponse = {
   error?: string;
 };
 
+// Define type for Moon's Assistant chat request
+export type MoonsAssistantRequest = {
+  message: string;
+  conversation?: Array<{role: string, content: string}>;
+};
+
+// New function to handle chat with Moon's Assistant
+export async function chatWithMoonsAssistant(request: MoonsAssistantRequest) {
+  try {
+    console.log("Processing chat with Moon's Assistant:", request.message);
+    
+    const messages = [
+      {
+        role: "system",
+        content: 
+          "You are Moon's Assistant for the GOVCIO-SAMS ELT PROGRAM, a school administration management system for aviation training. " +
+          "The system manages three schools: KFNA, NFS East, and NFS West. " +
+          "Your role is to help users find information about instructors, courses, students, and test results, and to help with administrative tasks. " +
+          "Answer questions helpfully, concisely, and accurately."
+      }
+    ];
+    
+    // Add conversation history if provided
+    if (request.conversation && request.conversation.length > 0) {
+      messages.push(...request.conversation);
+    }
+    
+    // Add the user's message
+    messages.push({
+      role: "user",
+      content: request.message
+    });
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages,
+    });
+    
+    return {
+      role: "assistant",
+      content: response.choices[0].message.content
+    };
+  } catch (error) {
+    console.error("Error with Moon's Assistant chat:", error);
+    return {
+      role: "assistant",
+      content: "I'm sorry, I encountered an error while processing your request. Please try again."
+    };
+  }
+}
+
+// Define type for Moon's Assistant chat request
+export type MoonsAssistantRequest = {
+  message: string;
+  conversation?: Array<{role: string, content: string}>;
+};
+
 // Tool functions that the assistant can use to perform tasks
 const aiTools = {
   // GET operations
