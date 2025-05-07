@@ -24,8 +24,9 @@ export function useMoonsAssistant() {
   const sendMessageMutation = useMutation({
     mutationFn: async (message: string) => {
       // Create a conversation context from our chat history
+      // The history needs to be in ChatCompletionMessageParam format for OpenAI
       const conversation = messages.map(({ role, content }) => ({
-        role,
+        role: role === 'user' ? 'user' : 'assistant', 
         content,
       }));
 
@@ -46,6 +47,7 @@ export function useMoonsAssistant() {
         });
         
         const responseData: MoonsAssistantResponse = await response.json();
+        console.log('Moon Assistant response:', responseData);
         
         // Add the assistant's response to the chat history
         if (responseData.success) {

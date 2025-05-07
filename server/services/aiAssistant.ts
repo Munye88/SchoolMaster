@@ -40,6 +40,7 @@ export async function chatWithMoonsAssistant(request: MoonsAssistantRequest) {
     
     // Add conversation history if provided
     if (request.conversation && request.conversation.length > 0) {
+      console.log("Adding conversation history:", request.conversation.length, "messages");
       messages.push(...request.conversation);
     }
     
@@ -49,15 +50,19 @@ export async function chatWithMoonsAssistant(request: MoonsAssistantRequest) {
       content: request.message
     });
     
+    console.log("Calling OpenAI with", messages.length, "messages");
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages,
     });
     
-    return {
+    console.log("Received OpenAI response");
+    const result = {
       role: "assistant",
-      content: response.choices[0].message.content
+      content: response.choices[0].message.content || "I don't have a response for that question."
     };
+    console.log("Returning result:", result);
+    return result;
   } catch (error) {
     console.error("Error with Moon's Assistant chat:", error);
     return {
