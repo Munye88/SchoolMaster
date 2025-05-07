@@ -1283,6 +1283,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
+      // Extract last messages for context
+      let recentContext = "";
+      let lastMentionedInstructor = "";
+      
+      if (conversationContext && Array.isArray(conversationContext) && conversationContext.length > 0) {
+        // Get the last few messages for context
+        const recentMessages = conversationContext.slice(-3);
+        
+        // Build a context string from recent messages
+        recentContext = recentMessages.map(msg => 
+          (msg.role === 'user' ? 'User: ' : 'Assistant: ') + msg.content
+        ).join(' ');
+        
+        // Extract possible instructor names from recent context
+        const instructorPatterns = [
+          /about\s+([A-Za-z]+\s+[A-Za-z]+)/i,
+          /([A-Za-z]+\s+[A-Za-z]+)'s\s+profile/i,
+          /([A-Za-z]+\s+[A-Za-z]+)\s+is\s+an\s+instructor/i,
+          /instructor\s+([A-Za-z]+\s+[A-Za-z]+)/i
+        ];
+        
+        for (const pattern of instructorPatterns) {
+          const match = recentContext.match(pattern);
+          if (match && match[1]) {
+            lastMentionedInstructor = match[1].toLowerCase();
+            break;
+          }
+        }
+      }
+      
       // Create a comprehensive knowledge base about the system
       const knowledgeBase = {
         instructors: {
@@ -1381,6 +1411,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create a flexible query response system
       const lowerQuery = query.toLowerCase();
+      
+      // Check for pronouns referring to previous context
+      if ((lowerQuery.includes('his') || lowerQuery.includes('her') || lowerQuery.includes('their')) && lastMentionedInstructor) {
+        // This is a follow-up question about a previously mentioned instructor
+        console.log(`Follow-up question about ${lastMentionedInstructor}`);
+        
+        // Find the instructor in our knowledge base
+        let instructor = null;
+        for (const key in knowledgeBase.instructors) {
+          if (lastMentionedInstructor.includes(key) || key.includes(lastMentionedInstructor)) {
+            instructor = knowledgeBase.instructors[key];
+            break;
+          }
+        }
+        
+        if (instructor) {
+          // Handle evaluation in follow-up question
+          if (lowerQuery.includes('evaluation') || lowerQuery.includes('score') || lowerQuery.includes('performance')) {
+            return res.json({
+              success: true,
+              response: `${instructor.name}'s evaluation scores: Q1: ${instructor.evaluations.q1}%, Q2: ${instructor.evaluations.q2}%, Q3: ${instructor.evaluations.q3}%, Q4: ${instructor.evaluations.q4}%. Overall, ${instructor.name} has maintained an average of ${instructor.evaluations.average}% throughout the year.`
+            });
+          }
+          
+          // Handle attendance in follow-up question
+          if (lowerQuery.includes('attendance') || lowerQuery.includes('absent')) {
+            return res.json({
+              success: true,
+              response: `${instructor.name}'s attendance record is ${instructor.attendance}.`
+            });
+          }
+        }
+      }
       
       // Check for instructor information in the query
       for (const instructorKey in knowledgeBase.instructors) {
