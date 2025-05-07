@@ -6,9 +6,19 @@ import { instructors, testResults, staffAttendance, evaluations, courses, events
 import { formatISO, parseISO, format } from "date-fns";
 
 // Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let openai: OpenAI | undefined;
+try {
+  if (process.env.OPENAI_API_KEY) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    console.log("OpenAI client initialized successfully");
+  } else {
+    console.error("OPENAI_API_KEY environment variable is not set");
+  }
+} catch (error) {
+  console.error("Error initializing OpenAI client:", error);
+}
 
 // Define types for our assistant tools
 export type AiToolResponse = {
@@ -86,6 +96,12 @@ export async function chatWithMoonsAssistant(request: MoonsAssistantRequest) {
     });
     
     try {
+      // Check if OpenAI client is initialized
+      if (!openai) {
+        console.error("OpenAI client is not initialized");
+        throw new Error("OpenAI client is not available");
+      }
+      
       console.log("Calling OpenAI with", messages.length, "messages");
       const response = await openai.chat.completions.create({
         model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -943,6 +959,12 @@ export async function processAssistantQuery(query: string, conversationContext: 
 
     // Inner try-catch block for API calls specifically
     try {
+      // Check if OpenAI client is initialized
+      if (!openai) {
+        console.error("OpenAI client is not initialized");
+        throw new Error("OpenAI client is not available");
+      }
+      
       // Call OpenAI with function calling
       const response = await openai.chat.completions.create({
         model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -984,6 +1006,12 @@ export async function processAssistantQuery(query: string, conversationContext: 
         }));
         
         try {
+          // Verify OpenAI client is still available
+          if (!openai) {
+            console.error("OpenAI client is not initialized or became unavailable");
+            throw new Error("OpenAI client is not available");
+          }
+          
           // Send a follow-up request to process the tool results
           const secondResponse = await openai.chat.completions.create({
             model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user

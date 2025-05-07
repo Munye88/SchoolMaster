@@ -1289,6 +1289,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Moon's Assistant API - New improved version
   app.post("/api/moons-assistant/chat", async (req, res) => {
     try {
+      // Set proper content type for JSON response
+      res.setHeader('Content-Type', 'application/json');
+      
       const request: MoonsAssistantRequest = req.body;
       
       if (!request.message || typeof request.message !== 'string') {
@@ -1301,15 +1304,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Processing Moon's Assistant chat:", request.message.substring(0, 50));
       
       try {
+        // Check OpenAI API key availability
+        if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.trim() === '') {
+          console.error("Error: OPENAI_API_KEY environment variable is missing or empty");
+          return res.status(200).json({
+            success: false,
+            error: "The AI service is not properly configured. Please contact the system administrator."
+          });
+        }
+        
         const result = await chatWithMoonsAssistant(request);
         
         // Log activity
-        await dbStorage.createActivity({
-          type: "moons_assistant_query",
-          description: `Moon's Assistant query: "${request.message.substring(0, 50)}${request.message.length > 50 ? '...' : ''}"`,
-          timestamp: new Date(),
-          userId: req.isAuthenticated() ? req.user.id : 1
-        });
+        try {
+          await dbStorage.createActivity({
+            type: "moons_assistant_query",
+            description: `Moon's Assistant query: "${request.message.substring(0, 50)}${request.message.length > 50 ? '...' : ''}"`,
+            timestamp: new Date(),
+            userId: req.isAuthenticated() ? req.user.id : 1
+          });
+        } catch (logError) {
+          console.error("Failed to log activity:", logError);
+          // Continue processing even if logging fails
+        }
+        
+        console.log("Sending Moon's Assistant response:", result.content.substring(0, 50));
         
         return res.status(200).json({
           success: true,
@@ -1319,7 +1338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (error) {
         console.error("Error in Moon's Assistant chat:", error);
         
-        return res.status(500).json({
+        return res.status(200).json({  // Returning 200 with error info is better for the client
           success: false,
           error: "An error occurred while processing your request with Moon's Assistant. Please try again."
         });
