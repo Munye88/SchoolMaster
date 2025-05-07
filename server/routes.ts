@@ -37,7 +37,7 @@ import {
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
-import { processAssistantQuery } from "./services/aiAssistant";
+import { processAssistantQuery, chatWithMoonsAssistant, MoonsAssistantRequest } from "./services/aiAssistant";
 import { AIChatRequest } from "../client/src/lib/ai-types";
 import { initDatabase } from "./initDb";
 
@@ -1282,6 +1282,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
           error: 'Invalid query. Please provide a valid query string.' 
         });
       }
+      
+      // We're slowly replacing this with Moon's Assistant
+      // but keeping for backward compatibility for now
+  
+  // Moon's Assistant API - New improved version
+  app.post("/api/moons-assistant/chat", async (req, res) => {
+    try {
+      const request: MoonsAssistantRequest = req.body;
+      
+      if (!request.message || typeof request.message !== 'string') {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Invalid message. Please provide a valid message string.' 
+        });
+      }
+      
+      console.log("Processing Moon's Assistant chat:", request.message.substring(0, 50));
+      
+      try {
+        const result = await chatWithMoonsAssistant(request);
+        
+        // Log activity
+        await dbStorage.createActivity({
+          type: "moons_assistant_query",
+          description: `Moon's Assistant query: "${request.message.substring(0, 50)}${request.message.length > 50 ? '...' : ''}"`,
+          timestamp: new Date(),
+          userId: req.isAuthenticated() ? req.user.id : 1
+        });
+        
+        return res.status(200).json({
+          success: true,
+          message: result.content,
+          role: result.role
+        });
+      } catch (error) {
+        console.error("Error in Moon's Assistant chat:", error);
+        
+        return res.status(500).json({
+          success: false,
+          error: "An error occurred while processing your request with Moon's Assistant. Please try again."
+        });
+      }
+    } catch (error) {
+      console.error("Error processing Moon's Assistant chat request:", error);
+      return res.status(500).json({
+        success: false,
+        error: "An error occurred while processing your request. Please try again."
+      });
+    }
+  });
       
       // Add specialized handlers for specific calendar/student-related questions
       let lowerQuery = query.toLowerCase();
