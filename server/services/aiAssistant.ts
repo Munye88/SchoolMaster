@@ -41,7 +41,16 @@ export async function chatWithMoonsAssistant(request: MoonsAssistantRequest) {
     // Add conversation history if provided
     if (request.conversation && request.conversation.length > 0) {
       console.log("Adding conversation history:", request.conversation.length, "messages");
-      messages.push(...request.conversation);
+      // Make sure each message has a valid role format for OpenAI API
+      const validConversation = request.conversation.map(msg => {
+        return {
+          role: msg.role === 'user' || msg.role === 'assistant' || msg.role === 'system' 
+            ? msg.role 
+            : 'user',
+          content: msg.content || ''
+        };
+      });
+      messages.push(...validConversation);
     }
     
     // Add the user's message
