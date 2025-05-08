@@ -778,7 +778,7 @@ const Reports = () => {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-blue-100 rounded-full">
-                      <Plane className="h-4 w-4 text-blue-600" />
+                      <PieChart className="h-4 w-4 text-blue-600" />
                     </div>
                     <div>
                       <CardTitle className="text-lg font-semibold text-[#0A2463]">Leave Type Distribution</CardTitle>
@@ -793,7 +793,7 @@ const Reports = () => {
                 </div>
               </CardHeader>
               <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
-                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border-2 border-blue-300 p-4">
                   <ResponsiveContainer width="100%" height="100%">
                     <div className="relative h-full w-full flex items-center justify-center">
                       {/* Custom label - PTO */}
