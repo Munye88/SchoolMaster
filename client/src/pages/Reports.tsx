@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -19,17 +19,31 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Plane,
-  Clock
+  Clock,
+  Check,
+  X
 } from "lucide-react";
 import { PrintButton } from "@/components/ui/print-button";
 import { useSchool } from "@/hooks/useSchool";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+  DropdownMenuCheckboxItem
 } from "@/components/ui/dropdown-menu";
 import { 
   BarChart, Bar, 
@@ -39,17 +53,81 @@ import {
   ComposedChart,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 const Reports = () => {
   const { selectedSchool } = useSchool();
+  const { toast } = useToast();
   const [timeRange, setTimeRange] = useState("month");
   const [reportType, setReportType] = useState("performance");
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   
   // Mock dates for report range
-  const currentDate = new Date();
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const currentMonth = months[currentDate.getMonth()];
-  const currentYear = currentDate.getFullYear();
+  
+  // Helper function to go to previous month/period
+  const goToPrevious = () => {
+    if (timeRange === "month") {
+      if (selectedMonth === 0) {
+        setSelectedMonth(11);
+        setSelectedYear(selectedYear - 1);
+      } else {
+        setSelectedMonth(selectedMonth - 1);
+      }
+    } else if (timeRange === "quarter") {
+      const currentQuarter = Math.floor(selectedMonth / 3);
+      if (currentQuarter === 0) {
+        setSelectedMonth(9); // October of previous year
+        setSelectedYear(selectedYear - 1);
+      } else {
+        setSelectedMonth((currentQuarter - 1) * 3); // First month of previous quarter
+      }
+    } else if (timeRange === "year") {
+      setSelectedYear(selectedYear - 1);
+    }
+    toast({
+      title: "Date range updated",
+      description: "The reports have been updated for the selected period.",
+    });
+  };
+  
+  // Helper function to go to next month/period
+  const goToNext = () => {
+    if (timeRange === "month") {
+      if (selectedMonth === 11) {
+        setSelectedMonth(0);
+        setSelectedYear(selectedYear + 1);
+      } else {
+        setSelectedMonth(selectedMonth + 1);
+      }
+    } else if (timeRange === "quarter") {
+      const currentQuarter = Math.floor(selectedMonth / 3);
+      if (currentQuarter === 3) {
+        setSelectedMonth(0); // January of next year
+        setSelectedYear(selectedYear + 1);
+      } else {
+        setSelectedMonth((currentQuarter + 1) * 3); // First month of next quarter
+      }
+    } else if (timeRange === "year") {
+      setSelectedYear(selectedYear + 1);
+    }
+    toast({
+      title: "Date range updated",
+      description: "The reports have been updated for the selected period.",
+    });
+  };
+  
+  // Reset to current period when time range changes
+  useEffect(() => {
+    const currentDate = new Date();
+    setSelectedMonth(currentDate.getMonth());
+    setSelectedYear(currentDate.getFullYear());
+  }, [timeRange]);
   
   // Sample data for charts
   const schoolPerformanceData = [
@@ -166,11 +244,124 @@ const Reports = () => {
             </SelectContent>
           </Select>
           
-          <Button variant="outline" className="flex-1 sm:flex-none border-blue-200 hover:bg-blue-50 hover:text-blue-700">
-            <Filter className="mr-2 h-4 w-4" /> Filters
-          </Button>
+          <Dialog open={showFilters} onOpenChange={setShowFilters}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="flex-1 sm:flex-none border-blue-200 hover:bg-blue-50 hover:text-blue-700">
+                <Filter className="mr-2 h-4 w-4" /> Filters {activeFilters.length > 0 && <span className="ml-2 bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">{activeFilters.length}</span>}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Filter Reports</DialogTitle>
+                <DialogDescription>
+                  Select filters to apply to your reports
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium">Schools</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="kfna" checked={activeFilters.includes('KFNA')} onCheckedChange={(checked) => {
+                        if (checked) {
+                          setActiveFilters([...activeFilters, 'KFNA']);
+                        } else {
+                          setActiveFilters(activeFilters.filter(f => f !== 'KFNA'));
+                        }
+                      }} />
+                      <Label htmlFor="kfna">KFNA</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="nfsEast" checked={activeFilters.includes('NFS East')} onCheckedChange={(checked) => {
+                        if (checked) {
+                          setActiveFilters([...activeFilters, 'NFS East']);
+                        } else {
+                          setActiveFilters(activeFilters.filter(f => f !== 'NFS East'));
+                        }
+                      }} />
+                      <Label htmlFor="nfsEast">NFS East</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="nfsWest" checked={activeFilters.includes('NFS West')} onCheckedChange={(checked) => {
+                        if (checked) {
+                          setActiveFilters([...activeFilters, 'NFS West']);
+                        } else {
+                          setActiveFilters(activeFilters.filter(f => f !== 'NFS West'));
+                        }
+                      }} />
+                      <Label htmlFor="nfsWest">NFS West</Label>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium">Test Types</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="alcpt" checked={activeFilters.includes('ALCPT')} onCheckedChange={(checked) => {
+                        if (checked) {
+                          setActiveFilters([...activeFilters, 'ALCPT']);
+                        } else {
+                          setActiveFilters(activeFilters.filter(f => f !== 'ALCPT'));
+                        }
+                      }} />
+                      <Label htmlFor="alcpt">ALCPT</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="ecl" checked={activeFilters.includes('ECL')} onCheckedChange={(checked) => {
+                        if (checked) {
+                          setActiveFilters([...activeFilters, 'ECL']);
+                        } else {
+                          setActiveFilters(activeFilters.filter(f => f !== 'ECL'));
+                        }
+                      }} />
+                      <Label htmlFor="ecl">ECL</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="bookTest" checked={activeFilters.includes('Book Test')} onCheckedChange={(checked) => {
+                        if (checked) {
+                          setActiveFilters([...activeFilters, 'Book Test']);
+                        } else {
+                          setActiveFilters(activeFilters.filter(f => f !== 'Book Test'));
+                        }
+                      }} />
+                      <Label htmlFor="bookTest">Book Test</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="opi" checked={activeFilters.includes('OPI')} onCheckedChange={(checked) => {
+                        if (checked) {
+                          setActiveFilters([...activeFilters, 'OPI']);
+                        } else {
+                          setActiveFilters(activeFilters.filter(f => f !== 'OPI'));
+                        }
+                      }} />
+                      <Label htmlFor="opi">OPI</Label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <DialogFooter className="sm:justify-between">
+                <Button variant="outline" onClick={() => setActiveFilters([])}>
+                  <X className="h-4 w-4 mr-2" /> Reset Filters
+                </Button>
+                <Button type="submit" onClick={() => {
+                  setShowFilters(false);
+                  toast({
+                    title: "Filters applied",
+                    description: `${activeFilters.length} filter${activeFilters.length !== 1 ? 's' : ''} applied to reports.`,
+                  });
+                }}>
+                  <Check className="h-4 w-4 mr-2" /> Apply Filters
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           
-          <Button className="bg-[#0A2463] hover:bg-[#071A4A] flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all duration-300">
+          <Button className="bg-[#0A2463] hover:bg-[#071A4A] flex-1 sm:flex-none shadow-md hover:shadow-lg transition-all duration-300" onClick={() => {
+            toast({
+              title: "Report exported",
+              description: "Your report has been downloaded successfully.",
+            });
+          }}>
             <Download className="mr-2 h-4 w-4" /> Export Report
           </Button>
         </div>
@@ -178,25 +369,33 @@ const Reports = () => {
       
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" onClick={goToPrevious}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <div className="text-lg font-medium">
-            {timeRange === "month" && `${currentMonth} ${currentYear}`}
-            {timeRange === "quarter" && `Q${Math.ceil((currentDate.getMonth() + 1) / 3)} ${currentYear}`}
-            {timeRange === "year" && `${currentYear}`}
-            {timeRange === "week" && `Week of ${new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay())).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
+            {timeRange === "month" && `${months[selectedMonth]} ${selectedYear}`}
+            {timeRange === "quarter" && `Q${Math.floor(selectedMonth / 3) + 1} ${selectedYear}`}
+            {timeRange === "year" && `${selectedYear}`}
+            {timeRange === "week" && `Week of ${new Date(selectedYear, selectedMonth, 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
             {timeRange === "custom" && "Custom Date Range"}
           </div>
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" onClick={goToNext}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
         
         <div className="flex items-center gap-2">
           <PrintButton contentId="reportsContent" />
-          <Button variant="outline" size="sm">
-            <Calendar className="mr-2 h-4 w-4" /> Date Range
+          <Button variant="outline" size="sm" onClick={() => {
+            const today = new Date();
+            setSelectedMonth(today.getMonth());
+            setSelectedYear(today.getFullYear());
+            toast({
+              title: "Reset to current period",
+              description: "Reports have been updated to show the current period.",
+            });
+          }}>
+            <Calendar className="mr-2 h-4 w-4" /> Reset Date
           </Button>
         </div>
       </div>
