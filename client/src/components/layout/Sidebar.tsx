@@ -308,7 +308,7 @@ const Sidebar = () => {
                 </Link>
               </li>
               
-              {/* DLI - dropdown */}
+              {/* Inventory (formerly DLI) - dropdown */}
               <li>
                 <a href="#" onClick={handleToggleDLI} className={cn(
                   "flex items-center justify-between p-2 rounded-lg hover:bg-[#1334A3]/70 group transition-all relative overflow-hidden",
@@ -317,7 +317,7 @@ const Sidebar = () => {
                 )}>
                   <div className="flex items-center">
                     <BookText className={cn("w-5 h-5 text-blue-400", collapsed ? "mx-auto" : "mr-3")} />
-                    {!collapsed && <span>DLI</span>}
+                    {!collapsed && <span>Inventory</span>}
                   </div>
                   {!collapsed && <ChevronDown className={`w-4 h-4 text-blue-400 ${showDLILinks ? 'transform rotate-180' : ''}`} />}
                 </a>
@@ -325,13 +325,13 @@ const Sidebar = () => {
                 {showDLILinks && !collapsed && (
                   <ul className="mt-1 space-y-0.5 overflow-hidden bg-gradient-to-b from-blue-50/90 to-white/90 rounded-lg py-1.5 mx-1.5 backdrop-blur-sm shadow-inner border border-blue-100">
                     <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 text-blue-800">
-                      DLI Resources
+                      Inventory Resources
                     </li>
                     <li>
                       <Link href="/dli/book-order" onClick={() => setShowDLILinks(false)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
                         <BookOpen className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
-                        DLI Book Inventory
+                        Book Inventory
                       </Link>
                     </li>
                     <li>
