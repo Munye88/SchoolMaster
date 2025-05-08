@@ -71,6 +71,9 @@ function Router() {
           {/* Auth route - public */}
           <Route path="/auth" component={AuthPage} />
           
+          {/* Test Route for Moon's Assistant - Public for debugging */}
+          <Route path="/test-moons-assistant" component={MoonsAssistantTest} />
+          
           {/* Protected routes */}
           <ProtectedRoute path="/" component={Dashboard} />
           <ProtectedRoute path="/instructors" component={InstructorProfile} />
@@ -109,8 +112,7 @@ function Router() {
           <ProtectedRoute path="/training-development/decision-making" component={TrainingDevelopment} />
           <ProtectedRoute path="/training-development/team-building" component={TrainingDevelopment} />
           
-          {/* Test Route for Moon's Assistant */}
-          <ProtectedRoute path="/test-moons-assistant" component={MoonsAssistantTest} />
+          {/* Test Route for Moon's Assistant moved to public route above */}
           
           {/* Management routes */}
           <ProtectedRoute path="/management/schools" component={ManageSchools} />
