@@ -1289,12 +1289,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Moon's Assistant API - New improved version
   app.post("/api/moons-assistant/chat", async (req, res) => {
     try {
-      // Set proper content type for JSON response
-      res.setHeader('Content-Type', 'application/json');
+      // Always set content type for JSON response as early as possible
+      res.set({
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store'
+      });
       
       const request: MoonsAssistantRequest = req.body;
       
-      if (!request.message || typeof request.message !== 'string') {
+      if (!request || !request.message || typeof request.message !== 'string') {
+        console.error("Invalid request format:", JSON.stringify(req.body));
         return res.status(400).json({ 
           success: false, 
           error: 'Invalid message. Please provide a valid message string.' 
@@ -1307,7 +1311,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Check OpenAI API key availability
         if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.trim() === '') {
           console.error("Error: OPENAI_API_KEY environment variable is missing or empty");
-          return res.status(200).json({
+          return res.json({
             success: false,
             error: "The AI service is not properly configured. Please contact the system administrator."
           });
@@ -1330,7 +1334,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         console.log("Sending Moon's Assistant response:", result.content.substring(0, 50));
         
-        return res.status(200).json({
+        // We specifically avoid using res.status().json() here as it might break content-type
+        return res.json({
           success: true,
           message: result.content,
           role: result.role
@@ -1338,14 +1343,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (error) {
         console.error("Error in Moon's Assistant chat:", error);
         
-        return res.status(200).json({  // Returning 200 with error info is better for the client
+        // We specifically avoid using res.status().json() here as it might break content-type
+        return res.json({
           success: false,
           error: "An error occurred while processing your request with Moon's Assistant. Please try again."
         });
       }
     } catch (error) {
       console.error("Error processing Moon's Assistant chat request:", error);
-      return res.status(500).json({
+      return res.json({
         success: false,
         error: "An error occurred while processing your request. Please try again."
       });

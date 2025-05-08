@@ -50,27 +50,40 @@ export function useMoonsAssistant() {
         
         // Check for non-JSON responses (like HTML error pages)
         const contentType = response.headers.get('content-type');
+        console.log('Response content type:', contentType);
+        
         if (!contentType || !contentType.includes('application/json')) {
           console.error('Non-JSON response from Moon Assistant API:', contentType);
           throw new Error('Received non-JSON response from server. Please try again.');
         }
         
-        const responseData: MoonsAssistantResponse = await response.json();
-        console.log('Moon Assistant response:', responseData);
-        
-        // Add the assistant's response to the chat history
-        if (responseData.success) {
-          const assistantMessage: MoonsAssistantMessage = {
-            role: 'assistant',
-            content: responseData.message,
-            timestamp: Date.now(),
-          };
+        // Safely try to parse JSON response
+        let responseText = '';
+        try {
+          responseText = await response.text();
+          console.log('Raw response text:', responseText.substring(0, 100));
           
-          setMessages((prev) => [...prev, assistantMessage]);
-          return responseData;
-        } else {
-          console.error('Moon Assistant error response:', responseData.error);
-          throw new Error(responseData.error || 'Failed to get response from Moon\'s Assistant');
+          // Manually parse JSON to handle both standard and non-standard formats
+          const responseData: MoonsAssistantResponse = JSON.parse(responseText);
+          console.log('Moon Assistant response:', responseData);
+          
+          // Add the assistant's response to the chat history
+          if (responseData.success) {
+            const assistantMessage: MoonsAssistantMessage = {
+              role: 'assistant',
+              content: responseData.message,
+              timestamp: Date.now(),
+            };
+            
+            setMessages((prev) => [...prev, assistantMessage]);
+            return responseData;
+          } else {
+            console.error('Moon Assistant error response:', responseData.error);
+            throw new Error(responseData.error || 'Failed to get response from Moon\'s Assistant');
+          }
+        } catch (parseError) {
+          console.error('Failed to parse JSON response:', parseError, 'Raw response:', responseText);
+          throw new Error('Invalid response format from server. Please try again.');
         }
       } catch (error) {
         // If there's an error, add an error message to the chat
@@ -86,7 +99,7 @@ export function useMoonsAssistant() {
         setIsTyping(false);
       }
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: 'Error',
         description: `Failed to get a response: ${error.message}`,
