@@ -196,11 +196,11 @@ const Reports = () => {
   
   // Staff leave data - separated PTO and R&R into distinct categories
   const leaveTypeData = [
-    { name: 'PTO', value: 28, fill: '#0A2463' },
-    { name: 'R&R', value: 20, fill: '#3B82F6' },
-    { name: 'Paternity', value: 12, fill: '#4CB944' },
-    { name: 'Bereavement', value: 8, fill: '#FF8811' },
-    { name: 'Negative PTO', value: 4, fill: '#E63946' }
+    { name: 'PTO', value: 28, percentage: 39, fill: '#0A2463' },
+    { name: 'R&R', value: 20, percentage: 28, fill: '#3B82F6' },
+    { name: 'Paternity', value: 12, percentage: 17, fill: '#4CB944' },
+    { name: 'Bereavement', value: 8, percentage: 11, fill: '#FF8811' },
+    { name: 'Negative PTO', value: 4, percentage: 6, fill: '#E63946' }
   ];
   
   const leaveBySchoolData = [
@@ -795,26 +795,53 @@ const Reports = () => {
               <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
                 <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
-                      <Pie
-                        dataKey="value"
-                        data={leaveTypeData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={100}
-                        fill="#8884d8"
-                        label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
-                      >
-                        {leaveTypeData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value) => [`${value} requests`, '']}
-                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                      />
-                      <Legend />
-                    </RechartsPieChart>
+                    <div className="relative h-full w-full flex items-center justify-center">
+                      {/* Custom label - PTO */}
+                      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 text-xs font-medium text-[#0A2463]">
+                        PTO: 28 (39%)
+                      </div>
+                      {/* Custom label - R&R */}
+                      <div className="absolute top-1/2 left-6 transform -translate-y-1/2 text-xs font-medium text-[#3B82F6]">
+                        R&R: 20 (28%)
+                      </div>
+                      {/* Custom label - Paternity */}
+                      <div className="absolute bottom-12 left-1/4 text-xs font-medium text-[#4CB944]">
+                        Paternity: 12 (17%)
+                      </div>
+                      {/* Custom label - Bereavement */}
+                      <div className="absolute bottom-12 right-1/4 text-xs font-medium text-[#FF8811]">
+                        Bereavement: 8 (11%)
+                      </div>
+                      {/* Custom label - Negative PTO */}
+                      <div className="absolute top-1/2 right-4 transform -translate-y-1/2 text-xs font-medium text-[#E63946]">
+                        Negative PTO: 4 (6%)
+                      </div>
+                      <RechartsPieChart>
+                        <Pie
+                          dataKey="value"
+                          data={leaveTypeData}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={85}
+                          fill="#8884d8"
+                        >
+                          {leaveTypeData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          formatter={(value, name) => [`${value} requests (${leaveTypeData.find(item => item.name === name)?.percentage}%)`, name]}
+                          contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                        />
+                        <Legend 
+                          layout="horizontal"
+                          verticalAlign="bottom"
+                          align="center"
+                          iconType="square"
+                          iconSize={10}
+                        />
+                      </RechartsPieChart>
+                    </div>
                   </ResponsiveContainer>
                 </div>
               </CardContent>
