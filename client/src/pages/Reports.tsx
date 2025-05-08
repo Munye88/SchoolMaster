@@ -793,54 +793,36 @@ const Reports = () => {
                 </div>
               </CardHeader>
               <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
-                <div className="w-full h-full rounded-lg bg-white shadow-inner border-2 border-blue-300 p-4">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner p-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <div className="relative h-full w-full flex items-center justify-center">
-                      {/* Custom label - PTO */}
-                      <div className="absolute top-8 left-1/2 transform -translate-x-1/2 text-xs font-medium text-[#0A2463]">
-                        PTO: 28 (39%)
+                    <div className="flex items-center justify-center h-full w-full">
+                      {/* Pure text layout like in the screenshot - no pie chart */}
+                      <div className="w-full h-full relative border border-red-100 rounded-lg overflow-hidden" style={{borderRadius: '24px', backgroundColor: '#FFFFFF'}}>
+                        {/* PTO label centered at top */}
+                        <div className="absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-base font-medium text-center">
+                          <span className="text-[#0A2463]">PTO: 28 (39%)</span>
+                        </div>
+                        
+                        {/* R&R label at the center left */}
+                        <div className="absolute top-1/2 left-[20%] transform -translate-x-1/2 -translate-y-1/2 text-base font-medium text-[#3B82F6]">
+                          R&R: 20 (28%)
+                        </div>
+                        
+                        {/* Paternity label at the bottom left */}
+                        <div className="absolute bottom-[35%] left-[25%] transform -translate-y-1/2 text-base font-medium text-[#4CB944]">
+                          Paternity: 12 (17%)
+                        </div>
+                        
+                        {/* Bereavement label at the bottom right */}
+                        <div className="absolute bottom-[35%] right-[25%] transform translate-x-1/2 -translate-y-1/2 text-base font-medium text-[#FF8811]">
+                          Bereavement: 8 (11%)
+                        </div>
+                        
+                        {/* Negative PTO label at the center right */}
+                        <div className="absolute top-1/2 right-[15%] transform translate-x-1/2 -translate-y-1/2 text-base font-medium text-[#E63946]">
+                          Negative PTO: 4 (6%)
+                        </div>
                       </div>
-                      {/* Custom label - R&R */}
-                      <div className="absolute top-1/2 left-6 transform -translate-y-1/2 text-xs font-medium text-[#3B82F6]">
-                        R&R: 20 (28%)
-                      </div>
-                      {/* Custom label - Paternity */}
-                      <div className="absolute bottom-12 left-1/4 text-xs font-medium text-[#4CB944]">
-                        Paternity: 12 (17%)
-                      </div>
-                      {/* Custom label - Bereavement */}
-                      <div className="absolute bottom-12 right-1/4 text-xs font-medium text-[#FF8811]">
-                        Bereavement: 8 (11%)
-                      </div>
-                      {/* Custom label - Negative PTO */}
-                      <div className="absolute top-1/2 right-4 transform -translate-y-1/2 text-xs font-medium text-[#E63946]">
-                        Negative PTO: 4 (6%)
-                      </div>
-                      <RechartsPieChart>
-                        <Pie
-                          dataKey="value"
-                          data={leaveTypeData}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={85}
-                          fill="#8884d8"
-                        >
-                          {leaveTypeData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.fill} />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          formatter={(value, name) => [`${value} requests (${leaveTypeData.find(item => item.name === name)?.percentage}%)`, name]}
-                          contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                        />
-                        <Legend 
-                          layout="horizontal"
-                          verticalAlign="bottom"
-                          align="center"
-                          iconType="square"
-                          iconSize={10}
-                        />
-                      </RechartsPieChart>
                     </div>
                   </ResponsiveContainer>
                 </div>
