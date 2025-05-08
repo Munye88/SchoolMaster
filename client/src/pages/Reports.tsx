@@ -67,7 +67,7 @@ const Reports = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   
-  // Mock dates for report range
+  // Date management
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   
   // Helper function to go to previous month/period
@@ -89,7 +89,14 @@ const Reports = () => {
       }
     } else if (timeRange === "year") {
       setSelectedYear(selectedYear - 1);
+    } else if (timeRange === "week") {
+      // Calculate previous week
+      const currentDate = new Date(selectedYear, selectedMonth);
+      currentDate.setDate(currentDate.getDate() - 7);
+      setSelectedMonth(currentDate.getMonth());
+      setSelectedYear(currentDate.getFullYear());
     }
+    
     toast({
       title: "Date range updated",
       description: "The reports have been updated for the selected period.",
@@ -115,7 +122,14 @@ const Reports = () => {
       }
     } else if (timeRange === "year") {
       setSelectedYear(selectedYear + 1);
+    } else if (timeRange === "week") {
+      // Calculate next week
+      const currentDate = new Date(selectedYear, selectedMonth);
+      currentDate.setDate(currentDate.getDate() + 7);
+      setSelectedMonth(currentDate.getMonth());
+      setSelectedYear(currentDate.getFullYear());
     }
+    
     toast({
       title: "Date range updated",
       description: "The reports have been updated for the selected period.",
@@ -548,42 +562,37 @@ const Reports = () => {
                       <PieChart className="h-4 w-4 text-green-600" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg font-semibold text-green-800">Course Completion Rate</CardTitle>
+                      <CardTitle className="text-lg font-semibold text-green-700">Course Completion Rate</CardTitle>
                       <CardDescription>
                         Percentage of students completing courses on time
                       </CardDescription>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" className="text-green-700 hover:text-green-900 hover:bg-green-50">
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-green-700 hover:text-green-900 hover:bg-green-50">
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="h-80 bg-gradient-to-b from-green-50 to-white py-3 px-1">
                 <div className="w-full h-full rounded-lg bg-white shadow-inner border border-green-100 p-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart margin={{ top: 20, right: 30, left: 20, bottom: 25 }}>
+                    <RechartsPieChart>
                       <Pie
+                        dataKey="value"
                         data={courseCompletionData}
                         cx="50%"
                         cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
+                        outerRadius={100}
                         fill="#8884d8"
-                        dataKey="value"
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        labelLine={false}
                       >
                         {courseCompletionData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.fill} />
                         ))}
                       </Pie>
-                      <Tooltip 
-                        formatter={(value) => [`${value}%`, 'Percentage']}
+                      <Tooltip
+                        formatter={(value) => [`${value}%`, '']}
                         contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
                       />
                       <Legend />
@@ -602,59 +611,44 @@ const Reports = () => {
                     <LineChart className="h-4 w-4 text-amber-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg font-semibold text-amber-800">Performance Trends Over Time</CardTitle>
+                    <CardTitle className="text-lg font-semibold text-amber-700">Monthly Performance Trends</CardTitle>
                     <CardDescription>
-                      Track test scores and performance metrics over time
+                      Test score trends across the year
                     </CardDescription>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="border-amber-200 hover:bg-amber-50 text-amber-700">
-                  <Download className="mr-2 h-4 w-4" /> Export Data
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <Filter className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>ALCPT</DropdownMenuItem>
+                    <DropdownMenuItem>Book Test</DropdownMenuItem>
+                    <DropdownMenuItem>ECL</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </CardHeader>
-            <CardContent className="h-80 bg-gradient-to-b from-amber-50 to-white py-3 px-1">
+            <CardContent className="h-96 bg-gradient-to-b from-amber-50 to-white py-3 px-1">
               <div className="w-full h-full rounded-lg bg-white shadow-inner border border-amber-100 p-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <RechartsLineChart
                     data={monthlyPerformanceData}
-                    margin={{ top: 20, right: 30, left: 0, bottom: 25 }}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                     <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                     <YAxis domain={[70, 90]} tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                      formatter={(value) => [`${value}%`, '']} 
+                      formatter={(value) => [`${value}%`, '']}
                     />
                     <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                    <Line
-                      type="monotone"
-                      dataKey="alcpt"
-                      name="ALCPT"
-                      stroke="#0A2463"
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6, strokeWidth: 2 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="bookTest"
-                      name="Book Test"
-                      stroke="#4CB944"
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6, strokeWidth: 2 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="ecl"
-                      name="ECL"
-                      stroke="#FF8811"
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6, strokeWidth: 2 }}
-                    />
+                    <Line type="monotone" dataKey="alcpt" name="ALCPT" stroke="#0A2463" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="bookTest" name="Book Test" stroke="#4CB944" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="ecl" name="ECL" stroke="#FF8811" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
                   </RechartsLineChart>
                 </ResponsiveContainer>
               </div>
@@ -663,87 +657,18 @@ const Reports = () => {
         </TabsContent>
         
         <TabsContent value="attendance">
-          <Card className="shadow-md hover:shadow-lg transition-all duration-300 mb-6">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-blue-100 rounded-full">
-                    <Users className="h-4 w-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg font-semibold text-[#0A2463]">Student Attendance Reports</CardTitle>
-                    <CardDescription>
-                      Track student attendance across all courses and schools
-                    </CardDescription>
-                  </div>
-                </div>
-                <Button variant="outline" size="sm" className="border-blue-200 hover:bg-blue-50 text-blue-700">
-                  <Download className="mr-2 h-4 w-4" /> Export Data
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
-              <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={attendanceData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                    <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                    <YAxis domain={[85, 100]} tick={{ fontSize: 12 }} />
-                    <Tooltip 
-                      contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                      formatter={(value) => [`${value}%`, '']}
-                    />
-                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                    <Area 
-                      type="monotone" 
-                      dataKey="knfa" 
-                      name="KNFA" 
-                      stroke="#0A2463" 
-                      fill="#0A2463" 
-                      fillOpacity={0.3} 
-                      activeDot={{ r: 6 }}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="nfsEast" 
-                      name="NFS East" 
-                      stroke="#4CB944" 
-                      fill="#4CB944" 
-                      fillOpacity={0.3} 
-                      activeDot={{ r: 6 }}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="nfsWest" 
-                      name="NFS West" 
-                      stroke="#FF8811" 
-                      fill="#FF8811" 
-                      fillOpacity={0.3} 
-                      activeDot={{ r: 6 }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="evaluations">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <Card className="shadow-md hover:shadow-lg transition-all duration-300">
-              <CardHeader className="bg-gradient-to-r from-purple-50 to-white border-b border-purple-100">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 bg-purple-100 rounded-full">
-                      <Award className="h-4 w-4 text-purple-600" />
+                    <div className="p-2 bg-blue-100 rounded-full">
+                      <Users className="h-4 w-4 text-blue-600" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg font-semibold text-purple-900">Staff Evaluation by Quarter</CardTitle>
+                      <CardTitle className="text-lg font-semibold text-[#0A2463]">Staff Attendance by School</CardTitle>
                       <CardDescription>
-                        Track instructor evaluations and performance reviews
+                        Monthly attendance rates across schools
                       </CardDescription>
                     </div>
                   </div>
@@ -754,113 +679,92 @@ const Reports = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Q1 2025</DropdownMenuItem>
-                      <DropdownMenuItem>Q2 2025</DropdownMenuItem>
-                      <DropdownMenuItem>Q3 2025</DropdownMenuItem>
-                      <DropdownMenuItem>Q4 2025</DropdownMenuItem>
+                      <DropdownMenuItem>KNFA</DropdownMenuItem>
+                      <DropdownMenuItem>NFS East</DropdownMenuItem>
+                      <DropdownMenuItem>NFS West</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
               </CardHeader>
-              <CardContent className="h-80 bg-gradient-to-b from-purple-50 to-white py-3 px-1">
-                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-purple-100 p-4">
+              <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={attendanceData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                      <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                      <YAxis domain={[80, 100]} tick={{ fontSize: 12 }} />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                        formatter={(value) => [`${value}%`, '']}
+                      />
+                      <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                      <Bar dataKey="knfa" name="KNFA" fill="#E4424D" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="nfsEast" name="NFS East" fill="#22A783" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="nfsWest" name="NFS West" fill="#6247AA" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="evaluations">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-100 rounded-full">
+                      <Award className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-[#0A2463]">Instructor Evaluation Distribution</CardTitle>
+                      <CardDescription>
+                        Distribution of evaluation scores across all instructors
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <Filter className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>KNFA</DropdownMenuItem>
+                      <DropdownMenuItem>NFS East</DropdownMenuItem>
+                      <DropdownMenuItem>NFS West</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </CardHeader>
+              <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={instructorEvaluationData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
                       layout="vertical"
-                      margin={{ top: 20, right: 50, left: 80, bottom: 25 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.2} />
-                      <XAxis type="number" domain={[0, 25]} />
-                      <YAxis 
-                        type="category" 
-                        dataKey="score" 
-                        tick={{ fontSize: 12 }}
-                        width={80}
-                      />
+                      <XAxis type="number" tick={{ fontSize: 12 }} />
+                      <YAxis dataKey="score" type="category" tick={{ fontSize: 12 }} width={50} />
                       <Tooltip
                         contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
                         formatter={(value) => [`${value} instructors`, '']}
                       />
                       <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                      <Bar 
-                        dataKey="count" 
-                        name="Instructor Count" 
-                        radius={[0, 4, 4, 0]} 
-                      >
+                      <Bar dataKey="count" name="Instructors" radius={[0, 4, 4, 0]}>
                         {instructorEvaluationData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.fill} />
                         ))}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
-              <CardHeader className="bg-gradient-to-r from-rose-50 to-white border-b border-rose-100">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-rose-100 rounded-full">
-                      <PieChart className="h-4 w-4 text-rose-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg font-semibold text-rose-900">Evaluation Distribution</CardTitle>
-                      <CardDescription>
-                        Score distribution across all instructors
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" className="text-rose-700 hover:text-rose-900 hover:bg-rose-50">
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-rose-700 hover:text-rose-900 hover:bg-rose-50">
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="h-80 bg-gradient-to-b from-rose-50 to-white py-3 px-1">
-                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-rose-100 p-4">
-                  <div className="h-full flex flex-col">
-                    <div className="flex-1">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <RechartsPieChart>
-                          <Pie
-                            data={instructorEvaluationData}
-                            cx="50%"
-                            cy="40%"
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="count"
-                          >
-                            {instructorEvaluationData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.fill} />
-                            ))}
-                          </Pie>
-                          <Tooltip 
-                            formatter={(value) => [`${value} instructors`, '']} 
-                          />
-                        </RechartsPieChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <div className="grid grid-cols-5 gap-2 mt-4">
-                      {instructorEvaluationData.map((entry, index) => (
-                        <div key={index} className="flex flex-col items-center">
-                          <div className="flex items-center mb-1">
-                            <div 
-                              className="h-3 w-3 rounded-full mr-1" 
-                              style={{ backgroundColor: entry.fill }}
-                            />
-                            <span className="text-xs font-medium">{entry.score}</span>
-                          </div>
-                          <span className="text-xs font-bold">{entry.count}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -877,63 +781,40 @@ const Reports = () => {
                       <Plane className="h-4 w-4 text-blue-600" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg font-semibold text-[#0A2463]">Leave Types Distribution</CardTitle>
+                      <CardTitle className="text-lg font-semibold text-[#0A2463]">Leave Type Distribution</CardTitle>
                       <CardDescription>
-                        Breakdown of leave requests by category
+                        Breakdown of different leave types
                       </CardDescription>
                     </div>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <Filter className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>All Schools</DropdownMenuItem>
-                      <DropdownMenuItem>KNFA</DropdownMenuItem>
-                      <DropdownMenuItem>NFS East</DropdownMenuItem>
-                      <DropdownMenuItem>NFS West</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
                 <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                    <RechartsPieChart>
                       <Pie
+                        dataKey="value"
                         data={leaveTypeData}
                         cx="50%"
-                        cy="45%"
-                        outerRadius={80}
-                        innerRadius={30}
+                        cy="50%"
+                        outerRadius={100}
                         fill="#8884d8"
-                        paddingAngle={2}
-                        dataKey="value"
-                        nameKey="name"
-                        stroke="#fff"
-                        strokeWidth={2}
-                        label={(entry) => `${entry.name}: ${entry.value}`}
+                        label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
                         labelLine={false}
                       >
                         {leaveTypeData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.fill} />
                         ))}
                       </Pie>
-                      <Legend 
-                        layout="horizontal"
-                        verticalAlign="bottom"
-                        align="center"
-                        formatter={(value) => {
-                          const match = leaveTypeData.find(item => item.name === value);
-                          return `${value}: ${match?.value} requests`;
-                        }}
-                        wrapperStyle={{
-                          paddingTop: '20px',
-                          textTransform: 'capitalize'
-                        }}
+                      <Tooltip
+                        formatter={(value) => [`${value} requests`, '']}
+                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
                       />
+                      <Legend />
                     </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
@@ -945,41 +826,132 @@ const Reports = () => {
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-green-100 rounded-full">
-                      <Clock className="h-4 w-4 text-green-600" />
+                      <BarChart2 className="h-4 w-4 text-green-600" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg font-semibold text-green-800">Leave Duration Distribution</CardTitle>
+                      <CardTitle className="text-lg font-semibold text-green-700">Leave by School</CardTitle>
                       <CardDescription>
-                        Analysis of leave request durations
+                        Distribution of leave requests by school
                       </CardDescription>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" className="text-green-700 hover:text-green-900 hover:bg-green-50">
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-green-700 hover:text-green-900 hover:bg-green-50">
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <Filter className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>PTO</DropdownMenuItem>
+                      <DropdownMenuItem>R&R</DropdownMenuItem>
+                      <DropdownMenuItem>Paternity</DropdownMenuItem>
+                      <DropdownMenuItem>Bereavement</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </CardHeader>
               <CardContent className="h-80 bg-gradient-to-b from-green-50 to-white py-3 px-1">
                 <div className="w-full h-full rounded-lg bg-white shadow-inner border border-green-100 p-4">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
-                      data={leaveDurationData}
+                      data={leaveBySchoolData}
                       margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                      <XAxis dataKey="duration" tick={{ fontSize: 12 }} />
+                      <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                      <YAxis tick={{ fontSize: 12 }} />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                      />
+                      <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                      <Bar dataKey="pto" name="PTO" fill="#0A2463" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="rr" name="R&R" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="paternity" name="Paternity" fill="#4CB944" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="bereavement" name="Bereavement" fill="#FF8811" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="negativePto" name="Negative PTO" fill="#E63946" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-amber-50 to-white border-b border-amber-100">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-amber-100 rounded-full">
+                      <LineChart className="h-4 w-4 text-amber-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-amber-700">Monthly Leave Trends</CardTitle>
+                      <CardDescription>
+                        Leave requests throughout the year
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="h-80 bg-gradient-to-b from-amber-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-amber-100 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={leaveMonthlyTrendsData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                      <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                       <YAxis tick={{ fontSize: 12 }} />
                       <Tooltip
                         contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
                         formatter={(value) => [`${value} requests`, '']}
                       />
-                      <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                      <Bar dataKey="count" name="Number of Requests" radius={[4, 4, 0, 0]}>
+                      <Area type="monotone" dataKey="count" name="Leave Requests" stroke="#FF8811" fill="#FF8811" fillOpacity={0.2} activeDot={{ r: 6 }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-100 rounded-full">
+                      <BarChart2 className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-[#0A2463]">Leave Duration</CardTitle>
+                      <CardDescription>
+                        Length of leave requests
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={leaveDurationData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
+                      layout="vertical"
+                    >
+                      <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.2} />
+                      <XAxis type="number" tick={{ fontSize: 12 }} />
+                      <YAxis dataKey="duration" type="category" tick={{ fontSize: 12 }} width={60} />
+                      <Tooltip
+                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                        formatter={(value) => [`${value} requests`, '']}
+                      />
+                      <Bar dataKey="count" name="Requests" radius={[0, 4, 4, 0]}>
                         {leaveDurationData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.fill} />
                         ))}
@@ -990,161 +962,46 @@ const Reports = () => {
               </CardContent>
             </Card>
           </div>
-          
-          <Card className="shadow-md hover:shadow-lg transition-all duration-300 mb-6">
-            <CardHeader className="bg-gradient-to-r from-amber-50 to-white border-b border-amber-100">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-amber-100 rounded-full">
-                    <LineChart className="h-4 w-4 text-amber-600" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg font-semibold text-amber-800">Monthly Leave Trends</CardTitle>
-                    <CardDescription>
-                      Track staff leave requests throughout the year
-                    </CardDescription>
-                  </div>
-                </div>
-                <Button variant="outline" size="sm" className="border-amber-200 hover:bg-amber-50 text-amber-700">
-                  <Download className="mr-2 h-4 w-4" /> Export Data
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="h-80 bg-gradient-to-b from-amber-50 to-white py-3 px-1">
-              <div className="w-full h-full rounded-lg bg-white shadow-inner border border-amber-100 p-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={leaveMonthlyTrendsData}
-                    margin={{ top: 20, right: 30, left: 0, bottom: 25 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
-                    <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} />
-                    <Tooltip 
-                      contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                      formatter={(value) => [`${value} requests`, '']} 
-                    />
-                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                    <Area
-                      type="monotone"
-                      dataKey="count"
-                      name="Leave Requests"
-                      stroke="#FF8811"
-                      fill="#FF8811"
-                      fillOpacity={0.3}
-                      activeDot={{ r: 6, strokeWidth: 2 }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-          
+        </TabsContent>
+        
+        <TabsContent value="trends">
           <Card className="shadow-md hover:shadow-lg transition-all duration-300 mb-6">
             <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <div className="p-2 bg-blue-100 rounded-full">
-                    <BarChart2 className="h-4 w-4 text-blue-600" />
+                    <TrendingUp className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg font-semibold text-[#0A2463]">Leave by School & Type</CardTitle>
+                    <CardTitle className="text-lg font-semibold text-[#0A2463]">Long-term Performance Trends</CardTitle>
                     <CardDescription>
-                      Compare leave distribution across schools
+                      Year-over-year performance metrics
                     </CardDescription>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="border-blue-200 hover:bg-blue-50 text-blue-700">
-                  <Download className="mr-2 h-4 w-4" /> Export Data
+                <Button variant="ghost" size="sm">
+                  <Calendar className="h-4 w-4" />
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
+            <CardContent className="h-96 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
               <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={leaveBySchoolData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} />
-                    <Tooltip
-                      contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                      formatter={(value) => [`${value} requests`, '']}
-                    />
-                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                    <Bar dataKey="pto" name="PTO" fill="#0A2463" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="rr" name="R&R" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="paternity" name="Paternity" fill="#4CB944" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="bereavement" name="Bereavement" fill="#FF8811" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="negativePto" name="Negative PTO" fill="#E63946" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="trends">
-          <Card className="shadow-md hover:shadow-lg transition-all duration-300 mb-6">
-            <CardHeader className="bg-gradient-to-r from-indigo-50 to-white border-b border-indigo-100">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-indigo-100 rounded-full">
-                    <TrendingUp className="h-4 w-4 text-indigo-600" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg font-semibold text-indigo-900">Long-term Performance Trends</CardTitle>
-                    <CardDescription>
-                      Track year-over-year metrics and enrollment trends
-                    </CardDescription>
-                  </div>
-                </div>
-                <Button variant="outline" size="sm" className="border-indigo-200 hover:bg-indigo-50 text-indigo-700">
-                  <Download className="mr-2 h-4 w-4" /> Export Data
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="h-80 bg-gradient-to-b from-indigo-50 to-white py-3 px-1">
-              <div className="w-full h-full rounded-lg bg-white shadow-inner border border-indigo-100 p-4">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart
                     data={monthlyPerformanceData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                     <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                     <YAxis domain={[70, 90]} tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
                       formatter={(value) => [`${value}%`, '']}
                     />
                     <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                    <Area 
-                      type="monotone" 
-                      dataKey="alcpt" 
-                      name="ALCPT" 
-                      stroke="#0A2463" 
-                      fill="#0A2463" 
-                      fillOpacity={0.1}
-                    />
-                    <Bar 
-                      dataKey="bookTest" 
-                      name="Book Test" 
-                      barSize={20} 
-                      fill="#4CB944"
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="ecl"
-                      name="ECL"
-                      stroke="#FF8811"
-                      strokeWidth={3}
-                      dot={{ r: 5 }}
-                      activeDot={{ r: 8 }}
-                    />
+                    <Bar dataKey="bookTest" name="Book Test" fill="#4CB944" radius={[4, 4, 0, 0]} />
+                    <Line type="monotone" dataKey="alcpt" name="ALCPT" stroke="#0A2463" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                    <Line type="monotone" dataKey="ecl" name="ECL" stroke="#FF8811" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
@@ -1152,130 +1009,6 @@ const Reports = () => {
           </Card>
         </TabsContent>
       </Tabs>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="shadow-md hover:shadow-lg transition-all duration-300 border-blue-100">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-blue-100 rounded-full">
-                <FileText className="h-4 w-4 text-blue-600" />
-              </div>
-              <div>
-                <CardTitle className="text-lg font-semibold text-[#0A2463]">Report Summary</CardTitle>
-                <CardDescription>
-                  {reportType === "performance" && "Key insights from the performance report"}
-                  {reportType === "attendance" && "Key insights from the attendance report"}
-                  {reportType === "evaluations" && "Key insights from the staff evaluations"}
-                  {reportType === "staffLeave" && "Key insights from the staff leave data"}
-                  {reportType === "trends" && "Key insights from the trends analysis"}
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6">
-            <ul className="space-y-4">
-              <li className="flex items-start bg-green-50 p-3 rounded-lg border border-green-100">
-                <div className="h-6 w-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-3 mt-0.5 shadow-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                </div>
-                <span className="text-green-800 font-medium">
-                  {reportType === "performance" && "Overall performance has improved by 12% since last quarter."}
-                  {reportType === "attendance" && "Attendance rate is 96%, which is above the target of 90%."}
-                  {reportType === "evaluations" && "85% of instructors received satisfactory or above ratings."}
-                  {reportType === "staffLeave" && "Leave types now clearly separated with PTO and R&R shown as distinct categories."}
-                  {reportType === "trends" && "Steady improvement in test scores over the past 6 months."}
-                </span>
-              </li>
-              <li className="flex items-start bg-amber-50 p-3 rounded-lg border border-amber-100">
-                <div className="h-6 w-6 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mr-3 mt-0.5 shadow-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                  </svg>
-                </div>
-                <span className="text-amber-800 font-medium">
-                  {reportType === "performance" && "NFS East shows the highest improvement in test scores."}
-                  {reportType === "attendance" && "Technical Training courses have the lowest attendance rate."}
-                  {reportType === "evaluations" && "Quarterly evaluations are completed for 95% of staff."}
-                  {reportType === "staffLeave" && "PTO (28) and R&R (20) make up 67% of all leave requests."}
-                  {reportType === "trends" && "Course enrollment has increased by 23% year over year."}
-                </span>
-              </li>
-              <li className="flex items-start bg-red-50 p-3 rounded-lg border border-red-100">
-                <div className="h-6 w-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center mr-3 mt-0.5 shadow-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                  </svg>
-                </div>
-                <span className="text-red-800 font-medium">
-                  {reportType === "performance" && "Technical Training course pass rates need improvement."}
-                  {reportType === "attendance" && "Action needed for students with attendance below 80%."}
-                  {reportType === "evaluations" && "3 instructors require performance improvement plans."}
-                  {reportType === "staffLeave" && "Negative PTO requests increased by 33% since last quarter."}
-                  {reportType === "trends" && "Aviation course enrollment has declined in Q3."}
-                </span>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
-        
-        <Card className="shadow-md hover:shadow-lg transition-all duration-300 border-purple-100">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-white border-b border-purple-100">
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-purple-100 rounded-full">
-                <FileText className="h-4 w-4 text-purple-600" />
-              </div>
-              <div>
-                <CardTitle className="text-lg font-semibold text-purple-900">Recommendations</CardTitle>
-                <CardDescription>
-                  Strategic actions based on report insights
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6">
-            <ul className="space-y-4">
-              <li className="flex items-start bg-gradient-to-r from-blue-50 to-white p-3 rounded-lg border border-blue-100">
-                <div className="h-6 w-6 rounded-full bg-[#0A2463] text-white flex items-center justify-center mr-3 mt-0.5 shadow-md">1</div>
-                <span className="text-blue-900 font-medium">
-                  {reportType === "performance" && "Schedule additional support sessions for Technical Training courses."}
-                  {reportType === "attendance" && "Implement attendance incentives for low attendance courses."}
-                  {reportType === "evaluations" && "Conduct focused training for instructors needing improvement."}
-                  {reportType === "staffLeave" && "Optimize staffing levels during December and June peak leave periods."}
-                  {reportType === "trends" && "Revise Aviation course curriculum to increase enrollment."}
-                </span>
-              </li>
-              <li className="flex items-start bg-gradient-to-r from-blue-50 to-white p-3 rounded-lg border border-blue-100">
-                <div className="h-6 w-6 rounded-full bg-[#0A2463] text-white flex items-center justify-center mr-3 mt-0.5 shadow-md">2</div>
-                <span className="text-blue-900 font-medium">
-                  {reportType === "performance" && "Recognize and reward instructors with highest performance improvements."}
-                  {reportType === "attendance" && "Follow up with students having attendance below threshold."}
-                  {reportType === "evaluations" && "Establish peer mentoring program for new instructors."}
-                  {reportType === "staffLeave" && "Implement better tracking system for PTO and R&R categories."}
-                  {reportType === "trends" && "Expand successful Language Training course offerings."}
-                </span>
-              </li>
-              <li className="flex items-start bg-gradient-to-r from-blue-50 to-white p-3 rounded-lg border border-blue-100">
-                <div className="h-6 w-6 rounded-full bg-[#0A2463] text-white flex items-center justify-center mr-3 mt-0.5 shadow-md">3</div>
-                <span className="text-blue-900 font-medium">
-                  {reportType === "performance" && "Share best practices from NFS East with other schools."}
-                  {reportType === "attendance" && "Review scheduling for courses with attendance issues."}
-                  {reportType === "evaluations" && "Update evaluation criteria for next quarter based on feedback."}
-                  {reportType === "staffLeave" && "Monitor and reduce the increasing trend of Negative PTO requests."}
-                  {reportType === "trends" && "Implement new tracking metrics for course effectiveness."}
-                </span>
-              </li>
-            </ul>
-            
-            <Button className="w-full mt-6 bg-[#0A2463] hover:bg-[#071A4A] shadow-md hover:shadow-lg transition-all duration-300">
-              <FileText className="h-4 w-4 mr-2" /> Generate Detailed Action Plan
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
     </main>
   );
 };
