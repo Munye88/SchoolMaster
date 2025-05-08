@@ -101,7 +101,7 @@ export function MoonsAssistantDialog() {
                   </p>
                   <Badge variant="outline" className="mb-4 bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800">
                     <Sparkles className="h-3 w-3 mr-1 text-yellow-500" />
-                    Voice-Enabled AI Assistant
+                    Advanced AI Assistant
                   </Badge>
                   <p className="text-sm mt-2">
                     I'm your enhanced AI assistant powered by OpenAI's GPT-4o model. I can answer questions about instructors, 
