@@ -804,7 +804,6 @@ const Reports = () => {
                         outerRadius={100}
                         fill="#8884d8"
                         label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
-                        labelLine={false}
                       >
                         {leaveTypeData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.fill} />
