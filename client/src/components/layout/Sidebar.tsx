@@ -262,13 +262,7 @@ const Sidebar = () => {
                         Yearly Schedule
                       </Link>
                     </li>
-                    <li>
-                      <Link href={`/schools/${showSchoolLinks}/sop`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
-                        <FileText className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
-                        SOP
-                      </Link>
-                    </li>
+                    {/* SOP removed as requested */}
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/staff-evaluations`} onClick={() => setShowSchoolLinks(null)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
@@ -283,13 +277,7 @@ const Sidebar = () => {
                         Staff Attendance
                       </Link>
                     </li>
-                    <li>
-                      <Link href={`/schools/${showSchoolLinks}/book-inventory`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
-                        <BookOpen className="h-4 w-4 mr-2 text-amber-600 group-hover:text-amber-700" />
-                        Book Inventory
-                      </Link>
-                    </li>
+                    {/* Book Inventory removed as requested */}
                     <li>
                       <Link href={`/schools/${showSchoolLinks}/staff-leave-tracker`} onClick={() => setShowSchoolLinks(null)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
