@@ -795,35 +795,55 @@ const Reports = () => {
               <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
                 <div className="w-full h-full rounded-lg bg-white shadow-inner p-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <div className="flex items-center justify-center h-full w-full">
-                      {/* Pure text layout like in the screenshot - no pie chart */}
-                      <div className="w-full h-full relative border border-red-100 rounded-lg overflow-hidden" style={{borderRadius: '24px', backgroundColor: '#FFFFFF'}}>
-                        {/* PTO label centered at top */}
-                        <div className="absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-base font-medium text-center">
-                          <span className="text-[#0A2463]">PTO: 28 (39%)</span>
-                        </div>
-                        
-                        {/* R&R label at the center left */}
-                        <div className="absolute top-1/2 left-[20%] transform -translate-x-1/2 -translate-y-1/2 text-base font-medium text-[#3B82F6]">
-                          R&R: 20 (28%)
-                        </div>
-                        
-                        {/* Paternity label at the bottom left */}
-                        <div className="absolute bottom-[35%] left-[25%] transform -translate-y-1/2 text-base font-medium text-[#4CB944]">
-                          Paternity: 12 (17%)
-                        </div>
-                        
-                        {/* Bereavement label at the bottom right */}
-                        <div className="absolute bottom-[35%] right-[25%] transform translate-x-1/2 -translate-y-1/2 text-base font-medium text-[#FF8811]">
-                          Bereavement: 8 (11%)
-                        </div>
-                        
-                        {/* Negative PTO label at the center right */}
-                        <div className="absolute top-1/2 right-[15%] transform translate-x-1/2 -translate-y-1/2 text-base font-medium text-[#E63946]">
-                          Negative PTO: 4 (6%)
-                        </div>
-                      </div>
-                    </div>
+                    <RechartsPieChart width={400} height={300}>
+                      <defs>
+                        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#ff6b6b" floodOpacity="0.5"/>
+                        </filter>
+                      </defs>
+                      <Pie
+                        data={leaveTypeData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="value"
+                        label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, name, value }) => {
+                          const RADIAN = Math.PI / 180;
+                          // Position for the curved text away from the pie
+                          const radius = outerRadius * 1.5;
+                          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                          
+                          return (
+                            <text
+                              x={x}
+                              y={y}
+                              fill={leaveTypeData[index].fill}
+                              textAnchor={x > cx ? 'start' : 'end'}
+                              dominantBaseline="central"
+                              fontSize={14}
+                              fontWeight="500"
+                            >
+                              {`${name}: ${value} (${percent * 100}%)`}
+                            </text>
+                          );
+                        }}
+                      >
+                        {leaveTypeData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <path 
+                        d="M50,50 C50,20 100,10 200,10 C300,10 350,20 350,50 C380,50 390,100 390,150 C390,200 380,250 350,250 C350,280 300,290 200,290 C100,290 50,280 50,250 C20,250 10,200 10,150 C10,100 20,50 50,50 Z"
+                        fill="none"
+                        stroke="#ff6b6b"
+                        strokeWidth="1"
+                        style={{ filter: 'url(#shadow)' }}
+                        transform="translate(0, 0) scale(0.9)"
+                      />
+                    </RechartsPieChart>
                   </ResponsiveContainer>
                 </div>
               </CardContent>
