@@ -67,7 +67,7 @@ const Reports = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   
-  // Date management
+  // Month data 
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   
   // Helper function to go to previous month/period
@@ -143,491 +143,19 @@ const Reports = () => {
     setSelectedYear(currentDate.getFullYear());
   }, [timeRange]);
   
-  // Full dataset for all months
-  const allMonthsPerformanceData = {
-    "Jan": { 
-      schoolPerformance: [
-        { name: 'KNFA', alcpt: 79, bookTest: 78, ecl: 77, fill: '#0A2463' },
-        { name: 'NFS East', alcpt: 81, bookTest: 79, ecl: 78, fill: '#4CB944' },
-        { name: 'NFS West', alcpt: 77, bookTest: 75, ecl: 76, fill: '#FF8811' }
-      ],
-      courseCompletion: [
-        { name: 'Completed', value: 0.0, fill: '#4CB944' },
-        { name: 'In Progress', value: 90.0, fill: '#FF8811' },
-        { name: 'Not Started', value: 10.0, fill: '#E63946' }
-      ],
-      monthlyPerformance: { alcpt: 79, bookTest: 78, ecl: 77 },
-      instructorEvaluation: [
-        { score: '95%+', count: 3, fill: '#4CB944' },
-        { score: '90-94%', count: 4, fill: '#85C88A' },
-        { score: '85-89%', count: 12, fill: '#FFB84C' },
-        { score: '80-84%', count: 22, fill: '#F16767' },
-        { score: '<80%', count: 19, fill: '#E63946' }
-      ],
-      attendance: { knfa: 95, nfsEast: 93, nfsWest: 91 },
-      leaveType: [
-        { name: 'PTO', value: 2, fill: '#0A2463' },
-        { name: 'R&R', value: 1, fill: '#3B82F6' },
-        { name: 'Paternity', value: 0, fill: '#4CB944' },
-        { name: 'Bereavement', value: 1, fill: '#FF8811' },
-        { name: 'Negative PTO', value: 0, fill: '#E63946' }
-      ],
-      leaveBySchool: [
-        { name: 'KNFA', pto: 1, rr: 0, paternity: 0, bereavement: 0, negativePto: 0 },
-        { name: 'NFS East', pto: 1, rr: 1, paternity: 0, bereavement: 1, negativePto: 0 },
-        { name: 'NFS West', pto: 0, rr: 0, paternity: 0, bereavement: 0, negativePto: 0 }
-      ],
-      leaveTrends: { count: 4 },
-      leaveDuration: [
-        { duration: '1-3 days', count: 3, fill: '#63CAFF' },
-        { duration: '4-7 days', count: 1, fill: '#0A2463' },
-        { duration: '8-14 days', count: 0, fill: '#4CB944' },
-        { duration: '15+ days', count: 0, fill: '#FF8811' }
-      ]
-    },
-    "Feb": { 
-      schoolPerformance: [
-        { name: 'KNFA', alcpt: 80, bookTest: 79, ecl: 78, fill: '#0A2463' },
-        { name: 'NFS East', alcpt: 82, bookTest: 80, ecl: 79, fill: '#4CB944' },
-        { name: 'NFS West', alcpt: 78, bookTest: 77, ecl: 77, fill: '#FF8811' }
-      ],
-      courseCompletion: [
-        { name: 'Completed', value: 5.0, fill: '#4CB944' },
-        { name: 'In Progress', value: 90.0, fill: '#FF8811' },
-        { name: 'Not Started', value: 5.0, fill: '#E63946' }
-      ],
-      monthlyPerformance: { alcpt: 80, bookTest: 79, ecl: 78 },
-      instructorEvaluation: [
-        { score: '95%+', count: 3, fill: '#4CB944' },
-        { score: '90-94%', count: 5, fill: '#85C88A' },
-        { score: '85-89%', count: 14, fill: '#FFB84C' },
-        { score: '80-84%', count: 20, fill: '#F16767' },
-        { score: '<80%', count: 18, fill: '#E63946' }
-      ],
-      attendance: { knfa: 94, nfsEast: 92, nfsWest: 90 },
-      leaveType: [
-        { name: 'PTO', value: 3, fill: '#0A2463' },
-        { name: 'R&R', value: 2, fill: '#3B82F6' },
-        { name: 'Paternity', value: 1, fill: '#4CB944' },
-        { name: 'Bereavement', value: 0, fill: '#FF8811' },
-        { name: 'Negative PTO', value: 0, fill: '#E63946' }
-      ],
-      leaveBySchool: [
-        { name: 'KNFA', pto: 1, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 },
-        { name: 'NFS East', pto: 1, rr: 0, paternity: 1, bereavement: 0, negativePto: 0 },
-        { name: 'NFS West', pto: 1, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 }
-      ],
-      leaveTrends: { count: 6 },
-      leaveDuration: [
-        { duration: '1-3 days', count: 4, fill: '#63CAFF' },
-        { duration: '4-7 days', count: 2, fill: '#0A2463' },
-        { duration: '8-14 days', count: 0, fill: '#4CB944' },
-        { duration: '15+ days', count: 0, fill: '#FF8811' }
-      ]
-    },
-    "Mar": { 
-      schoolPerformance: [
-        { name: 'KNFA', alcpt: 82, bookTest: 80, ecl: 79, fill: '#0A2463' },
-        { name: 'NFS East', alcpt: 83, bookTest: 81, ecl: 80, fill: '#4CB944' },
-        { name: 'NFS West', alcpt: 80, bookTest: 79, ecl: 78, fill: '#FF8811' }
-      ],
-      courseCompletion: [
-        { name: 'Completed', value: 10.0, fill: '#4CB944' },
-        { name: 'In Progress', value: 85.0, fill: '#FF8811' },
-        { name: 'Not Started', value: 5.0, fill: '#E63946' }
-      ],
-      monthlyPerformance: { alcpt: 82, bookTest: 80, ecl: 79 },
-      instructorEvaluation: [
-        { score: '95%+', count: 4, fill: '#4CB944' },
-        { score: '90-94%', count: 5, fill: '#85C88A' },
-        { score: '85-89%', count: 15, fill: '#FFB84C' },
-        { score: '80-84%', count: 19, fill: '#F16767' },
-        { score: '<80%', count: 17, fill: '#E63946' }
-      ],
-      attendance: { knfa: 96, nfsEast: 94, nfsWest: 93 },
-      leaveType: [
-        { name: 'PTO', value: 4, fill: '#0A2463' },
-        { name: 'R&R', value: 2, fill: '#3B82F6' },
-        { name: 'Paternity', value: 1, fill: '#4CB944' },
-        { name: 'Bereavement', value: 1, fill: '#FF8811' },
-        { name: 'Negative PTO', value: 0, fill: '#E63946' }
-      ],
-      leaveBySchool: [
-        { name: 'KNFA', pto: 2, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 },
-        { name: 'NFS East', pto: 1, rr: 0, paternity: 1, bereavement: 1, negativePto: 0 },
-        { name: 'NFS West', pto: 1, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 }
-      ],
-      leaveTrends: { count: 8 },
-      leaveDuration: [
-        { duration: '1-3 days', count: 5, fill: '#63CAFF' },
-        { duration: '4-7 days', count: 2, fill: '#0A2463' },
-        { duration: '8-14 days', count: 1, fill: '#4CB944' },
-        { duration: '15+ days', count: 0, fill: '#FF8811' }
-      ]
-    },
-    "Apr": { 
-      schoolPerformance: [
-        { name: 'KNFA', alcpt: 83, bookTest: 81, ecl: 80, fill: '#0A2463' },
-        { name: 'NFS East', alcpt: 85, bookTest: 82, ecl: 82, fill: '#4CB944' },
-        { name: 'NFS West', alcpt: 81, bookTest: 79, ecl: 79, fill: '#FF8811' }
-      ],
-      courseCompletion: [
-        { name: 'Completed', value: 15.0, fill: '#4CB944' },
-        { name: 'In Progress', value: 80.0, fill: '#FF8811' },
-        { name: 'Not Started', value: 5.0, fill: '#E63946' }
-      ],
-      monthlyPerformance: { alcpt: 83, bookTest: 81, ecl: 80 },
-      instructorEvaluation: [
-        { score: '95%+', count: 4, fill: '#4CB944' },
-        { score: '90-94%', count: 6, fill: '#85C88A' },
-        { score: '85-89%', count: 16, fill: '#FFB84C' },
-        { score: '80-84%', count: 18, fill: '#F16767' },
-        { score: '<80%', count: 16, fill: '#E63946' }
-      ],
-      attendance: { knfa: 95, nfsEast: 95, nfsWest: 92 },
-      leaveType: [
-        { name: 'PTO', value: 3, fill: '#0A2463' },
-        { name: 'R&R', value: 1, fill: '#3B82F6' },
-        { name: 'Paternity', value: 0, fill: '#4CB944' },
-        { name: 'Bereavement', value: 1, fill: '#FF8811' },
-        { name: 'Negative PTO', value: 0, fill: '#E63946' }
-      ],
-      leaveBySchool: [
-        { name: 'KNFA', pto: 1, rr: 0, paternity: 0, bereavement: 0, negativePto: 0 },
-        { name: 'NFS East', pto: 1, rr: 1, paternity: 0, bereavement: 1, negativePto: 0 },
-        { name: 'NFS West', pto: 1, rr: 0, paternity: 0, bereavement: 0, negativePto: 0 }
-      ],
-      leaveTrends: { count: 5 },
-      leaveDuration: [
-        { duration: '1-3 days', count: 3, fill: '#63CAFF' },
-        { duration: '4-7 days', count: 2, fill: '#0A2463' },
-        { duration: '8-14 days', count: 0, fill: '#4CB944' },
-        { duration: '15+ days', count: 0, fill: '#FF8811' }
-      ]
-    },
-    "May": { 
-      schoolPerformance: [
-        { name: 'KNFA', alcpt: 85, bookTest: 83, ecl: 82, fill: '#0A2463' },
-        { name: 'NFS East', alcpt: 87, bookTest: 84, ecl: 84, fill: '#4CB944' },
-        { name: 'NFS West', alcpt: 83, bookTest: 80, ecl: 81, fill: '#FF8811' }
-      ],
-      courseCompletion: [
-        { name: 'Completed', value: 25.0, fill: '#4CB944' },
-        { name: 'In Progress', value: 75.0, fill: '#FF8811' },
-        { name: 'Not Started', value: 0.0, fill: '#E63946' }
-      ],
-      monthlyPerformance: { alcpt: 84, bookTest: 82, ecl: 80 },
-      instructorEvaluation: [
-        { score: '95%+', count: 5, fill: '#4CB944' },
-        { score: '90-94%', count: 5, fill: '#85C88A' },
-        { score: '85-89%', count: 17, fill: '#FFB84C' },
-        { score: '80-84%', count: 19, fill: '#F16767' },
-        { score: '<80%', count: 14, fill: '#E63946' }
-      ],
-      attendance: { knfa: 93, nfsEast: 96, nfsWest: 90 },
-      leaveType: [
-        { name: 'PTO', value: 4, fill: '#0A2463' },
-        { name: 'R&R', value: 2, fill: '#3B82F6' },
-        { name: 'Paternity', value: 1, fill: '#4CB944' },
-        { name: 'Bereavement', value: 0, fill: '#FF8811' },
-        { name: 'Negative PTO', value: 0, fill: '#E63946' }
-      ],
-      leaveBySchool: [
-        { name: 'KNFA', pto: 2, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 },
-        { name: 'NFS East', pto: 1, rr: 0, paternity: 1, bereavement: 0, negativePto: 0 },
-        { name: 'NFS West', pto: 1, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 }
-      ],
-      leaveTrends: { count: 7 },
-      leaveDuration: [
-        { duration: '1-3 days', count: 4, fill: '#63CAFF' },
-        { duration: '4-7 days', count: 3, fill: '#0A2463' },
-        { duration: '8-14 days', count: 0, fill: '#4CB944' },
-        { duration: '15+ days', count: 0, fill: '#FF8811' }
-      ]
-    },
-    "Jun": { 
-      schoolPerformance: [
-        { name: 'KNFA', alcpt: 84, bookTest: 82, ecl: 81, fill: '#0A2463' },
-        { name: 'NFS East', alcpt: 86, bookTest: 83, ecl: 83, fill: '#4CB944' },
-        { name: 'NFS West', alcpt: 82, bookTest: 80, ecl: 80, fill: '#FF8811' }
-      ],
-      courseCompletion: [
-        { name: 'Completed', value: 35.0, fill: '#4CB944' },
-        { name: 'In Progress', value: 65.0, fill: '#FF8811' },
-        { name: 'Not Started', value: 0.0, fill: '#E63946' }
-      ],
-      monthlyPerformance: { alcpt: 84, bookTest: 82, ecl: 81 },
-      instructorEvaluation: [
-        { score: '95%+', count: 6, fill: '#4CB944' },
-        { score: '90-94%', count: 7, fill: '#85C88A' },
-        { score: '85-89%', count: 15, fill: '#FFB84C' },
-        { score: '80-84%', count: 18, fill: '#F16767' },
-        { score: '<80%', count: 14, fill: '#E63946' }
-      ],
-      attendance: { knfa: 94, nfsEast: 93, nfsWest: 91 },
-      leaveType: [
-        { name: 'PTO', value: 6, fill: '#0A2463' },
-        { name: 'R&R', value: 4, fill: '#3B82F6' },
-        { name: 'Paternity', value: 2, fill: '#4CB944' },
-        { name: 'Bereavement', value: 0, fill: '#FF8811' },
-        { name: 'Negative PTO', value: 0, fill: '#E63946' }
-      ],
-      leaveBySchool: [
-        { name: 'KNFA', pto: 2, rr: 1, paternity: 1, bereavement: 0, negativePto: 0 },
-        { name: 'NFS East', pto: 2, rr: 1, paternity: 1, bereavement: 0, negativePto: 0 },
-        { name: 'NFS West', pto: 2, rr: 2, paternity: 0, bereavement: 0, negativePto: 0 }
-      ],
-      leaveTrends: { count: 12 },
-      leaveDuration: [
-        { duration: '1-3 days', count: 6, fill: '#63CAFF' },
-        { duration: '4-7 days', count: 4, fill: '#0A2463' },
-        { duration: '8-14 days', count: 2, fill: '#4CB944' },
-        { duration: '15+ days', count: 0, fill: '#FF8811' }
-      ]
-    },
-    "Jul": { 
-      schoolPerformance: [
-        { name: 'KNFA', alcpt: 85, bookTest: 83, ecl: 81, fill: '#0A2463' },
-        { name: 'NFS East', alcpt: 87, bookTest: 84, ecl: 83, fill: '#4CB944' },
-        { name: 'NFS West', alcpt: 83, bookTest: 82, ecl: 80, fill: '#FF8811' }
-      ],
-      courseCompletion: [
-        { name: 'Completed', value: 45.0, fill: '#4CB944' },
-        { name: 'In Progress', value: 55.0, fill: '#FF8811' },
-        { name: 'Not Started', value: 0.0, fill: '#E63946' }
-      ],
-      monthlyPerformance: { alcpt: 85, bookTest: 83, ecl: 81 },
-      instructorEvaluation: [
-        { score: '95%+', count: 6, fill: '#4CB944' },
-        { score: '90-94%', count: 8, fill: '#85C88A' },
-        { score: '85-89%', count: 16, fill: '#FFB84C' },
-        { score: '80-84%', count: 17, fill: '#F16767' },
-        { score: '<80%', count: 13, fill: '#E63946' }
-      ],
-      attendance: { knfa: 96, nfsEast: 95, nfsWest: 92 },
-      leaveType: [
-        { name: 'PTO', value: 5, fill: '#0A2463' },
-        { name: 'R&R', value: 3, fill: '#3B82F6' },
-        { name: 'Paternity', value: 0, fill: '#4CB944' },
-        { name: 'Bereavement', value: 1, fill: '#FF8811' },
-        { name: 'Negative PTO', value: 0, fill: '#E63946' }
-      ],
-      leaveBySchool: [
-        { name: 'KNFA', pto: 2, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 },
-        { name: 'NFS East', pto: 1, rr: 1, paternity: 0, bereavement: 1, negativePto: 0 },
-        { name: 'NFS West', pto: 2, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 }
-      ],
-      leaveTrends: { count: 9 },
-      leaveDuration: [
-        { duration: '1-3 days', count: 5, fill: '#63CAFF' },
-        { duration: '4-7 days', count: 3, fill: '#0A2463' },
-        { duration: '8-14 days', count: 1, fill: '#4CB944' },
-        { duration: '15+ days', count: 0, fill: '#FF8811' }
-      ]
-    },
-    "Aug": { 
-      schoolPerformance: [
-        { name: 'KNFA', alcpt: 86, bookTest: 83, ecl: 82, fill: '#0A2463' },
-        { name: 'NFS East', alcpt: 88, bookTest: 84, ecl: 84, fill: '#4CB944' },
-        { name: 'NFS West', alcpt: 84, bookTest: 82, ecl: 81, fill: '#FF8811' }
-      ],
-      courseCompletion: [
-        { name: 'Completed', value: 60.0, fill: '#4CB944' },
-        { name: 'In Progress', value: 40.0, fill: '#FF8811' },
-        { name: 'Not Started', value: 0.0, fill: '#E63946' }
-      ],
-      monthlyPerformance: { alcpt: 86, bookTest: 83, ecl: 82 },
-      instructorEvaluation: [
-        { score: '95%+', count: 7, fill: '#4CB944' },
-        { score: '90-94%', count: 8, fill: '#85C88A' },
-        { score: '85-89%', count: 18, fill: '#FFB84C' },
-        { score: '80-84%', count: 16, fill: '#F16767' },
-        { score: '<80%', count: 11, fill: '#E63946' }
-      ],
-      attendance: { knfa: 97, nfsEast: 94, nfsWest: 93 },
-      leaveType: [
-        { name: 'PTO', value: 3, fill: '#0A2463' },
-        { name: 'R&R', value: 2, fill: '#3B82F6' },
-        { name: 'Paternity', value: 1, fill: '#4CB944' },
-        { name: 'Bereavement', value: 0, fill: '#FF8811' },
-        { name: 'Negative PTO', value: 0, fill: '#E63946' }
-      ],
-      leaveBySchool: [
-        { name: 'KNFA', pto: 1, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 },
-        { name: 'NFS East', pto: 1, rr: 0, paternity: 1, bereavement: 0, negativePto: 0 },
-        { name: 'NFS West', pto: 1, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 }
-      ],
-      leaveTrends: { count: 6 },
-      leaveDuration: [
-        { duration: '1-3 days', count: 4, fill: '#63CAFF' },
-        { duration: '4-7 days', count: 2, fill: '#0A2463' },
-        { duration: '8-14 days', count: 0, fill: '#4CB944' },
-        { duration: '15+ days', count: 0, fill: '#FF8811' }
-      ]
-    },
-    "Sep": { 
-      schoolPerformance: [
-        { name: 'KNFA', alcpt: 85, bookTest: 83, ecl: 82, fill: '#0A2463' },
-        { name: 'NFS East', alcpt: 87, bookTest: 84, ecl: 84, fill: '#4CB944' },
-        { name: 'NFS West', alcpt: 83, bookTest: 82, ecl: 81, fill: '#FF8811' }
-      ],
-      courseCompletion: [
-        { name: 'Completed', value: 75.0, fill: '#4CB944' },
-        { name: 'In Progress', value: 20.0, fill: '#FF8811' },
-        { name: 'Not Started', value: 5.0, fill: '#E63946' }
-      ],
-      monthlyPerformance: { alcpt: 85, bookTest: 83, ecl: 82 },
-      instructorEvaluation: [
-        { score: '95%+', count: 6, fill: '#4CB944' },
-        { score: '90-94%', count: 7, fill: '#85C88A' },
-        { score: '85-89%', count: 17, fill: '#FFB84C' },
-        { score: '80-84%', count: 18, fill: '#F16767' },
-        { score: '<80%', count: 12, fill: '#E63946' }
-      ],
-      attendance: { knfa: 96, nfsEast: 93, nfsWest: 94 },
-      leaveType: [
-        { name: 'PTO', value: 2, fill: '#0A2463' },
-        { name: 'R&R', value: 2, fill: '#3B82F6' },
-        { name: 'Paternity', value: 0, fill: '#4CB944' },
-        { name: 'Bereavement', value: 1, fill: '#FF8811' },
-        { name: 'Negative PTO', value: 0, fill: '#E63946' }
-      ],
-      leaveBySchool: [
-        { name: 'KNFA', pto: 0, rr: 1, paternity: 0, bereavement: 1, negativePto: 0 },
-        { name: 'NFS East', pto: 1, rr: 0, paternity: 0, bereavement: 0, negativePto: 0 },
-        { name: 'NFS West', pto: 1, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 }
-      ],
-      leaveTrends: { count: 5 },
-      leaveDuration: [
-        { duration: '1-3 days', count: 3, fill: '#63CAFF' },
-        { duration: '4-7 days', count: 2, fill: '#0A2463' },
-        { duration: '8-14 days', count: 0, fill: '#4CB944' },
-        { duration: '15+ days', count: 0, fill: '#FF8811' }
-      ]
-    },
-    "Oct": { 
-      schoolPerformance: [
-        { name: 'KNFA', alcpt: 84, bookTest: 82, ecl: 81, fill: '#0A2463' },
-        { name: 'NFS East', alcpt: 86, bookTest: 83, ecl: 83, fill: '#4CB944' },
-        { name: 'NFS West', alcpt: 82, bookTest: 81, ecl: 80, fill: '#FF8811' }
-      ],
-      courseCompletion: [
-        { name: 'Completed', value: 80.0, fill: '#4CB944' },
-        { name: 'In Progress', value: 15.0, fill: '#FF8811' },
-        { name: 'Not Started', value: 5.0, fill: '#E63946' }
-      ],
-      monthlyPerformance: { alcpt: 84, bookTest: 82, ecl: 81 },
-      instructorEvaluation: [
-        { score: '95%+', count: 5, fill: '#4CB944' },
-        { score: '90-94%', count: 6, fill: '#85C88A' },
-        { score: '85-89%', count: 16, fill: '#FFB84C' },
-        { score: '80-84%', count: 19, fill: '#F16767' },
-        { score: '<80%', count: 14, fill: '#E63946' }
-      ],
-      attendance: { knfa: 95, nfsEast: 92, nfsWest: 92 },
-      leaveType: [
-        { name: 'PTO', value: 3, fill: '#0A2463' },
-        { name: 'R&R', value: 3, fill: '#3B82F6' },
-        { name: 'Paternity', value: 0, fill: '#4CB944' },
-        { name: 'Bereavement', value: 1, fill: '#FF8811' },
-        { name: 'Negative PTO', value: 0, fill: '#E63946' }
-      ],
-      leaveBySchool: [
-        { name: 'KNFA', pto: 1, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 },
-        { name: 'NFS East', pto: 1, rr: 1, paternity: 0, bereavement: 1, negativePto: 0 },
-        { name: 'NFS West', pto: 1, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 }
-      ],
-      leaveTrends: { count: 7 },
-      leaveDuration: [
-        { duration: '1-3 days', count: 5, fill: '#63CAFF' },
-        { duration: '4-7 days', count: 2, fill: '#0A2463' },
-        { duration: '8-14 days', count: 0, fill: '#4CB944' },
-        { duration: '15+ days', count: 0, fill: '#FF8811' }
-      ]
-    },
-    "Nov": { 
-      schoolPerformance: [
-        { name: 'KNFA', alcpt: 85, bookTest: 83, ecl: 82, fill: '#0A2463' },
-        { name: 'NFS East', alcpt: 87, bookTest: 84, ecl: 84, fill: '#4CB944' },
-        { name: 'NFS West', alcpt: 83, bookTest: 82, ecl: 81, fill: '#FF8811' }
-      ],
-      courseCompletion: [
-        { name: 'Completed', value: 85.0, fill: '#4CB944' },
-        { name: 'In Progress', value: 10.0, fill: '#FF8811' },
-        { name: 'Not Started', value: 5.0, fill: '#E63946' }
-      ],
-      monthlyPerformance: { alcpt: 85, bookTest: 83, ecl: 82 },
-      instructorEvaluation: [
-        { score: '95%+', count: 6, fill: '#4CB944' },
-        { score: '90-94%', count: 7, fill: '#85C88A' },
-        { score: '85-89%', count: 18, fill: '#FFB84C' },
-        { score: '80-84%', count: 17, fill: '#F16767' },
-        { score: '<80%', count: 12, fill: '#E63946' }
-      ],
-      attendance: { knfa: 94, nfsEast: 94, nfsWest: 93 },
-      leaveType: [
-        { name: 'PTO', value: 4, fill: '#0A2463' },
-        { name: 'R&R', value: 2, fill: '#3B82F6' },
-        { name: 'Paternity', value: 1, fill: '#4CB944' },
-        { name: 'Bereavement', value: 1, fill: '#FF8811' },
-        { name: 'Negative PTO', value: 0, fill: '#E63946' }
-      ],
-      leaveBySchool: [
-        { name: 'KNFA', pto: 2, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 },
-        { name: 'NFS East', pto: 1, rr: 0, paternity: 1, bereavement: 1, negativePto: 0 },
-        { name: 'NFS West', pto: 1, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 }
-      ],
-      leaveTrends: { count: 8 },
-      leaveDuration: [
-        { duration: '1-3 days', count: 5, fill: '#63CAFF' },
-        { duration: '4-7 days', count: 2, fill: '#0A2463' },
-        { duration: '8-14 days', count: 1, fill: '#4CB944' },
-        { duration: '15+ days', count: 0, fill: '#FF8811' }
-      ]
-    },
-    "Dec": { 
-      schoolPerformance: [
-        { name: 'KNFA', alcpt: 86, bookTest: 84, ecl: 83, fill: '#0A2463' },
-        { name: 'NFS East', alcpt: 89, bookTest: 85, ecl: 85, fill: '#4CB944' },
-        { name: 'NFS West', alcpt: 84, bookTest: 83, ecl: 82, fill: '#FF8811' }
-      ],
-      courseCompletion: [
-        { name: 'Completed', value: 90.0, fill: '#4CB944' },
-        { name: 'In Progress', value: 5.0, fill: '#FF8811' },
-        { name: 'Not Started', value: 5.0, fill: '#E63946' }
-      ],
-      monthlyPerformance: { alcpt: 86, bookTest: 84, ecl: 83 },
-      instructorEvaluation: [
-        { score: '95%+', count: 8, fill: '#4CB944' },
-        { score: '90-94%', count: 9, fill: '#85C88A' },
-        { score: '85-89%', count: 19, fill: '#FFB84C' },
-        { score: '80-84%', count: 15, fill: '#F16767' },
-        { score: '<80%', count: 9, fill: '#E63946' }
-      ],
-      attendance: { knfa: 95, nfsEast: 96, nfsWest: 94 },
-      leaveType: [
-        { name: 'PTO', value: 8, fill: '#0A2463' },
-        { name: 'R&R', value: 5, fill: '#3B82F6' },
-        { name: 'Paternity', value: 1, fill: '#4CB944' },
-        { name: 'Bereavement', value: 1, fill: '#FF8811' },
-        { name: 'Negative PTO', value: 0, fill: '#E63946' }
-      ],
-      leaveBySchool: [
-        { name: 'KNFA', pto: 3, rr: 2, paternity: 0, bereavement: 0, negativePto: 0 },
-        { name: 'NFS East', pto: 2, rr: 2, paternity: 1, bereavement: 1, negativePto: 0 },
-        { name: 'NFS West', pto: 3, rr: 1, paternity: 0, bereavement: 0, negativePto: 0 }
-      ],
-      leaveTrends: { count: 15 },
-      leaveDuration: [
-        { duration: '1-3 days', count: 6, fill: '#63CAFF' },
-        { duration: '4-7 days', count: 6, fill: '#0A2463' },
-        { duration: '8-14 days', count: 2, fill: '#4CB944' },
-        { duration: '15+ days', count: 1, fill: '#FF8811' }
-      ]
-    }
-  };
+  // Sample data for charts
+  const schoolPerformanceData = [
+    { name: 'KNFA', alcpt: 85, bookTest: 83, ecl: 82, fill: '#0A2463' },
+    { name: 'NFS East', alcpt: 87, bookTest: 84, ecl: 84, fill: '#4CB944' },
+    { name: 'NFS West', alcpt: 83, bookTest: 80, ecl: 81, fill: '#FF8811' }
+  ];
   
-  // Monthly performance data for line charts
+  const courseCompletionData = [
+    { name: 'Completed', value: 25.0, fill: '#4CB944' },
+    { name: 'In Progress', value: 75.0, fill: '#FF8811' },
+    { name: 'Not Started', value: 0.0, fill: '#E63946' }
+  ];
+  
   const monthlyPerformanceData = [
     { month: 'Jan', alcpt: 79, bookTest: 78, ecl: 77 },
     { month: 'Feb', alcpt: 80, bookTest: 79, ecl: 78 },
@@ -643,7 +171,14 @@ const Reports = () => {
     { month: 'Dec', alcpt: 86, bookTest: 84, ecl: 83 }
   ];
   
-  // Monthly attendance data
+  const instructorEvaluationData = [
+    { score: '95%+', count: 5, fill: '#4CB944' },
+    { score: '90-94%', count: 5, fill: '#85C88A' },
+    { score: '85-89%', count: 17, fill: '#FFB84C' },
+    { score: '80-84%', count: 19, fill: '#F16767' },
+    { score: '<80%', count: 14, fill: '#E63946' }
+  ];
+  
   const attendanceData = [
     { month: 'Jan', knfa: 95, nfsEast: 93, nfsWest: 91 },
     { month: 'Feb', knfa: 94, nfsEast: 92, nfsWest: 90 },
@@ -659,7 +194,21 @@ const Reports = () => {
     { month: 'Dec', knfa: 95, nfsEast: 96, nfsWest: 94 }
   ];
   
-  // Monthly leave trends data
+  // Staff leave data - separated PTO and R&R into distinct categories
+  const leaveTypeData = [
+    { name: 'PTO', value: 28, fill: '#0A2463' },
+    { name: 'R&R', value: 20, fill: '#3B82F6' },
+    { name: 'Paternity', value: 12, fill: '#4CB944' },
+    { name: 'Bereavement', value: 8, fill: '#FF8811' },
+    { name: 'Negative PTO', value: 4, fill: '#E63946' }
+  ];
+  
+  const leaveBySchoolData = [
+    { name: 'KNFA', pto: 10, rr: 6, paternity: 4, bereavement: 3, negativePto: 1 },
+    { name: 'NFS East', pto: 8, rr: 6, paternity: 5, bereavement: 2, negativePto: 1 },
+    { name: 'NFS West', pto: 10, rr: 8, paternity: 3, bereavement: 3, negativePto: 2 }
+  ];
+  
   const leaveMonthlyTrendsData = [
     { month: 'Jan', count: 4 },
     { month: 'Feb', count: 6 },
@@ -675,21 +224,12 @@ const Reports = () => {
     { month: 'Dec', count: 15 }
   ];
   
-  // Get data for the selected month
-  const monthAbbreviations = { 
-    0: 'Jan', 1: 'Feb', 2: 'Mar', 3: 'Apr', 4: 'May', 5: 'Jun', 
-    6: 'Jul', 7: 'Aug', 8: 'Sep', 9: 'Oct', 10: 'Nov', 11: 'Dec' 
-  };
-  
-  const selectedMonthData = allMonthsPerformanceData[monthAbbreviations[selectedMonth]];
-  
-  // Reactive data that changes based on selected month
-  const schoolPerformanceData = selectedMonthData.schoolPerformance;
-  const courseCompletionData = selectedMonthData.courseCompletion;
-  const instructorEvaluationData = selectedMonthData.instructorEvaluation;
-  const leaveTypeData = selectedMonthData.leaveType;
-  const leaveBySchoolData = selectedMonthData.leaveBySchool;
-  const leaveDurationData = selectedMonthData.leaveDuration;
+  const leaveDurationData = [
+    { duration: '1-3 days', count: 28, fill: '#63CAFF' },
+    { duration: '4-7 days', count: 32, fill: '#0A2463' },
+    { duration: '8-14 days', count: 10, fill: '#4CB944' },
+    { duration: '15+ days', count: 2, fill: '#FF8811' }
+  ];
 
   return (
     <main id="reportsContent" className="flex-1 overflow-y-auto py-6 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
