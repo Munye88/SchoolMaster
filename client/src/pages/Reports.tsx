@@ -16,7 +16,12 @@ import {
   Filter,
   Plane,
   LineChart,
-  Award
+  Award,
+  FileText,
+  Check,
+  AlertCircle,
+  AlertTriangle,
+  Lightbulb
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -830,7 +835,7 @@ const Reports: React.FC = () => {
               <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
                 <div className="flex items-center gap-2">
                   <div className="p-2 bg-blue-100 rounded-full">
-                    <FileText className="h-4 w-4 text-blue-600" />
+                    <LineChart className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
                     <CardTitle className="text-lg font-semibold text-blue-800">Report Summary</CardTitle>
@@ -844,21 +849,21 @@ const Reports: React.FC = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-green-700">
                     <div className="p-1 bg-green-100 rounded-full">
-                      <Check className="h-4 w-4" />
+                      <Award className="h-4 w-4" />
                     </div>
                     <p className="text-sm">85% of instructors received satisfactory or above ratings.</p>
                   </div>
                   
                   <div className="flex items-center gap-3 text-amber-700">
                     <div className="p-1 bg-amber-100 rounded-full">
-                      <AlertCircle className="h-4 w-4" />
+                      <Calendar className="h-4 w-4" />
                     </div>
                     <p className="text-sm">Quarterly evaluations are completed for 95% of staff.</p>
                   </div>
                   
                   <div className="flex items-center gap-3 text-red-700">
                     <div className="p-1 bg-red-100 rounded-full">
-                      <AlertTriangle className="h-4 w-4" />
+                      <Users className="h-4 w-4" />
                     </div>
                     <p className="text-sm">3 instructors require performance improvement plans.</p>
                   </div>
@@ -870,7 +875,7 @@ const Reports: React.FC = () => {
               <CardHeader className="bg-gradient-to-r from-purple-50 to-white border-b border-purple-100">
                 <div className="flex items-center gap-2">
                   <div className="p-2 bg-purple-100 rounded-full">
-                    <Lightbulb className="h-4 w-4 text-purple-600" />
+                    <TrendingUp className="h-4 w-4 text-purple-600" />
                   </div>
                   <div>
                     <CardTitle className="text-lg font-semibold text-purple-800">Recommendations</CardTitle>
