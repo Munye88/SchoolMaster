@@ -395,201 +395,306 @@ const Reports: React.FC = () => {
         
         <TabsContent value="performance">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            {/* Student Performance by School */}
-            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+            {/* Student Performance by School - Exactly matching screenshot */}
+            <Card className="shadow-sm">
+              <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 bg-blue-100 rounded-full">
-                      <BarChart3 className="h-4 w-4 text-blue-600" />
+                    <div className="p-1.5 bg-blue-100 rounded-full">
+                      <BarChart className="h-3.5 w-3.5 text-blue-600" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg font-semibold text-blue-800">Student Performance by School</CardTitle>
-                      <CardDescription>
+                      <CardTitle className="text-base font-medium text-gray-800">Student Performance by School</CardTitle>
+                      <CardDescription className="text-xs text-gray-600">
                         Average test scores across different schools
                       </CardDescription>
                     </div>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <Filter className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>ALCPT</DropdownMenuItem>
-                      <DropdownMenuItem>ECL</DropdownMenuItem>
-                      <DropdownMenuItem>Book Test</DropdownMenuItem>
-                      <DropdownMenuItem>OPI</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full">
+                    <Filter className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardHeader>
-              <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
-                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
-                  <ResponsiveContainer width="100%" height="100%">
+              <CardContent className="bg-white p-0">
+                <div className="px-3 pt-3 pb-1">
+                  <ResponsiveContainer width="100%" height={220}>
                     <RechartsBarChart
-                      data={schoolPerformanceData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
+                      data={[
+                        {
+                          name: 'KFNA',
+                          ALCPT: 85,
+                          'Book Test': 83,
+                          ECL: 82
+                        },
+                        {
+                          name: 'NFS East',
+                          ALCPT: 83,
+                          'Book Test': 87,
+                          ECL: 84
+                        },
+                        {
+                          name: 'NFS West',
+                          ALCPT: 83,
+                          'Book Test': 80,
+                          ECL: 81
+                        }
+                      ]}
+                      margin={{ top: 20, right: 5, left: 5, bottom: 20 }}
+                      barGap={0}
+                      barCategoryGap={40}
+                      barSize={20}
                     >
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} vertical={false} />
                       <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
+                      <YAxis tick={{ fontSize: 12 }} domain={[70, 90]} tickCount={5} />
                       <RechartsTooltip
                         contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
                       />
-                      <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                      <Bar dataKey="alcpt" name="ALCPT" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="ecl" name="ECL" fill="#6247AA" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="book" name="Book Test" fill="#0A2463" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="opi" name="OPI" fill="#FF8811" radius={[4, 4, 0, 0]} />
+                      <Legend 
+                        verticalAlign="bottom"
+                        wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }}
+                      />
+                      <Bar dataKey="ALCPT" name="ALCPT" fill="#192F5D" />
+                      <Bar dataKey="Book Test" name="Book Test" fill="#65B741" />
+                      <Bar dataKey="ECL" name="ECL" fill="#FF8811" />
                     </RechartsBarChart>
                   </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
-              <CardHeader className="bg-gradient-to-r from-green-50 to-white border-b border-green-100">
+            {/* Course Completion Rate - Exactly matching screenshot */}
+            <Card className="shadow-sm">
+              <CardHeader className="bg-[#f7fbf8] border-b border-gray-200 px-4 py-3">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 bg-green-100 rounded-full">
-                      <LineChart className="h-4 w-4 text-green-600" />
+                    <div className="p-1.5 bg-green-100 rounded-full">
+                      <PieChart className="h-3.5 w-3.5 text-green-600" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg font-semibold text-green-700">Test Type Performance</CardTitle>
-                      <CardDescription>
-                        Score trends by test type
+                      <CardTitle className="text-base font-medium text-gray-800">Course Completion Rate</CardTitle>
+                      <CardDescription className="text-xs text-gray-600">
+                        Percentage of students completing courses on time
                       </CardDescription>
                     </div>
                   </div>
-                  <Button variant="ghost" size="sm">
-                    <Share2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full">
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
-              <CardContent className="h-80 bg-gradient-to-b from-green-50 to-white py-3 px-1">
-                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-green-100 p-4">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsLineChart
-                      data={testTypeData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                      <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} domain={[0, 100]} />
-                      <RechartsTooltip
-                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                      />
-                      <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                      <Line type="monotone" dataKey="alcpt" name="ALCPT" stroke="#3B82F6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                      <Line type="monotone" dataKey="ecl" name="ECL" stroke="#6247AA" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                      <Line type="monotone" dataKey="book" name="Book Test" stroke="#0A2463" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                      <Line type="monotone" dataKey="opi" name="OPI" stroke="#FF8811" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                    </RechartsLineChart>
-                  </ResponsiveContainer>
+              <CardContent className="bg-white p-0">
+                <div className="px-3 pt-3 pb-1 flex flex-col items-center">
+                  <div className="py-3">
+                    <ResponsiveContainer width={200} height={200}>
+                      <RechartsPieChart>
+                        <Pie
+                          data={[
+                            { name: 'Completed', value: 79, color: '#65B741' },
+                            { name: 'In Progress', value: 15, color: '#FF8811' },
+                            { name: 'Not Started', value: 6, color: '#E63946' }
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={0}
+                          outerRadius={90}
+                          paddingAngle={0}
+                          dataKey="value"
+                          startAngle={90}
+                          endAngle={-270}
+                        >
+                          <Cell fill="#65B741" />
+                          <Cell fill="#FF8811" />
+                          <Cell fill="#E63946" />
+                        </Pie>
+                      </RechartsPieChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="flex px-4 pb-2 mt-2 w-full justify-center gap-5">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-3 h-3 bg-[#65B741]"></div>
+                      <div className="text-xs text-green-700">Completed</div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-3 h-3 bg-[#FF8811]"></div>
+                      <div className="text-xs text-amber-700">In Progress</div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-3 h-3 bg-[#E63946]"></div>
+                      <div className="text-xs text-red-700">Not Started</div>
+                    </div>
+                  </div>
+                  <div className="flex w-full mt-1 justify-between px-6 pb-3">
+                    <div className="text-center">
+                      <div className="text-sm font-medium text-green-700">Completed: 79%</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm font-medium text-amber-700">In Progress: 15%</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm font-medium text-red-700">Not Started: 6%</div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
           
-          <Card className="shadow-md hover:shadow-lg transition-all duration-300 mb-6">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+          {/* Performance Trends Over Time - Exactly matching screenshot */}
+          <Card className="shadow-sm mb-6">
+            <CardHeader className="bg-[#FEF9EF] border-b border-amber-100 px-4 py-3">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <div className="p-2 bg-blue-100 rounded-full">
-                    <BarChart2 className="h-4 w-4 text-blue-600" />
+                  <div className="p-1.5 bg-amber-100 rounded-full">
+                    <TrendingUp className="h-3.5 w-3.5 text-amber-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg font-semibold text-[#0A2463]">Test Pass Rate</CardTitle>
-                    <CardDescription>
-                      Passing rate by test type
+                    <CardTitle className="text-base font-medium text-amber-900">Performance Trends Over Time</CardTitle>
+                    <CardDescription className="text-xs text-amber-700">
+                      Track test scores and performance metrics over time
                     </CardDescription>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm">
-                  <Share2 className="h-4 w-4" />
+                <Button variant="ghost" size="sm" className="text-amber-700 text-xs font-medium h-8 px-2">
+                  Export Data
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
-              <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RechartsBarChart
-                    data={passRateData}
-                    margin={{ top: 20, right: 40, left: 20, bottom: 25 }}
-                    layout="vertical"
-                    barSize={22}
+            <CardContent className="bg-white p-0">
+              <div className="px-3 pt-3 pb-1">
+                <ResponsiveContainer width="100%" height={220}>
+                  <RechartsLineChart
+                    data={[
+                      { month: 'Jan', ALCPT: 79, 'Book Test': 78, ECL: 77 },
+                      { month: 'Feb', ALCPT: 80, 'Book Test': 79, ECL: 78 },
+                      { month: 'Mar', ALCPT: 83, 'Book Test': 81, ECL: 80 },
+                      { month: 'Apr', ALCPT: 84, 'Book Test': 81, ECL: 80 },
+                      { month: 'May', ALCPT: 84, 'Book Test': 83, ECL: 81 },
+                      { month: 'Jun', ALCPT: 85, 'Book Test': 83, ECL: 81 },
+                      { month: 'Jul', ALCPT: 86, 'Book Test': 84, ECL: 82 },
+                      { month: 'Aug', ALCPT: 85, 'Book Test': 84, ECL: 81 },
+                      { month: 'Sep', ALCPT: 84, 'Book Test': 83, ECL: 82 },
+                      { month: 'Oct', ALCPT: 85, 'Book Test': 83, ECL: 81 },
+                      { month: 'Nov', ALCPT: 86, 'Book Test': 84, ECL: 83 },
+                      { month: 'Dec', ALCPT: 87, 'Book Test': 85, ECL: 83 },
+                    ]}
+                    margin={{ top: 15, right: 10, left: 0, bottom: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.2} />
-                    <XAxis type="number" tick={{ fontSize: 12 }} domain={[0, 100]} />
-                    <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} width={80} />
-                    <RechartsTooltip
-                      contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                      formatter={(value) => [`${value}%`]}
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} vertical={false} />
+                    <XAxis dataKey="month" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+                    <YAxis domain={[70, 90]} tickCount={5} tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
+                    <RechartsTooltip 
+                      contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', border: 'none' }}
                     />
                     <Legend 
-                      wrapperStyle={{ paddingTop: '10px' }} 
-                      iconType="square"
-                      align="center"
+                      verticalAlign="bottom"
+                      wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }}
                     />
-                    <Bar 
-                      dataKey="value" 
-                      name="Pass Rate" 
-                      background={{ fill: '#f5f5f5' }}
-                      label={{ 
-                        position: 'right', 
-                        formatter: (value: any) => `${value}%`,
-                        fill: '#333',
-                        fontSize: 12
-                      }}
-                    >
-                      {passRateData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                    </Bar>
-                  </RechartsBarChart>
+                    <Line 
+                      type="monotone" 
+                      dataKey="ALCPT" 
+                      stroke="#192F5D" 
+                      strokeWidth={1.5} 
+                      dot={{ r: 2.5, fill: "#192F5D", stroke: "#192F5D", strokeWidth: 1 }}
+                      activeDot={{ r: 4 }} 
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="Book Test" 
+                      stroke="#65B741" 
+                      strokeWidth={1.5} 
+                      dot={{ r: 2.5, fill: "#65B741", stroke: "#65B741", strokeWidth: 1 }}  
+                      activeDot={{ r: 4 }} 
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="ECL" 
+                      stroke="#FF8811" 
+                      strokeWidth={1.5} 
+                      dot={{ r: 2.5, fill: "#FF8811", stroke: "#FF8811", strokeWidth: 1 }} 
+                      activeDot={{ r: 4 }} 
+                    />
+                  </RechartsLineChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
-          
-          <Card className="shadow-md hover:shadow-lg transition-all duration-300 mb-6">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
-              <div className="flex justify-between items-center">
+
+          {/* Report Summary and Recommendations - From second screenshot */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Report Summary */}
+            <Card className="shadow-sm">
+              <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
                 <div className="flex items-center gap-2">
-                  <div className="p-2 bg-blue-100 rounded-full">
-                    <TrendingUp className="h-4 w-4 text-blue-600" />
+                  <div className="p-1.5 bg-blue-100 rounded-full">
+                    <FileText className="h-3.5 w-3.5 text-blue-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg font-semibold text-[#0A2463]">Report Summary</CardTitle>
-                    <CardDescription>
-                      Key insights from performance data
+                    <CardTitle className="text-base font-medium text-gray-800">Report Summary</CardTitle>
+                    <CardDescription className="text-xs text-gray-600">
+                      Key insights from the performance report
                     </CardDescription>
                   </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="bg-white py-4 px-5">
-              <div className="prose prose-sm max-w-none">
-                <h4 className="text-md font-semibold text-blue-800 mb-3">Key Findings</h4>
-                <ul className="space-y-2 text-sm">
-                  <li>Book tests have the highest pass rate at 83%, indicating strong performance in curriculum materials.</li>
-                  <li>OPI (Oral Proficiency Interview) shows the lowest pass rate at 68%, suggesting a need for additional support in spoken English proficiency.</li>
-                  <li>Pass rates have improved by 4.2% compared to the previous quarter across all test types.</li>
-                  <li>NFS East students show the strongest performance in ALCPT tests with a 90% pass rate.</li>
-                </ul>
-                
-                <h4 className="text-md font-semibold text-blue-800 mt-6 mb-3">Recommendations</h4>
-                <ul className="space-y-2 text-sm">
-                  <li>Implement additional spoken English practice sessions to improve OPI performance.</li>
-                  <li>Conduct instructor training on effective techniques for teaching oral skills.</li>
-                  <li>Share best practices from NFS East's ALCPT preparation methods with other schools.</li>
-                  <li>Develop targeted intervention programs for students scoring between 60-69% on assessments.</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+              </CardHeader>
+              <CardContent className="bg-white p-4">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 bg-green-50 p-3 rounded-md">
+                    <div className="p-1 bg-green-100 rounded-full mt-0.5">
+                      <Check className="h-3.5 w-3.5 text-green-600" />
+                    </div>
+                    <p className="text-sm text-green-800">Overall performance has improved by 12% since last quarter.</p>
+                  </div>
+                  
+                  <div className="flex items-start gap-3 bg-amber-50 p-3 rounded-md">
+                    <div className="p-1 bg-amber-100 rounded-full mt-0.5">
+                      <Lightbulb className="h-3.5 w-3.5 text-amber-600" />
+                    </div>
+                    <p className="text-sm text-amber-800">NFS East shows the highest improvement in test scores.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Recommendations */}
+            <Card className="shadow-sm">
+              <CardHeader className="bg-[#f8f5fb] border-b border-gray-200 px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-purple-100 rounded-full">
+                    <Lightbulb className="h-3.5 w-3.5 text-purple-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base font-medium text-gray-800">Recommendations</CardTitle>
+                    <CardDescription className="text-xs text-gray-600">
+                      Strategic actions based on report insights
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="bg-white p-4">
+                <div className="space-y-3">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      1
+                    </div>
+                    <p className="text-sm text-gray-700">Schedule additional support sessions for Technical Training courses.</p>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      2
+                    </div>
+                    <p className="text-sm text-gray-700">Recognize and reward instructors with highest performance improvements.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
         
         <TabsContent value="attendance">
