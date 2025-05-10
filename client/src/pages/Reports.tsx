@@ -644,27 +644,31 @@ const Reports: React.FC = () => {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
-                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
-                      <Pie
-                        data={evaluationTypeData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {evaluationTypeData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip formatter={(value) => [`${value} evaluations`, '']} />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
+              <CardContent className="bg-gradient-to-b from-blue-50 to-white py-6 px-6">
+                <div className="rounded-lg bg-white shadow-inner border border-blue-100 p-6 space-y-6">
+                  <div className="space-y-4">
+                    {evaluationTypeData.map((entry, index) => (
+                      <div key={index} className="flex items-center justify-between border-b border-gray-100 pb-3">
+                        <div className="flex items-center">
+                          <div 
+                            className="w-3 h-3 rounded-full mr-3" 
+                            style={{ backgroundColor: entry.fill as string }}
+                          ></div>
+                          <span className="text-gray-700 font-medium">{entry.name}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-500">{entry.value} evaluations</span>
+                          <span className="text-xl font-bold" style={{ color: entry.fill as string }}>
+                            {((entry.value / evaluationTypeData.reduce((acc, curr) => acc + curr.value, 0)) * 100).toFixed(0)}%
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="text-center text-sm text-gray-500 mt-4">
+                    <p>Evaluation rating distribution for current reporting period</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
