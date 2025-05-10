@@ -831,6 +831,8 @@ const Reports = () => {
                   </div>
                 </div>
               </CardContent>
+                </div>
+              </CardContent>
             </Card>
             
             <Card className="shadow-md hover:shadow-lg transition-all duration-300">
