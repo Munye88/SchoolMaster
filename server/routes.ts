@@ -3708,13 +3708,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             ptodays: staffLeave.ptodays
           })
           .from(staffLeave)
-          .where(
-            sql`${staffLeave.instructorId} = ${instructor.id} 
-                AND ${staffLeave.startDate} >= '${year}-01-01' 
-                AND ${staffLeave.startDate} <= '${year}-12-31'
-                AND ${staffLeave.status} = 'approved'
-                AND ${staffLeave.leaveType} = 'PTO'`
-          );
+          .where(eq(staffLeave.instructorId, instructor.id))
+          .where(sql`${staffLeave.startDate} >= '${year}-01-01' AND ${staffLeave.startDate} <= '${year}-12-31'`)
+          .where(eq(staffLeave.status, 'approved'))
+          .where(eq(staffLeave.leaveType, 'PTO'));
         
         // Calculate total used PTO days
         const usedDays = leaveRecords.reduce((total, leave) => total + (leave.ptodays || 0), 0);
@@ -3723,9 +3720,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const [existingRecord] = await db
           .select()
           .from(ptoBalance)
-          .where(
-            sql`${ptoBalance.instructorId} = ${instructor.id} AND ${ptoBalance.year} = ${year}`
-          );
+          .where(eq(ptoBalance.instructorId, instructor.id))
+          .where(eq(ptoBalance.year, year));
         
         if (existingRecord) {
           // Update existing record
