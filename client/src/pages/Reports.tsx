@@ -149,10 +149,10 @@ const Reports: React.FC = () => {
   ];
   
   const passRateData = [
-    { name: 'ALCPT', passed: 75, failed: 25, fill: '#3B82F6' },
-    { name: 'ECL', passed: 68, failed: 32, fill: '#6247AA' },
-    { name: 'Book Test', passed: 82, failed: 18, fill: '#0A2463' },
-    { name: 'OPI', passed: 70, failed: 30, fill: '#FF8811' }
+    { name: 'ALCPT', value: 75, color: '#3B82F6' },
+    { name: 'ECL', value: 68, color: '#6247AA' },
+    { name: 'Book Test', value: 82, color: '#0A2463' },
+    { name: 'OPI', value: 70, color: '#FF8811' }
   ];
   
   const staffAttendanceData = [
@@ -526,13 +526,12 @@ const Reports: React.FC = () => {
                       align="center"
                     />
                     <Bar 
-                      dataKey="passed" 
-                      name="Passed" 
-                      fill="#4CB944" 
+                      dataKey="value" 
+                      name="Pass Rate" 
                       background={{ fill: '#f5f5f5' }}
                     >
                       {passRateData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                        <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Bar>
                   </RechartsBarChart>
