@@ -1103,24 +1103,12 @@ export default function StaffLeaveTracker() {
                     </SelectContent>
                   </Select>
                   
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => syncPtoBalancesMutation.mutate(selectedYear)}
-                    disabled={syncPtoBalancesMutation.isPending}
-                  >
-                    {syncPtoBalancesMutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Syncing...
-                      </>
-                    ) : (
-                      <>
-                        <RefreshCw className="mr-2 h-4 w-4" />
-                        Sync PTO Balances
-                      </>
-                    )}
-                  </Button>
+                  {syncPtoBalancesMutation.isPending && (
+                    <div className="flex items-center text-sm text-slate-500">
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Updating balances...
+                    </div>
+                  )}
                 </div>
                 
                 <div className="text-sm text-muted-foreground">
@@ -1158,14 +1146,9 @@ export default function StaffLeaveTracker() {
                       <TableCell colSpan={7} className="text-center py-8">
                         <div className="flex flex-col items-center justify-center gap-2">
                           <p>No PTO balance records found for {selectedYear}.</p>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => syncPtoBalancesMutation.mutate(selectedYear)}
-                          >
-                            <RefreshCw className="mr-2 h-4 w-4" />
-                            Initialize PTO Balances
-                          </Button>
+                          <p className="text-sm text-muted-foreground">
+                            PTO balances will be automatically created when instructors have approved PTO leave records.
+                          </p>
                         </div>
                       </TableCell>
                     </TableRow>

@@ -2816,7 +2816,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
+      // Get the leave record before deleting it
+      const [leaveRecord] = await db
+        .select()
+        .from(staffLeave)
+        .where(eq(staffLeave.id, id));
+        
+      if (!leaveRecord) {
+        return res.status(404).json({ message: "Staff leave record not found" });
+      }
+      
+      // Delete the leave record
       await db.delete(staffLeave).where(eq(staffLeave.id, id));
+      
+      // If this was a PTO leave that was approved, sync the PTO balance
+      if (leaveRecord.leaveType === 'PTO' && leaveRecord.status === 'approved') {
+        try {
+          const year = new Date(leaveRecord.startDate).getFullYear();
+          await syncPtoBalanceForInstructor(leaveRecord.instructorId, year);
+          console.log(`Automatically synced PTO balance for instructor ${leaveRecord.instructorId} after deleting leave record`);
+        } catch (syncError) {
+          console.error("Error auto-syncing PTO balance after deleting leave:", syncError);
+          // Continue with the deletion response even if sync fails
+        }
+      }
+      
       res.status(204).send();
     } catch (error) {
       console.error("Error deleting staff leave record:", error);
