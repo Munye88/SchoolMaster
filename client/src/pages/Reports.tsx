@@ -678,61 +678,18 @@ const Reports: React.FC = () => {
         
         <TabsContent value="evaluations">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Staff Evaluation by Quarter */}
             <Card className="shadow-md hover:shadow-lg transition-all duration-300">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-white border-b border-purple-100">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 bg-blue-100 rounded-full">
-                      <PieChart className="h-4 w-4 text-blue-600" />
+                    <div className="p-2 bg-purple-100 rounded-full">
+                      <BarChart className="h-4 w-4 text-purple-600" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg font-semibold text-[#0A2463]">Evaluation Distribution</CardTitle>
+                      <CardTitle className="text-lg font-semibold text-purple-800">Staff Evaluation by Quarter</CardTitle>
                       <CardDescription>
-                        Breakdown of evaluation ratings
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="sm">
-                    <Share2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
-                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
-                      <Pie
-                        data={evaluationTypeData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {evaluationTypeData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip formatter={(value) => [`${value} evaluations`, '']} />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
-              <CardHeader className="bg-gradient-to-r from-green-50 to-white border-b border-green-100">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-green-100 rounded-full">
-                      <BarChart2 className="h-4 w-4 text-green-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg font-semibold text-green-700">Evaluations by School</CardTitle>
-                      <CardDescription>
-                        Evaluation ratings across schools
+                        Track instructor evaluations and performance reviews
                       </CardDescription>
                     </div>
                   </div>
@@ -741,26 +698,210 @@ const Reports: React.FC = () => {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="h-80 bg-gradient-to-b from-green-50 to-white py-3 px-1">
-                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-green-100 p-4">
+              <CardContent className="h-80 bg-gradient-to-b from-purple-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-purple-100 p-4">
                   <ResponsiveContainer width="100%" height="100%">
                     <RechartsBarChart
-                      data={evaluationBySchoolData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
+                      data={[
+                        { range: '95%+', count: 12 },
+                        { range: '90-94%', count: 22 },
+                        { range: '85-89%', count: 16 },
+                        { range: '80-84%', count: 8 },
+                        { range: '<80%', count: 2 }
+                      ]}
+                      layout="vertical"
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                      <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                      <YAxis tick={{ fontSize: 12 }} />
-                      <RechartsTooltip
-                        contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                      <XAxis type="number" domain={[0, 25]} />
+                      <YAxis dataKey="range" type="category" width={70} />
+                      <RechartsTooltip 
+                        formatter={(value) => [`${value} instructors`]}
+                        contentStyle={{ borderRadius: '8px' }}
                       />
-                      <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                      <Bar dataKey="excellent" name="Excellent" fill="#4CB944" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="good" name="Good" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="satisfactory" name="Satisfactory" fill="#FF8811" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="needsImprovement" name="Needs Improvement" fill="#E63946" radius={[4, 4, 0, 0]} />
+                      <Legend name="Instructor Count" />
+                      <Bar 
+                        dataKey="count" 
+                        name="Instructor Count" 
+                        fill="#8884d8"
+                        barSize={30}
+                        radius={[0, 4, 4, 0]}
+                      >
+                        {/* Use different colors based on the score range */}
+                        <Cell fill="#65B741" />
+                        <Cell fill="#65B741" />
+                        <Cell fill="#FFB534" />
+                        <Cell fill="#FF8811" />
+                        <Cell fill="#E63946" />
+                      </Bar>
                     </RechartsBarChart>
                   </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Evaluation Distribution */}
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-red-50 to-white border-b border-red-100">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-red-100 rounded-full">
+                      <PieChart className="h-4 w-4 text-red-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-red-800">Evaluation Distribution</CardTitle>
+                      <CardDescription>
+                        Score distribution across all instructors
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <div className="flex">
+                    <Button variant="ghost" size="sm">
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="h-80 bg-gradient-to-b from-red-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-red-100 p-4">
+                  <ResponsiveContainer width="100%" height="90%">
+                    <RechartsPieChart>
+                      <Pie
+                        data={[
+                          { name: '95%+', value: 12, fill: '#65B741' },
+                          { name: '90-94%', value: 22, fill: '#9AD37F' },
+                          { name: '85-89%', value: 16, fill: '#FFB534' },
+                          { name: '80-84%', value: 8, fill: '#FF8811' },
+                          { name: '<80%', value: 2, fill: '#E63946' }
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={false}
+                      >
+                        {/* Using fixed colors instead of dynamic mapping */}
+                        <Cell fill="#65B741" />
+                        <Cell fill="#9AD37F" />
+                        <Cell fill="#FFB534" />
+                        <Cell fill="#FF8811" />
+                        <Cell fill="#E63946" />
+                      </Pie>
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
+                  <div className="grid grid-cols-5 gap-1 text-center mt-1">
+                    <div>
+                      <div className="w-3 h-3 rounded-full bg-[#65B741] mx-auto"></div>
+                      <div className="text-xs font-medium mt-1">95%+</div>
+                      <div className="text-xs font-bold">12</div>
+                    </div>
+                    <div>
+                      <div className="w-3 h-3 rounded-full bg-[#9AD37F] mx-auto"></div>
+                      <div className="text-xs font-medium mt-1">90-94%</div>
+                      <div className="text-xs font-bold">22</div>
+                    </div>
+                    <div>
+                      <div className="w-3 h-3 rounded-full bg-[#FFB534] mx-auto"></div>
+                      <div className="text-xs font-medium mt-1">85-89%</div>
+                      <div className="text-xs font-bold">16</div>
+                    </div>
+                    <div>
+                      <div className="w-3 h-3 rounded-full bg-[#FF8811] mx-auto"></div>
+                      <div className="text-xs font-medium mt-1">80-84%</div>
+                      <div className="text-xs font-bold">8</div>
+                    </div>
+                    <div>
+                      <div className="w-3 h-3 rounded-full bg-[#E63946] mx-auto"></div>
+                      <div className="text-xs font-medium mt-1">&lt;80%</div>
+                      <div className="text-xs font-bold">2</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Report Summary and Recommendations */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-blue-100 rounded-full">
+                    <FileText className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-blue-800">Report Summary</CardTitle>
+                    <CardDescription>
+                      Key insights from the staff evaluations
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="bg-white py-4 px-5">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-green-700">
+                    <div className="p-1 bg-green-100 rounded-full">
+                      <Check className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">85% of instructors received satisfactory or above ratings.</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-amber-700">
+                    <div className="p-1 bg-amber-100 rounded-full">
+                      <AlertCircle className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">Quarterly evaluations are completed for 95% of staff.</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-red-700">
+                    <div className="p-1 bg-red-100 rounded-full">
+                      <AlertTriangle className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">3 instructors require performance improvement plans.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-white border-b border-purple-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-purple-100 rounded-full">
+                    <Lightbulb className="h-4 w-4 text-purple-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-purple-800">Recommendations</CardTitle>
+                    <CardDescription>
+                      Strategic actions based on report insights
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="bg-white py-4 px-5">
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      1
+                    </div>
+                    <p className="text-sm">Conduct focused training for instructors needing improvement.</p>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      2
+                    </div>
+                    <p className="text-sm">Establish peer mentoring program for new instructors.</p>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      3
+                    </div>
+                    <p className="text-sm">Update evaluation criteria for next quarter based on program objectives.</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
