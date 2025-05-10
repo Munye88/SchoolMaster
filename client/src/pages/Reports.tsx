@@ -867,7 +867,7 @@ const Reports: React.FC = () => {
                     <div className="p-1 bg-red-100 rounded-full">
                       <Users className="h-4 w-4" />
                     </div>
-                    <p className="text-sm">3 instructors require performance improvement plans.</p>
+                    <p className="text-sm">2 instructors require performance improvement plans.</p>
                   </div>
                 </div>
               </CardContent>
