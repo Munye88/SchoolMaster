@@ -1,5 +1,5 @@
 import { useParams } from 'wouter';
-import { Instructor } from '@shared/schema';
+import { Instructor, PtoBalance } from '@shared/schema';
 import { 
   Card, 
   CardContent, 
@@ -8,6 +8,12 @@ import {
   CardTitle, 
   CardFooter
 } from "@/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from "@/components/ui/tabs";
 import { 
   Table, 
   TableBody, 
@@ -48,7 +54,8 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useState, useEffect, useRef } from 'react';
-import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer, Search } from 'lucide-react';
+import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer, Search, RefreshCw, Info as InfoIcon, Pencil as PencilIcon } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
 import { useSchool } from '@/hooks/useSchool';
 import { format, addDays, differenceInCalendarDays } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -180,6 +187,13 @@ export default function StaffLeaveTracker() {
   // For the employee ID search
   const [employeeIdSearch, setEmployeeIdSearch] = useState<string>('');
   
+  // For the active tab selection
+  const [activeTab, setActiveTab] = useState<string>("leave-records");
+  
+  // Current year for PTO balance tracking
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
+  
   // Fetch staff leave data from API
   const { 
     data: leaveRecords = [], 
@@ -197,6 +211,48 @@ export default function StaffLeaveTracker() {
   } = useQuery<Instructor[]>({
     queryKey: ['/api/instructors', currentSchool?.id],
     enabled: !!currentSchool?.id,
+  });
+  
+  // Fetch PTO balance data from API
+  const {
+    data: ptoBalances = [],
+    isLoading: isLoadingPtoBalances,
+    error: ptoBalanceError
+  } = useQuery<(PtoBalance & { instructorName: string, schoolId: number })[]>({
+    queryKey: ['/api/pto-balance', currentSchool?.id],
+    enabled: !!currentSchool?.id && activeTab === "pto-balance",
+  });
+  
+  // Filter PTO balances for the current school
+  const schoolPtoBalances = ptoBalances.filter(balance => 
+    instructors.some(instructor => 
+      instructor.id === balance.instructorId && 
+      instructor.schoolId === currentSchool?.id
+    )
+  );
+  
+  // Sync PTO balances mutation
+  const syncPtoBalancesMutation = useMutation({
+    mutationFn: async (year: number) => {
+      const res = await apiRequest('POST', '/api/pto-balance/sync-all', { year });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/pto-balance'] });
+      toast({
+        title: "PTO Balances Synchronized",
+        description: "All instructors' PTO balances have been updated based on their approved leave records.",
+        variant: "default",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Synchronization Failed",
+        description: "There was an error synchronizing PTO balances. Please try again.",
+        variant: "destructive",
+      });
+      console.error("Error syncing PTO balances:", error);
+    }
   });
   
   // Filter instructors by current school
@@ -787,56 +843,63 @@ export default function StaffLeaveTracker() {
       
       {/* Main card with table for display on screen */}
       <Card>
-        <CardHeader>
-          <CardTitle>Staff Leave Records</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle>Staff Leave Management</CardTitle>
           <CardDescription>
-            Overview of all staff leave requests and their current status
+            Manage staff leave requests and PTO balances for all instructors
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Search by Employee ID */}
-          <div className="flex mb-4">
-            <div className="relative w-full max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <Input
-                type="search"
-                placeholder="Search by Employee ID..."
-                className="w-full rounded-md border border-input bg-background pl-8 py-2 text-sm ring-offset-background"
-                value={employeeIdSearch}
-                onChange={(e) => setEmployeeIdSearch(e.target.value)}
-              />
-            </div>
-          </div>
-          
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>INSTRUCTOR</TableHead>
-                <TableHead>LEAVE TYPE</TableHead>
-                <TableHead>PERIOD</TableHead>
-                <TableHead>STATUS</TableHead>
-                <TableHead>SCHOOL</TableHead>
-                <TableHead>ACTIONS</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
-                    <div className="flex items-center justify-center">
-                      <Loader2 className="h-6 w-6 animate-spin mr-2" />
-                      <span>Loading leave records...</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : schoolLeaveRecords.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8">
-                    No leave records found for this school. Add a new leave request using the button above.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                schoolLeaveRecords.map((leave) => (
+          <Tabs defaultValue="leave-records" value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="mb-4">
+              <TabsTrigger value="leave-records">Leave Records</TabsTrigger>
+              <TabsTrigger value="pto-balance">PTO Balance</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="leave-records">
+              {/* Search by Employee ID */}
+              <div className="flex mb-4">
+                <div className="relative w-full max-w-sm">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+                  <Input
+                    type="search"
+                    placeholder="Search by Employee ID..."
+                    className="w-full rounded-md border border-input bg-background pl-8 py-2 text-sm ring-offset-background"
+                    value={employeeIdSearch}
+                    onChange={(e) => setEmployeeIdSearch(e.target.value)}
+                  />
+                </div>
+              </div>
+              
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>INSTRUCTOR</TableHead>
+                    <TableHead>LEAVE TYPE</TableHead>
+                    <TableHead>PERIOD</TableHead>
+                    <TableHead>STATUS</TableHead>
+                    <TableHead>SCHOOL</TableHead>
+                    <TableHead>ACTIONS</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8">
+                        <div className="flex items-center justify-center">
+                          <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                          <span>Loading leave records...</span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : schoolLeaveRecords.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8">
+                        No leave records found for this school. Add a new leave request using the button above.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    schoolLeaveRecords.map((leave) => (
                   <TableRow key={leave.id} className="hover:bg-slate-50">
                     <TableCell>
                       <div className="flex flex-col">
@@ -1010,6 +1073,146 @@ export default function StaffLeaveTracker() {
               )}
             </TableBody>
           </Table>
+            </TabsContent>
+            
+            <TabsContent value="pto-balance">
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center space-x-2">
+                  <Select 
+                    value={selectedYear.toString()} 
+                    onValueChange={(value) => setSelectedYear(parseInt(value))}
+                  >
+                    <SelectTrigger className="w-[150px]">
+                      <SelectValue placeholder="Select Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={(currentYear - 1).toString()}>{currentYear - 1}</SelectItem>
+                      <SelectItem value={currentYear.toString()}>{currentYear}</SelectItem>
+                      <SelectItem value={(currentYear + 1).toString()}>{currentYear + 1}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => syncPtoBalancesMutation.mutate(selectedYear)}
+                    disabled={syncPtoBalancesMutation.isPending}
+                  >
+                    {syncPtoBalancesMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Syncing...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Sync PTO Balances
+                      </>
+                    )}
+                  </Button>
+                </div>
+                
+                <div className="text-sm text-muted-foreground">
+                  <div className="flex items-center">
+                    <InfoIcon className="h-4 w-4 mr-1" />
+                    <span>Default annual allowance: 21 days</span>
+                  </div>
+                </div>
+              </div>
+              
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>INSTRUCTOR</TableHead>
+                    <TableHead>TOTAL DAYS</TableHead>
+                    <TableHead>USED DAYS</TableHead>
+                    <TableHead>REMAINING</TableHead>
+                    <TableHead>ADJUSTMENTS</TableHead>
+                    <TableHead>LAST UPDATED</TableHead>
+                    <TableHead>ACTIONS</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoadingPtoBalances ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8">
+                        <div className="flex items-center justify-center">
+                          <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                          <span>Loading PTO balances...</span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : schoolPtoBalances.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8">
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <p>No PTO balance records found for {selectedYear}.</p>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => syncPtoBalancesMutation.mutate(selectedYear)}
+                          >
+                            <RefreshCw className="mr-2 h-4 w-4" />
+                            Initialize PTO Balances
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    schoolPtoBalances.map((balance) => (
+                      <TableRow key={balance.id} className="hover:bg-slate-50">
+                        <TableCell>
+                          <div className="font-medium">{balance.instructorName}</div>
+                        </TableCell>
+                        <TableCell>{balance.totalDays}</TableCell>
+                        <TableCell>{balance.usedDays}</TableCell>
+                        <TableCell>
+                          <Badge variant={balance.remainingDays < 5 ? "destructive" : balance.remainingDays < 10 ? "outline" : "default"}>
+                            {balance.remainingDays}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{balance.adjustments || 0}</TableCell>
+                        <TableCell>{format(new Date(balance.lastUpdated), 'MMM d, yyyy')}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              // Open a dialog to edit PTO balance
+                              // We'll implement this in the next iteration
+                              toast({
+                                title: "Coming Soon",
+                                description: "PTO balance editing will be available in the next update",
+                              });
+                            }}
+                          >
+                            <PencilIcon className="h-4 w-4 mr-1" />
+                            Edit
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+              
+              <div className="mt-8 space-y-4">
+                <div className="p-4 border rounded-md bg-slate-50">
+                  <h3 className="text-lg font-medium mb-2">About PTO Balance</h3>
+                  <p className="text-sm text-gray-600 mb-2">
+                    This system tracks Paid Time Off (PTO) balances for all instructors. Each instructor receives an annual allocation of 21 days,
+                    which is automatically reduced when leave requests are approved.
+                  </p>
+                  <ul className="text-sm text-gray-600 list-disc pl-4 space-y-1">
+                    <li>The "Sync PTO Balances" button will update all balances based on approved leave records</li>
+                    <li>Negative adjustments are deductions from the balance</li>
+                    <li>Positive adjustments are additions to the balance</li>
+                    <li>PTO balances refresh annually on January 1st</li>
+                  </ul>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 

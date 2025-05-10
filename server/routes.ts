@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import multer from "multer";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { 
   insertInstructorSchema, 
   insertCourseSchema, 
