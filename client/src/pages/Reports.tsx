@@ -504,33 +504,86 @@ const Reports: React.FC = () => {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="bg-gradient-to-b from-blue-50 to-white py-6 px-6">
-              <div className="rounded-lg bg-white shadow-inner border border-blue-100 p-6 space-y-6">
-                <div className="space-y-4">
-                  {passRateData.map((entry, index) => (
-                    <div key={index} className="flex items-center justify-between border-b border-gray-100 pb-3">
-                      <div className="flex items-center">
-                        <div 
-                          className="w-3 h-3 rounded-full mr-3" 
-                          style={{ backgroundColor: entry.fill as string }}
-                        ></div>
-                        <span className="text-gray-700 font-medium">{entry.name}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <span className="text-xl font-bold" style={{ color: entry.fill as string }}>
-                          {entry.value}%
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="text-center text-sm text-gray-500 mt-4">
-                  <p>Test pass rates for current reporting period</p>
-                </div>
+            <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
+              <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsBarChart
+                    data={passRateData}
+                    margin={{ top: 20, right: 40, left: 20, bottom: 25 }}
+                    layout="vertical"
+                    barSize={22}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.2} />
+                    <XAxis type="number" tick={{ fontSize: 12 }} domain={[0, 100]} />
+                    <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} width={80} />
+                    <RechartsTooltip
+                      contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                      formatter={(value) => [`${value}%`]}
+                    />
+                    <Legend 
+                      wrapperStyle={{ paddingTop: '10px' }} 
+                      iconType="square"
+                      align="center"
+                    />
+                    <Bar 
+                      dataKey="value" 
+                      name="Pass Rate" 
+                      background={{ fill: '#f5f5f5' }}
+                      label={{ 
+                        position: 'right', 
+                        formatter: (value: any) => `${value}%`,
+                        fill: '#333',
+                        fontSize: 12
+                      }}
+                    >
+                      {passRateData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Bar>
+                  </RechartsBarChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
+          
+          <div className="grid grid-cols-1 gap-6 mb-6">
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-blue-100 rounded-full">
+                      <TrendingUp className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-[#0A2463]">Report Summary</CardTitle>
+                      <CardDescription>
+                        Key insights from performance data
+                      </CardDescription>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="bg-white py-4 px-5">
+                <div className="prose prose-sm max-w-none">
+                  <h4 className="text-md font-semibold text-blue-800 mb-3">Key Findings</h4>
+                  <ul className="space-y-2 text-sm">
+                    <li>Book tests have the highest pass rate at 83%, indicating strong performance in curriculum materials.</li>
+                    <li>OPI (Oral Proficiency Interview) shows the lowest pass rate at 68%, suggesting a need for additional support in spoken English proficiency.</li>
+                    <li>Pass rates have improved by 4.2% compared to the previous quarter across all test types.</li>
+                    <li>NFS East students show the strongest performance in ALCPT tests with a 90% pass rate.</li>
+                  </ul>
+                  
+                  <h4 className="text-md font-semibold text-blue-800 mt-6 mb-3">Recommendations</h4>
+                  <ul className="space-y-2 text-sm">
+                    <li>Implement additional spoken English practice sessions to improve OPI performance.</li>
+                    <li>Conduct instructor training on effective techniques for teaching oral skills.</li>
+                    <li>Share best practices from NFS East's ALCPT preparation methods with other schools.</li>
+                    <li>Develop targeted intervention programs for students scoring between 60-69% on assessments.</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
         
         <TabsContent value="attendance">
@@ -644,31 +697,27 @@ const Reports: React.FC = () => {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="bg-gradient-to-b from-blue-50 to-white py-6 px-6">
-                <div className="rounded-lg bg-white shadow-inner border border-blue-100 p-6 space-y-6">
-                  <div className="space-y-4">
-                    {evaluationTypeData.map((entry, index) => (
-                      <div key={index} className="flex items-center justify-between border-b border-gray-100 pb-3">
-                        <div className="flex items-center">
-                          <div 
-                            className="w-3 h-3 rounded-full mr-3" 
-                            style={{ backgroundColor: entry.fill as string }}
-                          ></div>
-                          <span className="text-gray-700 font-medium">{entry.name}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-gray-500">{entry.value} evaluations</span>
-                          <span className="text-xl font-bold" style={{ color: entry.fill as string }}>
-                            {((entry.value / evaluationTypeData.reduce((acc, curr) => acc + curr.value, 0)) * 100).toFixed(0)}%
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="text-center text-sm text-gray-500 mt-4">
-                    <p>Evaluation rating distribution for current reporting period</p>
-                  </div>
+              <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart>
+                      <Pie
+                        data={evaluationTypeData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {evaluationTypeData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip formatter={(value) => [`${value} evaluations`, '']} />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
@@ -739,31 +788,27 @@ const Reports: React.FC = () => {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="bg-gradient-to-b from-blue-50 to-white py-6 px-6">
-                <div className="rounded-lg bg-white shadow-inner border-2 border-blue-300 p-6 space-y-6">
-                  <div className="space-y-4">
-                    {leaveTypeData.map((entry, index) => (
-                      <div key={index} className="flex items-center justify-between border-b border-gray-100 pb-3">
-                        <div className="flex items-center">
-                          <div 
-                            className="w-3 h-3 rounded-full mr-3" 
-                            style={{ backgroundColor: entry.fill as string }}
-                          ></div>
-                          <span className="text-gray-700 font-medium">{entry.name}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-gray-500">{entry.value} requests</span>
-                          <span className="text-xl font-bold" style={{ color: entry.fill as string }}>
-                            {((entry.value / leaveTypeData.reduce((acc, curr) => acc + curr.value, 0)) * 100).toFixed(0)}%
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="text-center text-sm text-gray-500 mt-4">
-                    <p>Leave type distribution for current reporting period</p>
-                  </div>
+              <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
+                <div className="w-full h-full rounded-lg bg-white shadow-inner border-2 border-blue-300 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsPieChart>
+                      <Pie
+                        data={leaveTypeData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {leaveTypeData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip formatter={(value) => [`${value} requests`, '']} />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
