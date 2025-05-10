@@ -16,6 +16,7 @@ import { addCompletedDateField } from './migrations/add_completed_date';
 import { addColumnsToEvaluations } from './migrations/add_columns_to_evaluations';
 import { addNotificationsTable } from './migrations/add_notifications_table';
 import { addStaffCounselingTable } from './migrations/add_staff_counseling_table';
+import { addPtoBalanceTable } from './migrations/add_pto_balance_table';
 
 export async function initDatabase() {
   try {
@@ -149,6 +150,9 @@ export async function initDatabase() {
     
     // Add staff counseling table
     await addStaffCounselingTable();
+    
+    // Add PTO balance table
+    await addPtoBalanceTable();
     
     return true;
   } catch (error) {

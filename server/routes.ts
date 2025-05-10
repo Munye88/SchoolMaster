@@ -24,6 +24,7 @@ import {
   insertCandidateSchema,
   insertInterviewQuestionSchema,
   insertStaffCounselingSchema,
+  insertPtoBalanceSchema,
   evaluations,
   courses,
   staffLeave,
@@ -33,7 +34,8 @@ import {
   interviewQuestions,
   staffAttendance,
   staffCounseling,
-  events
+  events,
+  ptoBalance
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
