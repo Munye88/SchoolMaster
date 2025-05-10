@@ -3768,89 +3768,116 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Helper function to sync PTO balance for a specific instructor
   async function syncPtoBalanceForInstructor(instructorId: number, year: number) {
-    // Get instructor details
-    const instructor = await dbStorage.getInstructor(instructorId);
-    if (!instructor) {
-      throw new Error(`Instructor with ID ${instructorId} not found`);
-    }
-    
-    // Get all approved PTO leaves for this instructor in the specified year
-    // Need to be explicit about the equality conditions
-    const leaveRecords = await db.execute(sql`
-      SELECT instructor_id, ptodays 
-      FROM staff_leave 
-      WHERE 
-        instructor_id = ${instructor.id} AND
-        start_date >= '${year}-01-01' AND 
-        start_date <= '${year}-12-31' AND
-        status = 'approved' AND
-        leave_type = 'PTO'
-    `);
-    
-    // Calculate total used PTO days (safely)
-    let usedDays = 0;
-    if (leaveRecords.rows && leaveRecords.rows.length > 0) {
-      usedDays = leaveRecords.rows.reduce((total, leave) => {
-        const ptoDays = parseInt(leave.ptodays) || 0;
-        return total + ptoDays;
-      }, 0);
-    }
-    
-    // Ensure we don't exceed the maximum allowance
-    const maxAllowance = 21;
-    usedDays = Math.min(usedDays, maxAllowance);
-    
-    // Check if PTO balance record exists for this instructor and year
-    const existingRecordResult = await db.execute(sql`
-      SELECT * FROM pto_balance
-      WHERE instructor_id = ${instructor.id} AND year = ${year}
-    `);
-    
-    const hasExistingRecord = existingRecordResult.rows && existingRecordResult.rows.length > 0;
-    
-    if (hasExistingRecord) {
-      // Update existing record
-      const existingRecord = existingRecordResult.rows[0];
-      const adjustments = parseInt(existingRecord.adjustments) || 0;
-      const totalDays = parseInt(existingRecord.total_days) || 21;
+    try {
+      // Get instructor details
+      const instructor = await dbStorage.getInstructor(instructorId);
+      if (!instructor) {
+        throw new Error(`Instructor with ID ${instructorId} not found`);
+      }
       
-      // Ensure remaining days can't go below zero
-      const calculatedRemainingDays = totalDays - usedDays + adjustments;
-      const remainingDays = Math.max(0, calculatedRemainingDays);
-      
-      await db.execute(sql`
-        UPDATE pto_balance
-        SET 
-          used_days = ${usedDays},
-          remaining_days = ${remainingDays},
-          last_updated = NOW()
-        WHERE id = ${existingRecord.id}
+      // Get all approved PTO leaves for this instructor in the specified year
+      const leaveRecordsResult = await db.execute(sql`
+        SELECT 
+          COALESCE(SUM(ptodays), 0) AS total_used_days 
+        FROM staff_leave 
+        WHERE 
+          instructor_id = ${instructor.id} AND
+          start_date >= '${year}-01-01' AND 
+          start_date <= '${year}-12-31' AND
+          status = 'approved' AND
+          leave_type = 'PTO'
       `);
       
-      // Return updated record
-      const updatedRecordResult = await db.execute(sql`
-        SELECT * FROM pto_balance WHERE id = ${existingRecord.id}
+      // Calculate total used PTO days (safely)
+      let usedDays = 0;
+      if (leaveRecordsResult.rows && leaveRecordsResult.rows.length > 0) {
+        const totalUsedDaysStr = leaveRecordsResult.rows[0].total_used_days;
+        usedDays = totalUsedDaysStr !== null ? parseInt(totalUsedDaysStr) : 0;
+      }
+      
+      // Only create/update records if there are actual leave records
+      // This prevents showing instructors with zero days used
+      if (usedDays === 0) {
+        // Check if a record already exists
+        const existingRecordResult = await db.execute(sql`
+          SELECT * FROM pto_balance
+          WHERE instructor_id = ${instructor.id} AND year = ${year}
+        `);
+        
+        // If no record exists and no days used, skip creating one
+        if (!(existingRecordResult.rows && existingRecordResult.rows.length > 0)) {
+          // Return a virtual record without creating one in the database
+          return {
+            instructor_id: instructor.id,
+            year: year,
+            total_days: 21,
+            used_days: 0,
+            remaining_days: 21,
+            adjustments: 0,
+            last_updated: new Date()
+          };
+        }
+      }
+      
+      // Ensure we don't exceed the maximum allowance
+      const maxAllowance = 21;
+      usedDays = Math.min(usedDays, maxAllowance);
+      
+      // Check if PTO balance record exists for this instructor and year
+      const existingRecordResult = await db.execute(sql`
+        SELECT * FROM pto_balance
+        WHERE instructor_id = ${instructor.id} AND year = ${year}
       `);
       
-      return updatedRecordResult.rows[0];
-    } else {
-      // Create new record
-      const totalDays = 21; // Default annual allowance
-      const remainingDays = Math.max(0, totalDays - usedDays);
+      const hasExistingRecord = existingRecordResult.rows && existingRecordResult.rows.length > 0;
       
-      const insertResult = await db.execute(sql`
-        INSERT INTO pto_balance (
-          instructor_id, year, total_days, used_days, 
-          remaining_days, adjustments, last_updated
-        )
-        VALUES (
-          ${instructor.id}, ${year}, ${totalDays}, ${usedDays},
-          ${remainingDays}, 0, NOW()
-        )
-        RETURNING *
-      `);
-      
-      return insertResult.rows[0];
+      if (hasExistingRecord) {
+        // Update existing record
+        const existingRecord = existingRecordResult.rows[0];
+        const adjustments = parseInt(existingRecord.adjustments || '0');
+        const totalDays = parseInt(existingRecord.total_days || '21');
+        
+        // Ensure remaining days can't go below zero
+        const calculatedRemainingDays = totalDays - usedDays + adjustments;
+        const remainingDays = Math.max(0, calculatedRemainingDays);
+        
+        await db.execute(sql`
+          UPDATE pto_balance
+          SET 
+            used_days = ${usedDays},
+            remaining_days = ${remainingDays},
+            last_updated = NOW()
+          WHERE id = ${existingRecord.id}
+        `);
+        
+        // Return updated record
+        const updatedRecordResult = await db.execute(sql`
+          SELECT * FROM pto_balance WHERE id = ${existingRecord.id}
+        `);
+        
+        return updatedRecordResult.rows[0];
+      } else {
+        // Create new record only if there are used days
+        const totalDays = 21; // Default annual allowance
+        const remainingDays = Math.max(0, totalDays - usedDays);
+        
+        const insertResult = await db.execute(sql`
+          INSERT INTO pto_balance (
+            instructor_id, year, total_days, used_days, 
+            remaining_days, adjustments, last_updated
+          )
+          VALUES (
+            ${instructor.id}, ${year}, ${totalDays}, ${usedDays},
+            ${remainingDays}, 0, NOW()
+          )
+          RETURNING *
+        `);
+        
+        return insertResult.rows[0];
+      }
+    } catch (error) {
+      console.error(`Error in syncPtoBalanceForInstructor for ID ${instructorId}:`, error);
+      throw error;
     }
   }
 
