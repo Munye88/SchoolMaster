@@ -194,6 +194,9 @@ export default function StaffLeaveTracker() {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   
+  // Track if PTO balances have been initialized
+  const [ptoBalancesInitialized, setPtoBalancesInitialized] = useState<boolean>(false);
+  
   // Fetch staff leave data from API
   const { 
     data: leaveRecords = [], 
@@ -436,6 +439,14 @@ export default function StaffLeaveTracker() {
       editForm.setValue('rrdays', returnDays - 1); // -1 because return day is not counted as R&R
     }
   }, [editForm.watch('startDate'), editForm.watch('endDate'), editForm.watch('returnDate')]);
+  
+  // Auto-sync PTO balances when switching to the balance tab
+  useEffect(() => {
+    if (activeTab === "pto-balance" && currentSchool?.id) {
+      // When switching to the PTO balance tab, always sync the data
+      syncPtoBalancesMutation.mutate(selectedYear);
+    }
+  }, [activeTab, currentSchool?.id, selectedYear]);
   
   const months = [
     "January", "February", "March", "April", "May", "June", 

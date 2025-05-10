@@ -3725,7 +3725,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (existingRecord) {
           // Update existing record
-          const remainingDays = existingRecord.totalDays - usedDays + (existingRecord.adjustments || 0);
+          // Ensure remaining days can't go below zero
+          const calculatedRemainingDays = existingRecord.totalDays - usedDays + (existingRecord.adjustments || 0);
+          const remainingDays = Math.max(0, calculatedRemainingDays);
           
           const [updatedRecord] = await db
             .update(ptoBalance)
