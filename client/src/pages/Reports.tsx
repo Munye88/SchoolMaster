@@ -511,17 +511,30 @@ const Reports: React.FC = () => {
                     data={passRateData}
                     margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
                     layout="vertical"
+                    barSize={28}
                   >
                     <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.2} />
                     <XAxis type="number" tick={{ fontSize: 12 }} domain={[0, 100]} />
-                    <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} width={100} />
+                    <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} width={80} />
                     <RechartsTooltip
                       contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
                       formatter={(value, name) => [`${value}%`, name]}
                     />
-                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                    <Bar dataKey="passed" name="Passed" stackId="a" fill="#4CB944" radius={[0, 4, 4, 0]} />
-                    <Bar dataKey="failed" name="Failed" stackId="a" fill="#E63946" radius={[4, 0, 0, 4]} />
+                    <Legend 
+                      wrapperStyle={{ paddingTop: '10px' }} 
+                      iconType="square"
+                      align="center"
+                    />
+                    <Bar 
+                      dataKey="passed" 
+                      name="Passed" 
+                      fill="#4CB944" 
+                      background={{ fill: '#f5f5f5' }}
+                    >
+                      {passRateData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Bar>
                   </RechartsBarChart>
                 </ResponsiveContainer>
               </div>
