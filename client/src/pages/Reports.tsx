@@ -312,7 +312,7 @@ const Reports: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-green-700">12</div>
+            <div className="text-2xl font-bold text-green-700">6</div>
             <div className="flex items-center mt-1">
               <ArrowUpRight className="h-3 w-3 text-green-500 mr-1" />
               <span className="text-xs font-medium text-green-500">+9.1% </span>
@@ -509,9 +509,9 @@ const Reports: React.FC = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <RechartsBarChart
                     data={passRateData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
+                    margin={{ top: 20, right: 40, left: 20, bottom: 25 }}
                     layout="vertical"
-                    barSize={24}
+                    barSize={22}
                   >
                     <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.2} />
                     <XAxis type="number" tick={{ fontSize: 12 }} domain={[0, 100]} />
@@ -529,6 +529,12 @@ const Reports: React.FC = () => {
                       dataKey="value" 
                       name="Pass Rate" 
                       background={{ fill: '#f5f5f5' }}
+                      label={{ 
+                        position: 'right', 
+                        formatter: (value) => `${value}%`,
+                        fill: '#333',
+                        fontSize: 12
+                      }}
                     >
                       {passRateData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.fill} />
