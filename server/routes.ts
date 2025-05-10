@@ -3710,7 +3710,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .from(staffLeave)
           .where(
             sql`${staffLeave.instructorId} = ${instructor.id} 
-                AND EXTRACT(YEAR FROM ${staffLeave.startDate}) = ${year}
+                AND ${staffLeave.startDate} >= '${year}-01-01' 
+                AND ${staffLeave.startDate} <= '${year}-12-31'
                 AND ${staffLeave.status} = 'approved'
                 AND ${staffLeave.leaveType} = 'PTO'`
           );

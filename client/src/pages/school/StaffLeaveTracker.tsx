@@ -1196,21 +1196,7 @@ export default function StaffLeaveTracker() {
                 </TableBody>
               </Table>
               
-              <div className="mt-8 space-y-4">
-                <div className="p-4 border rounded-md bg-slate-50">
-                  <h3 className="text-lg font-medium mb-2">About PTO Balance</h3>
-                  <p className="text-sm text-gray-600 mb-2">
-                    This system tracks Paid Time Off (PTO) balances for all instructors. Each instructor receives an annual allocation of 21 days,
-                    which is automatically reduced when leave requests are approved.
-                  </p>
-                  <ul className="text-sm text-gray-600 list-disc pl-4 space-y-1">
-                    <li>The "Sync PTO Balances" button will update all balances based on approved leave records</li>
-                    <li>Negative adjustments are deductions from the balance</li>
-                    <li>Positive adjustments are additions to the balance</li>
-                    <li>PTO balances refresh annually on January 1st</li>
-                  </ul>
-                </div>
-              </div>
+
             </TabsContent>
           </Tabs>
         </CardContent>
