@@ -21,7 +21,9 @@ import {
   Check,
   AlertCircle,
   AlertTriangle,
-  Lightbulb
+  Lightbulb,
+  BarChart3,
+  TrendingDown
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -393,17 +395,18 @@ const Reports: React.FC = () => {
         
         <TabsContent value="performance">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Student Performance by School */}
             <Card className="shadow-md hover:shadow-lg transition-all duration-300">
               <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-blue-100 rounded-full">
-                      <BarChart2 className="h-4 w-4 text-blue-600" />
+                      <BarChart3 className="h-4 w-4 text-blue-600" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg font-semibold text-[#0A2463]">School Performance</CardTitle>
+                      <CardTitle className="text-lg font-semibold text-blue-800">Student Performance by School</CardTitle>
                       <CardDescription>
-                        Test results by school
+                        Average test scores across different schools
                       </CardDescription>
                     </div>
                   </div>
@@ -490,7 +493,7 @@ const Reports: React.FC = () => {
             </Card>
           </div>
           
-          <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+          <Card className="shadow-md hover:shadow-lg transition-all duration-300 mb-6">
             <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
@@ -551,44 +554,42 @@ const Reports: React.FC = () => {
             </CardContent>
           </Card>
           
-          <div className="grid grid-cols-1 gap-6 mb-6">
-            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-blue-100 rounded-full">
-                      <TrendingUp className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg font-semibold text-[#0A2463]">Report Summary</CardTitle>
-                      <CardDescription>
-                        Key insights from performance data
-                      </CardDescription>
-                    </div>
+          <Card className="shadow-md hover:shadow-lg transition-all duration-300 mb-6">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-blue-100 rounded-full">
+                    <TrendingUp className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-[#0A2463]">Report Summary</CardTitle>
+                    <CardDescription>
+                      Key insights from performance data
+                    </CardDescription>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="bg-white py-4 px-5">
-                <div className="prose prose-sm max-w-none">
-                  <h4 className="text-md font-semibold text-blue-800 mb-3">Key Findings</h4>
-                  <ul className="space-y-2 text-sm">
-                    <li>Book tests have the highest pass rate at 83%, indicating strong performance in curriculum materials.</li>
-                    <li>OPI (Oral Proficiency Interview) shows the lowest pass rate at 68%, suggesting a need for additional support in spoken English proficiency.</li>
-                    <li>Pass rates have improved by 4.2% compared to the previous quarter across all test types.</li>
-                    <li>NFS East students show the strongest performance in ALCPT tests with a 90% pass rate.</li>
-                  </ul>
-                  
-                  <h4 className="text-md font-semibold text-blue-800 mt-6 mb-3">Recommendations</h4>
-                  <ul className="space-y-2 text-sm">
-                    <li>Implement additional spoken English practice sessions to improve OPI performance.</li>
-                    <li>Conduct instructor training on effective techniques for teaching oral skills.</li>
-                    <li>Share best practices from NFS East's ALCPT preparation methods with other schools.</li>
-                    <li>Develop targeted intervention programs for students scoring between 60-69% on assessments.</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardHeader>
+            <CardContent className="bg-white py-4 px-5">
+              <div className="prose prose-sm max-w-none">
+                <h4 className="text-md font-semibold text-blue-800 mb-3">Key Findings</h4>
+                <ul className="space-y-2 text-sm">
+                  <li>Book tests have the highest pass rate at 83%, indicating strong performance in curriculum materials.</li>
+                  <li>OPI (Oral Proficiency Interview) shows the lowest pass rate at 68%, suggesting a need for additional support in spoken English proficiency.</li>
+                  <li>Pass rates have improved by 4.2% compared to the previous quarter across all test types.</li>
+                  <li>NFS East students show the strongest performance in ALCPT tests with a 90% pass rate.</li>
+                </ul>
+                
+                <h4 className="text-md font-semibold text-blue-800 mt-6 mb-3">Recommendations</h4>
+                <ul className="space-y-2 text-sm">
+                  <li>Implement additional spoken English practice sessions to improve OPI performance.</li>
+                  <li>Conduct instructor training on effective techniques for teaching oral skills.</li>
+                  <li>Share best practices from NFS East's ALCPT preparation methods with other schools.</li>
+                  <li>Develop targeted intervention programs for students scoring between 60-69% on assessments.</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
         
         <TabsContent value="attendance">
