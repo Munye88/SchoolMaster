@@ -17,6 +17,7 @@ import { addColumnsToEvaluations } from './migrations/add_columns_to_evaluations
 import { addNotificationsTable } from './migrations/add_notifications_table';
 import { addStaffCounselingTable } from './migrations/add_staff_counseling_table';
 import { addPtoBalanceTable } from './migrations/add_pto_balance_table';
+import { dropPtoConstraint } from './migrations/drop_pto_constraint';
 
 export async function initDatabase() {
   try {
@@ -153,6 +154,7 @@ export async function initDatabase() {
     
     // Add PTO balance table
     await addPtoBalanceTable();
+    await dropPtoConstraint();
     
     return true;
   } catch (error) {
