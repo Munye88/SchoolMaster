@@ -439,6 +439,37 @@ export const staffLeaveRelations = relations(staffLeave, ({ one }) => ({
 export type StaffLeave = typeof staffLeave.$inferSelect;
 export type InsertStaffLeave = z.infer<typeof insertStaffLeaveSchema>;
 
+// PTO Balance Tracker
+export const ptoBalance = pgTable("pto_balance", {
+  id: serial("id").primaryKey(),
+  instructorId: integer("instructor_id").notNull().references(() => instructors.id),
+  year: integer("year").notNull(),
+  totalDays: integer("total_days").notNull().default(21), // Default annual PTO allowance
+  usedDays: integer("used_days").notNull().default(0),
+  remainingDays: integer("remaining_days").notNull().default(21), // Initially equal to totalDays
+  adjustments: integer("adjustments").default(0), // For manual adjustments as needed
+  lastUpdated: timestamp("last_updated").notNull().defaultNow(),
+});
+
+export const insertPtoBalanceSchema = createInsertSchema(ptoBalance).pick({
+  instructorId: true,
+  year: true,
+  totalDays: true, 
+  usedDays: true,
+  remainingDays: true,
+  adjustments: true
+});
+
+export const ptoBalanceRelations = relations(ptoBalance, ({ one }) => ({
+  instructor: one(instructors, {
+    fields: [ptoBalance.instructorId],
+    references: [instructors.id]
+  })
+}));
+
+export type PtoBalance = typeof ptoBalance.$inferSelect;
+export type InsertPtoBalance = z.infer<typeof insertPtoBalanceSchema>;
+
 // Action Log for tracking tasks and tickets
 export const actionLogs = pgTable("action_logs", {
   id: serial("id").primaryKey(),
