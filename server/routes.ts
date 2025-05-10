@@ -3525,6 +3525,271 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PTO Balance Management API endpoints
+  app.get("/api/pto-balance", async (req, res) => {
+    try {
+      // Get all PTO balance records with instructor names
+      const balanceRecords = await db
+        .select({
+          id: ptoBalance.id,
+          instructorId: ptoBalance.instructorId,
+          instructorName: instructors.name,
+          year: ptoBalance.year,
+          totalDays: ptoBalance.totalDays,
+          usedDays: ptoBalance.usedDays,
+          remainingDays: ptoBalance.remainingDays,
+          adjustments: ptoBalance.adjustments,
+          lastUpdated: ptoBalance.lastUpdated,
+          schoolId: instructors.schoolId
+        })
+        .from(ptoBalance)
+        .innerJoin(instructors, eq(ptoBalance.instructorId, instructors.id));
+      
+      res.json(balanceRecords);
+    } catch (error) {
+      console.error("Error fetching PTO balance records:", error);
+      res.status(500).json({ error: "Failed to fetch PTO balance records" });
+    }
+  });
+
+  app.get("/api/pto-balance/:instructorId/:year", async (req, res) => {
+    const instructorId = parseInt(req.params.instructorId);
+    const year = parseInt(req.params.year);
+    
+    if (isNaN(instructorId) || isNaN(year)) {
+      return res.status(400).json({ message: "Invalid instructor ID or year" });
+    }
+    
+    try {
+      const [record] = await db
+        .select()
+        .from(ptoBalance)
+        .where(
+          sql`${ptoBalance.instructorId} = ${instructorId} AND ${ptoBalance.year} = ${year}`
+        );
+      
+      if (!record) {
+        return res.status(404).json({ message: "PTO balance record not found" });
+      }
+      
+      res.json(record);
+    } catch (error) {
+      console.error("Error fetching PTO balance record:", error);
+      res.status(500).json({ error: "Failed to fetch PTO balance record" });
+    }
+  });
+
+  app.post("/api/pto-balance", async (req, res) => {
+    try {
+      const newBalance = insertPtoBalanceSchema.parse(req.body);
+      
+      // Check if record already exists for instructor and year
+      const [existingRecord] = await db
+        .select()
+        .from(ptoBalance)
+        .where(
+          sql`${ptoBalance.instructorId} = ${newBalance.instructorId} AND ${ptoBalance.year} = ${newBalance.year}`
+        );
+      
+      if (existingRecord) {
+        return res.status(409).json({ 
+          message: "PTO balance record already exists for this instructor and year",
+          record: existingRecord
+        });
+      }
+      
+      // Calculate remaining days based on total and used
+      const remainingDays = (newBalance.totalDays || 21) - (newBalance.usedDays || 0);
+      
+      // Create new record
+      const [record] = await db
+        .insert(ptoBalance)
+        .values({
+          ...newBalance,
+          remainingDays: newBalance.remainingDays !== undefined ? newBalance.remainingDays : remainingDays
+        })
+        .returning();
+      
+      // Log activity
+      const instructor = await dbStorage.getInstructor(newBalance.instructorId);
+      await dbStorage.createActivity({
+        type: "pto_balance_created",
+        description: `PTO balance record created for ${instructor?.name || 'Unknown'} for year ${newBalance.year}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(201).json(record);
+    } catch (error) {
+      console.error("Error creating PTO balance record:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      res.status(500).json({ error: "Failed to create PTO balance record" });
+    }
+  });
+
+  app.patch("/api/pto-balance/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid PTO balance ID" });
+    }
+    
+    try {
+      // Get existing record
+      const [existingRecord] = await db
+        .select()
+        .from(ptoBalance)
+        .where(eq(ptoBalance.id, id));
+      
+      if (!existingRecord) {
+        return res.status(404).json({ message: "PTO balance record not found" });
+      }
+      
+      const updateData = req.body;
+      
+      // Calculate remaining days if total or used days are being updated
+      let remainingDays = existingRecord.remainingDays;
+      if (updateData.totalDays !== undefined || updateData.usedDays !== undefined) {
+        const totalDays = updateData.totalDays !== undefined ? updateData.totalDays : existingRecord.totalDays;
+        const usedDays = updateData.usedDays !== undefined ? updateData.usedDays : existingRecord.usedDays;
+        const adjustments = updateData.adjustments !== undefined ? updateData.adjustments : existingRecord.adjustments;
+        
+        remainingDays = totalDays - usedDays + (adjustments || 0);
+      }
+      
+      // Update record with calculated remaining days
+      const [updatedRecord] = await db
+        .update(ptoBalance)
+        .set({
+          ...updateData,
+          remainingDays: updateData.remainingDays !== undefined ? updateData.remainingDays : remainingDays,
+          lastUpdated: new Date()
+        })
+        .where(eq(ptoBalance.id, id))
+        .returning();
+      
+      // Log activity
+      const instructor = await dbStorage.getInstructor(existingRecord.instructorId);
+      await dbStorage.createActivity({
+        type: "pto_balance_updated",
+        description: `PTO balance updated for ${instructor?.name || 'Unknown'} for year ${existingRecord.year}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(updatedRecord);
+    } catch (error) {
+      console.error("Error updating PTO balance record:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update PTO balance record" });
+    }
+  });
+
+  // Utility endpoint to update all instructors' used PTO days based on leave records
+  app.post("/api/pto-balance/sync-all", async (req, res) => {
+    try {
+      const year = parseInt(req.body.year);
+      if (isNaN(year)) {
+        return res.status(400).json({ message: "Invalid year provided" });
+      }
+      
+      // Get all instructors
+      const instructorsList = await dbStorage.getInstructors();
+      const updateResults = [];
+      
+      for (const instructor of instructorsList) {
+        // Get all approved PTO leaves for this instructor in the specified year
+        const leaveRecords = await db
+          .select({
+            instructorId: staffLeave.instructorId,
+            ptodays: staffLeave.ptodays
+          })
+          .from(staffLeave)
+          .where(
+            sql`${staffLeave.instructorId} = ${instructor.id} 
+                AND EXTRACT(YEAR FROM ${staffLeave.startDate}) = ${year}
+                AND ${staffLeave.status} = 'approved'
+                AND ${staffLeave.leaveType} = 'PTO'`
+          );
+        
+        // Calculate total used PTO days
+        const usedDays = leaveRecords.reduce((total, leave) => total + (leave.ptodays || 0), 0);
+        
+        // Check if PTO balance record exists for this instructor and year
+        const [existingRecord] = await db
+          .select()
+          .from(ptoBalance)
+          .where(
+            sql`${ptoBalance.instructorId} = ${instructor.id} AND ${ptoBalance.year} = ${year}`
+          );
+        
+        if (existingRecord) {
+          // Update existing record
+          const remainingDays = existingRecord.totalDays - usedDays + (existingRecord.adjustments || 0);
+          
+          const [updatedRecord] = await db
+            .update(ptoBalance)
+            .set({
+              usedDays,
+              remainingDays,
+              lastUpdated: new Date()
+            })
+            .where(eq(ptoBalance.id, existingRecord.id))
+            .returning();
+          
+          updateResults.push({ 
+            instructor: instructor.name, 
+            updated: true, 
+            usedDays, 
+            remainingDays 
+          });
+        } else {
+          // Create new record
+          const totalDays = 21; // Default annual allowance
+          const remainingDays = totalDays - usedDays;
+          
+          const [newRecord] = await db
+            .insert(ptoBalance)
+            .values({
+              instructorId: instructor.id,
+              year,
+              totalDays,
+              usedDays,
+              remainingDays,
+              adjustments: 0
+            })
+            .returning();
+          
+          updateResults.push({ 
+            instructor: instructor.name, 
+            created: true, 
+            usedDays, 
+            remainingDays 
+          });
+        }
+      }
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "pto_balance_sync",
+        description: `Synchronized PTO balances for all instructors for year ${year}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json({ 
+        message: `Successfully synchronized PTO balances for ${updateResults.length} instructors`,
+        details: updateResults
+      });
+    } catch (error) {
+      console.error("Error syncing PTO balances:", error);
+      res.status(500).json({ message: "Failed to sync PTO balances" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
