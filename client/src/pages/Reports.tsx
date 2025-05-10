@@ -23,7 +23,9 @@ import {
   AlertTriangle,
   Lightbulb,
   BarChart3,
-  TrendingDown
+  TrendingDown,
+  Clock,
+  CheckCircle
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -828,7 +830,7 @@ const Reports: React.FC = () => {
                   
                   <div className="flex items-center gap-3 text-amber-700">
                     <div className="p-1 bg-amber-100 rounded-full">
-                      <Clock className="h-4 w-4" />
+                      <Calendar className="h-4 w-4" />
                     </div>
                     <p className="text-sm">Lateness has decreased by 6% quarter-over-quarter across all schools.</p>
                   </div>
@@ -1329,7 +1331,7 @@ const Reports: React.FC = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-green-700">
                     <div className="p-1 bg-green-100 rounded-full">
-                      <CheckCircle className="h-4 w-4" />
+                      <Check className="h-4 w-4" />
                     </div>
                     <p className="text-sm">85% of leave requests were approved within 48 hours of submission.</p>
                   </div>
@@ -1436,6 +1438,91 @@ const Reports: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+          
+          {/* Report Summary and Recommendations for Trends */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Report Summary */}
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-blue-100 rounded-full">
+                    <LineChart className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-blue-800">Report Summary</CardTitle>
+                    <CardDescription>
+                      Key insights from long-term trends
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="bg-white py-4 px-5">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-green-700">
+                    <div className="p-1 bg-green-100 rounded-full">
+                      <TrendingUp className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">All schools show an average performance improvement of 5.3% over 12 months.</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-amber-700">
+                    <div className="p-1 bg-amber-100 rounded-full">
+                      <BarChart className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">NFS East consistently outperforms other schools by 3-4% each quarter.</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-red-700">
+                    <div className="p-1 bg-red-100 rounded-full">
+                      <TrendingDown className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">KFNA showed a slight performance decrease in Q1 2025 compared to Q4 2024.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Recommendations */}
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-white border-b border-purple-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-purple-100 rounded-full">
+                    <TrendingUp className="h-4 w-4 text-purple-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-purple-800">Recommendations</CardTitle>
+                    <CardDescription>
+                      Strategic actions based on report insights
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="bg-white py-4 px-5">
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      1
+                    </div>
+                    <p className="text-sm">Investigate factors contributing to NFS East's consistent high performance.</p>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      2
+                    </div>
+                    <p className="text-sm">Develop intervention plan for KFNA to address recent performance decline.</p>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      3
+                    </div>
+                    <p className="text-sm">Conduct quarterly cross-school seminars to share best teaching practices.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </main>
