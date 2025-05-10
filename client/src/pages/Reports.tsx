@@ -771,7 +771,7 @@ const Reports: React.FC = () => {
               </CardHeader>
               <CardContent className="h-80 bg-gradient-to-b from-red-50 to-white py-3 px-1">
                 <div className="w-full h-full rounded-lg bg-white shadow-inner border border-red-100 p-4">
-                  <ResponsiveContainer width="100%" height="90%">
+                  <ResponsiveContainer width="100%" height="75%">
                     <RechartsPieChart>
                       <Pie
                         data={[
@@ -797,31 +797,33 @@ const Reports: React.FC = () => {
                       </Pie>
                     </RechartsPieChart>
                   </ResponsiveContainer>
-                  <div className="grid grid-cols-5 gap-1 text-center mt-1">
-                    <div>
-                      <div className="w-3 h-3 rounded-full bg-[#65B741] mx-auto"></div>
-                      <div className="text-xs font-medium mt-1">95%+</div>
-                      <div className="text-xs font-bold">12</div>
-                    </div>
-                    <div>
-                      <div className="w-3 h-3 rounded-full bg-[#9AD37F] mx-auto"></div>
-                      <div className="text-xs font-medium mt-1">90-94%</div>
-                      <div className="text-xs font-bold">22</div>
-                    </div>
-                    <div>
-                      <div className="w-3 h-3 rounded-full bg-[#FFB534] mx-auto"></div>
-                      <div className="text-xs font-medium mt-1">85-89%</div>
-                      <div className="text-xs font-bold">16</div>
-                    </div>
-                    <div>
-                      <div className="w-3 h-3 rounded-full bg-[#FF8811] mx-auto"></div>
-                      <div className="text-xs font-medium mt-1">80-84%</div>
-                      <div className="text-xs font-bold">8</div>
-                    </div>
-                    <div>
-                      <div className="w-3 h-3 rounded-full bg-[#E63946] mx-auto"></div>
-                      <div className="text-xs font-medium mt-1">&lt;80%</div>
-                      <div className="text-xs font-bold">2</div>
+                  <div className="flex justify-center items-center mt-4">
+                    <div className="flex space-x-8">
+                      <div className="flex flex-col items-center">
+                        <div className="w-3 h-3 rounded-full bg-[#65B741]"></div>
+                        <div className="text-xs font-medium mt-1">95%+</div>
+                        <div className="text-xs font-bold">12</div>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-3 h-3 rounded-full bg-[#9AD37F]"></div>
+                        <div className="text-xs font-medium mt-1">90-94%</div>
+                        <div className="text-xs font-bold">22</div>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-3 h-3 rounded-full bg-[#FFB534]"></div>
+                        <div className="text-xs font-medium mt-1">85-89%</div>
+                        <div className="text-xs font-bold">16</div>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-3 h-3 rounded-full bg-[#FF8811]"></div>
+                        <div className="text-xs font-medium mt-1">80-84%</div>
+                        <div className="text-xs font-bold">8</div>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-3 h-3 rounded-full bg-[#E63946]"></div>
+                        <div className="text-xs font-medium mt-1">&lt;80%</div>
+                        <div className="text-xs font-bold">2</div>
+                      </div>
                     </div>
                   </div>
                 </div>
