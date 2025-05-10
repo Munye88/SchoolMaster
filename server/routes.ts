@@ -2723,6 +2723,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const newLeave = req.body;
       const [leave] = await db.insert(staffLeave).values(newLeave).returning();
+      
+      // Auto-sync PTO balance if this is a PTO leave type and it's approved
+      if (newLeave.leaveType === 'PTO' && newLeave.status === 'approved') {
+        try {
+          const year = new Date(newLeave.startDate).getFullYear();
+          await syncPtoBalanceForInstructor(newLeave.instructorId, year);
+          console.log(`Automatically synced PTO balance for instructor ${newLeave.instructorId} after creating leave record`);
+        } catch (syncError) {
+          console.error("Error auto-syncing PTO balance after creating leave:", syncError);
+          // Don't block the leave creation if sync fails
+        }
+      }
+      
       res.status(201).json(leave);
     } catch (error) {
       console.error("Error creating staff leave record:", error);
@@ -2737,15 +2750,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
+      // Get the original record before update
+      const [originalLeave] = await db
+        .select()
+        .from(staffLeave)
+        .where(eq(staffLeave.id, id));
+        
+      if (!originalLeave) {
+        return res.status(404).json({ message: "Staff leave record not found" });
+      }
+      
       const updateData = req.body;
       const [updatedLeave] = await db
         .update(staffLeave)
         .set(updateData)
         .where(eq(staffLeave.id, id))
         .returning();
-        
-      if (!updatedLeave) {
-        return res.status(404).json({ message: "Staff leave record not found" });
+      
+      // Check if we need to update PTO balance
+      // Cases:
+      // 1. Leave type changed to/from PTO
+      // 2. Status changed to/from approved
+      // 3. PTO days changed
+      const needToSyncPto = 
+        // PTO leave type that's approved, either before or after update
+        ((originalLeave.leaveType === 'PTO' || updateData.leaveType === 'PTO') &&
+         (originalLeave.status === 'approved' || updateData.status === 'approved')) ||
+        // PTO days changed
+        (updateData.ptodays !== undefined && updateData.ptodays !== originalLeave.ptodays);
+      
+      if (needToSyncPto) {
+        try {
+          // Get the year(s) affected by this change
+          const originalYear = new Date(originalLeave.startDate).getFullYear();
+          let updatedYear = originalYear;
+          
+          if (updateData.startDate) {
+            updatedYear = new Date(updateData.startDate).getFullYear();
+          }
+          
+          // Sync PTO balance for the instructor for both years if they're different
+          await syncPtoBalanceForInstructor(updatedLeave.instructorId, originalYear);
+          if (updatedYear !== originalYear) {
+            await syncPtoBalanceForInstructor(updatedLeave.instructorId, updatedYear);
+          }
+          
+          console.log(`Automatically synced PTO balance for instructor ${updatedLeave.instructorId} after updating leave record`);
+        } catch (syncError) {
+          console.error("Error auto-syncing PTO balance after updating leave:", syncError);
+          // Don't block the leave update if sync fails
+        }
       }
       
       res.json(updatedLeave);
@@ -3687,6 +3741,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to update PTO balance record" });
     }
   });
+
+  // Helper function to sync PTO balance for a specific instructor
+  async function syncPtoBalanceForInstructor(instructorId: number, year: number) {
+    // Get instructor details
+    const instructor = await dbStorage.getInstructor(instructorId);
+    if (!instructor) {
+      throw new Error(`Instructor with ID ${instructorId} not found`);
+    }
+    
+    // Get all approved PTO leaves for this instructor in the specified year
+    const leaveRecords = await db
+      .select({
+        instructorId: staffLeave.instructorId,
+        ptodays: staffLeave.ptodays
+      })
+      .from(staffLeave)
+      .where(eq(staffLeave.instructorId, instructor.id))
+      .where(sql`${staffLeave.startDate} >= '${year}-01-01' AND ${staffLeave.startDate} <= '${year}-12-31'`)
+      .where(eq(staffLeave.status, 'approved'))
+      .where(eq(staffLeave.leaveType, 'PTO'));
+    
+    // Calculate total used PTO days
+    const usedDays = leaveRecords.reduce((total, leave) => total + (leave.ptodays || 0), 0);
+    
+    // Check if PTO balance record exists for this instructor and year
+    const [existingRecord] = await db
+      .select()
+      .from(ptoBalance)
+      .where(eq(ptoBalance.instructorId, instructor.id))
+      .where(eq(ptoBalance.year, year));
+    
+    if (existingRecord) {
+      // Update existing record
+      // Ensure remaining days can't go below zero
+      const calculatedRemainingDays = existingRecord.totalDays - usedDays + (existingRecord.adjustments || 0);
+      const remainingDays = Math.max(0, calculatedRemainingDays);
+      
+      const [updatedRecord] = await db
+        .update(ptoBalance)
+        .set({
+          usedDays,
+          remainingDays,
+          lastUpdated: new Date()
+        })
+        .where(eq(ptoBalance.id, existingRecord.id))
+        .returning();
+      
+      return updatedRecord;
+    } else {
+      // Create new record
+      const totalDays = 21; // Default annual allowance
+      const remainingDays = Math.max(0, totalDays - usedDays);
+      
+      const [newRecord] = await db
+        .insert(ptoBalance)
+        .values({
+          instructorId: instructor.id,
+          year,
+          totalDays,
+          usedDays,
+          remainingDays,
+          adjustments: 0
+        })
+        .returning();
+      
+      return newRecord;
+    }
+  }
 
   // Utility endpoint to update all instructors' used PTO days based on leave records
   app.post("/api/pto-balance/sync-all", async (req, res) => {
