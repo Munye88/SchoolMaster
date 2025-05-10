@@ -504,44 +504,30 @@ const Reports: React.FC = () => {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="h-80 bg-gradient-to-b from-blue-50 to-white py-3 px-1">
-              <div className="w-full h-full rounded-lg bg-white shadow-inner border border-blue-100 p-4">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RechartsBarChart
-                    data={passRateData}
-                    margin={{ top: 20, right: 40, left: 20, bottom: 25 }}
-                    layout="vertical"
-                    barSize={22}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.2} />
-                    <XAxis type="number" tick={{ fontSize: 12 }} domain={[0, 100]} />
-                    <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} width={80} />
-                    <RechartsTooltip
-                      contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                      formatter={(value) => [`${value}%`]}
-                    />
-                    <Legend 
-                      wrapperStyle={{ paddingTop: '10px' }} 
-                      iconType="square"
-                      align="center"
-                    />
-                    <Bar 
-                      dataKey="value" 
-                      name="Pass Rate" 
-                      background={{ fill: '#f5f5f5' }}
-                      label={{ 
-                        position: 'right', 
-                        formatter: (value) => `${value}%`,
-                        fill: '#333',
-                        fontSize: 12
-                      }}
-                    >
-                      {passRateData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                    </Bar>
-                  </RechartsBarChart>
-                </ResponsiveContainer>
+            <CardContent className="bg-gradient-to-b from-blue-50 to-white py-6 px-6">
+              <div className="rounded-lg bg-white shadow-inner border border-blue-100 p-6 space-y-6">
+                <div className="space-y-4">
+                  {passRateData.map((entry, index) => (
+                    <div key={index} className="flex items-center justify-between border-b border-gray-100 pb-3">
+                      <div className="flex items-center">
+                        <div 
+                          className="w-3 h-3 rounded-full mr-3" 
+                          style={{ backgroundColor: entry.fill as string }}
+                        ></div>
+                        <span className="text-gray-700 font-medium">{entry.name}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-xl font-bold" style={{ color: entry.fill as string }}>
+                          {entry.value}%
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="text-center text-sm text-gray-500 mt-4">
+                  <p>Test pass rates for current reporting period</p>
+                </div>
               </div>
             </CardContent>
           </Card>
