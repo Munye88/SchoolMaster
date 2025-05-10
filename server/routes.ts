@@ -3776,14 +3776,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Get all approved PTO leaves for this instructor in the specified year
+      const yearStart = `${year}-01-01`;
+      const yearEnd = `${year}-12-31`;
+      
       const leaveRecordsResult = await db.execute(sql`
         SELECT 
           COALESCE(SUM(ptodays), 0) AS total_used_days 
         FROM staff_leave 
         WHERE 
           instructor_id = ${instructor.id} AND
-          start_date >= '${year}-01-01' AND 
-          start_date <= '${year}-12-31' AND
+          start_date >= ${yearStart} AND 
+          start_date <= ${yearEnd} AND
           status = 'approved' AND
           leave_type = 'PTO'
       `);
