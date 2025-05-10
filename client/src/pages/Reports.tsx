@@ -799,6 +799,91 @@ const Reports: React.FC = () => {
               </CardContent>
             </Card>
           </div>
+          
+          {/* Report Summary and Recommendations for Attendance */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Report Summary */}
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-blue-100 rounded-full">
+                    <LineChart className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-blue-800">Report Summary</CardTitle>
+                    <CardDescription>
+                      Key insights from attendance data
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="bg-white py-4 px-5">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-green-700">
+                    <div className="p-1 bg-green-100 rounded-full">
+                      <Award className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">NFS East has the highest attendance rate at 94%, followed by KFNA at 91%.</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-amber-700">
+                    <div className="p-1 bg-amber-100 rounded-full">
+                      <Clock className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">Lateness has decreased by 6% quarter-over-quarter across all schools.</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-red-700">
+                    <div className="p-1 bg-red-100 rounded-full">
+                      <AlertCircle className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">NFS West's absence rate of 8% exceeds the 5% target by 3 percentage points.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Recommendations */}
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-white border-b border-purple-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-purple-100 rounded-full">
+                    <TrendingUp className="h-4 w-4 text-purple-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-purple-800">Recommendations</CardTitle>
+                    <CardDescription>
+                      Strategic actions based on report insights
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="bg-white py-4 px-5">
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      1
+                    </div>
+                    <p className="text-sm">Investigate NFS West absence patterns and implement targeted improvement plan.</p>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      2
+                    </div>
+                    <p className="text-sm">Implement NFS East's attendance management practices at other schools.</p>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      3
+                    </div>
+                    <p className="text-sm">Recognize instructors with perfect attendance through the staff recognition program.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
         
         <TabsContent value="evaluations">
@@ -1218,6 +1303,91 @@ const Reports: React.FC = () => {
                       </Bar>
                     </RechartsBarChart>
                   </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Report Summary and Recommendations for Staff Leave */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Report Summary */}
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-blue-100 rounded-full">
+                    <LineChart className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-blue-800">Report Summary</CardTitle>
+                    <CardDescription>
+                      Key insights from staff leave data
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="bg-white py-4 px-5">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-green-700">
+                    <div className="p-1 bg-green-100 rounded-full">
+                      <CheckCircle className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">85% of leave requests were approved within 48 hours of submission.</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-amber-700">
+                    <div className="p-1 bg-amber-100 rounded-full">
+                      <Calendar className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">PTO remains the most common leave type at 63%, followed by R&R at 22%.</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-red-700">
+                    <div className="p-1 bg-red-100 rounded-full">
+                      <AlertTriangle className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">7 instructors have negative PTO balances, requiring management attention.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Recommendations */}
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-white border-b border-purple-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-purple-100 rounded-full">
+                    <TrendingUp className="h-4 w-4 text-purple-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-purple-800">Recommendations</CardTitle>
+                    <CardDescription>
+                      Strategic actions based on report insights
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="bg-white py-4 px-5">
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      1
+                    </div>
+                    <p className="text-sm">Implement PTO balance review for instructors with negative balances.</p>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      2
+                    </div>
+                    <p className="text-sm">Establish sequential leave schedule to prevent staffing shortages.</p>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      3
+                    </div>
+                    <p className="text-sm">Develop clear guidelines for emergency leave approval process.</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
