@@ -3901,7 +3901,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             instructorId: instructor.id,
             instructorName: instructor.name,
             updated: true,
-            result
+            usedDays: parseInt(result.used_days) || 0,
+            remainingDays: parseInt(result.remaining_days) || 21
           });
         } catch (error) {
           console.error(`Error syncing PTO for instructor ${instructor.id} (${instructor.name}):`, error);
@@ -3909,56 +3910,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             instructorId: instructor.id,
             instructorName: instructor.name,
             updated: false,
-            error: error.message
+            error: String(error)
           });
         }
-        
-        if (existingRecord) {
-          // Update existing record
-          // Ensure remaining days can't go below zero
-          const calculatedRemainingDays = existingRecord.totalDays - usedDays + (existingRecord.adjustments || 0);
-          const remainingDays = Math.max(0, calculatedRemainingDays);
-          
-          const [updatedRecord] = await db
-            .update(ptoBalance)
-            .set({
-              usedDays,
-              remainingDays,
-              lastUpdated: new Date()
-            })
-            .where(eq(ptoBalance.id, existingRecord.id))
-            .returning();
-          
-          updateResults.push({ 
-            instructor: instructor.name, 
-            updated: true, 
-            usedDays, 
-            remainingDays 
-          });
-        } else {
-          // Create new record
-          const totalDays = 21; // Default annual allowance
-          const remainingDays = totalDays - usedDays;
-          
-          const [newRecord] = await db
-            .insert(ptoBalance)
-            .values({
-              instructorId: instructor.id,
-              year,
-              totalDays,
-              usedDays,
-              remainingDays,
-              adjustments: 0
-            })
-            .returning();
-          
-          updateResults.push({ 
-            instructor: instructor.name, 
-            created: true, 
-            usedDays, 
-            remainingDays 
-          });
-        }
+        // The syncPtoBalanceForInstructor function handles all the update logic
+        // We don't need to manually modify the database again here
       }
       
       // Log activity
