@@ -625,71 +625,85 @@ const Reports: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Report Summary and Recommendations - From second screenshot */}
+          {/* Report Summary and Recommendations - Matching the Staff Evaluation tab formatting */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             {/* Report Summary */}
-            <Card className="shadow-sm">
-              <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100">
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-blue-100 rounded-full">
-                    <FileText className="h-3.5 w-3.5 text-blue-600" />
+                  <div className="p-2 bg-blue-100 rounded-full">
+                    <LineChart className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-base font-medium text-gray-800">Report Summary</CardTitle>
-                    <CardDescription className="text-xs text-gray-600">
-                      Key insights from the performance report
+                    <CardTitle className="text-lg font-semibold text-blue-800">Report Summary</CardTitle>
+                    <CardDescription>
+                      Key insights from performance trends
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="bg-white p-4">
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3 bg-green-50 p-3 rounded-md">
-                    <div className="p-1 bg-green-100 rounded-full mt-0.5">
-                      <Check className="h-3.5 w-3.5 text-green-600" />
+              <CardContent className="bg-white py-4 px-5">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-green-700">
+                    <div className="p-1 bg-green-100 rounded-full">
+                      <Award className="h-4 w-4" />
                     </div>
-                    <p className="text-sm text-green-800">Overall performance has improved by 12% since last quarter.</p>
+                    <p className="text-sm">Book tests have the highest pass rate at 87%, indicating strong curriculum knowledge.</p>
                   </div>
                   
-                  <div className="flex items-start gap-3 bg-amber-50 p-3 rounded-md">
-                    <div className="p-1 bg-amber-100 rounded-full mt-0.5">
-                      <Lightbulb className="h-3.5 w-3.5 text-amber-600" />
+                  <div className="flex items-center gap-3 text-amber-700">
+                    <div className="p-1 bg-amber-100 rounded-full">
+                      <TrendingUp className="h-4 w-4" />
                     </div>
-                    <p className="text-sm text-amber-800">NFS East shows the highest improvement in test scores.</p>
+                    <p className="text-sm">NFS East shows the strongest performance improvement with an 8% increase.</p>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 text-red-700">
+                    <div className="p-1 bg-red-100 rounded-full">
+                      <AlertCircle className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm">ECL scores are below target at NFS West with a 79% average, requiring attention.</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
             
             {/* Recommendations */}
-            <Card className="shadow-sm">
-              <CardHeader className="bg-[#f8f5fb] border-b border-gray-200 px-4 py-3">
+            <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-white border-b border-purple-100">
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-purple-100 rounded-full">
-                    <Lightbulb className="h-3.5 w-3.5 text-purple-600" />
+                  <div className="p-2 bg-purple-100 rounded-full">
+                    <TrendingUp className="h-4 w-4 text-purple-600" />
                   </div>
                   <div>
-                    <CardTitle className="text-base font-medium text-gray-800">Recommendations</CardTitle>
-                    <CardDescription className="text-xs text-gray-600">
+                    <CardTitle className="text-lg font-semibold text-purple-800">Recommendations</CardTitle>
+                    <CardDescription>
                       Strategic actions based on report insights
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="bg-white p-4">
-                <div className="space-y-3">
+              <CardContent className="bg-white py-4 px-5">
+                <div className="space-y-4">
                   <div className="flex gap-3">
                     <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
                       1
                     </div>
-                    <p className="text-sm text-gray-700">Schedule additional support sessions for Technical Training courses.</p>
+                    <p className="text-sm">Implement additional support for ECL preparation at NFS West.</p>
                   </div>
                   
                   <div className="flex gap-3">
                     <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
                       2
                     </div>
-                    <p className="text-sm text-gray-700">Recognize and reward instructors with highest performance improvements.</p>
+                    <p className="text-sm">Share NFS East teaching methods with other schools to improve overall scores.</p>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+                      3
+                    </div>
+                    <p className="text-sm">Develop standardized curriculum resources focused on ECL and ALCPT preparation.</p>
                   </div>
                 </div>
               </CardContent>
