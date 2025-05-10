@@ -149,10 +149,10 @@ const Reports: React.FC = () => {
   ];
   
   const passRateData = [
-    { name: 'ALCPT', value: 75, color: '#3B82F6' },
-    { name: 'ECL', value: 68, color: '#6247AA' },
-    { name: 'Book Test', value: 82, color: '#0A2463' },
-    { name: 'OPI', value: 70, color: '#FF8811' }
+    { name: 'ALCPT', value: 75, fill: '#3B82F6' },
+    { name: 'ECL', value: 68, fill: '#6247AA' },
+    { name: 'Book Test', value: 82, fill: '#0A2463' },
+    { name: 'OPI', value: 70, fill: '#FF8811' }
   ];
   
   const staffAttendanceData = [
@@ -511,14 +511,14 @@ const Reports: React.FC = () => {
                     data={passRateData}
                     margin={{ top: 20, right: 30, left: 20, bottom: 25 }}
                     layout="vertical"
-                    barSize={28}
+                    barSize={24}
                   >
                     <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.2} />
                     <XAxis type="number" tick={{ fontSize: 12 }} domain={[0, 100]} />
                     <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} width={80} />
                     <RechartsTooltip
                       contentStyle={{ borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
-                      formatter={(value, name) => [`${value}%`, name]}
+                      formatter={(value) => [`${value}%`]}
                     />
                     <Legend 
                       wrapperStyle={{ paddingTop: '10px' }} 
@@ -531,7 +531,7 @@ const Reports: React.FC = () => {
                       background={{ fill: '#f5f5f5' }}
                     >
                       {passRateData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
                       ))}
                     </Bar>
                   </RechartsBarChart>
