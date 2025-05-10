@@ -3775,62 +3775,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     // Get all approved PTO leaves for this instructor in the specified year
-    const leaveRecords = await db
-      .select({
-        instructorId: staffLeave.instructorId,
-        ptodays: staffLeave.ptodays
-      })
-      .from(staffLeave)
-      .where(eq(staffLeave.instructorId, instructor.id))
-      .where(sql`${staffLeave.startDate} >= '${year}-01-01' AND ${staffLeave.startDate} <= '${year}-12-31'`)
-      .where(eq(staffLeave.status, 'approved'))
-      .where(eq(staffLeave.leaveType, 'PTO'));
+    // Need to be explicit about the equality conditions
+    const leaveRecords = await db.execute(sql`
+      SELECT instructor_id, ptodays 
+      FROM staff_leave 
+      WHERE 
+        instructor_id = ${instructor.id} AND
+        start_date >= '${year}-01-01' AND 
+        start_date <= '${year}-12-31' AND
+        status = 'approved' AND
+        leave_type = 'PTO'
+    `);
     
-    // Calculate total used PTO days
-    const usedDays = leaveRecords.reduce((total, leave) => total + (leave.ptodays || 0), 0);
+    // Calculate total used PTO days (safely)
+    let usedDays = 0;
+    if (leaveRecords.rows && leaveRecords.rows.length > 0) {
+      usedDays = leaveRecords.rows.reduce((total, leave) => {
+        const ptoDays = parseInt(leave.ptodays) || 0;
+        return total + ptoDays;
+      }, 0);
+    }
+    
+    // Ensure we don't exceed the maximum allowance
+    const maxAllowance = 21;
+    usedDays = Math.min(usedDays, maxAllowance);
     
     // Check if PTO balance record exists for this instructor and year
-    const [existingRecord] = await db
-      .select()
-      .from(ptoBalance)
-      .where(eq(ptoBalance.instructorId, instructor.id))
-      .where(eq(ptoBalance.year, year));
+    const existingRecordResult = await db.execute(sql`
+      SELECT * FROM pto_balance
+      WHERE instructor_id = ${instructor.id} AND year = ${year}
+    `);
     
-    if (existingRecord) {
+    const hasExistingRecord = existingRecordResult.rows && existingRecordResult.rows.length > 0;
+    
+    if (hasExistingRecord) {
       // Update existing record
+      const existingRecord = existingRecordResult.rows[0];
+      const adjustments = parseInt(existingRecord.adjustments) || 0;
+      const totalDays = parseInt(existingRecord.total_days) || 21;
+      
       // Ensure remaining days can't go below zero
-      const calculatedRemainingDays = existingRecord.totalDays - usedDays + (existingRecord.adjustments || 0);
+      const calculatedRemainingDays = totalDays - usedDays + adjustments;
       const remainingDays = Math.max(0, calculatedRemainingDays);
       
-      const [updatedRecord] = await db
-        .update(ptoBalance)
-        .set({
-          usedDays,
-          remainingDays,
-          lastUpdated: new Date()
-        })
-        .where(eq(ptoBalance.id, existingRecord.id))
-        .returning();
+      await db.execute(sql`
+        UPDATE pto_balance
+        SET 
+          used_days = ${usedDays},
+          remaining_days = ${remainingDays},
+          last_updated = NOW()
+        WHERE id = ${existingRecord.id}
+      `);
       
-      return updatedRecord;
+      // Return updated record
+      const updatedRecordResult = await db.execute(sql`
+        SELECT * FROM pto_balance WHERE id = ${existingRecord.id}
+      `);
+      
+      return updatedRecordResult.rows[0];
     } else {
       // Create new record
       const totalDays = 21; // Default annual allowance
       const remainingDays = Math.max(0, totalDays - usedDays);
       
-      const [newRecord] = await db
-        .insert(ptoBalance)
-        .values({
-          instructorId: instructor.id,
-          year,
-          totalDays,
-          usedDays,
-          remainingDays,
-          adjustments: 0
-        })
-        .returning();
+      const insertResult = await db.execute(sql`
+        INSERT INTO pto_balance (
+          instructor_id, year, total_days, used_days, 
+          remaining_days, adjustments, last_updated
+        )
+        VALUES (
+          ${instructor.id}, ${year}, ${totalDays}, ${usedDays},
+          ${remainingDays}, 0, NOW()
+        )
+        RETURNING *
+      `);
       
-      return newRecord;
+      return insertResult.rows[0];
     }
   }
 
@@ -3847,27 +3867,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updateResults = [];
       
       for (const instructor of instructorsList) {
-        // Get all approved PTO leaves for this instructor in the specified year
-        const leaveRecords = await db
-          .select({
-            instructorId: staffLeave.instructorId,
-            ptodays: staffLeave.ptodays
-          })
-          .from(staffLeave)
-          .where(eq(staffLeave.instructorId, instructor.id))
-          .where(sql`${staffLeave.startDate} >= '${year}-01-01' AND ${staffLeave.startDate} <= '${year}-12-31'`)
-          .where(eq(staffLeave.status, 'approved'))
-          .where(eq(staffLeave.leaveType, 'PTO'));
-        
-        // Calculate total used PTO days
-        const usedDays = leaveRecords.reduce((total, leave) => total + (leave.ptodays || 0), 0);
-        
-        // Check if PTO balance record exists for this instructor and year
-        const [existingRecord] = await db
-          .select()
-          .from(ptoBalance)
-          .where(eq(ptoBalance.instructorId, instructor.id))
-          .where(eq(ptoBalance.year, year));
+        try {
+          // Use the individual sync function for each instructor for consistency
+          const result = await syncPtoBalanceForInstructor(instructor.id, year);
+          updateResults.push({
+            instructorId: instructor.id,
+            instructorName: instructor.name,
+            updated: true,
+            result
+          });
+        } catch (error) {
+          console.error(`Error syncing PTO for instructor ${instructor.id} (${instructor.name}):`, error);
+          updateResults.push({
+            instructorId: instructor.id,
+            instructorName: instructor.name,
+            updated: false,
+            error: error.message
+          });
+        }
         
         if (existingRecord) {
           // Update existing record
