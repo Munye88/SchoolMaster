@@ -126,119 +126,88 @@ export default function InstructorRecognition() {
         return;
       }
       
-      // Get instructor data
-      const instructorPromises = schoolInstructors.slice(0, 5).map(async (instructor) => {
+      // Process instructors directly without AI (to avoid rate limits)
+      const analyzedInstructors = schoolInstructors.map((instructor) => {
         // Get evaluations for this instructor
         const instructorEvals = evaluations?.filter(e => e.instructorId === instructor.id) || [];
-        
+        const evalScore = instructorEvals.length > 0 
+          ? instructorEvals.reduce((sum, e) => sum + e.score, 0) / instructorEvals.length 
+          : 0;
+          
         // Get attendance for this instructor
         const instructorAttendance = attendance?.filter(a => a.instructorId === instructor.id) || [];
+        const attendancePercentage = instructorAttendance.length > 0
+          ? instructorAttendance.filter(a => a.status.toLowerCase() === 'present').length / instructorAttendance.length * 100
+          : 0;
+          
+        // Calculate overall score based on category weights
+        let score = 0;
         
-        // Create data for AI analysis
-        const data = {
-          instructor: instructor.name,
-          nationality: instructor.nationality,
-          evaluations: instructorEvals.map(e => ({ score: e.score, quarter: e.quarter })),
-          attendance: instructorAttendance.length > 0
-            ? instructorAttendance.filter(a => a.status.toLowerCase() === 'present').length / instructorAttendance.length * 100
-            : 0,
-          category: selectedCategory
-        };
-        
-        // Create prompt for AI
-        const prompt = `
-          Analyze this instructor's data for a recognition award:
-          Instructor: ${instructor.name}
-          Nationality: ${instructor.nationality || 'Unknown'}
-          Evaluation Scores: ${instructorEvals.map(e => e.score).join(', ') || 'None available'}
-          Attendance Rate: ${data.attendance.toFixed(1)}%
-          Award Category: ${selectedCategory}
-          
-          Based on this data, provide a JSON object with the following fields:
-          1. "score" - A numerical score from 0-100 for this instructor for the ${selectedCategory} award
-          2. "strengths" - An array of 3-4 strengths of this instructor based on the data
-          3. "reasons" - A brief paragraph explaining why this instructor should be considered for the award
-          
-          Only respond with the JSON object.
-        `;
-        
-        try {
-          // Get AI analysis
-          const aiResponse = await askAI(prompt);
-          
-          let analysis = { score: 0, strengths: [], reasons: "" };
-          
-          if (aiResponse) {
-            // Parse AI response
-            try {
-              analysis = JSON.parse(aiResponse);
-            } catch (parseError) {
-              console.error("Failed to parse AI response:", parseError);
-              // Extract score with regex as fallback
-              const scoreMatch = aiResponse.match(/"score":\s*(\d+)/);
-              if (scoreMatch && scoreMatch[1]) {
-                analysis.score = parseInt(scoreMatch[1]);
-              }
-              
-              // Extract strengths with regex as fallback
-              const strengthsMatch = aiResponse.match(/"strengths":\s*\[(.*?)\]/s);
-              if (strengthsMatch && strengthsMatch[1]) {
-                analysis.strengths = strengthsMatch[1]
-                  .split(",")
-                  .map(s => s.trim().replace(/"/g, ""))
-                  .filter(s => s);
-              }
-              
-              // Extract reasons with regex as fallback
-              const reasonsMatch = aiResponse.match(/"reasons":\s*"(.*?)"/s);
-              if (reasonsMatch && reasonsMatch[1]) {
-                analysis.reasons = reasonsMatch[1];
-              }
-            }
-          } else {
-            // Fallback analysis if AI fails
-            const evalScore = instructorEvals.length > 0 
-              ? instructorEvals.reduce((sum, e) => sum + e.score, 0) / instructorEvals.length 
-              : 0;
-              
-            analysis = {
-              score: Math.round((evalScore * 0.6) + (data.attendance * 0.4)),
-              strengths: [
-                `${evalScore > 80 ? 'High' : 'Average'} evaluation scores`,
-                `${data.attendance > 90 ? 'Excellent' : 'Good'} attendance rate`,
-                'Committed to professional development'
-              ],
-              reasons: `${instructor.name} has demonstrated consistent performance with evaluation scores and ${data.attendance.toFixed(1)}% attendance rate, making them a candidate for the ${selectedCategory} award.`
-            };
-          }
-          
-          return {
-            ...instructor,
-            score: analysis.score,
-            strengths: analysis.strengths,
-            nominationReasons: analysis.reasons
-          };
-        } catch (error) {
-          console.error(`Error analyzing instructor ${instructor.name}:`, error);
-          // Fallback if AI analysis fails
-          const evalScore = instructorEvals.length > 0 
-            ? instructorEvals.reduce((sum, e) => sum + e.score, 0) / instructorEvals.length 
-            : 0;
-            
-          return {
-            ...instructor,
-            score: Math.round((evalScore * 0.6) + (data.attendance * 0.4)),
-            strengths: [
-              `${evalScore > 80 ? 'High' : 'Average'} evaluation scores`,
-              `${data.attendance > 90 ? 'Excellent' : 'Good'} attendance rate`,
-              'Committed to professional development'
-            ],
-            nominationReasons: `${instructor.name} has demonstrated consistent performance with evaluation scores and ${data.attendance.toFixed(1)}% attendance rate, making them a candidate for the ${selectedCategory} award.`
-          };
+        switch(selectedCategory) {
+          case "Perfect Attendance":
+            score = Math.round((attendancePercentage * 0.7) + (evalScore * 0.3));
+            break;
+          case "Outstanding Performance":
+            score = Math.round((evalScore * 0.7) + (attendancePercentage * 0.3));
+            break;
+          case "Employee of the Month":
+          default:
+            score = Math.round((evalScore * 0.5) + (attendancePercentage * 0.5));
+            break;
         }
+        
+        // Generate strengths based on data
+        const strengths = [];
+        
+        if (attendancePercentage > 90) {
+          strengths.push(`Excellent attendance rate of ${attendancePercentage.toFixed(1)}%`);
+        } else if (attendancePercentage > 80) {
+          strengths.push(`Good attendance rate of ${attendancePercentage.toFixed(1)}%`);
+        } else {
+          strengths.push(`Attendance rate of ${attendancePercentage.toFixed(1)}%`);
+        }
+        
+        if (evalScore > 90) {
+          strengths.push(`Outstanding evaluation score of ${evalScore.toFixed(1)}`);
+        } else if (evalScore > 80) {
+          strengths.push(`Strong evaluation score of ${evalScore.toFixed(1)}`);
+        } else {
+          strengths.push(`Evaluation score of ${evalScore.toFixed(1)}`);
+        }
+        
+        if (selectedCategory === "Perfect Attendance" && attendancePercentage > 90) {
+          strengths.push("Consistently demonstrates excellent attendance");
+        } else if (selectedCategory === "Outstanding Performance" && evalScore > 85) {
+          strengths.push("Consistently demonstrates teaching excellence");
+        } else {
+          strengths.push("Dedicated to professional development");
+        }
+        
+        strengths.push("Contributes positively to school culture");
+        
+        // Generate nomination reasons
+        let nominationReasons = "";
+        
+        switch(selectedCategory) {
+          case "Perfect Attendance":
+            nominationReasons = `${instructor.name} has demonstrated exceptional dedication with an attendance rate of ${attendancePercentage.toFixed(1)}% and evaluation score of ${evalScore.toFixed(1)}. This consistent reliability makes them an ideal recipient for the Perfect Attendance award.`;
+            break;
+          case "Outstanding Performance":
+            nominationReasons = `${instructor.name} has achieved remarkable teaching results with an evaluation score of ${evalScore.toFixed(1)} and attendance rate of ${attendancePercentage.toFixed(1)}%. Their commitment to excellence makes them a strong candidate for the Outstanding Performance award.`;
+            break;
+          case "Employee of the Month":
+          default:
+            nominationReasons = `${instructor.name} has demonstrated consistent excellence with an evaluation score of ${evalScore.toFixed(1)} and attendance rate of ${attendancePercentage.toFixed(1)}%. Their balanced performance and dedication make them a strong candidate for the Employee of the Month award.`;
+            break;
+        }
+        
+        return {
+          ...instructor,
+          score,
+          strengths,
+          nominationReasons
+        };
       });
-      
-      const analyzedInstructors = await Promise.all(instructorPromises);
       
       // Sort instructors by score
       analyzedInstructors.sort((a, b) => (b.score || 0) - (a.score || 0));
