@@ -39,7 +39,7 @@ import {
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
-// AI Assistants have been removed
+import OpenAI from "openai";
 import { AIChatRequest } from "../client/src/lib/ai-types";
 import { initDatabase } from "./initDb";
 
