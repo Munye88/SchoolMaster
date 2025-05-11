@@ -1246,11 +1246,6 @@ export default function StaffLeaveTracker() {
                   View details for {selectedLeave?.instructorName}'s leave request
                 </DialogDescription>
               </div>
-              <img 
-                src="/attached_assets/Govcio_logo-removebg-preview.png" 
-                alt="GovCIO Logo" 
-                className="h-12 object-contain" 
-              />
             </div>
           </DialogHeader>
           
