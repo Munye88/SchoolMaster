@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Award, Calendar, Crown, Download, FileSpreadsheet, Medal, Settings, Star, Trophy, UserCheck, Lightbulb } from "lucide-react";
-import { useAIChat } from "@/hooks/use-ai-chat";
+// AI Chat has been removed
 import { Instructor } from "@shared/schema";
 import { StandardInstructorAvatar } from "@/components/instructors/StandardInstructorAvatar";
 import html2canvas from "html2canvas";
@@ -1122,13 +1122,11 @@ Return ONLY a JSON array with this structure and nothing else:
   );
 };
 
-// Custom hook for AI analysis
+// Static recommendations without AI analysis
 function useAIAnalysis() {
-  const {
-    sendMessage: sendChatMessage,
-    messages,
-    isTyping: isAiLoading
-  } = useAIChat();
+  // AI functionality has been removed
+  const sendChatMessage = () => console.log("AI chat functionality has been removed");
+  const isAiLoading = false;
   
   // Extract AI response from the last message that's not from the user
   const aiResponse = messages.length > 0 
