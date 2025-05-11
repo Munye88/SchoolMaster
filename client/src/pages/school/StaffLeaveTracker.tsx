@@ -882,18 +882,18 @@ export default function StaffLeaveTracker() {
                 </div>
               </div>
               
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>INSTRUCTOR</TableHead>
-                    <TableHead>LEAVE TYPE</TableHead>
-                    <TableHead>PERIOD</TableHead>
-                    <TableHead>DESTINATION</TableHead>
-                    <TableHead>DURATION</TableHead>
-                    <TableHead>RETURN</TableHead>
-                    <TableHead>STATUS</TableHead>
-                    <TableHead>SCHOOL</TableHead>
-                    <TableHead>ACTIONS</TableHead>
+              <Table className="border-separate border-spacing-y-3">
+                <TableHeader className="bg-white">
+                  <TableRow className="border-b-0">
+                    <TableHead className="min-w-[140px] font-bold text-slate-700">INSTRUCTOR</TableHead>
+                    <TableHead className="whitespace-nowrap min-w-[100px] font-bold text-slate-700">LEAVE</TableHead>
+                    <TableHead className="min-w-[180px] font-bold text-slate-700">PERIOD</TableHead>
+                    <TableHead className="min-w-[110px] font-bold text-slate-700">DESTINATION</TableHead>
+                    <TableHead className="min-w-[90px] font-bold text-slate-700">DURATION</TableHead>
+                    <TableHead className="min-w-[100px] font-bold text-slate-700">RETURN</TableHead>
+                    <TableHead className="min-w-[100px] font-bold text-slate-700">STATUS</TableHead>
+                    <TableHead className="min-w-[100px] font-bold text-slate-700">SCHOOL</TableHead>
+                    <TableHead className="min-w-[150px] font-bold text-slate-700">ACTIONS</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -914,14 +914,14 @@ export default function StaffLeaveTracker() {
                     </TableRow>
                   ) : (
                     schoolLeaveRecords.map((leave) => (
-                  <TableRow key={leave.id} className="hover:bg-slate-50">
-                    <TableCell>
+                  <TableRow key={leave.id} className="hover:bg-slate-50 bg-white mb-2">
+                    <TableCell className="border-t border-b border-l rounded-l-md border-gray-200">
                       <div className="flex flex-col">
                         <span className="font-medium">{leave.instructorName}</span>
                         <span className="text-xs text-gray-500">ID: {leave.employeeId || `INST-${leave.instructorId.toString().padStart(4, '0')}`}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-t border-b border-gray-200">
                       <div className={cn(
                         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
                         leave.leaveType === "PTO" 
@@ -933,17 +933,19 @@ export default function StaffLeaveTracker() {
                         {leave.leaveType || 'PTO'}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <div className="text-sm font-medium">
-                        {leave.startDate && format(new Date(leave.startDate), 'MMM d, yyyy')} - {leave.endDate && format(new Date(leave.endDate), 'MMM d, yyyy')}
+                    <TableCell className="border-t border-b border-gray-200">
+                      <div className="text-sm font-medium whitespace-nowrap">
+                        <div>{leave.startDate && format(new Date(leave.startDate), 'MMM d, yyyy')}</div>
+                        <div className="text-gray-500 text-sm">to</div>
+                        <div>{leave.endDate && format(new Date(leave.endDate), 'MMM d, yyyy')}</div>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-t border-b border-gray-200">
                       <div className="text-sm">
                         {leave.destination || 'N/A'}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-t border-b border-gray-200">
                       <div className="text-sm">
                         {leave.leaveType === 'PTO' ? (
                           <>{leave.ptodays} days</>
@@ -954,12 +956,12 @@ export default function StaffLeaveTracker() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-t border-b border-gray-200">
                       <div className="text-sm">
                         {leave.returnDate ? format(new Date(leave.returnDate), 'MMM d, yyyy') : 'N/A'}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-t border-b border-gray-200">
                       <div className={cn(
                         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
                         leave.status === "Pending" 
@@ -971,15 +973,15 @@ export default function StaffLeaveTracker() {
                         {leave.status}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-t border-b border-gray-200">
                       <div className={cn(
                         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-                        "bg-indigo-100 text-indigo-800"
+                        "bg-blue-100 text-blue-800"
                       )}>
-                        {currentSchool?.name || "Unknown"}
+                        {currentSchool?.name ? currentSchool.name.replace('NFS ', '') : "Unknown"}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-t border-b border-r rounded-r-md border-gray-200">
                       <div className="flex items-center space-x-2">
                         <Button 
                           variant="ghost" 
