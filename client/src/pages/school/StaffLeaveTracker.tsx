@@ -888,6 +888,9 @@ export default function StaffLeaveTracker() {
                     <TableHead>INSTRUCTOR</TableHead>
                     <TableHead>LEAVE TYPE</TableHead>
                     <TableHead>PERIOD</TableHead>
+                    <TableHead>DESTINATION</TableHead>
+                    <TableHead>DURATION</TableHead>
+                    <TableHead>RETURN</TableHead>
                     <TableHead>STATUS</TableHead>
                     <TableHead>SCHOOL</TableHead>
                     <TableHead>ACTIONS</TableHead>
@@ -896,7 +899,7 @@ export default function StaffLeaveTracker() {
                 <TableBody>
                   {isLoading ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8">
+                      <TableCell colSpan={9} className="text-center py-8">
                         <div className="flex items-center justify-center">
                           <Loader2 className="h-6 w-6 animate-spin mr-2" />
                           <span>Loading leave records...</span>
@@ -905,7 +908,7 @@ export default function StaffLeaveTracker() {
                     </TableRow>
                   ) : schoolLeaveRecords.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8">
+                      <TableCell colSpan={9} className="text-center py-8">
                         No leave records found for this school. Add a new leave request using the button above.
                       </TableCell>
                     </TableRow>
@@ -929,30 +932,31 @@ export default function StaffLeaveTracker() {
                       )}>
                         {leave.leaveType || 'PTO'}
                       </div>
-                      {leave.ptodays > 0 && (
-                        <div className="mt-1 text-xs text-gray-500">
-                          PTO: {leave.ptodays} days
-                        </div>
-                      )}
-                      {leave.rrdays > 0 && (
-                        <div className="mt-1 text-xs text-gray-500">
-                          R&R: {leave.rrdays} days
-                        </div>
-                      )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col">
-                        <div className="text-sm font-medium">
-                          {leave.startDate && format(new Date(leave.startDate), 'MMM d, yyyy')} - {leave.endDate && format(new Date(leave.endDate), 'MMM d, yyyy')}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Return: {leave.returnDate ? format(new Date(leave.returnDate), 'MMM d, yyyy') : 'N/A'}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {leave.startDate && leave.endDate && 
-                            `Duration: ${differenceInCalendarDays(new Date(leave.endDate), new Date(leave.startDate)) + 1} days`
-                          }
-                        </div>
+                      <div className="text-sm font-medium">
+                        {leave.startDate && format(new Date(leave.startDate), 'MMM d, yyyy')} - {leave.endDate && format(new Date(leave.endDate), 'MMM d, yyyy')}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        {leave.destination || 'N/A'}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        {leave.leaveType === 'PTO' ? (
+                          <>{leave.ptodays} days</>
+                        ) : leave.leaveType === 'R&R' ? (
+                          <>{leave.rrdays} days</>
+                        ) : (
+                          <>{leave.ptodays} days</>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm">
+                        {leave.returnDate ? format(new Date(leave.returnDate), 'MMM d, yyyy') : 'N/A'}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -973,9 +977,6 @@ export default function StaffLeaveTracker() {
                         "bg-indigo-100 text-indigo-800"
                       )}>
                         {currentSchool?.name || "Unknown"}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        {leave.destination && <span>To: {leave.destination}</span>}
                       </div>
                     </TableCell>
                     <TableCell>
