@@ -3787,8 +3787,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           instructor_id = ${instructor.id} AND
           start_date >= ${yearStart} AND 
           start_date <= ${yearEnd} AND
-          status = 'approved' AND
-          leave_type = 'PTO'
+          LOWER(status) = 'approved' AND
+          LOWER(leave_type) = 'pto'
       `);
       
       // Calculate total used PTO days (safely)
