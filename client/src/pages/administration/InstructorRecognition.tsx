@@ -1128,12 +1128,8 @@ function useAIAnalysis() {
   const sendChatMessage = () => console.log("AI chat functionality has been removed");
   const isAiLoading = false;
   
-  // Extract AI response from the last message that's not from the user
-  const aiResponse = messages.length > 0 
-    ? messages[messages.length - 1]?.role === 'assistant' 
-      ? messages[messages.length - 1]?.content 
-      : ''
-    : '';
+  // Provide static recommendations instead of AI responses
+  const aiResponse = '';
 
   // Get all instructors
   const instructorQuery = useQuery<any[]>({
