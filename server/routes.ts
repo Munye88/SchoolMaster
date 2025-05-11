@@ -3798,29 +3798,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         usedDays = totalUsedDaysStr !== null ? parseInt(totalUsedDaysStr) : 0;
       }
       
-      // Only create/update records if there are actual leave records
-      // This prevents showing instructors with zero days used
-      if (usedDays === 0) {
-        // Check if a record already exists
-        const existingRecordResult = await db.execute(sql`
-          SELECT * FROM pto_balance
-          WHERE instructor_id = ${instructor.id} AND year = ${year}
-        `);
-        
-        // If no record exists and no days used, skip creating one
-        if (!(existingRecordResult.rows && existingRecordResult.rows.length > 0)) {
-          // Return a virtual record without creating one in the database
-          return {
-            instructor_id: instructor.id,
-            year: year,
-            total_days: 21,
-            used_days: 0,
-            remaining_days: 21,
-            adjustments: 0,
-            last_updated: new Date()
-          };
-        }
-      }
+      // We'll create/update records for all instructors, even those with zero days used
+      // This ensures all instructors show up in the PTO balance report
       
       // Ensure we don't exceed the maximum allowance
       const maxAllowance = 21;
@@ -3860,7 +3839,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         return updatedRecordResult.rows[0];
       } else {
-        // Create new record only if there are used days
+        // Create new record for all instructors (regardless of used days)
         const totalDays = 21; // Default annual allowance
         const remainingDays = Math.max(0, totalDays - usedDays);
         
