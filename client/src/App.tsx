@@ -38,8 +38,6 @@ import { AuthProvider } from "./hooks/use-auth";
 import { useAuth } from "@/hooks/use-auth";
 import { SchoolProvider } from "@/hooks/useSchool";
 import { AssistantDialog } from "@/components/assistant/AssistantDialog";
-import { MoonsAssistantDialog } from "@/components/assistant/MoonsAssistantDialog";
-import { MoonsAssistantTest } from "@/components/assistant/MoonsAssistantTest";
 
 // Admin pages
 import StaffLeaveApproval from "./pages/administration/staff-leave";
@@ -71,8 +69,7 @@ function Router() {
           {/* Auth route - public */}
           <Route path="/auth" component={AuthPage} />
           
-          {/* Test Route for Moon's Assistant - Public for debugging */}
-          <Route path="/test-moons-assistant" component={MoonsAssistantTest} />
+          {/* Moon's Assistant has been removed */}
           
           {/* Protected routes */}
           <ProtectedRoute path="/" component={Dashboard} />
@@ -147,10 +144,8 @@ function App() {
       <AuthProvider>
         <SchoolProvider>
           <Router />
-          {/* Old AI Assistant - will be removed once Moon's Assistant is fully implemented */}
+          {/* AI Assistant */}
           <AssistantDialog />
-          {/* New Moon's Assistant - the replacement for the original AI assistant */}
-          <MoonsAssistantDialog />
         </SchoolProvider>
       </AuthProvider>
     </QueryClientProvider>

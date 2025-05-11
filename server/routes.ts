@@ -1285,80 +1285,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // We're slowly replacing this with Moon's Assistant
-      // but keeping for backward compatibility for now
-  
-  // Moon's Assistant API - New improved version
-  app.post("/api/moons-assistant/chat", async (req, res) => {
-    try {
-      // Always set content type for JSON response as early as possible
-      res.set({
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-store'
-      });
+      // AI Assistant endpoint is still available
       
-      const request: MoonsAssistantRequest = req.body;
-      
-      if (!request || !request.message || typeof request.message !== 'string') {
-        console.error("Invalid request format:", JSON.stringify(req.body));
-        return res.status(400).json({ 
-          success: false, 
-          error: 'Invalid message. Please provide a valid message string.' 
-        });
-      }
-      
-      console.log("Processing Moon's Assistant chat:", request.message.substring(0, 50));
-      
-      try {
-        // Check OpenAI API key availability
-        if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.trim() === '') {
-          console.error("Error: OPENAI_API_KEY environment variable is missing or empty");
-          return res.json({
-            success: false,
-            error: "The AI service is not properly configured. Please contact the system administrator."
-          });
-        }
-        
-        const result = await chatWithMoonsAssistant(request);
-        
-        // Log activity
-        try {
-          await dbStorage.createActivity({
-            type: "moons_assistant_query",
-            description: `Moon's Assistant query: "${request.message.substring(0, 50)}${request.message.length > 50 ? '...' : ''}"`,
-            timestamp: new Date(),
-            userId: req.isAuthenticated() ? req.user.id : 1
-          });
-        } catch (logError) {
-          console.error("Failed to log activity:", logError);
-          // Continue processing even if logging fails
-        }
-        
-        console.log("Sending Moon's Assistant response:", result.content.substring(0, 50));
-        
-        // We specifically avoid using res.status().json() here as it might break content-type
-        return res.json({
-          success: true,
-          message: result.content,
-          role: result.role
-        });
-      } catch (error) {
-        console.error("Error in Moon's Assistant chat:", error);
-        
-        // We specifically avoid using res.status().json() here as it might break content-type
-        return res.json({
-          success: false,
-          error: "An error occurred while processing your request with Moon's Assistant. Please try again."
-        });
-      }
-    } catch (error) {
-      console.error("Error processing Moon's Assistant chat request:", error);
-      return res.json({
-        success: false,
-        error: "An error occurred while processing your request. Please try again."
-      });
-    }
-  });
       
       // Add specialized handlers for specific calendar/student-related questions
       let lowerQuery = query.toLowerCase();
