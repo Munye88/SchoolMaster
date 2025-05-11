@@ -1176,8 +1176,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(nationalityStats);
   });
 
-  // AI Chatbot has been removed
-  // AI Assistants have been removed
+  // AI Assistant has been removed (Moon's Assistant only)
+  
+  // AI Chatbot endpoint
+  app.post("/api/ai/chat", async (req, res) => {
+    try {
+      const { messages } = req.body as AIChatRequest;
+      
+      if (!messages || messages.length === 0) {
+        return res.status(400).json({ error: "No messages provided" });
+      }
+      
+      const latestMessage = messages[messages.length - 1];
+      
+      // Use AI service to generate response
+      const aiResponse = await generateAIResponse(latestMessage.content);
+      
+      return res.status(200).json({
+        message: {
+          role: "assistant",
+          content: aiResponse
+        }
+      });
+    } catch (error) {
+      console.error("Error in AI chat:", error);
+      return res.status(500).json({ error: "Error generating AI response" });
+    }
+  });
   // Recruitment Module API Routes
   
   // CV upload storage configuration is shared with the existing upload configuration
