@@ -1,13 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
-import { useAIChat } from "@/hooks/use-ai-chat";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import {
   Select,
@@ -17,29 +14,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { Badge } from "@/components/ui/badge";
 import { School, Instructor } from "@shared/schema";
-import { Trophy, Award, User, Calendar, BarChart } from "lucide-react";
+import { Trophy, Search, Award, FileText } from "lucide-react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-// Logo is referenced directly from public folder
-import { Loader2 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
+import { useAIChat } from "@/hooks/use-ai-chat";
 
 interface InstructorWithScore extends Instructor {
   score?: number;
   strengths?: string[];
   nominationReasons?: string;
-  photoUrl?: string;
-  position?: string;
-  experience?: number;
 }
 
 interface CertificateData {
@@ -87,37 +72,32 @@ export default function InstructorRecognition() {
     enabled: true,
   });
 
-  const schoolOptions = schools?.map((school: School) => ({
+  // Get schools
+  const schoolOptions = schools?.map((school) => ({
     value: school.id.toString(),
     label: school.name,
   })) || [];
   
-  // Find selected school details
   const selectedSchoolDetails = schools?.find(
-    (school: School) => school.id === parseInt(selectedSchool)
+    (school) => school.id === parseInt(selectedSchool)
   );
   
   // Filter instructors by selected school
   const filteredInstructors = instructors?.filter(
-    (instructor: Instructor) => instructor.schoolId === parseInt(selectedSchool)
+    (instructor) => instructor.schoolId === parseInt(selectedSchool)
   ) || [];
 
-  // Define months for dropdown
   const months = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
   
-  // Define award categories for dropdown
   const categories = [
     "Employee of the Month", 
     "Perfect Attendance", 
-    "Outstanding Performance", 
-    "Leadership Excellence", 
-    "Innovation Award"
+    "Outstanding Performance"
   ];
   
-  // Function to find top instructors using AI analysis
   const findTopCandidates = async () => {
     try {
       if (!selectedSchool) {
@@ -131,9 +111,9 @@ export default function InstructorRecognition() {
       
       setLoading(true);
       
-      // Collect data for AI analysis
+      // Get all instructors from selected school
       const schoolInstructors = instructors?.filter(
-        instructor => instructor.schoolId === parseInt(selectedSchool)
+        (instructor) => instructor.schoolId === parseInt(selectedSchool)
       ) || [];
       
       if (schoolInstructors.length === 0) {
@@ -146,174 +126,145 @@ export default function InstructorRecognition() {
         return;
       }
       
-      // Prepare instructor data for analysis
-      const instructorData = schoolInstructors.map(instructor => {
+      // Get instructor data
+      const instructorPromises = schoolInstructors.slice(0, 5).map(async (instructor) => {
         // Get evaluations for this instructor
         const instructorEvals = evaluations?.filter(e => e.instructorId === instructor.id) || [];
-        const evalScores = instructorEvals.map(e => e.score);
         
         // Get attendance for this instructor
         const instructorAttendance = attendance?.filter(a => a.instructorId === instructor.id) || [];
-        const attendanceRate = instructorAttendance.length > 0
-          ? (instructorAttendance.filter(a => a.status.toLowerCase() === 'present').length / instructorAttendance.length) * 100
-          : 0;
         
-        return {
-          id: instructor.id,
-          name: instructor.name,
-          nationality: instructor.nationality || 'Unknown',
-          position: instructor.position || 'Instructor',
-          evaluationScores: evalScores,
-          attendanceRate: attendanceRate
+        // Create data for AI analysis
+        const data = {
+          instructor: instructor.name,
+          nationality: instructor.nationality,
+          evaluations: instructorEvals.map(e => ({ score: e.score, quarter: e.quarter })),
+          attendance: instructorAttendance.length > 0
+            ? instructorAttendance.filter(a => a.status.toLowerCase() === 'present').length / instructorAttendance.length * 100
+            : 0,
+          category: selectedCategory
         };
+        
+        // Create prompt for AI
+        const prompt = `
+          Analyze this instructor's data for a recognition award:
+          Instructor: ${instructor.name}
+          Nationality: ${instructor.nationality || 'Unknown'}
+          Evaluation Scores: ${instructorEvals.map(e => e.score).join(', ') || 'None available'}
+          Attendance Rate: ${data.attendance.toFixed(1)}%
+          Award Category: ${selectedCategory}
+          
+          Based on this data, provide a JSON object with the following fields:
+          1. "score" - A numerical score from 0-100 for this instructor for the ${selectedCategory} award
+          2. "strengths" - An array of 3-4 strengths of this instructor based on the data
+          3. "reasons" - A brief paragraph explaining why this instructor should be considered for the award
+          
+          Only respond with the JSON object.
+        `;
+        
+        try {
+          // Get AI analysis
+          const aiResponse = await askAI(prompt);
+          
+          let analysis = { score: 0, strengths: [], reasons: "" };
+          
+          if (aiResponse) {
+            // Parse AI response
+            try {
+              analysis = JSON.parse(aiResponse);
+            } catch (parseError) {
+              console.error("Failed to parse AI response:", parseError);
+              // Extract score with regex as fallback
+              const scoreMatch = aiResponse.match(/"score":\s*(\d+)/);
+              if (scoreMatch && scoreMatch[1]) {
+                analysis.score = parseInt(scoreMatch[1]);
+              }
+              
+              // Extract strengths with regex as fallback
+              const strengthsMatch = aiResponse.match(/"strengths":\s*\[(.*?)\]/s);
+              if (strengthsMatch && strengthsMatch[1]) {
+                analysis.strengths = strengthsMatch[1]
+                  .split(",")
+                  .map(s => s.trim().replace(/"/g, ""))
+                  .filter(s => s);
+              }
+              
+              // Extract reasons with regex as fallback
+              const reasonsMatch = aiResponse.match(/"reasons":\s*"(.*?)"/s);
+              if (reasonsMatch && reasonsMatch[1]) {
+                analysis.reasons = reasonsMatch[1];
+              }
+            }
+          } else {
+            // Fallback analysis if AI fails
+            const evalScore = instructorEvals.length > 0 
+              ? instructorEvals.reduce((sum, e) => sum + e.score, 0) / instructorEvals.length 
+              : 0;
+              
+            analysis = {
+              score: Math.round((evalScore * 0.6) + (data.attendance * 0.4)),
+              strengths: [
+                `${evalScore > 80 ? 'High' : 'Average'} evaluation scores`,
+                `${data.attendance > 90 ? 'Excellent' : 'Good'} attendance rate`,
+                'Committed to professional development'
+              ],
+              reasons: `${instructor.name} has demonstrated consistent performance with evaluation scores and ${data.attendance.toFixed(1)}% attendance rate, making them a candidate for the ${selectedCategory} award.`
+            };
+          }
+          
+          return {
+            ...instructor,
+            score: analysis.score,
+            strengths: analysis.strengths,
+            nominationReasons: analysis.reasons
+          };
+        } catch (error) {
+          console.error(`Error analyzing instructor ${instructor.name}:`, error);
+          // Fallback if AI analysis fails
+          const evalScore = instructorEvals.length > 0 
+            ? instructorEvals.reduce((sum, e) => sum + e.score, 0) / instructorEvals.length 
+            : 0;
+            
+          return {
+            ...instructor,
+            score: Math.round((evalScore * 0.6) + (data.attendance * 0.4)),
+            strengths: [
+              `${evalScore > 80 ? 'High' : 'Average'} evaluation scores`,
+              `${data.attendance > 90 ? 'Excellent' : 'Good'} attendance rate`,
+              'Committed to professional development'
+            ],
+            nominationReasons: `${instructor.name} has demonstrated consistent performance with evaluation scores and ${data.attendance.toFixed(1)}% attendance rate, making them a candidate for the ${selectedCategory} award.`
+          };
+        }
       });
       
-      // Prepare prompt for AI
-      const prompt = `Analyze these instructors for the "${selectedCategory}" award:
-${JSON.stringify(instructorData)}
-
-Select the top 3 candidates based on these criteria:
-- For "Employee of the Month": Balance of evaluation scores and attendance.
-- For "Perfect Attendance": Prioritize attendance rate, then evaluation scores.
-- For "Outstanding Performance": Prioritize evaluation scores, then attendance.
-- For "Leadership Excellence": Look for higher positions and good evaluations.
-- For "Innovation Award": Consider nationality diversity and consistent evaluation improvement.
-
-For each instructor, provide:
-1. An overall score (90-100 range)
-2. Key strengths (3-4 bullet points)
-3. Brief nomination reasons
-4. Relevant metrics (evaluation average, attendance percentage)
-
-Format your response as a JSON array of objects with properties: id, score, strengths (array), and nominationReasons (string).`;
+      const analyzedInstructors = await Promise.all(instructorPromises);
       
-      // Call AI service for analysis
-      const aiResponse = await askAI(prompt);
+      // Sort instructors by score
+      analyzedInstructors.sort((a, b) => (b.score || 0) - (a.score || 0));
       
-      if (!aiResponse) {
-        toast({
-          title: "Analysis failed",
-          description: "Could not get AI recommendations. Please try again.",
-          variant: "destructive",
+      // Take top 3
+      const topThree = analyzedInstructors.slice(0, 3);
+      
+      setTopInstructors(topThree);
+      setLoading(false);
+      setActiveTab("candidates");
+      
+      // Select the first instructor by default if available
+      if (topThree.length > 0) {
+        setSelectedInstructor(topThree[0]);
+        
+        // Create certificate data
+        setCertificateData({
+          instructor: topThree[0],
+          category: selectedCategory,
+          date: new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          }),
+          school: selectedSchoolDetails
         });
-        setLoading(false);
-        return;
-      }
-      
-      try {
-        // Try to extract JSON from response
-        const jsonStart = aiResponse.indexOf('[');
-        const jsonEnd = aiResponse.lastIndexOf(']') + 1;
-        const jsonStr = aiResponse.substring(jsonStart, jsonEnd);
-        
-        let recommendations = JSON.parse(jsonStr);
-        
-        // Map recommendations to instructor objects
-        const analyzedInstructors = recommendations.map((rec: any) => {
-          const instructor = schoolInstructors.find(i => i.id === rec.id);
-          
-          if (!instructor) return null;
-          
-          return {
-            ...instructor,
-            score: rec.score || 95,
-            strengths: rec.strengths || [],
-            nominationReasons: rec.nominationReasons || ""
-          };
-        }).filter(Boolean);
-        
-        // Update state with top instructors
-        setTopInstructors(analyzedInstructors);
-        setActiveTab("candidates");
-        
-        // Select first instructor by default
-        if (analyzedInstructors.length > 0) {
-          setSelectedInstructor(analyzedInstructors[0]);
-          setCertificateData({
-            instructor: analyzedInstructors[0],
-            category: selectedCategory,
-            date: new Date().toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            }),
-            school: selectedSchoolDetails
-          });
-        }
-        
-      } catch (error) {
-        console.error("Error parsing AI response:", error);
-        // Fallback to a simple algorithm if AI response can't be parsed
-        const scoredInstructors = instructorData.map(data => {
-          // Get original instructor object
-          const instructor = schoolInstructors.find(i => i.id === data.id);
-          
-          if (!instructor) return null;
-          
-          // Calculate average evaluation score
-          const avgEvalScore = data.evaluationScores.length > 0
-            ? data.evaluationScores.reduce((sum, score) => sum + score, 0) / data.evaluationScores.length
-            : 0;
-          
-          // Calculate score based on category
-          let score = 0;
-          switch(selectedCategory) {
-            case "Perfect Attendance":
-              score = (data.attendanceRate * 0.7) + (avgEvalScore * 0.3);
-              break;
-            case "Outstanding Performance":
-              score = (avgEvalScore * 0.7) + (data.attendanceRate * 0.3);
-              break;
-            default:
-              score = (avgEvalScore * 0.5) + (data.attendanceRate * 0.5);
-          }
-          
-          // Normalize score to 90-100 range
-          const normalizedScore = 90 + (score / 100) * 10;
-          
-          // Generate strengths
-          const strengths = [];
-          if (data.attendanceRate > 90) {
-            strengths.push("Excellent attendance record");
-          }
-          if (avgEvalScore > 85) {
-            strengths.push("Strong teaching evaluations");
-          }
-          if (instructor.experience > 5) {
-            strengths.push("Significant teaching experience");
-          }
-          strengths.push("Contributes to positive learning environment");
-          
-          return {
-            ...instructor,
-            score: normalizedScore,
-            strengths,
-            nominationReasons: `${instructor.name} has demonstrated excellence with an evaluation average of ${avgEvalScore.toFixed(1)} and attendance rate of ${data.attendanceRate.toFixed(1)}%, making them an ideal candidate for the ${selectedCategory} award.`
-          };
-        }).filter(Boolean);
-        
-        // Sort by score
-        scoredInstructors.sort((a, b) => b.score - a.score);
-        
-        // Take top 3
-        const topThree = scoredInstructors.slice(0, 3);
-        
-        setTopInstructors(topThree);
-        setActiveTab("candidates");
-        
-        if (topThree.length > 0) {
-          setSelectedInstructor(topThree[0]);
-          setCertificateData({
-            instructor: topThree[0],
-            category: selectedCategory,
-            date: new Date().toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            }),
-            school: selectedSchoolDetails
-          });
-        }
       }
       
     } catch (error) {
@@ -323,7 +274,6 @@ Format your response as a JSON array of objects with properties: id, score, stre
         description: "There was an error analyzing instructors. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
   };
@@ -331,6 +281,7 @@ Format your response as a JSON array of objects with properties: id, score, stre
   const selectCandidate = (instructor: InstructorWithScore) => {
     setSelectedInstructor(instructor);
     
+    // Create certificate data
     setCertificateData({
       instructor,
       category: selectedCategory,
@@ -342,6 +293,7 @@ Format your response as a JSON array of objects with properties: id, score, stre
       school: selectedSchoolDetails
     });
     
+    // Switch to certificate tab
     setActiveTab("certificate");
   };
   
@@ -367,10 +319,7 @@ Format your response as a JSON array of objects with properties: id, score, stre
         return;
       }
       
-      // Generate PDF
-      setLoading(true);
-      
-      // Create canvas from certificate element
+      // Create canvas from the certificate element
       const canvas = await html2canvas(certificateElement, {
         scale: 2,
         useCORS: true,
@@ -384,7 +333,7 @@ Format your response as a JSON array of objects with properties: id, score, stre
         format: 'a4'
       });
       
-      // Calculate positions
+      // Calculate positions and dimensions
       const imgData = canvas.toDataURL('image/png');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
@@ -396,69 +345,96 @@ Format your response as a JSON array of objects with properties: id, score, stre
       pdf.addImage(imgData, 'PNG', 0, (pdfHeight - height) / 2, width, height);
       
       // Save PDF
-      pdf.save(`${certificateData.instructor.name} - ${certificateData.category} Certificate.pdf`);
-      
-      setLoading(false);
+      pdf.save(`${certificateData.instructor.name} - ${certificateData.category} - Certificate.pdf`);
       
       toast({
-        title: "Certificate generated",
-        description: "Certificate has been downloaded",
+        title: "Certificate downloaded",
+        description: "Certificate has been successfully downloaded",
       });
     } catch (error) {
-      console.error("Error generating certificate:", error);
+      console.error("Error generating PDF:", error);
       toast({
-        title: "Error generating certificate",
-        description: "There was an error generating the certificate. Please try again.",
+        title: "Error",
+        description: "Error generating certificate PDF. Please try again.",
         variant: "destructive",
       });
-      setLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex items-center justify-center mb-6">
-        <div className="bg-amber-100 rounded-full p-4 mr-3">
-          <Trophy className="h-8 w-8 text-amber-600" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold">Instructor Recognition Program</h1>
-          <p className="text-muted-foreground">
-            Recognize outstanding instructors who demonstrate excellence in teaching
-          </p>
-        </div>
+    <div className="container mx-auto py-8">
+      <div className="mb-6 text-center">
+        <h1 className="text-3xl font-bold text-primary mb-2">Instructor Recognition Program</h1>
+        <p className="text-muted-foreground">
+          Recognize outstanding instructors who consistently demonstrate excellence in teaching,
+          maintain exemplary attendance records, and contribute to a positive learning environment.
+        </p>
       </div>
       
-      <Tabs defaultValue="settings" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3 mb-6">
-          <TabsTrigger value="settings" className="flex items-center justify-center gap-2">
-            <Award className="h-4 w-4" />
-            <span>Award Settings</span>
-          </TabsTrigger>
-          <TabsTrigger value="candidates" className="flex items-center justify-center gap-2">
-            <User className="h-4 w-4" />
-            <span>Award Candidates</span>
-          </TabsTrigger>
-          <TabsTrigger value="certificate" className="flex items-center justify-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>Award Certificate</span>
-          </TabsTrigger>
-        </TabsList>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <Card className={`cursor-pointer hover:shadow-md transition-shadow ${
+          activeTab === "settings" ? "ring-2 ring-primary" : ""}
+        `} onClick={() => setActiveTab("settings")}>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Award className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">Award Settings</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Select the school, time period, and award category
+            </p>
+          </CardContent>
+        </Card>
         
-        <TabsContent value="settings">
-          <Card>
-            <CardHeader>
-              <CardTitle>Award Settings</CardTitle>
-              <CardDescription>
-                Configure the criteria for instructor recognition
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">School</label>
+        <Card className={`cursor-pointer hover:shadow-md transition-shadow ${
+          activeTab === "candidates" ? "ring-2 ring-primary" : ""}
+        `} onClick={() => setActiveTab("candidates")}>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Trophy className="h-5 w-5 text-amber-500" />
+              <CardTitle className="text-lg">Award Candidates</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Top performing instructors based on evaluation scores and attendance
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card className={`cursor-pointer hover:shadow-md transition-shadow ${
+          activeTab === "certificate" ? "ring-2 ring-primary" : ""}
+        `} onClick={() => setActiveTab("certificate")}>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-blue-500" />
+              <CardTitle className="text-lg">Award Certificate</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Preview and generate recognition certificates
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      
+      {activeTab === "settings" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Award Settings</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  School
+                </label>
                 <Select value={selectedSchool} onValueChange={setSelectedSchool}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select school" />
+                    <SelectValue placeholder="Select a school" />
                   </SelectTrigger>
                   <SelectContent>
                     {schoolOptions.map((school) => (
@@ -470,8 +446,10 @@ Format your response as a JSON array of objects with properties: id, score, stre
                 </Select>
               </div>
               
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Month</label>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Month
+                </label>
                 <Select value={selectedMonth} onValueChange={setSelectedMonth}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select month" />
@@ -486,9 +464,14 @@ Format your response as a JSON array of objects with properties: id, score, stre
                 </Select>
               </div>
               
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Award Category</label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Award Category
+                </label>
+                <Select 
+                  value={selectedCategory} 
+                  onValueChange={setSelectedCategory}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
@@ -505,241 +488,307 @@ Format your response as a JSON array of objects with properties: id, score, stre
               <Button 
                 className="w-full mt-4" 
                 onClick={findTopCandidates}
-                disabled={loading || isProcessing || !selectedSchool}
+                disabled={loading || !selectedSchool}
               >
-                {loading || isProcessing ? (
+                {loading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Analyzing...
+                    <span>Analyzing</span>
+                    <span className="ml-2">
+                      <span className="inline-block w-2 h-2 bg-white rounded-full animate-bounce mr-1" style={{ animationDelay: '0ms' }}></span>
+                      <span className="inline-block w-2 h-2 bg-white rounded-full animate-bounce mr-1" style={{ animationDelay: '150ms' }}></span>
+                      <span className="inline-block w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                    </span>
                   </>
                 ) : (
                   "Find Top Candidates"
                 )}
               </Button>
-              
-              {(loading || isProcessing) && (
-                <div className="mt-4">
-                  <p className="text-sm text-muted-foreground mb-2">Analyzing instructor data...</p>
-                  <Progress value={65} className="h-2" />
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="candidates">
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Performing Instructors</CardTitle>
-              <CardDescription>
-                Based on evaluation scores, attendance, and performance
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {topInstructors.length === 0 ? (
-                <div className="text-center py-12">
-                  <Trophy className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-lg font-medium">No candidates analyzed yet</p>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Use the settings tab to select a school and analyze instructor performance
-                  </p>
-                  <Button onClick={() => setActiveTab("settings")}>
-                    Go to Settings
-                  </Button>
-                </div>
-              ) : (
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {activeTab === "candidates" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Award Candidates</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {topInstructors.length === 0 ? (
+              <div className="text-center py-12">
+                <Search className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                <p className="mb-2 text-lg font-medium">No candidates analyzed yet</p>
+                <p className="text-sm text-muted-foreground mb-4">Select a school and analyze to see the top candidates</p>
+                <Button onClick={() => setActiveTab("settings")}>Go to Settings</Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Select a candidate to view and generate a certificate
+                </p>
+                
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {topInstructors.map((instructor, index) => (
                     <Card 
                       key={instructor.id} 
                       className={`cursor-pointer hover:shadow-md transition-shadow ${
-                        selectedInstructor?.id === instructor.id ? 'ring-2 ring-primary' : ''
+                        selectedInstructor?.id === instructor.id 
+                          ? 'ring-2 ring-primary' 
+                          : ''
                       }`}
                       onClick={() => selectCandidate(instructor)}
                     >
                       <CardHeader className="pb-2">
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center">
-                            <Avatar className="h-10 w-10 mr-2">
-                              <AvatarImage src={instructor.photoUrl || undefined} alt={instructor.name} />
-                              <AvatarFallback>{instructor.name.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <CardTitle className="text-base">{instructor.name}</CardTitle>
-                              <CardDescription>{instructor.position || "Instructor"}</CardDescription>
-                            </div>
-                          </div>
+                        <div className="flex justify-between items-start">
+                          <CardTitle className="text-lg">{instructor.name}</CardTitle>
                           {index === 0 && (
-                            <Badge variant="default" className="bg-amber-500">
-                              Top Pick
-                            </Badge>
+                            <Trophy className="h-5 w-5 text-yellow-500" />
                           )}
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <div className="mb-3">
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-sm font-medium">Overall Score</span>
-                            <span className="text-sm font-bold">{instructor.score?.toFixed(1)}%</span>
-                          </div>
-                          <Progress value={instructor.score} className="h-2" />
+                        <div className="text-sm mb-3">
+                          <p className="font-semibold mb-1">Rank: #{index + 1}</p>
+                          <p className="text-muted-foreground">{instructor.nationality || "N/A"}</p>
                         </div>
                         
-                        <div className="space-y-1 mb-3">
-                          <p className="text-sm font-medium">Key Strengths:</p>
-                          <ul className="text-sm space-y-1 list-disc pl-4">
-                            {instructor.strengths?.slice(0, 3).map((strength, i) => (
-                              <li key={i} className="text-muted-foreground">{strength}</li>
+                        <div className="text-sm">
+                          <div className="flex justify-between mb-1">
+                            <span>Overall Score:</span>
+                            <span className="font-medium">{instructor.score?.toFixed(1)}</span>
+                          </div>
+                          
+                          <div className="w-full bg-gray-200 rounded-full h-2 mt-1 mb-2">
+                            <div 
+                              className="bg-primary rounded-full h-2" 
+                              style={{ width: `${instructor.score}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                        
+                        <div className="mt-2">
+                          <h4 className="text-sm font-semibold mb-1">Key Strengths:</h4>
+                          <ul className="text-xs list-disc pl-4 space-y-1">
+                            {instructor.strengths?.slice(0, 2).map((strength, i) => (
+                              <li key={i}>{strength}</li>
                             ))}
                           </ul>
                         </div>
-                        
-                        <HoverCard>
-                          <HoverCardTrigger asChild>
-                            <Button variant="link" size="sm" className="px-0">
-                              View nomination details
-                            </Button>
-                          </HoverCardTrigger>
-                          <HoverCardContent className="w-80">
-                            <div className="space-y-2">
-                              <h4 className="text-sm font-semibold">Nomination Reasons</h4>
-                              <p className="text-sm">{instructor.nominationReasons}</p>
-                            </div>
-                          </HoverCardContent>
-                        </HoverCard>
                       </CardContent>
                     </Card>
                   ))}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="certificate">
-          <Card>
-            <CardHeader>
-              <CardTitle>Award Certificate</CardTitle>
-              <CardDescription>
-                Generate a certificate for the selected instructor
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {!selectedInstructor ? (
-                <div className="text-center py-12">
-                  <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-lg font-medium">No instructor selected</p>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Select an instructor from the candidates tab to generate a certificate
-                  </p>
-                  <Button onClick={() => setActiveTab("candidates")}>
-                    Select Candidate
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-sm font-medium mb-1">Instructor</p>
-                        <div className="flex items-center">
-                          <Avatar className="h-8 w-8 mr-2">
-                            <AvatarImage src={selectedInstructor.photoUrl || undefined} alt={selectedInstructor.name} />
-                            <AvatarFallback>{selectedInstructor.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <span>{selectedInstructor.name}</span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+      
+      {activeTab === "certificate" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Award Certificate</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {!selectedInstructor ? (
+              <div className="text-center py-12">
+                <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                <p className="mb-2 text-lg font-medium">No instructor selected</p>
+                <p className="text-sm text-muted-foreground mb-4">Select a candidate to preview their certificate</p>
+                <Button onClick={() => setActiveTab("candidates")}>View Candidates</Button>
+              </div>
+            ) : (
+              <div>
+                <div className="flex flex-col md:flex-row gap-6">
+                  <div className="w-full md:w-1/3 space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3">Certificate Details</h3>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Instructor
+                          </label>
+                          <div className="text-sm p-2 border rounded-md">
+                            {selectedInstructor.name}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Award Category
+                          </label>
+                          <div className="text-sm p-2 border rounded-md">
+                            {selectedCategory}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            School
+                          </label>
+                          <div className="text-sm p-2 border rounded-md">
+                            {selectedSchoolDetails?.name}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Date
+                          </label>
+                          <div className="text-sm p-2 border rounded-md">
+                            {new Date().toLocaleDateString('en-US', { 
+                              year: 'numeric', 
+                              month: 'long', 
+                              day: 'numeric' 
+                            })}
+                          </div>
                         </div>
                       </div>
-                      
-                      <div>
-                        <p className="text-sm font-medium mb-1">Award Category</p>
-                        <p>{selectedCategory}</p>
-                      </div>
-                      
-                      <div>
-                        <p className="text-sm font-medium mb-1">School</p>
-                        <p>{selectedSchoolDetails?.name}</p>
-                      </div>
-                      
-                      <div>
-                        <p className="text-sm font-medium mb-1">Date</p>
-                        <p>{new Date().toLocaleDateString('en-US', { 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
-                        })}</p>
-                      </div>
-                      
-                      <Button 
-                        className="w-full" 
-                        onClick={generateCertificate}
-                        disabled={loading}
-                      >
-                        {loading ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Generating...
-                          </>
-                        ) : (
-                          "Download Certificate"
-                        )}
-                      </Button>
                     </div>
                     
-                    <div className="col-span-2 border rounded-lg overflow-hidden bg-white relative">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Nomination Basis</h3>
+                      <div className="text-sm border rounded-md p-3 bg-gray-50">
+                        {selectedInstructor.nominationReasons || 
+                          `${selectedInstructor.name} has demonstrated consistent excellence in teaching and professional conduct, making them an ideal recipient for the ${selectedCategory} award.`
+                        }
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      className="w-full mt-4" 
+                      onClick={generateCertificate}
+                    >
+                      Download Certificate
+                    </Button>
+                  </div>
+                  
+                  <div className="w-full md:w-2/3">
+                    <div 
+                      id="certificate" 
+                      className="border rounded-lg overflow-hidden bg-white"
+                      style={{
+                        position: 'relative',
+                        width: '100%',
+                        aspectRatio: '1.414 / 1', // A4 landscape
+                        padding: '40px'
+                      }}
+                    >
                       <div 
-                        id="certificate" 
-                        className="p-8 flex flex-col items-center justify-center min-h-[400px]"
+                        style={{ 
+                          position: 'absolute', 
+                          top: 0, 
+                          left: 0, 
+                          width: '100%', 
+                          height: '100%',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: '40px'
+                        }}
                       >
                         {/* Logo */}
                         <img 
                           src="/logo.png" 
                           alt="GovCIO Logo" 
-                          className="h-14 mb-4"
+                          style={{
+                            height: '60px',
+                            marginBottom: '20px'
+                          }}
                         />
                         
-                        {/* Certificate title */}
-                        <h2 className="text-2xl font-bold text-center text-primary mb-1">
-                          Certificate of Recognition
-                        </h2>
+                        {/* Header */}
+                        <div style={{ 
+                          fontSize: '28px', 
+                          fontWeight: 'bold',
+                          textAlign: 'center',
+                          marginBottom: '10px',
+                          color: '#152C5B'
+                        }}>
+                          CERTIFICATE OF RECOGNITION
+                        </div>
                         
-                        <p className="text-sm text-gray-500 mb-6 text-center">
+                        <div style={{ 
+                          fontSize: '14px',
+                          textAlign: 'center',
+                          marginBottom: '30px',
+                          color: '#666'
+                        }}>
                           {selectedSchoolDetails?.name}
-                        </p>
+                        </div>
                         
-                        <p className="text-center mb-2">
+                        {/* Body */}
+                        <div style={{ 
+                          fontSize: '16px',
+                          textAlign: 'center',
+                          marginBottom: '15px',
+                          maxWidth: '80%'
+                        }}>
                           This certificate is presented to
-                        </p>
+                        </div>
                         
-                        <p className="text-3xl font-bold text-center text-primary mb-2 font-serif">
+                        <div style={{ 
+                          fontSize: '32px',
+                          fontWeight: 'bold',
+                          textAlign: 'center',
+                          marginBottom: '15px',
+                          fontFamily: 'cursive',
+                          color: '#152C5B'
+                        }}>
                           {selectedInstructor.name}
-                        </p>
+                        </div>
                         
-                        <p className="text-xl font-semibold text-center mb-2">
+                        <div style={{ 
+                          fontSize: '18px',
+                          textAlign: 'center',
+                          marginBottom: '10px',
+                          fontWeight: 'bold',
+                          color: '#444'
+                        }}>
                           {selectedCategory}
-                        </p>
+                        </div>
                         
-                        <p className="text-center max-w-md mb-8">
-                          For demonstrating exceptional performance, dedication to excellence, and outstanding contribution to the English Language Training Program.
-                        </p>
+                        <div style={{ 
+                          fontSize: '16px',
+                          textAlign: 'center',
+                          maxWidth: '80%',
+                          marginBottom: '30px'
+                        }}>
+                          for demonstrating exceptional performance and dedication to excellence
+                        </div>
                         
-                        <div className="flex justify-between w-full max-w-md mt-8">
-                          <div className="text-center">
-                            <div className="border-t border-gray-300 pt-2 w-32">
-                              <p className="font-medium">Program Manager</p>
+                        {/* Date and Signature */}
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          width: '80%',
+                          marginTop: '30px'
+                        }}>
+                          <div style={{
+                            flex: 1,
+                            textAlign: 'center',
+                            borderTop: '1px solid #999',
+                            paddingTop: '10px',
+                            marginRight: '40px'
+                          }}>
+                            <div style={{ fontSize: '14px', fontWeight: 'bold' }}>
+                              Program Manager
                             </div>
                           </div>
                           
-                          <div className="text-center">
-                            <div className="border-t border-gray-300 pt-2 w-32">
-                              <p className="font-medium">Date</p>
-                              <p className="text-sm">
-                                {new Date().toLocaleDateString('en-US', { 
-                                  year: 'numeric', 
-                                  month: 'long', 
-                                  day: 'numeric' 
-                                })}
-                              </p>
+                          <div style={{
+                            flex: 1,
+                            textAlign: 'center',
+                            borderTop: '1px solid #999',
+                            paddingTop: '10px'
+                          }}>
+                            <div style={{ fontSize: '14px', fontWeight: 'bold' }}>
+                              Date
+                            </div>
+                            <div style={{ fontSize: '14px', marginTop: '5px' }}>
+                              {new Date().toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })}
                             </div>
                           </div>
                         </div>
@@ -747,11 +796,11 @@ Format your response as a JSON array of objects with properties: id, score, stre
                     </div>
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
