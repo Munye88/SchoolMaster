@@ -1178,10 +1178,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // AI Assistant has been removed (Moon's Assistant only)
   
+  // Helper function to generate AI responses
+  async function generateAIResponse(message: string): Promise<string> {
+    try {
+      if (!process.env.OPENAI_API_KEY) {
+        console.warn("Missing OPENAI_API_KEY. Using fallback response.");
+        return "I'm sorry, I don't have enough information to provide a meaningful response at this time.";
+      }
+      
+      // Use OpenAI to generate a response
+      const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY
+      });
+      
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are a helpful assistant for a school management system. Provide helpful, concise answers related to education, training, and school administration."
+          },
+          {
+            role: "user",
+            content: message
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 500
+      });
+      
+      return completion.choices[0].message.content || "I'm sorry, I couldn't generate a response.";
+    } catch (error) {
+      console.error("Error generating AI response:", error);
+      return "I encountered an error while processing your request. Please try again later.";
+    }
+  }
+  
   // AI Chatbot endpoint
   app.post("/api/ai/chat", async (req, res) => {
     try {
-      const { messages } = req.body as AIChatRequest;
+      const { messages } = req.body;
       
       if (!messages || messages.length === 0) {
         return res.status(400).json({ error: "No messages provided" });
