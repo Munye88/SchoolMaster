@@ -51,9 +51,13 @@ const InstructorLookup = () => {
     enabled: !!selectedInstructor,
   });
   
-  // Fetch staff counseling records
-  const { data: staffCounselingRecords = [], isLoading: loadingCounselingRecords } = useQuery<any[]>({
-    queryKey: ['/api/instructors', selectedInstructor?.id, 'staff-counseling'],
+  // Fetch staff counseling records with proper error handling
+  const { 
+    data: staffCounselingRecords = [], 
+    isLoading: loadingCounselingRecords,
+    error: counselingError
+  } = useQuery<any[]>({
+    queryKey: [`/api/instructors/${selectedInstructor?.id}/staff-counseling`],
     refetchOnWindowFocus: false,
     enabled: !!selectedInstructor && !!selectedInstructor.id,
   });
@@ -127,20 +131,18 @@ const InstructorLookup = () => {
     r => selectedInstructor && r.instructorId === selectedInstructor.id
   );
   
-  // Filter only valid counseling records that match the selected instructor
-  const instructorCounselingRecords = selectedInstructor
-    ? staffCounselingRecords.filter(record => 
-        record && 
-        record.instructorId === selectedInstructor.id && 
-        record.counselingType && 
-        record.counselingDate
-      )
-    : [];
+  // Use staff counseling records as-is since they should already be filtered by instructor
+  const instructorCounselingRecords = staffCounselingRecords;
   
-  // Add debug logs
+  // Add detailed debug logs
   console.log("Selected instructor ID:", selectedInstructor?.id);
+  console.log("Selected instructor name:", selectedInstructor?.name);
   console.log("Staff counseling records:", staffCounselingRecords);
-  console.log("Filtered counseling records:", instructorCounselingRecords);
+  console.log("Staff counseling records length:", staffCounselingRecords.length);
+  console.log("Staff counseling API path:", `/api/instructors/${selectedInstructor?.id}/staff-counseling`);
+  if (counselingError) {
+    console.error("Counseling records fetch error:", counselingError);
+  }
   
   // Calculate average evaluation score
   const avgEvalScore = instructorEvaluations.length > 0
@@ -882,7 +884,7 @@ const InstructorLookup = () => {
                             {instructorCounselingRecords.length === 0 && (
                               <tr>
                                 <td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">
-                                  No counseling records found for this instructor
+                                  No counseling records found for instructor: {selectedInstructor?.name} (ID: {selectedInstructor?.id})
                                 </td>
                               </tr>
                             )}
