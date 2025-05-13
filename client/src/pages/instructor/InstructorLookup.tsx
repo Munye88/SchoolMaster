@@ -53,9 +53,9 @@ const InstructorLookup = () => {
   
   // Fetch staff counseling records
   const { data: staffCounselingRecords = [], isLoading: loadingCounselingRecords } = useQuery<any[]>({
-    queryKey: ['/api/schools', selectedInstructor?.schoolId, 'staff-counseling'],
+    queryKey: ['/api/instructors', selectedInstructor?.id, 'staff-counseling'],
     refetchOnWindowFocus: false,
-    enabled: !!selectedInstructor && !!selectedInstructor.schoolId,
+    enabled: !!selectedInstructor && !!selectedInstructor.id,
   });
   
   // Calculate PTO balance directly from staff leave data
@@ -128,9 +128,11 @@ const InstructorLookup = () => {
   );
   
   // Filter counseling records for the selected instructor
-  const instructorCounselingRecords = staffCounselingRecords.filter(
-    r => selectedInstructor && r.instructorId === selectedInstructor.id
-  );
+  const instructorCounselingRecords = staffCounselingRecords;
+  
+  // Add debug logs
+  console.log("Selected instructor ID:", selectedInstructor?.id);
+  console.log("Staff counseling records:", staffCounselingRecords);
   
   // Calculate average evaluation score
   const avgEvalScore = instructorEvaluations.length > 0
