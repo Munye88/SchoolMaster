@@ -408,37 +408,46 @@ export default function StaffLeaveTracker() {
   useEffect(() => {
     const startDate = form.watch('startDate');
     const endDate = form.watch('endDate');
-    const returnDate = form.watch('returnDate');
+    const leaveType = form.watch('leaveType');
     
-    if (startDate && endDate && returnDate) {
+    if (startDate && endDate) {
       const totalDays = calculateDays(startDate, endDate);
-      const returnDays = calculateDays(endDate, returnDate);
       
-      // Update PTO days based on total days
-      form.setValue('ptodays', totalDays);
-      
-      // Update R&R days based on return date
-      form.setValue('rrdays', returnDays - 1); // -1 because return day is not counted as R&R
+      if (leaveType === 'R&R') {
+        // For R&R leave type, the R&R days should be the total days between start and end
+        form.setValue('rrdays', totalDays);
+        form.setValue('ptodays', 0); // Reset PTO days to 0
+      } else {
+        // For other leave types, update PTO days based on total days
+        form.setValue('ptodays', totalDays);
+        form.setValue('rrdays', 0); // Reset R&R days to 0
+      }
     }
-  }, [form.watch('startDate'), form.watch('endDate'), form.watch('returnDate')]);
+  }, [form.watch('startDate'), form.watch('endDate'), form.watch('leaveType')]);
   
   // Update total days when dates change for edit form
   useEffect(() => {
     const startDate = editForm.watch('startDate');
     const endDate = editForm.watch('endDate');
     const returnDate = editForm.watch('returnDate');
+    const leaveType = editForm.watch('leaveType');
     
     if (startDate && endDate && returnDate) {
       const totalDays = calculateDays(startDate, endDate);
       const returnDays = calculateDays(endDate, returnDate);
       
-      // Update PTO days based on total days
-      editForm.setValue('ptodays', totalDays);
-      
-      // Update R&R days based on return date
-      editForm.setValue('rrdays', returnDays - 1); // -1 because return day is not counted as R&R
+      if (leaveType === 'R&R') {
+        // For R&R leave type, the R&R days should be the total days between start and end
+        editForm.setValue('rrdays', totalDays);
+        editForm.setValue('ptodays', 0); // Reset PTO days to 0
+      } else {
+        // For other leave types, update PTO days based on total days
+        editForm.setValue('ptodays', totalDays);
+        // Update R&R days based on return date only if not R&R leave type
+        editForm.setValue('rrdays', returnDays - 1); // -1 because return day is not counted as R&R
+      }
     }
-  }, [editForm.watch('startDate'), editForm.watch('endDate'), editForm.watch('returnDate')]);
+  }, [editForm.watch('startDate'), editForm.watch('endDate'), editForm.watch('returnDate'), editForm.watch('leaveType')]);
   
   // Auto-sync PTO balances when switching to the balance tab
   useEffect(() => {
@@ -723,7 +732,7 @@ export default function StaffLeaveTracker() {
                               />
                             </FormControl>
                             <FormDescription>
-                              Number of days for Rest & Recuperation
+                              Automatically calculated based on selected dates (start to end)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -1678,7 +1687,7 @@ export default function StaffLeaveTracker() {
                           />
                         </FormControl>
                         <FormDescription>
-                          Number of days for Rest & Recuperation
+                          Automatically calculated based on selected dates (start to end)
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
