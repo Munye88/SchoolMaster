@@ -1135,7 +1135,8 @@ export default function StaffLeaveTracker() {
                   <TableRow>
                     <TableHead>INSTRUCTOR</TableHead>
                     <TableHead>TOTAL DAYS</TableHead>
-                    <TableHead>USED DAYS</TableHead>
+                    <TableHead>USED PTO DAYS</TableHead>
+                    <TableHead>R&R DAYS USED</TableHead>
                     <TableHead>REMAINING</TableHead>
                     <TableHead>ADJUSTMENTS</TableHead>
                     <TableHead>LAST UPDATED</TableHead>
@@ -1145,7 +1146,7 @@ export default function StaffLeaveTracker() {
                 <TableBody>
                   {isLoadingPtoBalances ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
+                      <TableCell colSpan={8} className="text-center py-8">
                         <div className="flex items-center justify-center">
                           <Loader2 className="h-6 w-6 animate-spin mr-2" />
                           <span>Loading PTO balances...</span>
@@ -1154,7 +1155,7 @@ export default function StaffLeaveTracker() {
                     </TableRow>
                   ) : schoolPtoBalances.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
+                      <TableCell colSpan={8} className="text-center py-8">
                         <div className="flex flex-col items-center justify-center gap-2">
                           <p>No PTO balance records found for {selectedYear}.</p>
                           <p className="text-sm text-muted-foreground">
