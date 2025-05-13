@@ -822,19 +822,19 @@ const InstructorLookup = () => {
                         <div className="bg-yellow-50 p-4 rounded-lg">
                           <h3 className="text-sm font-medium text-yellow-800 mb-1">Verbal Counseling</h3>
                           <p className="text-2xl font-bold text-yellow-900">
-                            {instructorCounselingRecords.filter(r => r?.counselingType?.toLowerCase?.() === 'verbal').length}
+                            {instructorCounselingRecords.filter(r => r?.counselingType?.toLowerCase?.().includes('verbal')).length}
                           </p>
                         </div>
                         <div className="bg-orange-50 p-4 rounded-lg">
                           <h3 className="text-sm font-medium text-orange-800 mb-1">Written Counseling</h3>
                           <p className="text-2xl font-bold text-orange-900">
-                            {instructorCounselingRecords.filter(r => r?.counselingType?.toLowerCase?.() === 'written').length}
+                            {instructorCounselingRecords.filter(r => r?.counselingType?.toLowerCase?.().includes('written')).length}
                           </p>
                         </div>
                         <div className="bg-red-50 p-4 rounded-lg">
                           <h3 className="text-sm font-medium text-red-800 mb-1">Final Warning</h3>
                           <p className="text-2xl font-bold text-red-900">
-                            {instructorCounselingRecords.filter(r => r?.counselingType?.toLowerCase?.() === 'final warning').length}
+                            {instructorCounselingRecords.filter(r => r?.counselingType?.toLowerCase?.().includes('final')).length}
                           </p>
                         </div>
                       </div>
