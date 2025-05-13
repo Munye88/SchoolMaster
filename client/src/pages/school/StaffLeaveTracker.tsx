@@ -706,7 +706,7 @@ export default function StaffLeaveTracker() {
                               />
                             </FormControl>
                             <FormDescription>
-                              Number of days for Paid Time Off
+                              Automatically calculated based on selected dates (start to end)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -1657,12 +1657,13 @@ export default function StaffLeaveTracker() {
                         <FormControl>
                           <Input 
                             type="number" 
-                            {...field} 
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                            {...field}
+                            readOnly
+                            className="bg-gray-50"
                           />
                         </FormControl>
                         <FormDescription>
-                          Number of days for Paid Time Off
+                          Automatically calculated based on selected dates (start to end)
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -1681,8 +1682,9 @@ export default function StaffLeaveTracker() {
                         <FormControl>
                           <Input 
                             type="number" 
-                            {...field} 
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                            {...field}
+                            readOnly
+                            className="bg-gray-50"
                           />
                         </FormControl>
                         <FormDescription>
