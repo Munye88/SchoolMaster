@@ -43,6 +43,20 @@ const InstructorLookup = () => {
     refetchOnWindowFocus: false,
     enabled: !!selectedInstructor,
   });
+  
+  // Fetch PTO balance data
+  const { data: ptoBalances = [], isLoading: loadingPtoBalances } = useQuery<any[]>({
+    queryKey: ['/api/pto-balance'],
+    refetchOnWindowFocus: false,
+    enabled: !!selectedInstructor,
+  });
+  
+  // Fetch staff leave data
+  const { data: staffLeaves = [], isLoading: loadingStaffLeaves } = useQuery<any[]>({
+    queryKey: ['/api/staff-leave'],
+    refetchOnWindowFocus: false,
+    enabled: !!selectedInstructor,
+  });
 
   // Filter instructors based on search query
   const filteredInstructors = searchQuery
