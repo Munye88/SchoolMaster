@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Search, Mail, Phone, MapPin, Award, Briefcase, Calendar as CalendarIcon, UserCheck, Star, FileText, CalendarDays, XIcon } from "lucide-react";
+import { Search, Mail, Phone, MapPin, Award, Briefcase, Calendar as CalendarIcon, UserCheck, Star, FileText, CalendarDays, XIcon, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 
 const InstructorLookup = () => {
@@ -66,7 +66,7 @@ const InstructorLookup = () => {
           instructor.nationality.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : [];
-
+    
   // Filter data for selected instructor
   const instructorEvaluations = evaluations.filter(
     e => selectedInstructor && e.instructorId === selectedInstructor.id
@@ -77,18 +77,19 @@ const InstructorLookup = () => {
     a => selectedInstructor && a.instructorId === selectedInstructor.id
   );
   
+  // Filter instructor recognitions
   const instructorRecognitions = recognitions.filter(
     r => selectedInstructor && r.instructorId === selectedInstructor.id
   );
-
+  
+  // Calculate average evaluation score
+  const avgEvalScore = instructorEvaluations.length > 0
+    ? Math.round(instructorEvaluations.reduce((sum, evalItem) => sum + evalItem.score, 0) / instructorEvaluations.length)
+    : 0;
+    
   // Calculate attendance rate
   const attendanceRate = instructorAttendance.length > 0
     ? Math.round((instructorAttendance.filter(a => a.status.toLowerCase() === "present").length / instructorAttendance.length) * 100)
-    : 0;
-
-  // Calculate average evaluation score
-  const avgEvalScore = instructorEvaluations.length > 0
-    ? Math.round(instructorEvaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / instructorEvaluations.length)
     : 0;
 
   // Get instructor school name
@@ -283,11 +284,12 @@ const InstructorLookup = () => {
 
           {/* Tabbed Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="evaluations">Evaluations</TabsTrigger>
               <TabsTrigger value="attendance">Attendance</TabsTrigger>
               <TabsTrigger value="recognition">Recognition</TabsTrigger>
+              <TabsTrigger value="pto">PTO Balance</TabsTrigger>
             </TabsList>
 
             {/* Profile Tab */}
@@ -576,6 +578,160 @@ const InstructorLookup = () => {
                       <Award className="mx-auto h-12 w-12 text-gray-400" />
                       <h3 className="mt-2 text-sm font-semibold text-gray-900">No recognition awards</h3>
                       <p className="mt-1 text-sm text-gray-500">This instructor hasn't received any recognition awards yet.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* PTO Balance Tab */}
+            <TabsContent value="pto">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>PTO Balance</CardTitle>
+                    <CardDescription>Leave history and remaining balance</CardDescription>
+                  </div>
+                  {selectedInstructor && (
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500">Current Year Balance</p>
+                        <p className="text-2xl font-bold text-blue-600">
+                          {loadingPtoBalances ? (
+                            <Loader2 className="h-5 w-5 animate-spin inline" />
+                          ) : (
+                            ptoBalances.find(
+                              (balance) => 
+                                balance.instructorId === selectedInstructor.id && 
+                                balance.year === new Date().getFullYear()
+                            )?.remainingDays || 21
+                          )} days
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  {loadingPtoBalances || loadingStaffLeaves ? (
+                    <div className="flex justify-center py-8">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      {/* PTO Summary Card */}
+                      <Card className="shadow-sm">
+                        <CardContent className="pt-6">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="flex flex-col items-center p-4 bg-blue-50 rounded-lg">
+                              <h3 className="text-sm font-medium text-gray-500 mb-1">Total PTO Days</h3>
+                              <p className="text-2xl font-bold text-blue-600">
+                                {ptoBalances.find(
+                                  (balance) => 
+                                    balance.instructorId === selectedInstructor.id && 
+                                    balance.year === new Date().getFullYear()
+                                )?.totalDays || 21}
+                              </p>
+                            </div>
+                            <div className="flex flex-col items-center p-4 bg-amber-50 rounded-lg">
+                              <h3 className="text-sm font-medium text-gray-500 mb-1">Used PTO Days</h3>
+                              <p className="text-2xl font-bold text-amber-600">
+                                {ptoBalances.find(
+                                  (balance) => 
+                                    balance.instructorId === selectedInstructor.id && 
+                                    balance.year === new Date().getFullYear()
+                                )?.usedDays || 0}
+                              </p>
+                            </div>
+                            <div className="flex flex-col items-center p-4 bg-green-50 rounded-lg">
+                              <h3 className="text-sm font-medium text-gray-500 mb-1">Remaining PTO Days</h3>
+                              <p className="text-2xl font-bold text-green-600">
+                                {ptoBalances.find(
+                                  (balance) => 
+                                    balance.instructorId === selectedInstructor.id && 
+                                    balance.year === new Date().getFullYear()
+                                )?.remainingDays || 21}
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      
+                      {/* PTO History Table */}
+                      <div>
+                        <h3 className="text-lg font-medium mb-4">Leave History</h3>
+                        <div className="border rounded-lg overflow-hidden">
+                          <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Leave Type</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Period</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Days</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {staffLeaves
+                                .filter(leave => leave.instructorId === selectedInstructor.id)
+                                .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
+                                .map((leave, index) => (
+                                  <tr key={index} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                      <span className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${
+                                        leave.leaveType === 'PTO' 
+                                          ? 'bg-blue-100 text-blue-800' 
+                                          : leave.leaveType === 'R&R' 
+                                          ? 'bg-green-100 text-green-800'
+                                          : 'bg-amber-100 text-amber-800'
+                                      }`}>
+                                        {leave.leaveType}
+                                      </span>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                      <div className="text-sm">
+                                        {format(new Date(leave.startDate), 'MMM d, yyyy')} - {format(new Date(leave.endDate), 'MMM d, yyyy')}
+                                      </div>
+                                      <div className="text-xs text-gray-500">
+                                        Return: {format(new Date(leave.returnDate), 'MMM d, yyyy')}
+                                      </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                      {leave.leaveType === 'PTO' ? (
+                                        <span className="text-blue-600 font-semibold">{leave.ptodays}</span>
+                                      ) : leave.leaveType === 'R&R' ? (
+                                        <span className="text-green-600 font-semibold">{leave.rrdays}</span>
+                                      ) : (
+                                        <span className="text-amber-600 font-semibold">-</span>
+                                      )}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                      {leave.destination}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                      <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                                        leave.status === 'Approved' 
+                                          ? 'bg-green-100 text-green-800' 
+                                          : leave.status === 'Pending' 
+                                          ? 'bg-amber-100 text-amber-800'
+                                          : 'bg-red-100 text-red-800'
+                                      }`}>
+                                        {leave.status}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))}
+                                
+                              {staffLeaves.filter(leave => leave.instructorId === selectedInstructor?.id).length === 0 && (
+                                <tr>
+                                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                                    No leave records found for this instructor
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </CardContent>
