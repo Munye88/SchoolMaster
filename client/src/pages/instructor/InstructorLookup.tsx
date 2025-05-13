@@ -127,12 +127,20 @@ const InstructorLookup = () => {
     r => selectedInstructor && r.instructorId === selectedInstructor.id
   );
   
-  // Filter counseling records for the selected instructor
-  const instructorCounselingRecords = staffCounselingRecords;
+  // Filter only valid counseling records that match the selected instructor
+  const instructorCounselingRecords = selectedInstructor
+    ? staffCounselingRecords.filter(record => 
+        record && 
+        record.instructorId === selectedInstructor.id && 
+        record.counselingType && 
+        record.counselingDate
+      )
+    : [];
   
   // Add debug logs
   console.log("Selected instructor ID:", selectedInstructor?.id);
   console.log("Staff counseling records:", staffCounselingRecords);
+  console.log("Filtered counseling records:", instructorCounselingRecords);
   
   // Calculate average evaluation score
   const avgEvalScore = instructorEvaluations.length > 0
