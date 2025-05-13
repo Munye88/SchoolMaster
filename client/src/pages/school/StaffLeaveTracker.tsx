@@ -1131,6 +1131,9 @@ export default function StaffLeaveTracker() {
                     <div className="flex items-center text-xs">
                       <span className="ml-5">Both PTO and R&R days count toward the 21-day allowance</span>
                     </div>
+                    <div className="flex items-center text-xs">
+                      <span className="ml-5">Even if PTO days are 0, R&R days will reduce remaining days</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1140,8 +1143,8 @@ export default function StaffLeaveTracker() {
                   <TableRow>
                     <TableHead>INSTRUCTOR</TableHead>
                     <TableHead>TOTAL DAYS</TableHead>
-                    <TableHead>USED PTO DAYS</TableHead>
-                    <TableHead>R&R DAYS USED</TableHead>
+                    <TableHead>PTO DAYS TAKEN</TableHead>
+                    <TableHead>R&R TAKEN</TableHead>
                     <TableHead>REMAINING DAYS
                       <div className="text-xs font-normal opacity-75">(After PTO & R&R)</div>
                     </TableHead>
@@ -1188,7 +1191,12 @@ export default function StaffLeaveTracker() {
                                       leave.status === 'Approved'
                             );
                             const rrDaysUsed = instructorRRLeaves.reduce((total, leave) => total + leave.rrdays, 0);
-                            return rrDaysUsed > 0 ? rrDaysUsed : 0;
+                            
+                            if (rrDaysUsed > 0) {
+                              return <Badge variant="secondary">Yes ({rrDaysUsed} days)</Badge>;
+                            } else {
+                              return <Badge variant="outline">No</Badge>;
+                            }
                           })()}
                         </TableCell>
                         <TableCell>
