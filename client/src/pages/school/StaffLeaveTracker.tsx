@@ -700,8 +700,9 @@ export default function StaffLeaveTracker() {
                             <FormControl>
                               <Input 
                                 type="number" 
-                                {...field} 
-                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                {...field}
+                                readOnly
+                                className="bg-gray-50"
                               />
                             </FormControl>
                             <FormDescription>
