@@ -127,6 +127,11 @@ const InstructorLookup = () => {
     r => selectedInstructor && r.instructorId === selectedInstructor.id
   );
   
+  // Filter counseling records for the selected instructor
+  const instructorCounselingRecords = staffCounselingRecords.filter(
+    r => selectedInstructor && r.instructorId === selectedInstructor.id
+  );
+  
   // Calculate average evaluation score
   const avgEvalScore = instructorEvaluations.length > 0
     ? Math.round(instructorEvaluations.reduce((sum, evalItem) => sum + evalItem.score, 0) / instructorEvaluations.length)
@@ -329,12 +334,13 @@ const InstructorLookup = () => {
 
           {/* Tabbed Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="evaluations">Evaluations</TabsTrigger>
               <TabsTrigger value="attendance">Attendance</TabsTrigger>
               <TabsTrigger value="recognition">Recognition</TabsTrigger>
               <TabsTrigger value="pto">PTO Balance</TabsTrigger>
+              <TabsTrigger value="counseling">Counseling</TabsTrigger>
             </TabsList>
 
             {/* Profile Tab */}
@@ -772,6 +778,108 @@ const InstructorLookup = () => {
                 </CardContent>
               </Card>
             </TabsContent>
+            
+            {/* Counseling Records Tab */}
+            <TabsContent value="counseling">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Staff Counseling Records</CardTitle>
+                  <CardDescription>Counseling records and disciplinary actions for {selectedInstructor.name}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {loadingCounselingRecords ? (
+                    <div className="flex justify-center items-center h-40">
+                      <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                    </div>
+                  ) : (
+                    <>
+                      {/* Summary Stats */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div className="bg-yellow-50 p-4 rounded-lg">
+                          <h3 className="text-sm font-medium text-yellow-800 mb-1">Verbal Counseling</h3>
+                          <p className="text-2xl font-bold text-yellow-900">
+                            {instructorCounselingRecords.filter(r => r.counselingType.toLowerCase() === 'verbal').length}
+                          </p>
+                        </div>
+                        <div className="bg-orange-50 p-4 rounded-lg">
+                          <h3 className="text-sm font-medium text-orange-800 mb-1">Written Counseling</h3>
+                          <p className="text-2xl font-bold text-orange-900">
+                            {instructorCounselingRecords.filter(r => r.counselingType.toLowerCase() === 'written').length}
+                          </p>
+                        </div>
+                        <div className="bg-red-50 p-4 rounded-lg">
+                          <h3 className="text-sm font-medium text-red-800 mb-1">Final Warning</h3>
+                          <p className="text-2xl font-bold text-red-900">
+                            {instructorCounselingRecords.filter(r => r.counselingType.toLowerCase() === 'final warning').length}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Counseling Records List */}
+                      <h3 className="font-medium mb-4">Counseling History</h3>
+                      <div className="border rounded-lg overflow-hidden">
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comments</th>
+                              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attachment</th>
+                            </tr>
+                          </thead>
+                          <tbody className="bg-white divide-y divide-gray-200">
+                            {instructorCounselingRecords
+                              .sort((a, b) => new Date(b.counselingDate).getTime() - new Date(a.counselingDate).getTime())
+                              .map((record, index) => (
+                                <tr key={record.id || index}>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className={`px-2 py-1 text-xs rounded-full ${
+                                      record.counselingType.toLowerCase() === 'verbal' 
+                                        ? 'bg-yellow-100 text-yellow-800' 
+                                        : record.counselingType.toLowerCase() === 'written'
+                                          ? 'bg-orange-100 text-orange-800'
+                                          : 'bg-red-100 text-red-800'
+                                    }`}>
+                                      {record.counselingType}
+                                    </span>
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {format(new Date(record.counselingDate), 'MMM dd, yyyy')}
+                                  </td>
+                                  <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+                                    {record.comments}
+                                  </td>
+                                  <td className="px-6 py-4 whitespace-nowrap">
+                                    {record.attachmentUrl ? (
+                                      <a 
+                                        href={record.attachmentUrl} 
+                                        target="_blank" 
+                                        rel="noreferrer"
+                                        className="text-blue-600 hover:text-blue-800"
+                                      >
+                                        View
+                                      </a>
+                                    ) : (
+                                      <span className="text-gray-400">None</span>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            {instructorCounselingRecords.length === 0 && (
+                              <tr>
+                                <td colSpan={4} className="px-6 py-4 text-center text-sm text-gray-500">
+                                  No counseling records found for this instructor
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
         </div>
       ) : (
@@ -781,7 +889,7 @@ const InstructorLookup = () => {
           </div>
           <h3 className="text-lg font-medium">Search for an instructor</h3>
           <p className="text-gray-500 mt-2 max-w-md mx-auto">
-            Use the search box above to find an instructor and view their complete profile, evaluations, attendance, and recognition information.
+            Use the search box above to find an instructor and view their complete profile, evaluations, attendance, recognition, PTO balance, and counseling records.
           </p>
         </Card>
       )}
