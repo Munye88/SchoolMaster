@@ -140,6 +140,18 @@ const InstructorLookup = () => {
   console.log("Staff counseling records:", staffCounselingRecords);
   console.log("Staff counseling records length:", staffCounselingRecords.length);
   console.log("Staff counseling API path:", `/api/instructors/${selectedInstructor?.id}/staff-counseling`);
+  console.log("Counseling records loading state:", loadingCounselingRecords);
+  // Log each individual record details for debugging
+  staffCounselingRecords.forEach((record, index) => {
+    console.log(`Record ${index} details:`, {
+      id: record.id,
+      instructorId: record.instructorId,
+      type: record.counselingType,
+      date: record.counselingDate,
+      hasComments: !!record.comments,
+      hasAttachment: !!record.attachmentUrl
+    });
+  });
   if (counselingError) {
     console.error("Counseling records fetch error:", counselingError);
   }
@@ -850,9 +862,9 @@ const InstructorLookup = () => {
                                 <tr key={record.id || index}>
                                   <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`px-2 py-1 text-xs rounded-full ${
-                                      record?.counselingType?.toLowerCase?.() === 'verbal' 
+                                      record?.counselingType?.toLowerCase?.().includes('verbal') 
                                         ? 'bg-yellow-100 text-yellow-800' 
-                                        : record?.counselingType?.toLowerCase?.() === 'written'
+                                        : record?.counselingType?.toLowerCase?.().includes('written')
                                           ? 'bg-orange-100 text-orange-800'
                                           : 'bg-red-100 text-red-800'
                                     }`}>
