@@ -429,12 +429,10 @@ export default function StaffLeaveTracker() {
   useEffect(() => {
     const startDate = editForm.watch('startDate');
     const endDate = editForm.watch('endDate');
-    const returnDate = editForm.watch('returnDate');
     const leaveType = editForm.watch('leaveType');
     
-    if (startDate && endDate && returnDate) {
+    if (startDate && endDate) {
       const totalDays = calculateDays(startDate, endDate);
-      const returnDays = calculateDays(endDate, returnDate);
       
       if (leaveType === 'R&R') {
         // For R&R leave type, the R&R days should be the total days between start and end
@@ -443,11 +441,10 @@ export default function StaffLeaveTracker() {
       } else {
         // For other leave types, update PTO days based on total days
         editForm.setValue('ptodays', totalDays);
-        // Update R&R days based on return date only if not R&R leave type
-        editForm.setValue('rrdays', returnDays - 1); // -1 because return day is not counted as R&R
+        editForm.setValue('rrdays', 0); // Reset R&R days to 0
       }
     }
-  }, [editForm.watch('startDate'), editForm.watch('endDate'), editForm.watch('returnDate'), editForm.watch('leaveType')]);
+  }, [editForm.watch('startDate'), editForm.watch('endDate'), editForm.watch('leaveType')]);
   
   // Auto-sync PTO balances when switching to the balance tab
   useEffect(() => {
@@ -728,7 +725,8 @@ export default function StaffLeaveTracker() {
                               <Input 
                                 type="number" 
                                 {...field} 
-                                onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                readOnly
+                                className="bg-gray-50"
                               />
                             </FormControl>
                             <FormDescription>
