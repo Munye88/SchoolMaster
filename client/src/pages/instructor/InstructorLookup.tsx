@@ -51,6 +51,13 @@ const InstructorLookup = () => {
     enabled: !!selectedInstructor,
   });
   
+  // Fetch staff counseling records
+  const { data: staffCounselingRecords = [], isLoading: loadingCounselingRecords } = useQuery<any[]>({
+    queryKey: ['/api/schools', selectedInstructor?.schoolId, 'staff-counseling'],
+    refetchOnWindowFocus: false,
+    enabled: !!selectedInstructor && !!selectedInstructor.schoolId,
+  });
+  
   // Calculate PTO balance directly from staff leave data
   const calculatePtoData = (instructorId: number) => {
     const currentYear = new Date().getFullYear();
