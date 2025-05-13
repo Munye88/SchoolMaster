@@ -800,19 +800,19 @@ const InstructorLookup = () => {
                         <div className="bg-yellow-50 p-4 rounded-lg">
                           <h3 className="text-sm font-medium text-yellow-800 mb-1">Verbal Counseling</h3>
                           <p className="text-2xl font-bold text-yellow-900">
-                            {instructorCounselingRecords.filter(r => r.counselingType.toLowerCase() === 'verbal').length}
+                            {instructorCounselingRecords.filter(r => r?.counselingType?.toLowerCase?.() === 'verbal').length}
                           </p>
                         </div>
                         <div className="bg-orange-50 p-4 rounded-lg">
                           <h3 className="text-sm font-medium text-orange-800 mb-1">Written Counseling</h3>
                           <p className="text-2xl font-bold text-orange-900">
-                            {instructorCounselingRecords.filter(r => r.counselingType.toLowerCase() === 'written').length}
+                            {instructorCounselingRecords.filter(r => r?.counselingType?.toLowerCase?.() === 'written').length}
                           </p>
                         </div>
                         <div className="bg-red-50 p-4 rounded-lg">
                           <h3 className="text-sm font-medium text-red-800 mb-1">Final Warning</h3>
                           <p className="text-2xl font-bold text-red-900">
-                            {instructorCounselingRecords.filter(r => r.counselingType.toLowerCase() === 'final warning').length}
+                            {instructorCounselingRecords.filter(r => r?.counselingType?.toLowerCase?.() === 'final warning').length}
                           </p>
                         </div>
                       </div>
@@ -831,28 +831,32 @@ const InstructorLookup = () => {
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
                             {instructorCounselingRecords
-                              .sort((a, b) => new Date(b.counselingDate).getTime() - new Date(a.counselingDate).getTime())
+                              .sort((a, b) => {
+                                if (!a?.counselingDate) return 1;
+                                if (!b?.counselingDate) return -1;
+                                return new Date(b.counselingDate).getTime() - new Date(a.counselingDate).getTime();
+                              })
                               .map((record, index) => (
                                 <tr key={record.id || index}>
                                   <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`px-2 py-1 text-xs rounded-full ${
-                                      record.counselingType.toLowerCase() === 'verbal' 
+                                      record?.counselingType?.toLowerCase?.() === 'verbal' 
                                         ? 'bg-yellow-100 text-yellow-800' 
-                                        : record.counselingType.toLowerCase() === 'written'
+                                        : record?.counselingType?.toLowerCase?.() === 'written'
                                           ? 'bg-orange-100 text-orange-800'
                                           : 'bg-red-100 text-red-800'
                                     }`}>
-                                      {record.counselingType}
+                                      {record?.counselingType || 'Unknown'}
                                     </span>
                                   </td>
                                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {format(new Date(record.counselingDate), 'MMM dd, yyyy')}
+                                    {record?.counselingDate ? format(new Date(record.counselingDate), 'MMM dd, yyyy') : 'Unknown date'}
                                   </td>
                                   <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
-                                    {record.comments}
+                                    {record?.comments || 'No comments'}
                                   </td>
                                   <td className="px-6 py-4 whitespace-nowrap">
-                                    {record.attachmentUrl ? (
+                                    {record?.attachmentUrl ? (
                                       <a 
                                         href={record.attachmentUrl} 
                                         target="_blank" 
