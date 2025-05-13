@@ -54,31 +54,10 @@ export function useAIChat() {
     setMessages([]);
   };
 
-  // Added for direct AI analysis without chat UI
-  const askAI = async (prompt: string): Promise<string | null> => {
-    try {
-      // Create request
-      const request: AIChatRequest = {
-        messages: [{ role: "user", content: prompt }],
-        schoolId: selectedSchool?.id,
-      };
-      
-      // Send request to API
-      const response = await mutation.mutateAsync(request);
-      return response.message.content;
-    } catch (error) {
-      console.error("Error asking AI:", error);
-      return null;
-    }
-  };
-
   return {
     messages,
     isTyping: mutation.isPending,
     sendMessage,
     clearChat,
-    // Added for direct AI analysis
-    askAI,
-    isProcessing: mutation.isPending,
   };
 }

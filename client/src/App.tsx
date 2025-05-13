@@ -37,6 +37,7 @@ import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AuthProvider } from "./hooks/use-auth";
 import { useAuth } from "@/hooks/use-auth";
 import { SchoolProvider } from "@/hooks/useSchool";
+import { AssistantDialog } from "@/components/assistant/AssistantDialog";
 
 // Admin pages
 import StaffLeaveApproval from "./pages/administration/staff-leave";
@@ -143,7 +144,8 @@ function App() {
       <AuthProvider>
         <SchoolProvider>
           <Router />
-          {/* AI Assistant has been removed */}
+          {/* AI Assistant */}
+          <AssistantDialog />
         </SchoolProvider>
       </AuthProvider>
     </QueryClientProvider>

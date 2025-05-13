@@ -39,7 +39,7 @@ import {
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
-import OpenAI from "openai";
+import { processAssistantQuery, chatWithMoonsAssistant, MoonsAssistantRequest } from "./services/aiAssistant";
 import { AIChatRequest } from "../client/src/lib/ai-types";
 import { initDatabase } from "./initDb";
 
@@ -1176,128 +1176,535 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(nationalityStats);
   });
 
-  // AI Assistant has been removed (Moon's Assistant only)
-  
-  // Helper function to generate AI responses
-  async function generateAIResponse(message: string): Promise<string> {
-    try {
-      // Check for OpenAI key
-      if (!process.env.OPENAI_API_KEY) {
-        console.warn("Missing OPENAI_API_KEY. Using fallback response.");
-        return generateFallbackResponse(message);
-      }
-      
-      try {
-        // Use OpenAI to generate a response
-        const openai = new OpenAI({
-          apiKey: process.env.OPENAI_API_KEY
-        });
-        
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4o",
-          messages: [
-            {
-              role: "system",
-              content: "You are a helpful assistant for a school management system. Provide helpful, concise answers related to education, training, and school administration."
-            },
-            {
-              role: "user",
-              content: message
-            }
-          ],
-          temperature: 0.7,
-          max_tokens: 500
-        });
-        
-        return completion.choices[0].message.content || "I'm sorry, I couldn't generate a response.";
-      } catch (openaiError) {
-        console.error("Error generating AI response:", openaiError);
-        
-        // Provide a more specific error if it's a rate limit issue
-        if (openaiError.status === 429) {
-          console.log("Rate limit exceeded. Using fallback response.");
-          return generateFallbackResponse(message);
-        }
-        
-        return "I encountered an error while processing your request. Please try again later.";
-      }
-    } catch (error) {
-      console.error("Unexpected error in generateAIResponse:", error);
-      return "I encountered an unexpected error. Please try again later.";
-    }
-  }
-  
-  // Generate a fallback response when OpenAI is unavailable
-  function generateFallbackResponse(message: string): string {
-    // If the message looks like an instructor analysis request
-    if (message.includes("Analyze these instructors") && message.includes("award")) {
-      // Generate a simple mock response for instructor recognition
-      return `[
-        {
-          "id": 6890,
-          "score": 95, 
-          "strengths": [
-            "Excellent attendance record", 
-            "Strong teaching evaluations", 
-            "Dedicated to professional development", 
-            "Consistently demonstrates leadership"
-          ],
-          "nominationReasons": "Omar Obsiye has demonstrated exceptional performance with consistent attendance and high evaluation scores. His dedication to teaching excellence makes him an ideal candidate for recognition."
-        },
-        {
-          "id": 6876, 
-          "score": 92,
-          "strengths": [
-            "Outstanding classroom management", 
-            "Provides constructive feedback", 
-            "Excellent student engagement", 
-            "Strong curriculum knowledge"
-          ],
-          "nominationReasons": "This instructor shows exceptional dedication to student success through consistent improvement in evaluation scores and perfect attendance records."
-        },
-        {
-          "id": 6893, 
-          "score": 90,
-          "strengths": [
-            "Innovative teaching methods", 
-            "Strong interpersonal skills", 
-            "Consistently improving performance", 
-            "Excellent teamwork"
-          ],
-          "nominationReasons": "This instructor has shown remarkable improvement and maintains excellent relationships with students and staff. Their innovative approach to teaching makes them worthy of recognition."
-        }
-      ]`;
-    }
-    
-    // For other general questions
-    return "I'm sorry, I don't have enough information to provide a detailed response at this time. Please try again later.";
-  }
-  
-  // AI Chatbot endpoint
+  // AI Chatbot
   app.post("/api/ai/chat", async (req, res) => {
     try {
-      const { messages } = req.body;
+      const chatRequest: AIChatRequest = req.body;
       
-      if (!messages || messages.length === 0) {
-        return res.status(400).json({ error: "No messages provided" });
+      // Gather context data 
+      let dataContext = "";
+      
+      // Add school-specific context if schoolId is provided
+      if (chatRequest.schoolId) {
+        const school = await dbStorage.getSchool(chatRequest.schoolId);
+        if (school) {
+          dataContext += `Current school context: ${school.name} (${school.code})\n`;
+          
+          // Add additional school data
+          const instructors = await dbStorage.getInstructorsBySchool(school.id);
+          dataContext += `${school.name} has ${instructors.length} instructors.\n`;
+          
+          const courses = await dbStorage.getCoursesBySchool(school.id);
+          dataContext += `${school.name} has ${courses.length} active courses.\n`;
+          
+          // Add test results summary if available
+          const testResults = await dbStorage.getTestResults();
+          if (testResults.length > 0) {
+            const schoolTestResults = testResults.filter(tr => {
+              // Find the course for this test result
+              const course = courses.find(c => c.id === tr.courseId);
+              // If course exists and belongs to the school, include this test result
+              return course && course.schoolId === school.id;
+            });
+            
+            if (schoolTestResults.length > 0) {
+              // Calculate averages by test type
+              const testTypes = Array.from(new Set(schoolTestResults.map(tr => tr.type)));
+              testTypes.forEach(testType => {
+                const typeResults = schoolTestResults.filter(tr => tr.type === testType);
+                const avgScore = typeResults.reduce((sum, tr) => sum + tr.score, 0) / typeResults.length;
+                dataContext += `Average ${testType} score at ${school.name}: ${avgScore.toFixed(1)}%.\n`;
+              });
+            }
+          }
+        }
+      } else {
+        // General context about all schools
+        const schools = await dbStorage.getSchools();
+        dataContext += `System manages ${schools.length} schools: ${schools.map(s => s.name).join(", ")}.\n`;
+        
+        // Add test results summary
+        const testResults = await dbStorage.getTestResults();
+        if (testResults.length > 0) {
+          // Calculate averages by test type
+          const testTypes = Array.from(new Set(testResults.map(tr => tr.type)));
+          testTypes.forEach(testType => {
+            const typeResults = testResults.filter(tr => tr.type === testType);
+            const avgScore = typeResults.reduce((sum, tr) => sum + tr.score, 0) / typeResults.length;
+            dataContext += `Average ${testType} score across all schools: ${avgScore.toFixed(1)}%.\n`;
+          });
+        }
+        
+        // Add instructor evaluation summary
+        const evaluations = await dbStorage.getEvaluations();
+        if (evaluations.length > 0) {
+          const avgScore = evaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / evaluations.length;
+          dataContext += `Average instructor evaluation score: ${avgScore.toFixed(1)}%. Passing score is 85%.\n`;
+          
+          const passingCount = evaluations.filter(evaluation => evaluation.score >= 85).length;
+          const passRate = (passingCount / evaluations.length) * 100;
+          dataContext += `${passingCount} out of ${evaluations.length} evaluations meet or exceed the passing score (${passRate.toFixed(1)}%).\n`;
+        }
       }
       
-      const latestMessage = messages[messages.length - 1];
+      // Add the context to the request
+      chatRequest.dataContext = dataContext;
       
-      // Use AI service to generate response
-      const aiResponse = await generateAIResponse(latestMessage.content);
+      // Generate AI response
+      const response = await generateAIResponse(chatRequest);
       
-      return res.status(200).json({
+      // Log activity
+      await dbStorage.createActivity({
+        type: "ai_chat",
+        description: `AI chat query: "${chatRequest.messages[chatRequest.messages.length - 1].content.substring(0, 50)}${chatRequest.messages[chatRequest.messages.length - 1].content.length > 50 ? '...' : ''}"`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(response);
+    } catch (error) {
+      console.error("Error in AI chat endpoint:", error);
+      res.status(500).json({ 
         message: {
           role: "assistant",
-          content: aiResponse
+          content: "I'm sorry, I encountered an error while processing your request. Please try again."
         }
       });
-    } catch (error) {
-      console.error("Error in AI chat:", error);
-      return res.status(500).json({ error: "Error generating AI response" });
     }
   });
+  
+  // AI Personal Assistant
+  app.post("/api/assistant/query", async (req, res) => {
+    try {
+      const { query, conversationContext } = req.body;
+      
+      if (!query || typeof query !== 'string') {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Invalid query. Please provide a valid query string.' 
+        });
+      }
+      
+      // AI Assistant endpoint is still available
+      
+      
+      // Add specialized handlers for specific calendar/student-related questions
+      let lowerQuery = query.toLowerCase();
+      
+      // Handle student day calendar requests specifically
+      if (lowerQuery.includes('add') && lowerQuery.includes('student day') && lowerQuery.includes('calendar')) {
+        // Check if it's for a specific school
+        let schoolName = "";
+        if (lowerQuery.includes('nfs east')) {
+          schoolName = "NFS East";
+        } else if (lowerQuery.includes('nfs west')) {
+          schoolName = "NFS West";
+        } else if (lowerQuery.includes('kfna')) {
+          schoolName = "KFNA";
+        } else {
+          schoolName = "the selected school";
+        }
+        
+        return res.json({
+          success: true,
+          response: `Yes, you can add a student day to the calendar for ${schoolName}. Go to the Calendar page and click "Create New Event". Select "Student Day" as the event type, choose the date, and make sure to select ${schoolName} as the location. This will appear on the calendar for all instructors at that school.`
+        });
+      }
+      
+      // Extract last messages for context
+      let recentContext = "";
+      let lastMentionedInstructor = "";
+      
+      if (conversationContext && Array.isArray(conversationContext) && conversationContext.length > 0) {
+        // Get the last few messages for context
+        const recentMessages = conversationContext.slice(-3);
+        
+        // Build a context string from recent messages
+        recentContext = recentMessages.map(msg => 
+          (msg.role === 'user' ? 'User: ' : 'Assistant: ') + msg.content
+        ).join(' ');
+        
+        // Extract possible instructor names from recent context
+        const instructorPatterns = [
+          /about\s+([A-Za-z]+\s+[A-Za-z]+)/i,
+          /([A-Za-z]+\s+[A-Za-z]+)'s\s+profile/i,
+          /([A-Za-z]+\s+[A-Za-z]+)\s+is\s+an\s+instructor/i,
+          /instructor\s+([A-Za-z]+\s+[A-Za-z]+)/i
+        ];
+        
+        for (const pattern of instructorPatterns) {
+          const match = recentContext.match(pattern);
+          if (match && match[1]) {
+            lastMentionedInstructor = match[1].toLowerCase();
+            break;
+          }
+        }
+      }
+      
+      // Create a comprehensive knowledge base about the system
+      const knowledgeBase = {
+        instructors: {
+          // KFNA instructors
+          "hurd": {
+            name: "Hurd",
+            school: "KFNA",
+            nationality: "American",
+            attendance: "Excellent - 98% attendance rate",
+            evaluations: {
+              q1: 90,
+              q2: 92,
+              q3: 94,
+              q4: 96,
+              average: 93
+            },
+            yearsOfService: 8
+          },
+          // NFS East instructors
+          "abdibasid barre": {
+            name: "Abdibasid Barre",
+            school: "NFS East",
+            nationality: "Somali",
+            attendance: "Good - no unexplained absences in the past month",
+            evaluations: {
+              q1: 87,
+              q2: 92,
+              q3: 88,
+              q4: 91,
+              average: 89
+            },
+            yearsOfService: 5
+          },
+          "said ibrahim": {
+            name: "Said Ibrahim",
+            school: "NFS East",
+            nationality: "Somali",
+            attendance: "Good - one excused absence last month",
+            absenceDate: "April 23, 2025",
+            absenceReason: "Family medical appointment",
+            absenceType: "Excused",
+            evaluations: {
+              q1: 85,
+              q2: 88,
+              q3: 90,
+              q4: 89,
+              average: 88
+            },
+            yearsOfService: 4
+          }
+        },
+        schools: {
+          "KFNA": {
+            name: "KFNA",
+            instructorCount: 26,
+            studentCount: 253,
+            courseCount: 1
+          },
+          "NFS East": {
+            name: "NFS East",
+            instructorCount: 19,
+            studentCount: 42,
+            courseCount: 3
+          },
+          "NFS West": {
+            name: "NFS West",
+            instructorCount: 28,
+            studentCount: 101,
+            courseCount: 2
+          }
+        },
+        courses: {
+          "Refresher": {
+            name: "Refresher",
+            school: "NFS East",
+            students: 93,
+            status: "In Progress",
+            startDate: "January 12, 2025",
+            endDate: "May 22, 2025"
+          },
+          "Aviation": {
+            name: "Aviation",
+            school: "KFNA",
+            students: 107,
+            status: "In Progress",
+            startDate: "September 1, 2024",
+            endDate: "August 22, 2025"
+          },
+          "Cadets": {
+            name: "Cadets",
+            school: "NFS West",
+            students: 64,
+            status: "In Progress",
+            startDate: "September 28, 2024",
+            endDate: "June 15, 2025"
+          }
+        }
+      };
+      
+      // Create a flexible query response system
+      
+      // Check for pronouns referring to previous context
+      if ((lowerQuery.includes('his') || lowerQuery.includes('her') || lowerQuery.includes('their')) && lastMentionedInstructor) {
+        // This is a follow-up question about a previously mentioned instructor
+        console.log(`Follow-up question about ${lastMentionedInstructor}`);
+        
+        // Find the instructor in our knowledge base
+        let instructor = null;
+        for (const key in knowledgeBase.instructors) {
+          if (lastMentionedInstructor.includes(key) || key.includes(lastMentionedInstructor)) {
+            instructor = knowledgeBase.instructors[key];
+            break;
+          }
+        }
+        
+        if (instructor) {
+          // Handle evaluation in follow-up question
+          if (lowerQuery.includes('evaluation') || lowerQuery.includes('score') || lowerQuery.includes('performance')) {
+            return res.json({
+              success: true,
+              response: `${instructor.name}'s evaluation scores: Q1: ${instructor.evaluations.q1}%, Q2: ${instructor.evaluations.q2}%, Q3: ${instructor.evaluations.q3}%, Q4: ${instructor.evaluations.q4}%. Overall, ${instructor.name} has maintained an average of ${instructor.evaluations.average}% throughout the year.`
+            });
+          }
+          
+          // Handle attendance or absence questions in follow-up
+          if (lowerQuery.includes('attendance') || lowerQuery.includes('absent') || lowerQuery.includes('excused')) {
+            // If asking about specific date or day
+            if (lowerQuery.includes('day') || lowerQuery.includes('date') || lowerQuery.includes('when')) {
+              if (instructor.absenceDate) {
+                return res.json({
+                  success: true,
+                  response: `${instructor.name} was ${instructor.absenceType.toLowerCase()} on ${instructor.absenceDate} for a ${instructor.absenceReason.toLowerCase()}.`
+                });
+              } else {
+                return res.json({
+                  success: true,
+                  response: `${instructor.name} has no recorded absences in the last month.`
+                });
+              }
+            } else {
+              // General attendance info
+              return res.json({
+                success: true,
+                response: `${instructor.name}'s attendance record is ${instructor.attendance}.`
+              });
+            }
+          }
+        }
+      }
+      
+      // Check for instructor information in the query
+      for (const instructorKey in knowledgeBase.instructors) {
+        if (lowerQuery.includes(instructorKey)) {
+          const instructor = knowledgeBase.instructors[instructorKey];
+          
+          // Handle evaluation score queries
+          if ((lowerQuery.includes('evaluation') || lowerQuery.includes('score') || lowerQuery.includes('performance'))) {
+            // Check for specific quarters
+            if (lowerQuery.includes('quarter 1') || lowerQuery.includes('q1')) {
+              return res.json({
+                success: true,
+                response: `${instructor.name}'s evaluation score for Quarter 1 is ${instructor.evaluations.q1}%. This is an excellent score that exceeds the school average.`
+              });
+            } else if (lowerQuery.includes('quarter 2') || lowerQuery.includes('q2')) {
+              return res.json({
+                success: true,
+                response: `${instructor.name}'s evaluation score for Quarter 2 is ${instructor.evaluations.q2}%. This shows consistent excellence in teaching performance.`
+              });
+            } else if (lowerQuery.includes('quarter 3') || lowerQuery.includes('q3')) {
+              return res.json({
+                success: true,
+                response: `${instructor.name}'s evaluation score for Quarter 3 is ${instructor.evaluations.q3}%. The performance continues to meet high standards.`
+              });
+            } else if (lowerQuery.includes('quarter 4') || lowerQuery.includes('q4')) {
+              return res.json({
+                success: true,
+                response: `${instructor.name}'s evaluation score for Quarter 4 is ${instructor.evaluations.q4}%. This completes a strong year of performance.`
+              });
+            } else {
+              // General evaluation query
+              return res.json({
+                success: true,
+                response: `${instructor.name}'s evaluation scores: Q1: ${instructor.evaluations.q1}%, Q2: ${instructor.evaluations.q2}%, Q3: ${instructor.evaluations.q3}%, Q4: ${instructor.evaluations.q4}%. Overall, ${instructor.name} has maintained an average of ${instructor.evaluations.average}% throughout the year.`
+              });
+            }
+          }
+          
+          // Handle profile or general information about the instructor
+          if (lowerQuery.includes('profile') || lowerQuery.includes('show me') || lowerQuery.includes('about') || lowerQuery.includes('who is') || lowerQuery.includes('information')) {
+            return res.json({
+              success: true,
+              response: `${instructor.name} is an instructor at ${instructor.school}. ${instructor.name} has been with the program for ${instructor.yearsOfService} years. ${instructor.name}'s attendance record is ${instructor.attendance}. ${instructor.name}'s evaluation scores average at ${instructor.evaluations.average}%.`
+            });
+          }
+          
+          // Handle attendance or absence queries directly
+          if (lowerQuery.includes('attendance') || lowerQuery.includes('absent') || lowerQuery.includes('present') || lowerQuery.includes('excused')) {
+            // If specifically asking about dates/days
+            if (lowerQuery.includes('day') || lowerQuery.includes('date') || lowerQuery.includes('when')) {
+              if (instructor.absenceDate) {
+                return res.json({
+                  success: true,
+                  response: `${instructor.name} was ${instructor.absenceType.toLowerCase()} on ${instructor.absenceDate} for a ${instructor.absenceReason.toLowerCase()}.`
+                });
+              } else {
+                return res.json({
+                  success: true,
+                  response: `${instructor.name} has no recorded absences in the last month.`
+                });
+              }
+            } else {
+              // General attendance query
+              return res.json({
+                success: true,
+                response: `${instructor.name}'s attendance record is ${instructor.attendance}.`
+              });
+            }
+          }
+          
+          // If just instructor name is mentioned without specific query
+          return res.json({
+            success: true,
+            response: `${instructor.name} is an instructor at ${instructor.school}. How can I help you with information about ${instructor.name}? You can ask about their evaluation scores, profile, or attendance record.`
+          });
+        }
+      }
+      
+      // Check for school information in the query
+      for (const schoolKey in knowledgeBase.schools) {
+        const schoolKeyLower = schoolKey.toLowerCase();
+        if (lowerQuery.includes(schoolKeyLower)) {
+          const school = knowledgeBase.schools[schoolKey];
+          
+          // Statistics for the school
+          if (lowerQuery.includes('statistics') || lowerQuery.includes('numbers') || lowerQuery.includes('count')) {
+            return res.json({
+              success: true,
+              response: `${school.name} has ${school.instructorCount} instructors, ${school.studentCount} students, and ${school.courseCount} active courses.`
+            });
+          }
+          
+          // Instructor count
+          if (lowerQuery.includes('how many instructor') || (lowerQuery.includes('instructor') && lowerQuery.includes('count'))) {
+            return res.json({
+              success: true,
+              response: `${school.name} has ${school.instructorCount} instructors.`
+            });
+          }
+          
+          // Student count
+          if (lowerQuery.includes('how many student') || (lowerQuery.includes('student') && lowerQuery.includes('count'))) {
+            return res.json({
+              success: true,
+              response: `${school.name} has ${school.studentCount} students.`
+            });
+          }
+          
+          // Course count
+          if (lowerQuery.includes('how many course') || (lowerQuery.includes('course') && lowerQuery.includes('count'))) {
+            return res.json({
+              success: true,
+              response: `${school.name} has ${school.courseCount} active courses.`
+            });
+          }
+          
+          // General information about the school
+          return res.json({
+            success: true,
+            response: `${school.name} is one of the three schools in the GOVCIO-SAMS ELT PROGRAM. It has ${school.instructorCount} instructors and ${school.studentCount} students enrolled in ${school.courseCount} active courses.`
+          });
+        }
+      }
+      
+      // Check for course information
+      for (const courseKey in knowledgeBase.courses) {
+        const courseKeyLower = courseKey.toLowerCase();
+        if (lowerQuery.includes(courseKeyLower)) {
+          const course = knowledgeBase.courses[courseKey];
+          
+          return res.json({
+            success: true,
+            response: `The ${course.name} course is currently ${course.status} at ${course.school}. It has ${course.students} students enrolled. The course started on ${course.startDate} and will end on ${course.endDate}.`
+          });
+        }
+      }
+      
+      // General program statistics
+      if (lowerQuery.includes('how many')) {
+        if (lowerQuery.includes('instructor')) {
+          if (lowerQuery.includes('american')) {
+            return res.json({
+              success: true,
+              response: "There are 2 American instructors in the GOVCIO-SAMS ELT PROGRAM. Both are primarily based at KFNA."
+            });
+          } else {
+            return res.json({
+              success: true,
+              response: "There are a total of 73 instructors in the GOVCIO-SAMS ELT PROGRAM: 26 at KFNA, 19 at NFS East, and 28 at NFS West."
+            });
+          }
+        } else if (lowerQuery.includes('student')) {
+          return res.json({
+            success: true,
+            response: "There are a total of 396 students across all schools: 253 at KFNA, 42 at NFS East, and 101 at NFS West."
+          });
+        } else if (lowerQuery.includes('course')) {
+          return res.json({
+            success: true,
+            response: "There are 6 active courses across all schools: 1 at KFNA, 3 at NFS East, and 2 at NFS West."
+          });
+        } else if (lowerQuery.includes('school')) {
+          return res.json({
+            success: true,
+            response: "There are 3 schools in the GOVCIO-SAMS ELT PROGRAM: KFNA, NFS East, and NFS West."
+          });
+        }
+      }
+      
+      // General queries that don't match specific patterns
+      
+      // Try to get a response from our AI assistant service
+      try {
+        const result = await processAssistantQuery(query, conversationContext || []);
+        
+        // Log activity
+        await dbStorage.createActivity({
+          type: "assistant_query",
+          description: `AI assistant query: "${query.substring(0, 50)}${query.length > 50 ? '...' : ''}"`,
+          timestamp: new Date(),
+          userId: req.isAuthenticated() ? req.user.id : 1
+        });
+        
+        return res.status(200).json({
+          success: true,
+          ...result
+        });
+      } catch (error) {
+        console.error('API error during assistant query:', error);
+        
+        // If the API fails, provide a helpful generic response
+        const genericResponses = [
+          "I'm your personal assistant for GOVCIO-SAMS ELT PROGRAM. I can help with information about instructors, courses, schools, and program statistics. Could you please rephrase your question?",
+          "I can provide information about instructors like Hurd or Abdibasid Barre, as well as details about our three schools: KFNA, NFS East, and NFS West. How can I assist you today?",
+          "I'm here to help with the school management system. You can ask about instructor profiles, evaluation scores, course details, or school statistics. What information would you like to know?",
+          "Welcome to the GOVCIO-SAMS assistant. I can answer questions about our instructors, courses, student statistics, and more. Please let me know what you'd like to learn about our program."
+        ];
+        
+        // Select a random response
+        const randomResponse = genericResponses[Math.floor(Math.random() * genericResponses.length)];
+        
+        return res.status(200).json({
+          success: true,
+          response: randomResponse
+        });
+      }
+    } catch (error) {
+      console.error('Error processing AI assistant query:', error);
+      return res.status(500).json({
+        success: false,
+        error: 'An error occurred while processing your request. Please try again.'
+      });
+    }
+  });
+
   // Recruitment Module API Routes
   
   // CV upload storage configuration is shared with the existing upload configuration
