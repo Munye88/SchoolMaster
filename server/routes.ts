@@ -3709,21 +3709,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const leaveRecordsResult = await db.execute(sql`
         SELECT 
-          COALESCE(SUM(ptodays), 0) AS total_used_days 
+          COALESCE(SUM(CASE WHEN LOWER(leave_type) = 'pto' THEN ptodays ELSE 0 END), 0) AS total_pto_days,
+          COALESCE(SUM(CASE WHEN LOWER(leave_type) = 'r&r' THEN rrdays ELSE 0 END), 0) AS total_rr_days 
         FROM staff_leave 
         WHERE 
           instructor_id = ${instructor.id} AND
           start_date >= ${yearStart} AND 
           start_date <= ${yearEnd} AND
-          LOWER(status) = 'approved' AND
-          LOWER(leave_type) = 'pto'
+          LOWER(status) = 'approved'
       `);
       
-      // Calculate total used PTO days (safely)
+      // Calculate total used days (PTO + R&R)
       let usedDays = 0;
       if (leaveRecordsResult.rows && leaveRecordsResult.rows.length > 0) {
-        const totalUsedDaysStr = leaveRecordsResult.rows[0].total_used_days;
-        usedDays = totalUsedDaysStr !== null ? parseInt(totalUsedDaysStr) : 0;
+        const totalPtoDaysStr = leaveRecordsResult.rows[0].total_pto_days;
+        const totalRrDaysStr = leaveRecordsResult.rows[0].total_rr_days;
+        const ptoDays = totalPtoDaysStr !== null ? parseInt(totalPtoDaysStr) : 0;
+        const rrDays = totalRrDaysStr !== null ? parseInt(totalRrDaysStr) : 0;
+        usedDays = ptoDays + rrDays; // Combined total of both PTO and R&R days
       }
       
       // We'll create/update records for all instructors, even those with zero days used
@@ -3807,11 +3810,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           // Use the individual sync function for each instructor for consistency
           const result = await syncPtoBalanceForInstructor(instructor.id, year);
+          // Get R&R days for this instructor in the specified year
+          const yearStart = `${year}-01-01`;
+          const yearEnd = `${year}-12-31`;
+          
+          const rrDaysResult = await db.execute(sql`
+            SELECT 
+              COALESCE(SUM(rrdays), 0) AS total_rr_days 
+            FROM staff_leave 
+            WHERE 
+              instructor_id = ${instructor.id} AND
+              start_date >= ${yearStart} AND 
+              start_date <= ${yearEnd} AND
+              LOWER(status) = 'approved' AND
+              LOWER(leave_type) = 'r&r'
+          `);
+          
+          let rrDays = 0;
+          if (rrDaysResult.rows && rrDaysResult.rows.length > 0) {
+            const rrDaysStr = rrDaysResult.rows[0].total_rr_days;
+            rrDays = rrDaysStr !== null ? parseInt(rrDaysStr) : 0;
+          }
+          
           updateResults.push({
             instructorId: instructor.id,
             instructorName: instructor.name,
             updated: true,
             usedDays: parseInt(result.used_days) || 0,
+            rrDaysUsed: rrDays, 
             remainingDays: parseInt(result.remaining_days) || 21
           });
         } catch (error) {

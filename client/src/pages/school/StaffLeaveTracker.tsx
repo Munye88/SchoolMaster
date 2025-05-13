@@ -1123,9 +1123,14 @@ export default function StaffLeaveTracker() {
                 </div>
                 
                 <div className="text-sm text-muted-foreground">
-                  <div className="flex items-center">
-                    <InfoIcon className="h-4 w-4 mr-1" />
-                    <span>Default annual allowance: 21 days</span>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center">
+                      <InfoIcon className="h-4 w-4 mr-1" />
+                      <span>Default annual allowance: 21 days</span>
+                    </div>
+                    <div className="flex items-center text-xs">
+                      <span className="ml-5">Both PTO and R&R days count toward the 21-day allowance</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1137,7 +1142,9 @@ export default function StaffLeaveTracker() {
                     <TableHead>TOTAL DAYS</TableHead>
                     <TableHead>USED PTO DAYS</TableHead>
                     <TableHead>R&R DAYS USED</TableHead>
-                    <TableHead>REMAINING</TableHead>
+                    <TableHead>REMAINING DAYS
+                      <div className="text-xs font-normal opacity-75">(After PTO & R&R)</div>
+                    </TableHead>
                     <TableHead>ADJUSTMENTS</TableHead>
                     <TableHead>LAST UPDATED</TableHead>
                     <TableHead>ACTIONS</TableHead>
@@ -1173,9 +1180,37 @@ export default function StaffLeaveTracker() {
                         <TableCell>{balance.totalDays}</TableCell>
                         <TableCell>{balance.usedDays}</TableCell>
                         <TableCell>
-                          <Badge variant={balance.remainingDays < 5 ? "destructive" : balance.remainingDays < 10 ? "outline" : "default"}>
-                            {balance.remainingDays}
-                          </Badge>
+                          {(() => {
+                            // Calculate R&R days used by this instructor
+                            const instructorRRLeaves = schoolLeaveRecords.filter(
+                              leave => leave.instructorId === balance.instructorId && 
+                                      leave.leaveType === 'R&R' &&
+                                      leave.status === 'Approved'
+                            );
+                            const rrDaysUsed = instructorRRLeaves.reduce((total, leave) => total + leave.rrdays, 0);
+                            return rrDaysUsed > 0 ? rrDaysUsed : 0;
+                          })()}
+                        </TableCell>
+                        <TableCell>
+                          {(() => {
+                            // Calculate total used days (PTO + R&R)
+                            const instructorRRLeaves = schoolLeaveRecords.filter(
+                              leave => leave.instructorId === balance.instructorId && 
+                                      leave.leaveType === 'R&R' &&
+                                      leave.status === 'Approved'
+                            );
+                            const rrDaysUsed = instructorRRLeaves.reduce((total, leave) => total + leave.rrdays, 0);
+                            
+                            // The actual remaining days should account for R&R days too
+                            const totalUsed = balance.usedDays + rrDaysUsed;
+                            const actualRemaining = balance.totalDays - totalUsed + (balance.adjustments || 0);
+                            
+                            return (
+                              <Badge variant={actualRemaining < 5 ? "destructive" : actualRemaining < 10 ? "outline" : "default"}>
+                                {Math.max(0, actualRemaining)}
+                              </Badge>
+                            );
+                          })()}
                         </TableCell>
                         <TableCell>{balance.adjustments || 0}</TableCell>
                         <TableCell>{format(new Date(balance.lastUpdated), 'MMM d, yyyy')}</TableCell>
