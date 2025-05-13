@@ -51,6 +51,27 @@ const InstructorLookup = () => {
     enabled: !!selectedInstructor,
   });
   
+  // Calculate PTO balance directly from staff leave data
+  const calculatePtoData = (instructorId: number) => {
+    const currentYear = new Date().getFullYear();
+    const instructorLeaves = staffLeaves.filter(
+      leave => leave.instructorId === instructorId && 
+      new Date(leave.startDate).getFullYear() === currentYear &&
+      leave.leaveType.toLowerCase() === 'pto' &&
+      leave.status.toLowerCase() === 'approved'
+    );
+    
+    const totalPtoDays = 21; // Default annual allowance
+    const usedPtoDays = instructorLeaves.reduce((total, leave) => total + leave.ptodays, 0);
+    const remainingPtoDays = totalPtoDays - usedPtoDays;
+    
+    return {
+      totalDays: totalPtoDays,
+      usedDays: usedPtoDays,
+      remainingDays: remainingPtoDays
+    };
+  };
+  
   // Fetch staff leave data
   const { data: staffLeaves = [], isLoading: loadingStaffLeaves } = useQuery<any[]>({
     queryKey: ['/api/staff-leave'],
@@ -597,14 +618,10 @@ const InstructorLookup = () => {
                       <div className="text-right">
                         <p className="text-sm text-gray-500">Current Year Balance</p>
                         <p className="text-2xl font-bold text-blue-600">
-                          {loadingPtoBalances ? (
+                          {loadingStaffLeaves ? (
                             <Loader2 className="h-5 w-5 animate-spin inline" />
                           ) : (
-                            ptoBalances.find(
-                              (balance) => 
-                                balance.instructorId === selectedInstructor.id && 
-                                balance.year === new Date().getFullYear()
-                            )?.remainingDays || 21
+                            calculatePtoData(selectedInstructor.id).remainingDays
                           )} days
                         </p>
                       </div>
@@ -625,31 +642,19 @@ const InstructorLookup = () => {
                             <div className="flex flex-col items-center p-4 bg-blue-50 rounded-lg">
                               <h3 className="text-sm font-medium text-gray-500 mb-1">Total PTO Days</h3>
                               <p className="text-2xl font-bold text-blue-600">
-                                {ptoBalances.find(
-                                  (balance) => 
-                                    balance.instructorId === selectedInstructor.id && 
-                                    balance.year === new Date().getFullYear()
-                                )?.totalDays || 21}
+                                {calculatePtoData(selectedInstructor.id).totalDays}
                               </p>
                             </div>
                             <div className="flex flex-col items-center p-4 bg-amber-50 rounded-lg">
                               <h3 className="text-sm font-medium text-gray-500 mb-1">Used PTO Days</h3>
                               <p className="text-2xl font-bold text-amber-600">
-                                {ptoBalances.find(
-                                  (balance) => 
-                                    balance.instructorId === selectedInstructor.id && 
-                                    balance.year === new Date().getFullYear()
-                                )?.usedDays || 0}
+                                {calculatePtoData(selectedInstructor.id).usedDays}
                               </p>
                             </div>
                             <div className="flex flex-col items-center p-4 bg-green-50 rounded-lg">
                               <h3 className="text-sm font-medium text-gray-500 mb-1">Remaining PTO Days</h3>
                               <p className="text-2xl font-bold text-green-600">
-                                {ptoBalances.find(
-                                  (balance) => 
-                                    balance.instructorId === selectedInstructor.id && 
-                                    balance.year === new Date().getFullYear()
-                                )?.remainingDays || 21}
+                                {calculatePtoData(selectedInstructor.id).remainingDays}
                               </p>
                             </div>
                           </div>
