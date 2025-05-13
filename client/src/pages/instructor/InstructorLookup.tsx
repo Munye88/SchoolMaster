@@ -54,21 +54,38 @@ const InstructorLookup = () => {
   // Calculate PTO balance directly from staff leave data
   const calculatePtoData = (instructorId: number) => {
     const currentYear = new Date().getFullYear();
-    const instructorLeaves = staffLeaves.filter(
+    
+    // Get PTO leaves
+    const instructorPtoLeaves = staffLeaves.filter(
       leave => leave.instructorId === instructorId && 
       new Date(leave.startDate).getFullYear() === currentYear &&
       leave.leaveType.toLowerCase() === 'pto' &&
       leave.status.toLowerCase() === 'approved'
     );
     
+    // Get R&R leaves
+    const instructorRRLeaves = staffLeaves.filter(
+      leave => leave.instructorId === instructorId && 
+      new Date(leave.startDate).getFullYear() === currentYear &&
+      leave.leaveType.toLowerCase() === 'r&r' &&
+      leave.status.toLowerCase() === 'approved'
+    );
+    
     const totalPtoDays = 21; // Default annual allowance
-    const usedPtoDays = instructorLeaves.reduce((total, leave) => total + leave.ptodays, 0);
-    const remainingPtoDays = totalPtoDays - usedPtoDays;
+    const usedPtoDays = instructorPtoLeaves.reduce((total, leave) => total + leave.ptodays, 0);
+    const usedRRDays = instructorRRLeaves.reduce((total, leave) => total + leave.rrdays, 0);
+    
+    // Combined used days (PTO + R&R)
+    const totalUsedDays = usedPtoDays + usedRRDays;
+    
+    // Calculate remaining days after both PTO and R&R
+    const remainingPtoDays = totalPtoDays - totalUsedDays;
     
     return {
       totalDays: totalPtoDays,
-      usedDays: usedPtoDays,
-      remainingDays: remainingPtoDays
+      usedDays: totalUsedDays, // Combined total of PTO + R&R days used
+      hasRRTaken: instructorRRLeaves.length > 0, // Whether they've taken R&R leave
+      remainingDays: Math.max(0, remainingPtoDays) // Ensure it doesn't go below 0
     };
   };
   
@@ -646,16 +663,22 @@ const InstructorLookup = () => {
                               </p>
                             </div>
                             <div className="flex flex-col items-center p-4 bg-amber-50 rounded-lg">
-                              <h3 className="text-sm font-medium text-gray-500 mb-1">Used PTO Days</h3>
+                              <h3 className="text-sm font-medium text-gray-500 mb-1">Used Days</h3>
                               <p className="text-2xl font-bold text-amber-600">
                                 {calculatePtoData(selectedInstructor.id).usedDays}
                               </p>
+                              <div className="mt-2 text-xs">
+                                <span className="font-medium">R&R Taken:</span> {calculatePtoData(selectedInstructor.id).hasRRTaken ? 
+                                <Badge variant="secondary">Yes</Badge> : 
+                                <Badge variant="outline">No</Badge>}
+                              </div>
                             </div>
                             <div className="flex flex-col items-center p-4 bg-green-50 rounded-lg">
-                              <h3 className="text-sm font-medium text-gray-500 mb-1">Remaining PTO Days</h3>
+                              <h3 className="text-sm font-medium text-gray-500 mb-1">Remaining Days</h3>
                               <p className="text-2xl font-bold text-green-600">
                                 {calculatePtoData(selectedInstructor.id).remainingDays}
                               </p>
+                              <div className="mt-2 text-xs text-gray-500">(After PTO & R&R)</div>
                             </div>
                           </div>
                         </CardContent>
