@@ -134,27 +134,7 @@ const InstructorLookup = () => {
   // Use staff counseling records as-is since they should already be filtered by instructor
   const instructorCounselingRecords = staffCounselingRecords;
   
-  // Add detailed debug logs
-  console.log("Selected instructor ID:", selectedInstructor?.id);
-  console.log("Selected instructor name:", selectedInstructor?.name);
-  console.log("Staff counseling records:", staffCounselingRecords);
-  console.log("Staff counseling records length:", staffCounselingRecords.length);
-  console.log("Staff counseling API path:", `/api/instructors/${selectedInstructor?.id}/staff-counseling`);
-  console.log("Counseling records loading state:", loadingCounselingRecords);
-  // Log each individual record details for debugging
-  staffCounselingRecords.forEach((record, index) => {
-    console.log(`Record ${index} details:`, {
-      id: record.id,
-      instructorId: record.instructorId,
-      type: record.counselingType,
-      date: record.counselingDate,
-      hasComments: !!record.comments,
-      hasAttachment: !!record.attachmentUrl
-    });
-  });
-  if (counselingError) {
-    console.error("Counseling records fetch error:", counselingError);
-  }
+
   
   // Calculate average evaluation score
   const avgEvalScore = instructorEvaluations.length > 0
