@@ -1,0 +1,116 @@
+==> Cloning from https://github.com/Munye88/SchoolMaster
+==> Checking out commit b9d7499db9cead45c30b7496fa6aefb7e1ab375a in branch main
+==> Using Node.js version 22.14.0 (default)
+==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+==> Using Bun version 1.1.0 (default)
+==> Docs on specifying a bun version: https://render.com/docs/bun-version
+==> Running build command 'npm install --include=dev && npm run db:push && npm run build'...
+added 575 packages, and audited 576 packages in 21s
+73 packages are looking for funding
+  run `npm fund` for details
+8 vulnerabilities (7 moderate, 1 high)
+To address issues that do not require attention, run:
+  npm audit fix
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+Some issues need review, and may require choosing
+a different dependency.
+Run `npm audit` for details.
+> rest-express@1.0.0 db:push
+> drizzle-kit push
+No config path provided, using default 'drizzle.config.ts'
+Reading config file '/opt/render/project/src/drizzle.config.ts'
+Using 'pg' driver for database querying
+[⣷] Pulling schema from database...
+[⣯] Pulling schema from database...
+[⣟] Pulling schema from database...
+[⡿] Pulling schema from database...
+[✓] Pulling schema from database...
+[✓] Changes applied
+> rest-express@1.0.0 build
+> vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+vite v5.4.14 building for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 3908 modules transformed.
+rendering chunks...
+computing gzip size...
+../dist/public/index.html                                            1.80 kB │ gzip:   0.74 kB
+../dist/public/assets/govcio-logo-new-B3XxsdUm.png                  13.84 kB
+../dist/public/assets/certificate-background2-Bv8uOAkk.jpeg         19.12 kB
+../dist/public/assets/Govcio_logo-removebg-preview-BSC4ilX2.png     65.43 kB
+../dist/public/assets/download-C5Tr16zy.jpg                        152.64 kB
+../dist/public/assets/index-DVidKgKF.css                           124.76 kB │ gzip:  19.81 kB
+../dist/public/assets/purify.es-CF4_YkFU.js                         21.86 kB │ gzip:   8.62 kB
+../dist/public/assets/index.es-gQcy8GhR.js                         149.98 kB │ gzip:  51.25 kB
+../dist/public/assets/xlsx-B6sNpj_1.js                             429.35 kB │ gzip: 143.18 kB
+../dist/public/assets/index-Bp4TAC17.js                          2,448.12 kB │ gzip: 623.37 kB
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 13.31s
+  dist/index.js  273.0kb
+⚡ Done in 14ms
+==> Uploading build...
+==> Uploaded in 19.2s. Compression took 5.5s
+==> Build successful 🎉
+==> Deploying...
+==> Running 'npm start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+OpenAI client initialized successfully
+==> No open ports detected, continuing to scan...
+==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
+==> No open ports detected, continuing to scan...
+==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
+==> No open ports detected, continuing to scan...
+==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
+Error initializing database: ErrorEvent {
+  [Symbol(kTarget)]: WebSocket {
+    _events: [Object: null prototype] {
+      error: [Function],
+      message: [Function],
+      close: [Function],
+      open: [Function]
+    },
+    _eventsCount: 4,
+    _maxListeners: undefined,
+    _binaryType: 'arraybuffer',
+    _closeCode: 1006,
+    _closeFrameReceived: false,
+    _closeFrameSent: false,
+    _closeMessage: <Buffer >,
+    _closeTimer: null,
+    _errorEmitted: true,
+    _extensions: {},
+    _paused: false,
+    _protocol: '',
+    _readyState: 3,
+    _receiver: null,
+    _sender: null,
+    _socket: null,
+    _bufferedAmount: 0,
+    _isServer: false,
+    _redirects: 0,
+    _autoPong: true,
+    _url: 'wss://dpg-d0tm0dm3jp1c73eolbng-a.oregon-postgres.render.com/v2',
+    _req: null,
+    [Symbol(shapeMode)]: false,
+    [Symbol(kCapture)]: false
+  },
+  [Symbol(kType)]: 'error',
+  [Symbol(kError)]: Error: connect ETIMEDOUT 35.227.164.209:443
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1634:16) {
+    errno: -110,
+    code: 'ETIMEDOUT',
+    syscall: 'connect',
+    address: '35.227.164.209',
+    port: 443
+  },
+  [Symbol(kMessage)]: 'connect ETIMEDOUT 35.227.164.209:443'
+}
+==> No open ports detected, continuing to scan...
+==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
