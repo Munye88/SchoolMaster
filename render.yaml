@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: govcio-sams-elt
+    env: node
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: govcio-sams-db
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PERPLEXITY_API_KEY
+        sync: false
+
+databases:
+  - name: govcio-sams-db
+    databaseName: govcio_sams
+    user: govcio_user
+    plan: starter

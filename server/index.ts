@@ -65,26 +65,13 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Function to try listening on a port
-  const startServer = (portToUse: number) => {
-    server.listen({
-      port: portToUse,
-      host: "0.0.0.0",
-      reusePort: true,
-    }, () => {
-      log(`serving on port ${portToUse}`);
-    }).on('error', (e: NodeJS.ErrnoException) => {
-      if (e.code === 'EADDRINUSE') {
-        log(`Port ${portToUse} is already in use. Trying another port...`);
-        // If 5000 is in use, try 5001. If 5001 is in use, try 3000
-        const nextPort = portToUse === 5000 ? 5001 : (portToUse === 5001 ? 3000 : portToUse + 1);
-        startServer(nextPort);
-      } else {
-        log(`Server error: ${e.message}`);
-      }
-    });
-  };
-
-  // Start with port 5000 (Replit expects this port)
-  startServer(5000);
+  // Use PORT environment variable for production deployments like Render
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
+  
+  server.listen({
+    port: port,
+    host: "0.0.0.0",
+  }, () => {
+    log(`serving on port ${port}`);
+  });
 })();
