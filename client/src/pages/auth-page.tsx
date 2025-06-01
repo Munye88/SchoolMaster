@@ -33,8 +33,6 @@ export default function AuthPage() {
       username: "",
       password: "",
       confirmPassword: "",
-      name: "",
-      email: "",
       role: "user",
     },
   });
@@ -48,7 +46,13 @@ export default function AuthPage() {
       alert("Passwords don't match");
       return;
     }
-    registerMutation.mutate(values);
+    // Set default values for name and email since they're required by the API
+    const userData = {
+      ...values,
+      name: values.username, // Use username as name
+      email: `${values.username}@example.com`, // Generate a default email
+    };
+    registerMutation.mutate(userData);
   }
 
   // If the user is already logged in, redirect to home
@@ -217,60 +221,7 @@ export default function AuthPage() {
                     onSubmit={registerForm.handleSubmit(onRegisterSubmit)}
                     className="space-y-5"
                   >
-                    <FormField
-                      control={registerForm.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[#081f5c] font-medium">Full Name</FormLabel>
-                          <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-[#00a2ff] transition-colors">
-                              <User className="h-5 w-5" />
-                            </div>
-                            <FormControl>
-                              <Input
-                                placeholder="Enter your full name"
-                                autoComplete="name"
-                                className="pl-12 py-6 bg-[#f7f9fc] border-[#e1e8ef] rounded-lg focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
-                                value={field.value || ""}
-                                onChange={field.onChange}
-                                onBlur={field.onBlur}
-                                name={field.name}
-                              />
-                            </FormControl>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
-                    <FormField
-                      control={registerForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[#081f5c] font-medium">Email</FormLabel>
-                          <div className="relative group">
-                            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-[#00a2ff] transition-colors">
-                              <User className="h-5 w-5" />
-                            </div>
-                            <FormControl>
-                              <Input
-                                type="email"
-                                placeholder="Enter your email"
-                                autoComplete="email"
-                                className="pl-12 py-6 bg-[#f7f9fc] border-[#e1e8ef] rounded-lg focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
-                                value={field.value || ""}
-                                onChange={field.onChange}
-                                onBlur={field.onBlur}
-                                name={field.name}
-                              />
-                            </FormControl>
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
                     <FormField
                       control={registerForm.control}
