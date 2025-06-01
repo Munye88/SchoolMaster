@@ -1,4 +1,4 @@
-import { useAuth, loginSchema } from "@/hooks/use-auth";
+import { useAuth, loginSchema, registerSchema } from "@/hooks/use-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -28,31 +28,32 @@ export default function AuthPage() {
     },
   });
 
+  const registerForm = useForm({
+    defaultValues: {
+      username: "",
+      password: "",
+      confirmPassword: "",
+      role: "user",
+    },
+  });
+
   function onLoginSubmit(values: z.infer<typeof loginSchema>) {
     loginMutation.mutate(values);
   }
 
-  function onRegisterSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const username = formData.get('username') as string;
-    const password = formData.get('password') as string;
-    const confirmPassword = formData.get('confirmPassword') as string;
-
-    if (password !== confirmPassword) {
+  function onRegisterSubmit(values: any) {
+    console.log("Registration form values:", values);
+    if (values.password !== values.confirmPassword) {
       alert("Passwords don't match");
       return;
     }
-
+    // Set default values for name and email since they're required by the API
     const userData = {
-      username,
-      password,
-      confirmPassword,
-      name: username,
-      email: `${username}@example.com`,
-      role: "user",
+      ...values,
+      name: values.username, // Use username as name
+      email: `${values.username}@example.com`, // Generate a default email
     };
-
+    console.log("Sending registration data:", userData);
     registerMutation.mutate(userData);
   }
 
@@ -92,35 +93,37 @@ export default function AuthPage() {
             </div>
           </div>
           
-          {/* Right side with the forms */}
+          {/* Right side with the login form - keeping the logo working */}
           <div className="px-6 py-12 md:px-12 lg:px-16 flex flex-col justify-center">
             <div className="max-w-md mx-auto w-full">
-              {/* Logo */}
-              <div className="text-center mb-8">
+              {/* Logo - using the working path */}
+              <div className="flex justify-center mb-8">
                 <img 
-                  src="/logo.png" 
-                  alt="GOVCIO SAMS ELT PROGRAM" 
-                  className="mx-auto h-20 w-auto mb-4"
+                  src="logo.png" 
+                  alt="GOVCIO Logo" 
+                  style={{ maxWidth: "180px", marginBottom: "20px" }}
                 />
               </div>
-
+              
               {/* Tab Toggle */}
-              <div className="flex mb-8 bg-[#f7f9fc] rounded-lg p-1">
+              <div className="flex bg-[#f7f9fc] rounded-lg p-1 mb-8">
                 <button
+                  type="button"
                   onClick={() => setIsLogin(true)}
-                  className={`flex-1 py-3 text-center font-medium rounded-md transition-all ${
-                    isLogin 
-                      ? 'bg-white text-[#081f5c] shadow-sm' 
+                  className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all ${
+                    isLogin
+                      ? 'bg-white text-[#081f5c] shadow-sm'
                       : 'text-gray-600 hover:text-[#081f5c]'
                   }`}
                 >
                   Sign In
                 </button>
                 <button
+                  type="button"
                   onClick={() => setIsLogin(false)}
-                  className={`flex-1 py-3 text-center font-medium rounded-md transition-all ${
-                    !isLogin 
-                      ? 'bg-white text-[#081f5c] shadow-sm' 
+                  className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all ${
+                    !isLogin
+                      ? 'bg-white text-[#081f5c] shadow-sm'
                       : 'text-gray-600 hover:text-[#081f5c]'
                   }`}
                 >
@@ -193,7 +196,7 @@ export default function AuthPage() {
                         </FormItem>
                       )}
                     />
-
+                    
                     <Button
                       type="submit"
                       className="w-full py-6 mt-4 bg-gradient-to-r from-[#081f5c] to-[#00a2ff] hover:from-[#071849] hover:to-[#0091e6] text-white font-medium rounded-lg shadow-md transition-all hover:shadow-xl disabled:opacity-70"
@@ -202,7 +205,7 @@ export default function AuthPage() {
                       {loginMutation.isPending ? (
                         <>
                           <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                          Signing In...
+                          Signing in...
                         </>
                       ) : (
                         <>
@@ -215,80 +218,124 @@ export default function AuthPage() {
                 </Form>
               ) : (
                 /* Registration Form */
-                <form onSubmit={onRegisterSubmit} className="space-y-5">
-                  <div>
-                    <label className="text-[#081f5c] font-medium block mb-2">Username</label>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-[#00a2ff] transition-colors">
-                        <User className="h-5 w-5" />
-                      </div>
-                      <input
-                        name="username"
-                        type="text"
-                        placeholder="Choose a username"
-                        autoComplete="username"
-                        required
-                        minLength={3}
-                        className="w-full pl-12 py-6 bg-[#f7f9fc] border border-[#e1e8ef] rounded-lg focus:ring-2 focus:ring-[#00a2ff] focus:border-[#00a2ff] text-[#081f5c] outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-[#081f5c] font-medium block mb-2">Password</label>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-[#00a2ff] transition-colors">
-                        <Lock className="h-5 w-5" />
-                      </div>
-                      <input
-                        name="password"
-                        type="password"
-                        placeholder="••••••••"
-                        autoComplete="new-password"
-                        required
-                        minLength={6}
-                        className="w-full pl-12 py-6 bg-[#f7f9fc] border border-[#e1e8ef] rounded-lg focus:ring-2 focus:ring-[#00a2ff] focus:border-[#00a2ff] text-[#081f5c] outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-[#081f5c] font-medium block mb-2">Confirm Password</label>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-[#00a2ff] transition-colors">
-                        <Lock className="h-5 w-5" />
-                      </div>
-                      <input
-                        name="confirmPassword"
-                        type="password"
-                        placeholder="••••••••"
-                        autoComplete="new-password"
-                        required
-                        minLength={6}
-                        className="w-full pl-12 py-6 bg-[#f7f9fc] border border-[#e1e8ef] rounded-lg focus:ring-2 focus:ring-[#00a2ff] focus:border-[#00a2ff] text-[#081f5c] outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full py-6 mt-4 bg-gradient-to-r from-[#081f5c] to-[#00a2ff] hover:from-[#071849] hover:to-[#0091e6] text-white font-medium rounded-lg shadow-md transition-all hover:shadow-xl disabled:opacity-70"
-                    disabled={registerMutation.isPending}
+                <Form {...registerForm}>
+                  <form
+                    onSubmit={registerForm.handleSubmit(onRegisterSubmit)}
+                    className="space-y-5"
                   >
-                    {registerMutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Creating Account...
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="mr-2 h-5 w-5" />
-                        Create Account
-                      </>
-                    )}
-                  </Button>
-                </form>
+
+
+                    <FormField
+                      control={registerForm.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#081f5c] font-medium">Username</FormLabel>
+                          <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-[#00a2ff] transition-colors">
+                              <User className="h-5 w-5" />
+                            </div>
+                            <FormControl>
+                              <Input
+                                placeholder="Choose a username"
+                                autoComplete="username"
+                                className="pl-12 py-6 bg-[#f7f9fc] border-[#e1e8ef] rounded-lg focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
+                                {...field}
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={registerForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#081f5c] font-medium">Password</FormLabel>
+                          <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-[#00a2ff] transition-colors">
+                              <Lock className="h-5 w-5" />
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="password"
+                                placeholder="Create a password"
+                                autoComplete="new-password"
+                                className="pl-12 py-6 bg-[#f7f9fc] border-[#e1e8ef] rounded-lg focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
+                                {...field}
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={registerForm.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#081f5c] font-medium">Confirm Password</FormLabel>
+                          <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-[#00a2ff] transition-colors">
+                              <Lock className="h-5 w-5" />
+                            </div>
+                            <FormControl>
+                              <Input
+                                type="password"
+                                placeholder="Confirm your password"
+                                autoComplete="new-password"
+                                className="pl-12 py-6 bg-[#f7f9fc] border-[#e1e8ef] rounded-lg focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
+                                {...field}
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <Button
+                      type="submit"
+                      className="w-full py-6 mt-4 bg-gradient-to-r from-[#081f5c] to-[#00a2ff] hover:from-[#071849] hover:to-[#0091e6] text-white font-medium rounded-lg shadow-md transition-all hover:shadow-xl disabled:opacity-70"
+                      disabled={registerMutation.isPending}
+                    >
+                      {registerMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Creating account...
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="mr-2 h-5 w-5" />
+                          Create Account
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </Form>
               )}
+              
+              {/* Forgot Password - only show for login */}
+              {isLogin && (
+                <div className="mt-6 text-center">
+                  <a 
+                    onClick={() => window.alert("Please contact the administrator at munyesufi1988@gmail.com to reset your password.")}
+                    className="text-sm text-[#00a2ff] hover:text-[#081f5c] hover:underline transition-colors cursor-pointer"
+                  >
+                    Forgot your password?
+                  </a>
+                </div>
+              )}
+              
+              {/* Company Tag */}
+              <div className="mt-16 text-center text-gray-500 text-xs">
+                <p>SALIENT ARABIA FOR MILITARY SUPPORT</p>
+              </div>
             </div>
           </div>
         </div>
