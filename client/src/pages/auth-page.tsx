@@ -42,6 +42,7 @@ export default function AuthPage() {
   }
 
   function onRegisterSubmit(values: any) {
+    console.log("Registration form values:", values);
     if (values.password !== values.confirmPassword) {
       alert("Passwords don't match");
       return;
@@ -52,6 +53,7 @@ export default function AuthPage() {
       name: values.username, // Use username as name
       email: `${values.username}@example.com`, // Generate a default email
     };
+    console.log("Sending registration data:", userData);
     registerMutation.mutate(userData);
   }
 
