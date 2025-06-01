@@ -43,7 +43,11 @@ export default function AuthPage() {
     loginMutation.mutate(values);
   }
 
-  function onRegisterSubmit(values: z.infer<typeof registerSchema>) {
+  function onRegisterSubmit(values: any) {
+    if (values.password !== values.confirmPassword) {
+      alert("Passwords don't match");
+      return;
+    }
     registerMutation.mutate(values);
   }
 
