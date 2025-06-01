@@ -28,8 +28,7 @@ export default function AuthPage() {
     },
   });
 
-  const registerForm = useForm<z.infer<typeof registerSchema>>({
-    resolver: zodResolver(registerSchema),
+  const registerForm = useForm({
     defaultValues: {
       username: "",
       password: "",
@@ -229,7 +228,10 @@ export default function AuthPage() {
                                 placeholder="Enter your full name"
                                 autoComplete="name"
                                 className="pl-12 py-6 bg-[#f7f9fc] border-[#e1e8ef] rounded-lg focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
-                                {...field}
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                name={field.name}
                               />
                             </FormControl>
                           </div>
@@ -254,7 +256,10 @@ export default function AuthPage() {
                                 placeholder="Enter your email"
                                 autoComplete="email"
                                 className="pl-12 py-6 bg-[#f7f9fc] border-[#e1e8ef] rounded-lg focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
-                                {...field}
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                                onBlur={field.onBlur}
+                                name={field.name}
                               />
                             </FormControl>
                           </div>
