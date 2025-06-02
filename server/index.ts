@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initDatabase } from "./initDb";
 import { seedDatabase } from "./seed";
+import { seedCompleteInstructors } from "./completeInstructorSeed";
 
 const app = express();
 // Increase JSON body size limit to handle large base64 encoded images (50MB)
@@ -46,6 +47,9 @@ app.use((req, res, next) => {
     
     // Seed the database with initial admin user
     await seedDatabase();
+    
+    // Seed instructors with complete data from database export
+    await seedCompleteInstructors();
   } catch (error) {
     log(`Error initializing database: ${error}`);
   }
