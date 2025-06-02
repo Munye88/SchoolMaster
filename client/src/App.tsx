@@ -53,7 +53,7 @@ import ManageCourses from "./pages/management/ManageCoursesFixed";
 
 function SidebarWithAuth() {
   const { user } = useAuth();
-  
+
   // Don't show sidebar on the auth page
   return user ? <Sidebar /> : null;
 }
@@ -68,14 +68,20 @@ function Router() {
         <Switch>
           {/* Auth route - public */}
           <Route path="/auth" component={AuthPage} />
-          
+
           {/* Moon's Assistant has been removed */}
-          
+
           {/* Protected routes */}
           <ProtectedRoute path="/" component={Dashboard} />
           <ProtectedRoute path="/instructors" component={InstructorProfile} />
-          <ProtectedRoute path="/instructors/:id" component={InstructorProfile} />
-          <ProtectedRoute path="/instructor-lookup" component={InstructorLookup} />
+          <ProtectedRoute
+            path="/instructors/:id"
+            component={InstructorProfile}
+          />
+          <ProtectedRoute
+            path="/instructor-lookup"
+            component={InstructorLookup}
+          />
           <ProtectedRoute path="/courses" component={Courses} />
           <ProtectedRoute path="/courses/:id" component={CourseDetails} />
           <ProtectedRoute path="/dli" component={DLI} />
@@ -86,49 +92,139 @@ function Router() {
           <ProtectedRoute path="/reports" component={Reports} />
           <ProtectedRoute path="/documents" component={Documents} />
           <ProtectedRoute path="/action-log" component={ActionLogPage} />
-          <ProtectedRoute path="/quarterly-checkins" component={QuarterlyCheckins} />
+          <ProtectedRoute
+            path="/quarterly-checkins"
+            component={QuarterlyCheckins}
+          />
           <ProtectedRoute path="/recruitment" component={RecruitmentPage} />
-          
+
           {/* Administration routes */}
-          <ProtectedRoute path="/administration/company-policy" component={Administration} />
-          <ProtectedRoute path="/administration/evaluation-guideline" component={Administration} />
-          <ProtectedRoute path="/administration/instructor-performance-policy" component={Administration} />
-          <ProtectedRoute path="/administration/employee-handbook" component={Administration} />
-          <ProtectedRoute path="/administration/performance-policy" component={Administration} />
-          <ProtectedRoute path="/administration/classroom-evaluation" component={Administration} />
-          <ProtectedRoute path="/administration/instructor-recognition" component={InstructorRecognition} />
-          <ProtectedRoute path="/administration/manage-dashboard" component={ManageDashboard} />
-          <ProtectedRoute path="/administration/users" component={UserManagement} />
+          <ProtectedRoute
+            path="/administration/company-policy"
+            component={Administration}
+          />
+          <ProtectedRoute
+            path="/administration/evaluation-guideline"
+            component={Administration}
+          />
+          <ProtectedRoute
+            path="/administration/instructor-performance-policy"
+            component={Administration}
+          />
+          <ProtectedRoute
+            path="/administration/employee-handbook"
+            component={Administration}
+          />
+          <ProtectedRoute
+            path="/administration/performance-policy"
+            component={Administration}
+          />
+          <ProtectedRoute
+            path="/administration/classroom-evaluation"
+            component={Administration}
+          />
+          <ProtectedRoute
+            path="/administration/instructor-recognition"
+            component={InstructorRecognition}
+          />
+          <ProtectedRoute
+            path="/administration/manage-dashboard"
+            component={ManageDashboard}
+          />
+          <ProtectedRoute
+            path="/administration/users"
+            component={UserManagement}
+          />
           <ProtectedRoute path="/events" component={EventsPage} />
-          
+
           {/* Training & Development routes */}
-          <ProtectedRoute path="/training-development" component={TrainingDevelopment} />
-          <ProtectedRoute path="/training-development/leadership-skills" component={TrainingDevelopment} />
-          <ProtectedRoute path="/training-development/communication-techniques" component={TrainingDevelopment} />
-          <ProtectedRoute path="/training-development/conflict-resolution" component={TrainingDevelopment} />
-          <ProtectedRoute path="/training-development/decision-making" component={TrainingDevelopment} />
-          <ProtectedRoute path="/training-development/team-building" component={TrainingDevelopment} />
-          
+          <ProtectedRoute
+            path="/training-development"
+            component={TrainingDevelopment}
+          />
+          <ProtectedRoute
+            path="/training-development/leadership-skills"
+            component={TrainingDevelopment}
+          />
+          <ProtectedRoute
+            path="/training-development/communication-techniques"
+            component={TrainingDevelopment}
+          />
+          <ProtectedRoute
+            path="/training-development/conflict-resolution"
+            component={TrainingDevelopment}
+          />
+          <ProtectedRoute
+            path="/training-development/decision-making"
+            component={TrainingDevelopment}
+          />
+          <ProtectedRoute
+            path="/training-development/team-building"
+            component={TrainingDevelopment}
+          />
+
           {/* Test Route for Moon's Assistant moved to public route above */}
-          
+
           {/* Management routes */}
-          <ProtectedRoute path="/management/schools" component={ManageSchools} />
-          <ProtectedRoute path="/management/instructors" component={ManageInstructors} />
-          <ProtectedRoute path="/management/students" component={ManageStudents} />
-          <ProtectedRoute path="/management/courses" component={ManageCourses} />
-          
+          <ProtectedRoute
+            path="/management/schools"
+            component={ManageSchools}
+          />
+          <ProtectedRoute
+            path="/management/instructors"
+            component={ManageInstructors}
+          />
+          <ProtectedRoute
+            path="/management/students"
+            component={ManageStudents}
+          />
+          <ProtectedRoute
+            path="/management/courses"
+            component={ManageCourses}
+          />
+
           {/* School-specific document routes */}
-          <ProtectedRoute path="/schools/:schoolCode/instructor-profiles" component={SchoolInstructorProfiles} />
-          <ProtectedRoute path="/schools/:schoolCode/timetable" component={SchoolTimetable} />
-          <ProtectedRoute path="/schools/:schoolCode/student-day-schedule" component={SchoolStudentDaySchedule} />
-          <ProtectedRoute path="/schools/:schoolCode/yearly-schedule" component={SchoolYearlySchedule} />
-          <ProtectedRoute path="/schools/:schoolCode/sop" component={SchoolSOP} />
-          <ProtectedRoute path="/schools/:schoolCode/staff-evaluations" component={StaffEvaluations} />
-          <ProtectedRoute path="/schools/:schoolCode/staff-attendance" component={StaffAttendance} />
-          <ProtectedRoute path="/schools/:schoolCode/book-inventory" component={SchoolBookInventory} />
-          <ProtectedRoute path="/schools/:schoolCode/staff-leave-tracker" component={StaffLeaveTracker} />
-          <ProtectedRoute path="/schools/:schoolCode/staff-counseling" component={StaffCounseling} />
-          
+          <ProtectedRoute
+            path="/schools/:schoolCode/instructor-profiles"
+            component={SchoolInstructorProfiles}
+          />
+          <ProtectedRoute
+            path="/schools/:schoolCode/timetable"
+            component={SchoolTimetable}
+          />
+          <ProtectedRoute
+            path="/schools/:schoolCode/student-day-schedule"
+            component={SchoolStudentDaySchedule}
+          />
+          <ProtectedRoute
+            path="/schools/:schoolCode/yearly-schedule"
+            component={SchoolYearlySchedule}
+          />
+          <ProtectedRoute
+            path="/schools/:schoolCode/sop"
+            component={SchoolSOP}
+          />
+          <ProtectedRoute
+            path="/schools/:schoolCode/staff-evaluations"
+            component={StaffEvaluations}
+          />
+          <ProtectedRoute
+            path="/schools/:schoolCode/staff-attendance"
+            component={StaffAttendance}
+          />
+          <ProtectedRoute
+            path="/schools/:schoolCode/book-inventory"
+            component={SchoolBookInventory}
+          />
+          <ProtectedRoute
+            path="/schools/:schoolCode/staff-leave-tracker"
+            component={StaffLeaveTracker}
+          />
+          <ProtectedRoute
+            path="/schools/:schoolCode/staff-counseling"
+            component={StaffCounseling}
+          />
+
           {/* Fallback to 404 */}
           <Route component={NotFound} />
         </Switch>

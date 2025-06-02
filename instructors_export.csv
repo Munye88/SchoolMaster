@@ -1,0 +1,73 @@
+id,name,nationality,credentials,start_date,compound,school_id,phone,accompanied_status,role
+6852,Michael Migliore,American,ELT Certification,2021-06-01,Al Reem,349,555-2020,Accompanied,SR ELT Instructor
+6866,Anthony Migliore,American,ELT Certification,2021-06-01,Al Reem,349,555-2019,Unaccompanied,ELT Instructor
+6872,Matthew Drake,American,ELT Certification,2024-02-19,Saken,350,050-700-4786,Accompanied,ELT Instructor
+6873,Shah Nawaz,British,ELT Certification,2021-07-15,Saken,350,050-633-2469,Unaccompanied,ELT Instructor
+6874,Mohamed Mohamed,American,ELT Certification,2021-06-01,Al Reem,350,055-025-2436,Accompanied,ELT Instructor
+6875,Shamell Hurd,British,ELT Certification,2023-04-16,Al Reem,350,055-025-3278,Unaccompanied,ELT Instructor
+6876,Vacant ,American,ELT Certification,2022-07-03,Al Reem,350,555-1234,Unaccompanied,ELT Instructor
+6877,Abdibasid Barre,British,ELT Certification,2021-06-01,Al Reem,350,055-025-3581,Accompanied,ELT Instructor
+6878,Jose Montalvo,American,ELT Certification,2024-06-13,Al Reem,350,050-966-1203,Unaccompanied,ELT Instructor
+6879,Musab Ahmed,British,ELT Certification,2021-06-01,Al Reem,350,055-025-3265,Accompanied,ELT Instructor
+6880,Afrim Trelak,British,ELT Certification,2022-01-01,Al Reem,350,555-1250,Accompanied,ELT Instructor
+6882,Paul Moss,American,ELT Certification,2022-01-01,Al Reem,350,055-025-3275,Unaccompanied,ELT Instructor
+6883,Dahir Adani,British,ELT Certification,2021-06-01,Al Reem,350,055-024-9883,Unaccompanied,ELT Instructor
+6884,Vacant ,American,ELT Certification,2022-01-01,Al Reem,350,555-1243,Unaccompanied,ELT Instructor
+6885,Muhidin Sheikh,American,ELT Certification,2021-06-01,Al Reem,350,055-025-3391,Unaccompanied,ELT Instructor
+6886,Said Ibrahim,British,ELT Certification,2022-06-23,Al Reem,350,050-631-0781,Accompanied,ELT Instructor
+6887,Abdulaziz Yusuf,British,ELT Certification,2022-06-30,Al Reem,350,056-408-9608,Unaccompanied,ELT Instructor
+6888,Rafiq Abdul-Alim,American,ELT Certification,2023-04-16,Al Reem,350,056-589-1338,Unaccompanied,SR ELT Instructor
+6890,Omar Obsiye,British,ELT Certification,2022-07-03,Al Reem,350,054-404-3319,Unaccompanied,ELT Instructor
+6897,Vacant,American,ELT Certification,2023-06-01,Al Reem,351,555-3027,Unaccompanied,ELT Instructor
+6912,Mustafa Jama,British,ELT Certification,2021-08-12,Al Reem,349,555-2003,Accompanied,ELT Instructor
+6913,Domanic Fish,American,ELT Certification,2022-04-15,Saken,349,555-2011,Unaccompanied,ELT Instructor
+6914,Fawad Saleh,British,ELT Certification,2021-06-01,Saken,349,555-2014,Accompanied,ELT Instructor
+6915,Mohamed Sheikh,Canadian,ELT Certification,2022-09-18,Al Reem,349,555-2008,Unaccompanied,ELT Instructor
+6916,Mohammed Sirajuddin ,British,ELT Certification,2021-07-22,Al Reem,349,555-2009,Unaccompanied,ELT Instructor
+6917,Sahal Dirir,British,ELT Certification,2023-01-08,Saken,349,555-2010,Unaccompanied,ELT Instructor
+6918,Houssam Cherifi,British,ELT Certification,2021-06-05,Al Reem,349,555-2002,Unaccompanied,ELT Instructor
+6919,Shaun Yate,British,ELT Certification,2021-06-01,Al Reem,349,555-2001,Unaccompanied,ELT Instructor
+6920,Yassin Munye ,American,ELT Certification,2021-01-06,Saken,349,555-2007,Accompanied,ELT Instructor
+6921,Mohamed Hirabe,British,ELT Certification,2023-03-20,Al Reem,349,555-2005,Unaccompanied,ELT Instructor
+6922,Dean Baktay ,American,ELT Certification,2022-07-19,Al Reem,349,555-2016,Unaccompanied,ELT Instructor
+6923,Vacant,American,ELT Certification,2022-05-10,Al Reem,349,555-2006,Unaccompanied,ELT Instructor
+6924,Saleh Idris ,British,ELT Certification,2021-06-01,Al Reem,349,555-2017,Unaccompanied,ELT Instructor
+6925,Nicholas Renton,American,ELT Certification,2021-06-01,Al Reem,349,555-2018,Unaccompanied,ELT Instructor
+6927,Abdikarim Nur,American,ELT Certification,2022-08-03,Al Reem,349,555-2013,Unaccompanied,ELT Instructor
+6928,Junaide Bowers,British,ELT Certification,2023-02-14,Al Reem,349,555-2015,Unaccompanied,ELT Instructor
+6929,Mohamed Abdi-Abdullatif,American,ELT Certification,2021-10-12,Saken,349,555-2012,Accompanied,ELT Instructor
+6930,Abdifatah Farah,American,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 025 3651,Accompanied,ELT Instructor
+6931,Elijah Hasan ,American,ELT Certification,2022-04-15,Sharbatly Village,351,+966 55 025 0228,Accompanied,ELT Instructor
+6932,Asim Butt ,British,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 025 3654,Accompanied,ELT Instructor
+6933,Sean Less,American,ELT Certification,2021-07-22,Sharbatly Village,351,+966 55 025 3628,Unaccompanied,SR ELT Instructor
+6934,Melik Spain,American,ELT Certification,2022-01-15,Sharbatly Village,351,555-3004,Unaccompanied,ELT Instructor
+6935,Mohamed Nessour ,British,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 025 3491,Unaccompanied,ELT Instructor
+6936,Pierre Van Dorp ,American,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 025 3484,Unaccompanied,ELT Instructor
+6937,Mohamed Abdurahman ,American,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 025 3619,Accompanied,SR ELT Instructor 
+6938,Abdullah H Ahmed ,British,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 025 3473,Accompanied,ELT Instructor
+6939,Glenn Stevens ,American,ELT Certification,2023-04-07,Sharbatly Village,351,+966 50 153 9679,Unaccompanied,SR ELT Instructor
+6940,Sharmarke Ugaas,British,ELT Certification,2022-07-19,Sharbatly Village,351,+966 55 025 3658,Unaccompanied,ELT Instructor
+6941,Mohamed Dana,British,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 024 8973,Accompanied,ELT Instructor
+6942,Carl Nelson,American,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 025 3669,Unaccompanied,ELT Instructor
+6943,Gary Abdullah ,American,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 025 3380,Unaccompanied,ELT Instructor
+6944,Thomas Sheldrick,British,ELT Certification,2023-03-20,Sharbatly Village,351,+966 55 025 3663,Unaccompanied,ELT Instructor
+6945,Cedric Allen,American,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 024 8628,Accompanied,ELT Instructor
+6946,Wali Hamidullah ,American,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 024 9963,Unaccompanied,ELT Instructor
+6947,Michael Hylton,British,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 025 2716,Accompanied,ELT Instructor
+6948,Abraham Koriat ,American,ELT Certification,2021-06-05,Sharbatly Village,351,+966 55 025 3507,Unaccompanied,ELT Instructor
+6949,John Ssennyonjo ,Canadian,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 025 3471,Unaccompanied,ELT Instructor
+6950,Mohamed Yusuf,British,ELT Certification,2021-06-01,Sharbatly Village,351,+966 50 634 0815,Unaccompanied,ELT Instructor
+6951,Taha Alhumdi,American,ELT Certification,2022-06-14,Sharbatly Village,351,+966 55 024 8649,Unaccompanied,ELT Instructor
+6952,Yasin Yusuf,British,ELT Certification,2021-08-12,Sharbatly Village,351,+966 55 025 0320,Unaccompanied,ELT Instructor
+6953,Mohamed Nur ,Canadian,ELT Certification,2021-06-01,Sharbatly Village,351,+966 55 025 2451,Accompanied,ELT Instructor
+6954,Ben Arabi,American,ELT Certification,2021-11-05,Al Reem,351,+966 50 634 2198,Unaccompanied,ELT Instructor
+6955,Franklyn James,British,ELT Certification,2022-11-09,Sharbatly Village,351,+966 55 509 6180,Unaccompanied,ELT Instructor
+6956,Lewis Chowen,American,CELTA,2022-04-13,Al Reem,349,+966 55 223 0408,Accompanied,ELT Instructor
+6958,Vacant,American,MA Business,2025-04-17,Al Reem,349,+966 55 223 7776,Unaccompanied,ELT Instructor
+6959,Mohamud Abdulle ,American,CELTA,2021-06-01,Saken,349,+966 55 223 0009,Unaccompanied,SR ELT Instructor
+6961,Adnan Hamdan,British,CELTA,2025-04-19,Al Reem,349,+966550250403,Unaccompanied,ELT Instructor
+6962,Vacant,American,DELTA,2025-04-20,Al Reem,349,0550240514,Unaccompanied,ELT Instructor
+6963,Ben Khalifa ,British,DELTA,2025-04-20,Saken,349,02502102445,Unaccompanied,ELT Instructor
+6966,Vacant,American,MA TESOL,2025-04-29,Sharbatly Village,351,9999999,Unaccompanied,ELT Instructor
+6967,Vacant ,American,DELTA,2025-04-29,Al Reem,349,987878888,Unaccompanied,ELT Instructor
+6968,Vacant,American,MA in Education   (DLI certified),2025-04-30,Al Reem,350,75765665,Unaccompanied, ELT Instructor
