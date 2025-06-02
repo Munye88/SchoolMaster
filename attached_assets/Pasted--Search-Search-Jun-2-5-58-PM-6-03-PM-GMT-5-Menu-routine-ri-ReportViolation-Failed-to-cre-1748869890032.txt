@@ -1,0 +1,157 @@
+
+Search
+Search
+
+Jun 2, 5:58 PM - 6:03 PM
+GMT+5
+
+Menu
+  routine: 'ri_ReportViolation'
+}
+Failed to create instructor Said Ibrahim: error: insert or update on table "instructors" violates foreign key constraint "instructors_school_id_schools_id_fk"
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.createInstructor (file:///opt/render/project/src/dist/index.js:1451:26)
+    at async seedCompleteInstructors (file:///opt/render/project/src/dist/index.js:7225:9)
+    at async file:///opt/render/project/src/dist/index.js:7281:5 {
+  length: 294,
+  severity: 'ERROR',
+  code: '23503',
+  detail: 'Key (school_id)=(350) is not present in table "schools".',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'instructors',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'instructors_school_id_schools_id_fk',
+  file: 'ri_triggers.c',
+  line: '2608',
+  routine: 'ri_ReportViolation'
+}
+Failed to create instructor Abdulaziz Yusuf: error: insert or update on table "instructors" violates foreign key constraint "instructors_school_id_schools_id_fk"
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.createInstructor (file:///opt/render/project/src/dist/index.js:1451:26)
+    at async seedCompleteInstructors (file:///opt/render/project/src/dist/index.js:7225:9)
+    at async file:///opt/render/project/src/dist/index.js:7281:5 {
+  length: 294,
+  severity: 'ERROR',
+  code: '23503',
+  detail: 'Key (school_id)=(350) is not present in table "schools".',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'instructors',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'instructors_school_id_schools_id_fk',
+  file: 'ri_triggers.c',
+  line: '2608',
+  routine: 'ri_ReportViolation'
+}
+Failed to create instructor Rafiq Abdul-Alim: error: insert or update on table "instructors" violates foreign key constraint "instructors_school_id_schools_id_fk"
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.createInstructor (file:///opt/render/project/src/dist/index.js:1451:26)
+    at async seedCompleteInstructors (file:///opt/render/project/src/dist/index.js:7225:9)
+    at async file:///opt/render/project/src/dist/index.js:7281:5 {
+  length: 294,
+  severity: 'ERROR',
+  code: '23503',
+  detail: 'Key (school_id)=(350) is not present in table "schools".',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'instructors',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'instructors_school_id_schools_id_fk',
+  file: 'ri_triggers.c',
+  line: '2608',
+  routine: 'ri_ReportViolation'
+}
+Failed to create instructor Omar Obsiye: error: insert or update on table "instructors" violates foreign key constraint "instructors_school_id_schools_id_fk"
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.createInstructor (file:///opt/render/project/src/dist/index.js:1451:26)
+    at async seedCompleteInstructors (file:///opt/render/project/src/dist/index.js:7225:9)
+    at async file:///opt/render/project/src/dist/index.js:7281:5 {
+  length: 294,
+  severity: 'ERROR',
+  code: '23503',
+  detail: 'Key (school_id)=(350) is not present in table "schools".',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'instructors',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'instructors_school_id_schools_id_fk',
+  file: 'ri_triggers.c',
+  line: '2608',
+  routine: 'ri_ReportViolation'
+}
+Successfully seeded 0 instructors from complete database export
+Failed to create instructor Tarik Preston: error: insert or update on table "instructors" violates foreign key constraint "instructors_school_id_schools_id_fk"
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.createInstructor (file:///opt/render/project/src/dist/index.js:1451:26)
+    at async seedCompleteInstructors (file:///opt/render/project/src/dist/index.js:7225:9)
+    at async file:///opt/render/project/src/dist/index.js:7281:5 {
+  length: 294,
+  severity: 'ERROR',
+  code: '23503',
+  detail: 'Key (school_id)=(350) is not present in table "schools".',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'instructors',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'instructors_school_id_schools_id_fk',
+  file: 'ri_triggers.c',
+  line: '2608',
+  routine: 'ri_ReportViolation'
+}
+staff_attendance table already exists.
+Adding employee_id column to staff_leave table
+Adding attachment_url column to staff_leave table
+Staff leave table migration completed successfully
+NFS East images are already permanently fixed, skipping updates
+KFNA images are already permanently fixed, skipping updates
+NFS West images are already permanently fixed, skipping updates
+Adding completed_date column to action_logs table...
+completed_date column already exists
+Evaluations table migration completed successfully
+Adding notifications table...
+Notifications table already exists.
+Adding staff counseling table...
+Staff counseling table already exists.
+Adding pto_balance table...
+PTO balance table already exists, skipping creation
+Checking PTO balance constraint...
+PTO constraint does not exist, no action needed
+Fixing PTO balance calculations...
+PTO balance calculations fixed successfully
+1:02:49 PM [express] serving on port 10000
