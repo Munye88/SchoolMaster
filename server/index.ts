@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initDatabase } from "./initDb";
 import { seedDatabase } from "./seed";
+import { seedSchools } from "./schoolSeed";
 import { seedCompleteInstructors } from "./completeInstructorSeed";
 
 const app = express();
@@ -47,6 +48,9 @@ app.use((req, res, next) => {
     
     // Seed the database with initial admin user
     await seedDatabase();
+    
+    // Seed schools first (required for instructor foreign keys)
+    await seedSchools();
     
     // Seed instructors with complete data from database export
     await seedCompleteInstructors();
