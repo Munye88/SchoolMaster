@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { initDatabase } from "./initDb";
+import { seedDatabase } from "./seed";
 
 const app = express();
 // Increase JSON body size limit to handle large base64 encoded images (50MB)
@@ -42,6 +43,9 @@ app.use((req, res, next) => {
   try {
     // Initialize the database
     await initDatabase();
+    
+    // Seed the database with initial admin user
+    await seedDatabase();
   } catch (error) {
     log(`Error initializing database: ${error}`);
   }
