@@ -266,53 +266,37 @@ const AlcptOrder = () => {
   ];
   
   // Filter forms by school, search query, and status
-  const filteredForms = localFormsInventory.filter(form => {
-    const matchesSchool = selectedSchool ? form.schoolId === selectedSchool.id : 
-                         viewingSchoolId ? form.schoolId === viewingSchoolId : true;
-    const matchesSearch = form.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = selectedStatus === 'all' || form.status === selectedStatus;
+  const filteredForms = inventoryItems.filter(item => {
+    const matchesSchool = selectedSchool ? item.schoolId === selectedSchool.id : 
+                         viewingSchoolId ? item.schoolId === viewingSchoolId : true;
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = selectedStatus === 'all' || item.status === selectedStatus;
     
     return matchesSchool && matchesSearch && matchesStatus;
   });
   
   // Get forms for a specific school
   const getSchoolForms = (schoolId: number) => {
-    return localFormsInventory.filter(form => form.schoolId === schoolId);
+    return inventoryItems.filter(item => item.schoolId === schoolId);
   };
   
   // Add a new form to inventory
   const handleAddForm = () => {
-    // Generate new ID by finding max ID and adding 1
-    const newId = Math.max(...localFormsInventory.map(form => form.id)) + 1;
-    
-    // Determine status based on quantity
-    let status = 'Out of Stock';
-    if (currentForm.quantity > 20) {
-      status = 'In Stock';
-    } else if (currentForm.quantity > 0) {
-      status = 'Low Stock';
-    }
-    
-    const newForm = {
-      id: newId,
+    const itemData = {
       name: currentForm.name,
+      type: 'alcpt_form' as const,
       quantity: currentForm.quantity,
-      status: status,
+      minQuantity: 10,
+      maxQuantity: 100,
       schoolId: currentForm.schoolId,
     };
     
-    setLocalFormsInventory([...localFormsInventory, newForm]);
-    setShowAddFormDialog(false);
+    createInventoryMutation.mutate(itemData);
     setCurrentForm({
       name: '',
       quantity: 0,
-      status: 'Out of Stock',
+      status: 'out_of_stock',
       schoolId: selectedSchool?.id || 349,
-    });
-    
-    toast({
-      title: "Form added",
-      description: `${newForm.name} has been added to the inventory.`,
     });
   };
   
@@ -320,33 +304,19 @@ const AlcptOrder = () => {
   const handleEditForm = () => {
     if (!currentForm.id) return;
     
-    // Determine status based on quantity
-    let status = 'Out of Stock';
-    if (currentForm.quantity > 20) {
-      status = 'In Stock';
-    } else if (currentForm.quantity > 0) {
-      status = 'Low Stock';
-    }
+    const updateData = {
+      name: currentForm.name,
+      quantity: currentForm.quantity,
+      schoolId: currentForm.schoolId,
+    };
     
-    const updatedForms = localFormsInventory.map(form => {
-      if (form.id === currentForm.id) {
-        return {
-          ...form,
-          name: currentForm.name,
-          quantity: currentForm.quantity,
-          status: status,
-          schoolId: currentForm.schoolId,
-        };
-      }
-      return form;
-    });
-    
-    setLocalFormsInventory(updatedForms);
+    updateInventoryMutation.mutate({ id: currentForm.id, ...updateData });
     setShowEditFormDialog(false);
-    
-    toast({
-      title: "Form updated",
-      description: `${currentForm.name} has been updated.`,
+    setCurrentForm({
+      name: '',
+      quantity: 0,
+      status: 'out_of_stock',
+      schoolId: selectedSchool?.id || 349,
     });
   };
   
