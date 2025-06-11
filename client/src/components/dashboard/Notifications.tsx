@@ -26,7 +26,6 @@ interface NotificationsProps {
   staffLeave?: StaffLeave[];
   evaluations?: Evaluation[];
   courses?: Course[];
-  students?: Student[];
   limit?: number;
   showFilter?: boolean;
 }

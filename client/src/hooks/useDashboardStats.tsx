@@ -178,7 +178,7 @@ export function useDashboardStats(): DashboardStats {
       console.log("Active courses:", cachedCourseStats.activeCourses);
       console.log("Completed courses:", cachedCourseStats.completedCourses);
     }
-  }, [courses, students]);
+  }, [courses]);
   
   // Return combined statistics
   return {

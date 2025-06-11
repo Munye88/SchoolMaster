@@ -280,94 +280,118 @@ const Dashboard = () => {
                   </div>
                 </div>
                 
-                {/* Course Cards */}
+                {/* Course Cards - Dynamic from API data */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Refresher Course 1 - Purple styling */}
-                  <div className="rounded-lg shadow-sm bg-[#F2EFFA] p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-[#8E7CB0] mr-1"></div>
-                        <span className="text-base font-medium text-[#342355]">Refresher</span>
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-center text-xl">
-                        <BookOpen className="w-5 h-5 text-[#8E7CB0]" />
-                      </div>
+                  {courses
+                    .filter(course => course.status === 'In Progress')
+                    .slice(0, 6)
+                    .map((course, index) => {
+                      // Color schemes for variety
+                      const colorSchemes = [
+                        {
+                          bg: 'bg-[#F2EFFA]',
+                          dot: 'bg-[#8E7CB0]',
+                          text: 'text-[#342355]',
+                          icon: 'bg-purple-200',
+                          iconColor: 'text-[#8E7CB0]',
+                          progress: 'bg-purple-200',
+                          progressBar: 'bg-[#8E7CB0]'
+                        },
+                        {
+                          bg: 'bg-[#FDF4E7]',
+                          dot: 'bg-[#D9843A]',
+                          text: 'text-[#733F10]',
+                          icon: 'bg-orange-200',
+                          iconColor: 'text-[#D9843A]',
+                          progress: 'bg-orange-200',
+                          progressBar: 'bg-[#D9843A]'
+                        },
+                        {
+                          bg: 'bg-[#F0F9F5]',
+                          dot: 'bg-[#4D9E7A]',
+                          text: 'text-[#194434]',
+                          icon: 'bg-green-200',
+                          iconColor: 'text-[#4D9E7A]',
+                          progress: 'bg-green-200',
+                          progressBar: 'bg-[#4D9E7A]'
+                        },
+                        {
+                          bg: 'bg-[#E7F3FF]',
+                          dot: 'bg-[#3B82F6]',
+                          text: 'text-[#1E3A8A]',
+                          icon: 'bg-blue-200',
+                          iconColor: 'text-[#3B82F6]',
+                          progress: 'bg-blue-200',
+                          progressBar: 'bg-[#3B82F6]'
+                        },
+                        {
+                          bg: 'bg-[#FEF2F2]',
+                          dot: 'bg-[#EF4444]',
+                          text: 'text-[#7F1D1D]',
+                          icon: 'bg-red-200',
+                          iconColor: 'text-[#EF4444]',
+                          progress: 'bg-red-200',
+                          progressBar: 'bg-[#EF4444]'
+                        },
+                        {
+                          bg: 'bg-[#FFFBEB]',
+                          dot: 'bg-[#F59E0B]',
+                          text: 'text-[#78350F]',
+                          icon: 'bg-yellow-200',
+                          iconColor: 'text-[#F59E0B]',
+                          progress: 'bg-yellow-200',
+                          progressBar: 'bg-[#F59E0B]'
+                        }
+                      ];
+                      
+                      const scheme = colorSchemes[index % colorSchemes.length];
+                      const schoolName = schools.find(s => s.id === course.schoolId)?.name || 'Unknown';
+                      const instructor = instructors.find(i => i.id === course.instructorId);
+                      
+                      return (
+                        <div key={course.id} className={`rounded-lg shadow-sm ${scheme.bg} p-3`}>
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center">
+                              <div className={`w-2 h-2 rounded-full ${scheme.dot} mr-1`}></div>
+                              <span className={`text-base font-medium ${scheme.text}`}>{course.name}</span>
+                            </div>
+                            <div className={`w-8 h-8 rounded-full ${scheme.icon} flex items-center justify-center text-center text-xl`}>
+                              <BookOpen className={`w-5 h-5 ${scheme.iconColor}`} />
+                            </div>
+                          </div>
+                          <div className="mt-2 mb-2">
+                            <span className={`text-3xl font-bold ${scheme.text}`}>{course.studentCount || 0}</span>
+                            <span className={`text-base font-medium ${scheme.text} ml-2`}>Students</span>
+                          </div>
+                          <div className="text-xs mb-1">
+                            <span className={`${scheme.text} opacity-75`}>{schoolName}</span>
+                            {instructor && (
+                              <span className={`${scheme.text} opacity-75 block`}>Instructor: {instructor.name}</span>
+                            )}
+                          </div>
+                          <div>
+                            <div className={`flex items-center justify-between text-sm ${scheme.text} mb-1`}>
+                              <span>Progress</span>
+                              <span>{course.progress || 0}%</span>
+                            </div>
+                            <div className={`w-full ${scheme.progress} rounded-full h-2.5 overflow-hidden`}>
+                              <div 
+                                className={`h-full ${scheme.progressBar} rounded-full`} 
+                                style={{ width: `${course.progress || 0}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    
+                  {/* Show message if no active courses */}
+                  {courses.filter(course => course.status === 'In Progress').length === 0 && (
+                    <div className="col-span-full text-center py-8 text-gray-500">
+                      <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                      <p>No active courses at the moment</p>
                     </div>
-                    <div className="mt-2 mb-2">
-                      <span className="text-3xl font-bold text-[#342355]">93</span>
-                      <span className="text-base font-medium text-[#342355] ml-2">Students</span>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-between text-sm text-[#342355] mb-1">
-                        <span>Progress</span>
-                        <span>53%</span>
-                      </div>
-                      <div className="w-full bg-purple-200 rounded-full h-2.5 overflow-hidden">
-                        <div 
-                          className="h-full bg-[#8E7CB0] rounded-full" 
-                          style={{ width: '53%' }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Refresher Course 2 - Orange styling */}
-                  <div className="rounded-lg shadow-sm bg-[#FDF4E7] p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-[#D9843A] mr-1"></div>
-                        <span className="text-base font-medium text-[#733F10]">Refresher</span>
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-orange-200 flex items-center justify-center text-center text-xl">
-                        <BookOpen className="w-5 h-5 text-[#D9843A]" />
-                      </div>
-                    </div>
-                    <div className="mt-2 mb-2">
-                      <span className="text-3xl font-bold text-[#733F10]">8</span>
-                      <span className="text-base font-medium text-[#733F10] ml-2">Students</span>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-between text-sm text-[#733F10] mb-1">
-                        <span>Progress</span>
-                        <span>53%</span>
-                      </div>
-                      <div className="w-full bg-orange-200 rounded-full h-2.5 overflow-hidden">
-                        <div 
-                          className="h-full bg-[#D9843A] rounded-full" 
-                          style={{ width: '53%' }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Refresher Course 3 - Green styling */}
-                  <div className="rounded-lg shadow-sm bg-[#F0F9F5] p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-[#4D9E7A] mr-1"></div>
-                        <span className="text-base font-medium text-[#194434]">Refresher</span>
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-green-200 flex items-center justify-center text-center text-xl">
-                        <BookOpen className="w-5 h-5 text-[#4D9E7A]" />
-                      </div>
-                    </div>
-                    <div className="mt-2 mb-2">
-                      <span className="text-3xl font-bold text-[#194434]">16</span>
-                      <span className="text-base font-medium text-[#194434] ml-2">Students</span>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-between text-sm text-[#194434] mb-1">
-                        <span>Progress</span>
-                        <span>85%</span>
-                      </div>
-                      <div className="w-full bg-green-200 rounded-full h-2.5 overflow-hidden">
-                        <div 
-                          className="h-full bg-[#4D9E7A] rounded-full" 
-                          style={{ width: '85%' }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -714,7 +738,6 @@ const Dashboard = () => {
             staffLeave={staffLeave} 
             evaluations={evaluations} 
             courses={courses} 
-            students={students} 
             limit={3} 
           />
         </div>
