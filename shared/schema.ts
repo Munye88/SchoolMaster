@@ -788,8 +788,7 @@ export const insertSchoolScheduleSchema = createInsertSchema(schoolSchedules).pi
   title: true,
   academicYear: true,
   data: true,
-  isActive: true,
-  updatedAt: true
+  isActive: true
 });
 
 export const schoolSchedulesRelations = relations(schoolSchedules, ({ one }) => ({
