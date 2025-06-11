@@ -483,6 +483,17 @@ const Sidebar = () => {
                         Classroom Evaluation Guide
                       </Link>
                     </li>
+                    
+                    <li className="px-3 py-1 text-xs font-medium border-b border-blue-200/70 mb-1 mt-2 text-blue-800">
+                      System Management
+                    </li>
+                    <li>
+                      <Link href="/admin/schedules" onClick={() => setShowAdminLinks(false)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <CalendarDays className="h-4 w-4 mr-2 text-blue-600 group-hover:text-blue-700" />
+                        Schedule Management
+                      </Link>
+                    </li>
 
 
                   </ul>

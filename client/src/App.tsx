@@ -50,6 +50,7 @@ import ManageSchools from "./pages/management/ManageSchools";
 import ManageInstructors from "./pages/management/ManageInstructorsNew";
 import ManageStudents from "./pages/management/ManageStudents";
 import ManageCourses from "./pages/management/ManageCoursesFixed";
+import ScheduleManager from "./pages/admin/ScheduleManager";
 
 function SidebarWithAuth() {
   const { user } = useAuth();
@@ -181,6 +182,12 @@ function Router() {
           <ProtectedRoute
             path="/management/courses"
             component={ManageCourses}
+          />
+          
+          {/* Schedule Management */}
+          <ProtectedRoute
+            path="/admin/schedules"
+            component={ScheduleManager}
           />
 
           {/* School-specific document routes */}
