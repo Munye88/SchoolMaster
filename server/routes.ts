@@ -40,7 +40,8 @@ import {
   ptoBalance,
   inventoryItems,
   inventoryTransactions,
-  schools
+  schools,
+  schoolSchedules
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
@@ -3873,6 +3874,116 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error syncing PTO balances:", error);
       res.status(500).json({ message: "Failed to sync PTO balances" });
+    }
+  });
+
+  // School Schedule Management API Endpoints
+  
+  // Get all schedules for a school
+  app.get("/api/schedules", async (req, res) => {
+    try {
+      const { schoolId, scheduleType, academicYear } = req.query;
+      
+      let whereConditions = [];
+      
+      if (schoolId) {
+        const schoolIdNum = parseInt(schoolId as string);
+        if (!isNaN(schoolIdNum)) {
+          whereConditions.push(eq(schoolSchedules.schoolId, schoolIdNum));
+        }
+      }
+      
+      if (scheduleType) {
+        whereConditions.push(eq(schoolSchedules.scheduleType, scheduleType as string));
+      }
+      
+      if (academicYear) {
+        whereConditions.push(eq(schoolSchedules.academicYear, academicYear as string));
+      }
+      
+      let query = db.select({
+        id: schoolSchedules.id,
+        schoolId: schoolSchedules.schoolId,
+        scheduleType: schoolSchedules.scheduleType,
+        title: schoolSchedules.title,
+        academicYear: schoolSchedules.academicYear,
+        data: schoolSchedules.data,
+        isActive: schoolSchedules.isActive,
+        createdAt: schoolSchedules.createdAt,
+        updatedAt: schoolSchedules.updatedAt,
+        schoolName: schools.name
+      }).from(schoolSchedules)
+      .leftJoin(schools, eq(schoolSchedules.schoolId, schools.id));
+      
+      if (whereConditions.length > 0) {
+        query = query.where(whereConditions[0]);
+      }
+      
+      const schedules = await query.orderBy(schoolSchedules.updatedAt);
+      res.json(schedules);
+    } catch (error) {
+      console.error('Error fetching schedules:', error);
+      res.status(500).json({ error: 'Failed to fetch schedules' });
+    }
+  });
+
+  // Create a new schedule
+  app.post("/api/schedules", async (req, res) => {
+    try {
+      const scheduleData = req.body;
+      
+      const [newSchedule] = await db.insert(schoolSchedules).values({
+        schoolId: scheduleData.schoolId,
+        scheduleType: scheduleData.scheduleType,
+        title: scheduleData.title,
+        academicYear: scheduleData.academicYear,
+        data: scheduleData.data,
+        isActive: scheduleData.isActive || true,
+        updatedAt: new Date()
+      }).returning();
+      
+      res.status(201).json(newSchedule);
+    } catch (error) {
+      console.error('Error creating schedule:', error);
+      res.status(500).json({ error: 'Failed to create schedule' });
+    }
+  });
+
+  // Update a schedule
+  app.patch("/api/schedules/:id", async (req, res) => {
+    try {
+      const scheduleId = parseInt(req.params.id);
+      const updateData = req.body;
+      
+      const [updatedSchedule] = await db.update(schoolSchedules)
+        .set({
+          ...updateData,
+          updatedAt: new Date()
+        })
+        .where(eq(schoolSchedules.id, scheduleId))
+        .returning();
+      
+      if (!updatedSchedule) {
+        return res.status(404).json({ error: 'Schedule not found' });
+      }
+      
+      res.json(updatedSchedule);
+    } catch (error) {
+      console.error('Error updating schedule:', error);
+      res.status(500).json({ error: 'Failed to update schedule' });
+    }
+  });
+
+  // Delete a schedule
+  app.delete("/api/schedules/:id", async (req, res) => {
+    try {
+      const scheduleId = parseInt(req.params.id);
+      
+      await db.delete(schoolSchedules).where(eq(schoolSchedules.id, scheduleId));
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error deleting schedule:', error);
+      res.status(500).json({ error: 'Failed to delete schedule' });
     }
   });
 

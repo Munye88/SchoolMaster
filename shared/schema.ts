@@ -766,3 +766,35 @@ export type InsertInventoryItem = z.infer<typeof insertInventoryItemSchema>;
 
 export type InventoryTransaction = typeof inventoryTransactions.$inferSelect;
 export type InsertInventoryTransaction = z.infer<typeof insertInventoryTransactionSchema>;
+
+// School Schedule Management System
+export const schoolSchedules = pgTable("school_schedules", {
+  id: serial("id").primaryKey(),
+  schoolId: integer("school_id").notNull().references(() => schools.id),
+  scheduleType: text("schedule_type", { 
+    enum: ["yearly", "timetable", "student_day"] 
+  }).notNull(),
+  title: text("title").notNull(),
+  academicYear: text("academic_year").notNull(), // e.g., "2024-2025"
+  data: text("data").notNull(), // Store schedule data as JSON string
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow()
+});
+
+export const insertSchoolScheduleSchema = createInsertSchema(schoolSchedules).pick({
+  schoolId: true,
+  scheduleType: true,
+  title: true,
+  academicYear: true,
+  data: true,
+  isActive: true,
+  updatedAt: true
+});
+
+export const schoolSchedulesRelations = relations(schoolSchedules, ({ one }) => ({
+  school: one(schools, { fields: [schoolSchedules.schoolId], references: [schools.id] })
+}));
+
+export type SchoolSchedule = typeof schoolSchedules.$inferSelect;
+export type InsertSchoolSchedule = z.infer<typeof insertSchoolScheduleSchema>;
