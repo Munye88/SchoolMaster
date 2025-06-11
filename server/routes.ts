@@ -3899,12 +3899,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }).from(inventoryItems)
       .leftJoin(schools, eq(inventoryItems.schoolId, schools.id));
 
+      let whereConditions = [];
+      
       // Apply filters
       if (schoolId) {
         const schoolIdNum = parseInt(schoolId as string);
         if (!isNaN(schoolIdNum)) {
-          query = query.where(eq(inventoryItems.schoolId, schoolIdNum));
+          whereConditions.push(eq(inventoryItems.schoolId, schoolIdNum));
         }
+      }
+      
+      if (whereConditions.length > 0) {
+        query = query.where(whereConditions[0]);
       }
       
       const items = await query;
@@ -3974,13 +3980,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let status = 'in_stock';
       if (itemData.quantity === 0) {
         status = 'out_of_stock';
-      } else if (itemData.quantity <= itemData.minQuantity) {
+      } else if (itemData.quantity && itemData.minQuantity && itemData.quantity <= itemData.minQuantity) {
         status = 'low_stock';
       }
 
       const [newItem] = await db.insert(inventoryItems).values({
-        ...itemData,
-        status
+        name: itemData.name!,
+        type: itemData.type!,
+        quantity: itemData.quantity || 0,
+        minQuantity: itemData.minQuantity || 10,
+        maxQuantity: itemData.maxQuantity || 100,
+        schoolId: itemData.schoolId!,
+        status: status,
+        location: itemData.location,
+        description: itemData.description,
+        updatedAt: itemData.updatedAt
       }).returning();
 
       // Create initial transaction record
@@ -4141,18 +4155,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       .orderBy(sql`${inventoryTransactions.transactionDate} DESC`)
       .limit(parseInt(limit as string));
 
+      let transactionWhereConditions = [];
+      
       if (itemId) {
         const itemIdNum = parseInt(itemId as string);
         if (!isNaN(itemIdNum)) {
-          query = query.where(eq(inventoryTransactions.itemId, itemIdNum));
+          transactionWhereConditions.push(eq(inventoryTransactions.itemId, itemIdNum));
         }
       }
 
       if (schoolId) {
         const schoolIdNum = parseInt(schoolId as string);
         if (!isNaN(schoolIdNum)) {
-          query = query.where(eq(inventoryTransactions.schoolId, schoolIdNum));
+          transactionWhereConditions.push(eq(inventoryTransactions.schoolId, schoolIdNum));
         }
+      }
+      
+      if (transactionWhereConditions.length > 0) {
+        query = query.where(transactionWhereConditions[0]);
       }
 
       const transactions = await query;
@@ -4168,12 +4188,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { schoolId } = req.query;
 
-      let baseQuery = db.select().from(inventoryItems);
+      let statsWhereConditions = [];
       if (schoolId) {
         const schoolIdNum = parseInt(schoolId as string);
         if (!isNaN(schoolIdNum)) {
-          baseQuery = baseQuery.where(eq(inventoryItems.schoolId, schoolIdNum));
+          statsWhereConditions.push(eq(inventoryItems.schoolId, schoolIdNum));
         }
+      }
+      
+      let baseQuery = db.select().from(inventoryItems);
+      if (statsWhereConditions.length > 0) {
+        baseQuery = baseQuery.where(statsWhereConditions[0]);
       }
 
       const allItems = await baseQuery;

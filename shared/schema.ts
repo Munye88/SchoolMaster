@@ -690,9 +690,7 @@ export const inventoryItems = pgTable("inventory_items", {
   minQuantity: integer("min_quantity").notNull().default(10), // Low stock threshold
   maxQuantity: integer("max_quantity").notNull().default(100), // High stock limit
   schoolId: integer("school_id").notNull().references(() => schools.id),
-  status: text("status", { 
-    enum: ["in_stock", "low_stock", "out_of_stock"] 
-  }).notNull().default("in_stock"),
+  status: text("status").notNull().default("in_stock"),
   location: text("location"), // Storage location
   description: text("description"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
