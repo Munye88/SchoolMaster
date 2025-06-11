@@ -120,6 +120,7 @@ export function useDashboardStats(): DashboardStats {
       if (JSON.stringify(cachedStudentCounts) !== JSON.stringify(newStudentCounts)) {
         cachedStudentCounts = newStudentCounts;
         cacheVersion++; // Force re-render
+        forceUpdate(cacheVersion); // Trigger component re-render
       }
       
       console.log("KFNA Students:", cachedStudentCounts.knfa);
