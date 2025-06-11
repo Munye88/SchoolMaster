@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { StaffAttendance, StaffLeave, Evaluation, Instructor, Course, Student } from "@shared/schema";
+import { StaffAttendance, StaffLeave, Evaluation, Instructor, Course } from "@shared/schema";
 import { useSchool } from '@/hooks/useSchool';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -237,7 +237,6 @@ const Notifications: React.FC<NotificationsProps> = ({
   staffLeave = [],
   evaluations = [],
   courses = [],
-  students = [],
   limit,
   showFilter = true,
 }) => {
@@ -369,24 +368,18 @@ const Notifications: React.FC<NotificationsProps> = ({
       }
     });
   
-  // Student count change notifications
-  const studentCountNotifications: Notification[] = [];
-  if (students && students.length > 0) {
-    // Find courses with high enrollment
-    students.forEach(student => {
-      if (student.numberOfStudents > 25) {
-        studentCountNotifications.push({
-          id: `student-count-${student.id}`,
-          name: 'High Enrollment',
-          schoolId: student.schoolId,
-          reason: `${student.courseType} has ${student.numberOfStudents} students enrolled`,
-          type: 'student_change' as NotificationType,
-          priority: 'medium' as 'high' | 'medium' | 'low',
-          timestamp: today,
-        });
-      }
-    });
-  }
+  // Student count change notifications - based on course enrollment
+  const studentCountNotifications: Notification[] = courses
+    .filter(course => course.studentCount > 50) // High enrollment threshold
+    .map(course => ({
+      id: `student-count-${course.id}`,
+      name: 'High Enrollment',
+      schoolId: course.schoolId,
+      reason: `${course.name} has ${course.studentCount} students enrolled`,
+      type: 'student_change' as NotificationType,
+      priority: 'medium' as 'high' | 'medium' | 'low',
+      timestamp: today,
+    }));
   
   // Filter alerts based on selected school
   const filteredAbsentInstructors = selectedSchool 
