@@ -60,14 +60,8 @@ let cachedCourseStats = {
 };
 
 export function useDashboardStats(): DashboardStats {
-  // Fetch students data
-  const { 
-    data: students = [], 
-    isLoading: isLoadingStudents
-  } = useQuery<Student[]>({
-    queryKey: ['/api/students'],
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+  // Note: Student counts are calculated from course data, not from a separate students table
+  const isLoadingStudents = false; // Always false since we calculate from course data
   
   // Fetch instructors data
   const { 
@@ -97,27 +91,31 @@ export function useDashboardStats(): DashboardStats {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Calculate student counts when data changes
+  // Calculate student counts from courses data - this is where the real student numbers are
   useEffect(() => {
-    if (students.length > 0) {
-      const calculateStudentCount = (schoolId?: number) => {
-        const filteredStudents = schoolId 
-          ? students.filter(s => s.schoolId === schoolId)
-          : students;
+    if (courses.length > 0) {
+      const calculateStudentCountFromCourses = (schoolId?: number) => {
+        const filteredCourses = schoolId 
+          ? courses.filter(c => c.schoolId === schoolId)
+          : courses;
           
-        return filteredStudents.reduce((total, student) => 
-          total + (student.numberOfStudents || 0), 0);
+        return filteredCourses.reduce((total, course) => 
+          total + (course.studentCount || 0), 0);
       };
       
-      // Update the cached counts
+      // Update the cached counts based on course data
       cachedStudentCounts = {
-        totalStudents: calculateStudentCount(),
-        knfa: calculateStudentCount(349), // School with ID 349 is KFNA
-        nfsEast: calculateStudentCount(350),
-        nfsWest: calculateStudentCount(351)
+        totalStudents: calculateStudentCountFromCourses(),
+        knfa: calculateStudentCountFromCourses(349), // School with ID 349 is KFNA
+        nfsEast: calculateStudentCountFromCourses(350),
+        nfsWest: calculateStudentCountFromCourses(351)
       };
+      
+      console.log("KFNA Students:", cachedStudentCounts.knfa);
+      console.log("NFS East Students:", cachedStudentCounts.nfsEast);
+      console.log("NFS West Students:", cachedStudentCounts.nfsWest);
     }
-  }, [students]);
+  }, [courses]);
   
   // Calculate instructor and nationality counts when data changes
   useEffect(() => {
@@ -152,27 +150,7 @@ export function useDashboardStats(): DashboardStats {
         }).length
       };
       
-      // Update the student counts based on course data for more accurate display
-      // This ensures that Student Distribution by School reflects actual course data
-      if (students.length > 0) {
-        // Get courses by school
-        const kfnaCourses = courses.filter(c => c.schoolId === 349 && c.status === 'In Progress');
-        const nfsEastCourses = courses.filter(c => c.schoolId === 350 && c.status === 'In Progress');
-        const nfsWestCourses = courses.filter(c => c.schoolId === 351 && c.status === 'In Progress');
-        
-        // Calculate total students by school from the courses
-        const kfnaStudents = kfnaCourses.reduce((total, course) => total + (course.studentCount || 0), 0);
-        const nfsEastStudents = nfsEastCourses.reduce((total, course) => total + (course.studentCount || 0), 0);
-        const nfsWestStudents = nfsWestCourses.reduce((total, course) => total + (course.studentCount || 0), 0);
-        
-        // Update the cached student counts to reflect course data
-        cachedStudentCounts = {
-          totalStudents: kfnaStudents + nfsEastStudents + nfsWestStudents,
-          knfa: kfnaStudents, // School with ID 349 is KFNA
-          nfsEast: nfsEastStudents,
-          nfsWest: nfsWestStudents
-        };
-      }
+      // Student counts are already calculated in the earlier effect based on course data
       
       // Log the course details for debugging
       console.log("---------- COURSE STATUS DEBUG ----------");

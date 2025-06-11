@@ -1,0 +1,72 @@
+GDPR Compliance Instructions for Developer (Including GPT Integration)
+
+1. Data Minimisation
+
+• Only collect essential data (e.g. school name, user role, work email).
+• Do not collect personal phone numbers, home addresses, or any unnecessary personal information.
+2. Consent Management
+
+• Add a clear checkbox during sign-up to collect explicit consent to:
+o Store and process user data.
+o Use AI tools (like GPT) to generate content.
+• Consent must be opt-in, not pre-ticked.
+3. User Rights (Access and Deletion)
+
+• Provide the ability to:
+o Export all user data (e.g. JSON or CSV).
+o Delete all user data on request, including from backups if feasible.
+• Log and securely store any such actions.
+4. Secure Hosting
+
+• Use GDPR-compliant hosting (ideally based in the UK or EU).
+• Do not host or store user data on unverified or non-compliant providers.
+5. Privacy by Design
+
+• Design the system to default to minimal access and visibility.
+• Do not expose user data in interfaces unless strictly required.
+6. Cookie and Tracking Management (if used)
+
+• If cookies or analytics tools are used, implement a cookie banner.
+• Allow users to accept or decline non-essential cookies.
+ 
+GPT API Integration – GDPR-Specific Instructions
+
+7. No Personal Data in GPT Prompts
+
+• Strip all personal data from user input before sending it to GPT.
+• Example: Replace “Mrs Smith at Oakwood School” with “the headteacher”.
+8. Use GDPR-Compliant GPT Access
+
+• Use OpenAI’s Teams or Enterprise API only.
+• Ensure the plan includes:
+o No data is used for training.
+o A Data Processing Agreement (DPA) is available.
+o EU/UK data residency is preferred.
+9. Do Not Log GPT Prompts Containing User Content
+
+• Do not store prompt data if it includes any user content.
+• If logging is needed for debugging, anonymise all entries before storage.
+10. Display AI Usage Notice in the App
+
+• Add a simple message in the interface:
+“We use AI (e.g. GPT) to support inspection readiness. No personal data is shared. All inputs are anonymised before being processed.”
+ 
+General Compliance and Oversight
+
+11. Data Processing Roles
+
+• You are acting as a data processor.
+• The BRAVA Impact team is the data controller.
+• You must follow their instructions and never use or share data outside of agreed use.
+12. Logging and Audit Trails
+
+• Securely log all sensitive actions (e.g. data deletion, data export, changes to consent).
+• These logs must be encrypted or access-controlled.
+13. Breach Notification
+
+• In case of a suspected data breach, notify BRAVA Impact immediately.
+• Include what happened, what data was involved, and what steps have been taken.
+14. No Third-Party Data Sharing
+
+• Do not integrate with or send data to any third-party service (other than GPT) without prior written approval.
+• All third-party services must meet equivalent GDPR compliance standards.
