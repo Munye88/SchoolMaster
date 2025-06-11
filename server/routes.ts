@@ -25,6 +25,8 @@ import {
   insertInterviewQuestionSchema,
   insertStaffCounselingSchema,
   insertPtoBalanceSchema,
+  insertInventoryItemSchema,
+  insertInventoryTransactionSchema,
   evaluations,
   courses,
   staffLeave,
@@ -35,7 +37,10 @@ import {
   staffAttendance,
   staffCounseling,
   events,
-  ptoBalance
+  ptoBalance,
+  inventoryItems,
+  inventoryTransactions,
+  schools
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import { generateAIResponse } from "./services/ai";
@@ -3868,6 +3873,329 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error syncing PTO balances:", error);
       res.status(500).json({ message: "Failed to sync PTO balances" });
+    }
+  });
+
+  // Inventory Management API Endpoints
+  
+  // Get all inventory items
+  app.get("/api/inventory", async (req, res) => {
+    try {
+      const { schoolId, type, status } = req.query;
+      let query = db.select({
+        id: inventoryItems.id,
+        name: inventoryItems.name,
+        type: inventoryItems.type,
+        quantity: inventoryItems.quantity,
+        minQuantity: inventoryItems.minQuantity,
+        maxQuantity: inventoryItems.maxQuantity,
+        schoolId: inventoryItems.schoolId,
+        status: inventoryItems.status,
+        location: inventoryItems.location,
+        description: inventoryItems.description,
+        createdAt: inventoryItems.createdAt,
+        updatedAt: inventoryItems.updatedAt,
+        schoolName: schools.name
+      }).from(inventoryItems)
+      .leftJoin(schools, eq(inventoryItems.schoolId, schools.id));
+
+      // Apply filters
+      if (schoolId) {
+        const schoolIdNum = parseInt(schoolId as string);
+        if (!isNaN(schoolIdNum)) {
+          query = query.where(eq(inventoryItems.schoolId, schoolIdNum));
+        }
+      }
+      
+      const items = await query;
+      
+      // Apply additional filters after query
+      let filteredItems = items;
+      if (type) {
+        filteredItems = filteredItems.filter(item => item.type === type);
+      }
+      if (status) {
+        filteredItems = filteredItems.filter(item => item.status === status);
+      }
+      
+      res.json(filteredItems);
+    } catch (error) {
+      console.error("Error getting inventory items:", error);
+      res.status(500).json({ error: "Failed to fetch inventory items" });
+    }
+  });
+
+  // Get inventory item by ID
+  app.get("/api/inventory/:id", async (req, res) => {
+    try {
+      const itemId = parseInt(req.params.id);
+      if (isNaN(itemId)) {
+        return res.status(400).json({ message: "Invalid inventory item ID" });
+      }
+
+      const [item] = await db.select({
+        id: inventoryItems.id,
+        name: inventoryItems.name,
+        type: inventoryItems.type,
+        quantity: inventoryItems.quantity,
+        minQuantity: inventoryItems.minQuantity,
+        maxQuantity: inventoryItems.maxQuantity,
+        schoolId: inventoryItems.schoolId,
+        status: inventoryItems.status,
+        location: inventoryItems.location,
+        description: inventoryItems.description,
+        createdAt: inventoryItems.createdAt,
+        updatedAt: inventoryItems.updatedAt,
+        schoolName: schools.name
+      }).from(inventoryItems)
+      .leftJoin(schools, eq(inventoryItems.schoolId, schools.id))
+      .where(eq(inventoryItems.id, itemId));
+
+      if (!item) {
+        return res.status(404).json({ message: "Inventory item not found" });
+      }
+
+      res.json(item);
+    } catch (error) {
+      console.error("Error getting inventory item:", error);
+      res.status(500).json({ error: "Failed to fetch inventory item" });
+    }
+  });
+
+  // Create new inventory item
+  app.post("/api/inventory", async (req, res) => {
+    try {
+      const itemData = insertInventoryItemSchema.parse({
+        ...req.body,
+        updatedAt: new Date()
+      });
+
+      // Auto-set status based on quantity
+      let status = 'in_stock';
+      if (itemData.quantity === 0) {
+        status = 'out_of_stock';
+      } else if (itemData.quantity <= itemData.minQuantity) {
+        status = 'low_stock';
+      }
+
+      const [newItem] = await db.insert(inventoryItems).values({
+        ...itemData,
+        status
+      }).returning();
+
+      // Create initial transaction record
+      await db.insert(inventoryTransactions).values({
+        itemId: newItem.id,
+        transactionType: 'received',
+        quantity: newItem.quantity,
+        previousQuantity: 0,
+        newQuantity: newItem.quantity,
+        notes: 'Initial inventory entry',
+        createdBy: req.isAuthenticated() ? req.user.id : null,
+        schoolId: newItem.schoolId
+      });
+
+      // Log activity
+      await dbStorage.createActivity({
+        type: "inventory_created",
+        description: `New inventory item "${newItem.name}" added`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+
+      res.status(201).json(newItem);
+    } catch (error) {
+      console.error("Error creating inventory item:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid item data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create inventory item" });
+    }
+  });
+
+  // Update inventory item
+  app.patch("/api/inventory/:id", async (req, res) => {
+    try {
+      const itemId = parseInt(req.params.id);
+      if (isNaN(itemId)) {
+        return res.status(400).json({ message: "Invalid inventory item ID" });
+      }
+
+      // Get current item
+      const [currentItem] = await db.select().from(inventoryItems).where(eq(inventoryItems.id, itemId));
+      if (!currentItem) {
+        return res.status(404).json({ message: "Inventory item not found" });
+      }
+
+      const updateData = insertInventoryItemSchema.partial().parse({
+        ...req.body,
+        updatedAt: new Date()
+      });
+
+      // Auto-set status based on quantity if quantity is being updated
+      if (updateData.quantity !== undefined) {
+        if (updateData.quantity === 0) {
+          updateData.status = 'out_of_stock';
+        } else if (updateData.quantity <= (updateData.minQuantity || currentItem.minQuantity)) {
+          updateData.status = 'low_stock';
+        } else {
+          updateData.status = 'in_stock';
+        }
+
+        // Create transaction record if quantity changed
+        if (updateData.quantity !== currentItem.quantity) {
+          const quantityChange = updateData.quantity - currentItem.quantity;
+          const transactionType = quantityChange > 0 ? 'received' : 'distributed';
+          
+          await db.insert(inventoryTransactions).values({
+            itemId: itemId,
+            transactionType: transactionType,
+            quantity: Math.abs(quantityChange),
+            previousQuantity: currentItem.quantity,
+            newQuantity: updateData.quantity,
+            notes: req.body.transactionNotes || `Quantity ${transactionType}`,
+            createdBy: req.isAuthenticated() ? req.user.id : null,
+            schoolId: currentItem.schoolId
+          });
+        }
+      }
+
+      const [updatedItem] = await db.update(inventoryItems)
+        .set(updateData)
+        .where(eq(inventoryItems.id, itemId))
+        .returning();
+
+      // Log activity
+      await dbStorage.createActivity({
+        type: "inventory_updated",
+        description: `Inventory item "${updatedItem.name}" updated`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+
+      res.json(updatedItem);
+    } catch (error) {
+      console.error("Error updating inventory item:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid item data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update inventory item" });
+    }
+  });
+
+  // Delete inventory item
+  app.delete("/api/inventory/:id", async (req, res) => {
+    try {
+      const itemId = parseInt(req.params.id);
+      if (isNaN(itemId)) {
+        return res.status(400).json({ message: "Invalid inventory item ID" });
+      }
+
+      // Get item details before deletion
+      const [item] = await db.select().from(inventoryItems).where(eq(inventoryItems.id, itemId));
+      if (!item) {
+        return res.status(404).json({ message: "Inventory item not found" });
+      }
+
+      // Delete related transactions first
+      await db.delete(inventoryTransactions).where(eq(inventoryTransactions.itemId, itemId));
+
+      // Delete the item
+      await db.delete(inventoryItems).where(eq(inventoryItems.id, itemId));
+
+      // Log activity
+      await dbStorage.createActivity({
+        type: "inventory_deleted",
+        description: `Inventory item "${item.name}" deleted`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting inventory item:", error);
+      res.status(500).json({ message: "Failed to delete inventory item" });
+    }
+  });
+
+  // Get inventory transactions
+  app.get("/api/inventory-transactions", async (req, res) => {
+    try {
+      const { itemId, schoolId, limit = 50 } = req.query;
+      
+      let query = db.select({
+        id: inventoryTransactions.id,
+        itemId: inventoryTransactions.itemId,
+        itemName: inventoryItems.name,
+        transactionType: inventoryTransactions.transactionType,
+        quantity: inventoryTransactions.quantity,
+        previousQuantity: inventoryTransactions.previousQuantity,
+        newQuantity: inventoryTransactions.newQuantity,
+        notes: inventoryTransactions.notes,
+        transactionDate: inventoryTransactions.transactionDate,
+        schoolId: inventoryTransactions.schoolId,
+        schoolName: schools.name
+      }).from(inventoryTransactions)
+      .leftJoin(inventoryItems, eq(inventoryTransactions.itemId, inventoryItems.id))
+      .leftJoin(schools, eq(inventoryTransactions.schoolId, schools.id))
+      .orderBy(sql`${inventoryTransactions.transactionDate} DESC`)
+      .limit(parseInt(limit as string));
+
+      if (itemId) {
+        const itemIdNum = parseInt(itemId as string);
+        if (!isNaN(itemIdNum)) {
+          query = query.where(eq(inventoryTransactions.itemId, itemIdNum));
+        }
+      }
+
+      if (schoolId) {
+        const schoolIdNum = parseInt(schoolId as string);
+        if (!isNaN(schoolIdNum)) {
+          query = query.where(eq(inventoryTransactions.schoolId, schoolIdNum));
+        }
+      }
+
+      const transactions = await query;
+      res.json(transactions);
+    } catch (error) {
+      console.error("Error getting inventory transactions:", error);
+      res.status(500).json({ error: "Failed to fetch inventory transactions" });
+    }
+  });
+
+  // Get inventory statistics
+  app.get("/api/inventory/stats", async (req, res) => {
+    try {
+      const { schoolId } = req.query;
+
+      let baseQuery = db.select().from(inventoryItems);
+      if (schoolId) {
+        const schoolIdNum = parseInt(schoolId as string);
+        if (!isNaN(schoolIdNum)) {
+          baseQuery = baseQuery.where(eq(inventoryItems.schoolId, schoolIdNum));
+        }
+      }
+
+      const allItems = await baseQuery;
+
+      const stats = {
+        totalItems: allItems.length,
+        inStock: allItems.filter(item => item.status === 'in_stock').length,
+        lowStock: allItems.filter(item => item.status === 'low_stock').length,
+        outOfStock: allItems.filter(item => item.status === 'out_of_stock').length,
+        byType: {
+          alcpt_form: allItems.filter(item => item.type === 'alcpt_form').length,
+          answer_sheet: allItems.filter(item => item.type === 'answer_sheet').length,
+          book: allItems.filter(item => item.type === 'book').length,
+          material: allItems.filter(item => item.type === 'material').length
+        },
+        totalValue: allItems.reduce((sum, item) => sum + item.quantity, 0)
+      };
+
+      res.json(stats);
+    } catch (error) {
+      console.error("Error getting inventory stats:", error);
+      res.status(500).json({ error: "Failed to fetch inventory statistics" });
     }
   });
 

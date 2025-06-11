@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Card,
   CardContent,
@@ -67,91 +68,149 @@ import {
   CheckCircle
 } from 'lucide-react';
 
-// Mock data for ALCPT forms inventory
-const alcptFormsInventory = [
-  // KFNA Forms
-  { id: 1, name: 'ALCPT Form 126', quantity: 25, status: 'In Stock', schoolId: 349 },
-  { id: 2, name: 'ALCPT Form 127', quantity: 30, status: 'In Stock', schoolId: 349 },
-  { id: 3, name: 'ALCPT Form 128', quantity: 15, status: 'Low Stock', schoolId: 349 },
-  { id: 9, name: 'ALCPT Form 134', quantity: 10, status: 'Low Stock', schoolId: 349 },
-  { id: 11, name: 'ALCPT Form 138', quantity: 8, status: 'In Stock', schoolId: 349 },
-  { id: 13, name: 'ALCPT Form 142', quantity: 5, status: 'Low Stock', schoolId: 349 },
-  { id: 16, name: 'ALCPT Form 146', quantity: 2, status: 'Out of Stock', schoolId: 349 },
-  
-  // NFS East Forms
-  { id: 4, name: 'ALCPT Form 129', quantity: 8, status: 'Low Stock', schoolId: 350 },
-  { id: 5, name: 'ALCPT Form 130', quantity: 20, status: 'In Stock', schoolId: 350 },
-  { id: 10, name: 'ALCPT Form 135', quantity: 3, status: 'Low Stock', schoolId: 350 },
-  { id: 14, name: 'ALCPT Form 143', quantity: 6, status: 'In Stock', schoolId: 350 },
-  { id: 17, name: 'ALCPT Form 147', quantity: 4, status: 'Low Stock', schoolId: 350 },
-  { id: 19, name: 'ALCPT Form 150', quantity: 2, status: 'Low Stock', schoolId: 350 },
-  { id: 21, name: 'ALCPT Form 153', quantity: 1, status: 'Low Stock', schoolId: 350 },
-  
-  // NFS West Forms
-  { id: 6, name: 'ALCPT Form 131', quantity: 18, status: 'In Stock', schoolId: 351 },
-  { id: 7, name: 'ALCPT Form 132', quantity: 12, status: 'Low Stock', schoolId: 351 },
-  { id: 8, name: 'ALCPT Form 133', quantity: 5, status: 'Low Stock', schoolId: 351 },
-  { id: 12, name: 'ALCPT Form 139', quantity: 7, status: 'In Stock', schoolId: 351 },
-  { id: 15, name: 'ALCPT Form 144', quantity: 9, status: 'In Stock', schoolId: 351 },
-  { id: 18, name: 'ALCPT Form 148', quantity: 3, status: 'Low Stock', schoolId: 351 },
-  { id: 20, name: 'ALCPT Form 151', quantity: 0, status: 'Out of Stock', schoolId: 351 },
-  { id: 22, name: 'ALCPT Form 154', quantity: 0, status: 'Out of Stock', schoolId: 351 },
-];
+// Define types for inventory data
+interface InventoryItem {
+  id: number;
+  name: string;
+  type: 'alcpt_form' | 'answer_sheet' | 'book' | 'material';
+  quantity: number;
+  minQuantity: number;
+  maxQuantity: number;
+  schoolId: number;
+  status: 'in_stock' | 'low_stock' | 'out_of_stock';
+  location?: string;
+  description?: string;
+  schoolName?: string;
+}
 
-// Mock data for inventory update history
-const inventoryUpdateHistory = [
-  { id: 101, date: '2025-03-15', forms: 'ALCPT Forms 126-130', quantity: 50, status: 'Received', schoolId: 349, notes: 'Annual inventory refresh' },
-  { id: 102, date: '2025-02-28', forms: 'ALCPT Forms 131-135', quantity: 40, status: 'Distributed', schoolId: 350, notes: 'New course materials' },
-  { id: 103, date: '2025-01-20', forms: 'ALCPT Forms 126-128', quantity: 30, status: 'Received', schoolId: 351, notes: 'Replacement for damaged items' },
-  { id: 104, date: '2024-12-10', forms: 'ALCPT Forms 129-132', quantity: 45, status: 'Distributed', schoolId: 349, notes: 'Start of new term' },
-  { id: 105, date: '2024-11-05', forms: 'ALCPT Forms 133-135', quantity: 25, status: 'Received', schoolId: 350, notes: 'Inventory replenishment' },
-];
-
-// Mock data for form catalog
-const formCatalog = [
-  { id: 1, name: 'ALCPT Form 126' },
-  { id: 2, name: 'ALCPT Form 127' },
-  { id: 3, name: 'ALCPT Form 128' },
-  { id: 4, name: 'ALCPT Form 129' },
-  { id: 5, name: 'ALCPT Form 130' },
-  { id: 6, name: 'ALCPT Form 131' },
-  { id: 7, name: 'ALCPT Form 132' },
-  { id: 8, name: 'ALCPT Form 133' },
-  { id: 9, name: 'ALCPT Form 134' },
-  { id: 10, name: 'ALCPT Form 135' },
-  { id: 11, name: 'ALCPT Form 136' },
-  { id: 12, name: 'ALCPT Form 137' },
-  { id: 13, name: 'ALCPT Form 138' },
-  { id: 14, name: 'ALCPT Form 139' },
-  { id: 15, name: 'ALCPT Form 140' },
-  { id: 16, name: 'ALCPT Form 141' },
-  { id: 17, name: 'ALCPT Form 142' },
-  { id: 18, name: 'ALCPT Form 143' },
-  { id: 19, name: 'ALCPT Form 144' },
-  { id: 20, name: 'ALCPT Form 145' },
-  { id: 21, name: 'ALCPT Form 146' },
-  { id: 22, name: 'ALCPT Form 147' },
-  { id: 23, name: 'ALCPT Form 148' },
-  { id: 24, name: 'ALCPT Form 149' },
-  { id: 25, name: 'ALCPT Form 150' },
-  { id: 26, name: 'ALCPT Form 151' },
-  { id: 27, name: 'ALCPT Form 152' },
-  { id: 28, name: 'ALCPT Form 153' },
-  { id: 29, name: 'ALCPT Form 154' },
-  { id: 30, name: 'ALCPT Form 155' },
-];
+interface InventoryTransaction {
+  id: number;
+  itemId: number;
+  itemName: string;
+  transactionType: 'received' | 'distributed' | 'adjustment' | 'lost' | 'damaged';
+  quantity: number;
+  previousQuantity: number;
+  newQuantity: number;
+  notes?: string;
+  transactionDate: string;
+  schoolId: number;
+  schoolName: string;
+}
 
 const AlcptOrder = () => {
   const { toast } = useToast();
   const { selectedSchool } = useSchool();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('inventory');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
-  const [localFormsInventory, setLocalFormsInventory] = useState(alcptFormsInventory);
   const [showSchoolInventory, setShowSchoolInventory] = useState(true);
   
   // State for dialogs
   const [showAddFormDialog, setShowAddFormDialog] = useState(false);
+
+  // Fetch inventory data from API
+  const { data: inventoryItems = [], isLoading: isLoadingInventory } = useQuery<InventoryItem[]>({
+    queryKey: ['/api/inventory', selectedSchool?.id],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (selectedSchool?.id) {
+        params.append('schoolId', selectedSchool.id.toString());
+      }
+      params.append('type', 'alcpt_form');
+      
+      const response = await fetch(`/api/inventory?${params}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch inventory');
+      }
+      return response.json();
+    },
+    enabled: !!selectedSchool?.id
+  });
+
+  // Fetch inventory transactions
+  const { data: inventoryTransactions = [], isLoading: isLoadingTransactions } = useQuery<InventoryTransaction[]>({
+    queryKey: ['/api/inventory-transactions', selectedSchool?.id],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (selectedSchool?.id) {
+        params.append('schoolId', selectedSchool.id.toString());
+      }
+      params.append('limit', '20');
+      
+      const response = await fetch(`/api/inventory-transactions?${params}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch transactions');
+      }
+      return response.json();
+    },
+    enabled: !!selectedSchool?.id
+  });
+
+  // Create inventory item mutation
+  const createInventoryMutation = useMutation({
+    mutationFn: async (itemData: Partial<InventoryItem>) => {
+      const response = await fetch('/api/inventory', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(itemData),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to create inventory item');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/inventory'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/inventory-transactions'] });
+      setShowAddFormDialog(false);
+      toast({
+        title: "Success",
+        description: "Inventory item created successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to create inventory item",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update inventory item mutation
+  const updateInventoryMutation = useMutation({
+    mutationFn: async ({ id, ...updateData }: Partial<InventoryItem> & { id: number }) => {
+      const response = await fetch(`/api/inventory/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update inventory item');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/inventory'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/inventory-transactions'] });
+      toast({
+        title: "Success",
+        description: "Inventory updated successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update inventory",
+        variant: "destructive",
+      });
+    },
+  });
   const [showEditFormDialog, setShowEditFormDialog] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
