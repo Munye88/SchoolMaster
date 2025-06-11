@@ -46,6 +46,9 @@ let cachedStudentCounts: StudentCounts = {
   nfsWest: 0
 };
 
+// Force update flag to ensure React re-renders when cache updates
+let cacheVersion = 0;
+
 let cachedNationalityCounts: NationalityCounts = {
   american: 0,
   british: 0,
@@ -60,6 +63,8 @@ let cachedCourseStats = {
 };
 
 export function useDashboardStats(): DashboardStats {
+  const [, forceUpdate] = useState(0);
+  
   // Note: Student counts are calculated from course data, not from a separate students table
   const isLoadingStudents = false; // Always false since we calculate from course data
   
@@ -104,16 +109,28 @@ export function useDashboardStats(): DashboardStats {
       };
       
       // Update the cached counts based on course data
-      cachedStudentCounts = {
+      const newStudentCounts = {
         totalStudents: calculateStudentCountFromCourses(),
         knfa: calculateStudentCountFromCourses(349), // School with ID 349 is KFNA
         nfsEast: calculateStudentCountFromCourses(350),
         nfsWest: calculateStudentCountFromCourses(351)
       };
       
+      // Only update cache if values have changed
+      if (JSON.stringify(cachedStudentCounts) !== JSON.stringify(newStudentCounts)) {
+        cachedStudentCounts = newStudentCounts;
+        cacheVersion++; // Force re-render
+      }
+      
       console.log("KFNA Students:", cachedStudentCounts.knfa);
       console.log("NFS East Students:", cachedStudentCounts.nfsEast);
       console.log("NFS West Students:", cachedStudentCounts.nfsWest);
+      console.log("Total Students:", cachedStudentCounts.totalStudents);
+      
+      // Debug: Show the courses being used for calculation
+      console.log("Courses for KFNA (349):", courses.filter(c => c.schoolId === 349));
+      console.log("Courses for NFS East (350):", courses.filter(c => c.schoolId === 350));
+      console.log("Courses for NFS West (351):", courses.filter(c => c.schoolId === 351));
     }
   }, [courses]);
   

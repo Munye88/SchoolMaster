@@ -116,6 +116,13 @@ const Dashboard = () => {
     }
   };
 
+  // Debug logging for dashboard statistics
+  console.log("Dashboard Statistics:", {
+    totalStudents: statistics.totalStudents,
+    studentsBySchool: statistics.studentsBySchool,
+    dashboardStatsRaw: dashboardStats.studentCounts
+  });
+
   // Create nationality data for charts from our hook data
   const nationalityData = [
     { 
