@@ -669,6 +669,8 @@ export const schoolsRelations = relations(schools, ({ many }) => ({
   events: many(events),
   candidates: many(candidates),
   staffCounseling: many(staffCounseling),
+  inventoryItems: many(inventoryItems),
+  inventoryTransactions: many(inventoryTransactions),
 }));
 
 export type Candidate = typeof candidates.$inferSelect;
@@ -676,3 +678,93 @@ export type InsertCandidate = z.infer<typeof insertCandidateSchema>;
 
 export type InterviewQuestion = typeof interviewQuestions.$inferSelect;
 export type InsertInterviewQuestion = z.infer<typeof insertInterviewQuestionSchema>;
+
+// Inventory Management System
+export const inventoryItems = pgTable("inventory_items", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  type: text("type", { 
+    enum: ["alcpt_form", "answer_sheet", "book", "material"] 
+  }).notNull(),
+  quantity: integer("quantity").notNull().default(0),
+  minQuantity: integer("min_quantity").notNull().default(10), // Low stock threshold
+  maxQuantity: integer("max_quantity").notNull().default(100), // High stock limit
+  schoolId: integer("school_id").notNull().references(() => schools.id),
+  status: text("status", { 
+    enum: ["in_stock", "low_stock", "out_of_stock"] 
+  }).notNull().default("in_stock"),
+  location: text("location"), // Storage location
+  description: text("description"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+});
+
+export const insertInventoryItemSchema = createInsertSchema(inventoryItems).pick({
+  name: true,
+  type: true,
+  quantity: true,
+  minQuantity: true,
+  maxQuantity: true,
+  schoolId: true,
+  status: true,
+  location: true,
+  description: true,
+  updatedAt: true
+});
+
+export const inventoryTransactions = pgTable("inventory_transactions", {
+  id: serial("id").primaryKey(),
+  itemId: integer("item_id").notNull().references(() => inventoryItems.id),
+  transactionType: text("transaction_type", { 
+    enum: ["received", "distributed", "adjustment", "lost", "damaged"] 
+  }).notNull(),
+  quantity: integer("quantity").notNull(), // Positive for additions, negative for subtractions
+  previousQuantity: integer("previous_quantity").notNull(),
+  newQuantity: integer("new_quantity").notNull(),
+  notes: text("notes"),
+  transactionDate: timestamp("transaction_date").notNull().defaultNow(),
+  createdBy: integer("created_by").references(() => users.id),
+  schoolId: integer("school_id").notNull().references(() => schools.id)
+});
+
+export const insertInventoryTransactionSchema = createInsertSchema(inventoryTransactions).pick({
+  itemId: true,
+  transactionType: true,
+  quantity: true,
+  previousQuantity: true,
+  newQuantity: true,
+  notes: true,
+  transactionDate: true,
+  createdBy: true,
+  schoolId: true
+});
+
+// Relations
+export const inventoryItemsRelations = relations(inventoryItems, ({ one, many }) => ({
+  school: one(schools, {
+    fields: [inventoryItems.schoolId],
+    references: [schools.id]
+  }),
+  transactions: many(inventoryTransactions)
+}));
+
+export const inventoryTransactionsRelations = relations(inventoryTransactions, ({ one }) => ({
+  item: one(inventoryItems, {
+    fields: [inventoryTransactions.itemId],
+    references: [inventoryItems.id]
+  }),
+  school: one(schools, {
+    fields: [inventoryTransactions.schoolId],
+    references: [schools.id]
+  }),
+  creator: one(users, {
+    fields: [inventoryTransactions.createdBy],
+    references: [users.id]
+  })
+}));
+
+export type InventoryItem = typeof inventoryItems.$inferSelect;
+export type InsertInventoryItem = z.infer<typeof insertInventoryItemSchema>;
+
+export type InventoryTransaction = typeof inventoryTransactions.$inferSelect;
+export type InsertInventoryTransaction = z.infer<typeof insertInventoryTransactionSchema>;
