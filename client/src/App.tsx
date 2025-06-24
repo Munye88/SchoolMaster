@@ -53,6 +53,7 @@ import ManageCourses from "./pages/management/ManageCoursesFixed";
 import ScheduleManager from "./pages/admin/ScheduleManager";
 import DocumentManager from "./pages/administration/DocumentManager";
 import ReportsEnhanced from "./pages/reports/ReportsEnhanced";
+import TestTrackerEnhanced from "./pages/test-tracker/TestTrackerEnhanced";
 
 function SidebarWithAuth() {
   const { user } = useAuth();
@@ -91,7 +92,7 @@ function Router() {
           <ProtectedRoute path="/dli/book-order" component={BookOrder} />
           <ProtectedRoute path="/dli/alcpt-order" component={AlcptOrder} />
           <ProtectedRoute path="/dli/answer-sheets" component={AnswerSheets} />
-          <ProtectedRoute path="/test-tracker" component={TestTracker} />
+          <ProtectedRoute path="/test-tracker" component={TestTrackerEnhanced} />
           <ProtectedRoute path="/reports" component={ReportsEnhanced} />
           <ProtectedRoute path="/documents" component={Documents} />
           <ProtectedRoute path="/action-log" component={ActionLogPage} />

@@ -4491,6 +4491,220 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Test Scores API endpoints
+  app.get("/api/test-scores", async (req, res) => {
+    try {
+      const { school, testType } = req.query;
+      
+      // Mock data for demonstration - replace with real database queries
+      const testScores = [
+        {
+          id: 1,
+          studentName: "Ahmed Mohammed",
+          school: "KFNA",
+          schoolId: 349,
+          testType: "ALCPT",
+          score: 75,
+          maxScore: 100,
+          percentage: 75,
+          testDate: "2025-01-15",
+          instructor: "Hurd",
+          course: "Aviation",
+          level: "Intermediate",
+          uploadDate: "2025-01-16"
+        },
+        {
+          id: 2,
+          studentName: "Salim Ahmed",
+          school: "NFS East",
+          schoolId: 350,
+          testType: "Book Test",
+          score: 88,
+          maxScore: 100,
+          percentage: 88,
+          testDate: "2025-01-14",
+          instructor: "Said Ibrahim",
+          course: "Refresher",
+          level: "Advanced",
+          uploadDate: "2025-01-15"
+        },
+        {
+          id: 3,
+          studentName: "Hassan Ali",
+          school: "NFS West",
+          schoolId: 351,
+          testType: "ECL",
+          score: 82,
+          maxScore: 100,
+          percentage: 82,
+          testDate: "2025-01-13",
+          instructor: "Mike Johnson",
+          course: "Cadets",
+          level: "Intermediate",
+          uploadDate: "2025-01-14"
+        }
+      ];
+
+      let filteredScores = testScores;
+      
+      if (school && school !== 'all') {
+        filteredScores = filteredScores.filter(score => 
+          score.school.toUpperCase().replace(' ', '_') === school.toUpperCase()
+        );
+      }
+      
+      if (testType && testType !== 'all') {
+        filteredScores = filteredScores.filter(score => score.testType === testType);
+      }
+
+      res.json(filteredScores);
+    } catch (error) {
+      console.error('Test scores error:', error);
+      res.status(500).json({ error: 'Failed to fetch test scores' });
+    }
+  });
+
+  app.get("/api/test-scores/statistics", async (req, res) => {
+    try {
+      const { school, testType } = req.query;
+      
+      // Calculate statistics from mock data - replace with real calculations
+      const statistics = {
+        totalTests: 125,
+        averageScore: 78.5,
+        passRate: 82.4,
+        byTestType: {
+          'ALCPT': { count: 45, average: 76.2, passRate: 80.0 },
+          'Book Test': { count: 38, average: 81.5, passRate: 86.8 },
+          'ECL': { count: 25, average: 75.8, passRate: 76.0 },
+          'OPI': { count: 17, average: 82.1, passRate: 88.2 }
+        },
+        bySchool: {
+          'KFNA': { count: 52, average: 79.1, passRate: 84.6 },
+          'NFS East': { count: 41, average: 77.3, passRate: 78.0 },
+          'NFS West': { count: 32, average: 79.8, passRate: 84.4 }
+        },
+        trends: [
+          { month: 'Aug', averageScore: 75.2, testCount: 18 },
+          { month: 'Sep', averageScore: 76.8, testCount: 22 },
+          { month: 'Oct', averageScore: 78.1, testCount: 25 },
+          { month: 'Nov', averageScore: 77.9, testCount: 21 },
+          { month: 'Dec', averageScore: 79.4, testCount: 24 },
+          { month: 'Jan', averageScore: 78.5, testCount: 15 }
+        ]
+      };
+
+      res.json(statistics);
+    } catch (error) {
+      console.error('Test statistics error:', error);
+      res.status(500).json({ error: 'Failed to fetch test statistics' });
+    }
+  });
+
+  app.post("/api/test-scores/upload", upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      const XLSX = require('xlsx');
+      const workbook = XLSX.readFile(req.file.path);
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const data = XLSX.utils.sheet_to_json(worksheet);
+
+      let processedRows = 0;
+      const errors = [];
+
+      for (const row of data) {
+        try {
+          // Validate required fields
+          const requiredFields = ['Student Name', 'School', 'Test Type', 'Score', 'Max Score', 'Test Date', 'Instructor', 'Course', 'Level'];
+          const missingFields = requiredFields.filter(field => !row[field]);
+          
+          if (missingFields.length > 0) {
+            errors.push(`Row ${processedRows + 1}: Missing fields: ${missingFields.join(', ')}`);
+            continue;
+          }
+
+          // Calculate percentage
+          const score = parseInt(row['Score']);
+          const maxScore = parseInt(row['Max Score']);
+          const percentage = Math.round((score / maxScore) * 100);
+
+          // Find school ID
+          const schoolName = row['School'];
+          let schoolId;
+          switch (schoolName.toUpperCase()) {
+            case 'KFNA':
+              schoolId = 349;
+              break;
+            case 'NFS EAST':
+              schoolId = 350;
+              break;
+            case 'NFS WEST':
+              schoolId = 351;
+              break;
+            default:
+              errors.push(`Row ${processedRows + 1}: Invalid school name: ${schoolName}`);
+              continue;
+          }
+
+          // Store in database (mock for now)
+          // await dbStorage.createTestScore({
+          //   studentName: row['Student Name'],
+          //   schoolId,
+          //   testType: row['Test Type'],
+          //   score,
+          //   maxScore,
+          //   percentage,
+          //   testDate: new Date(row['Test Date']),
+          //   instructor: row['Instructor'],
+          //   course: row['Course'],
+          //   level: row['Level']
+          // });
+
+          processedRows++;
+        } catch (error) {
+          errors.push(`Row ${processedRows + 1}: ${error.message}`);
+        }
+      }
+
+      // Clean up uploaded file
+      require('fs').unlinkSync(req.file.path);
+      
+      res.json({ 
+        success: true, 
+        message: 'Test scores processed successfully',
+        processedRows,
+        errors: errors.slice(0, 10), // Limit errors shown
+        totalErrors: errors.length,
+        filename: req.file.filename
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      res.status(500).json({ error: 'Failed to process uploaded file' });
+    }
+  });
+
+  app.get("/api/test-scores/template", (req, res) => {
+    // Return template file download
+    res.json({ 
+      success: true,
+      message: 'Template download initiated',
+      downloadUrl: '/downloads/test-scores-template.xlsx'
+    });
+  });
+
+  app.get("/api/test-scores/export", (req, res) => {
+    // Return export file download
+    res.json({ 
+      success: true,
+      message: 'Export initiated',
+      downloadUrl: `/downloads/test-scores-export-${Date.now()}.xlsx`
+    });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

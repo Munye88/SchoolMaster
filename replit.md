@@ -1,0 +1,105 @@
+# GOVCIO-SAMS ELT Program Management System
+
+## Overview
+
+This is a comprehensive web application for managing an English Language Training (ELT) program across three naval schools: KFNA, NFS East, and NFS West. The system manages instructors, students, evaluations, attendance, and various administrative functions for aviation training programs.
+
+## System Architecture
+
+The application follows a full-stack architecture with:
+
+- **Frontend**: React with TypeScript using Vite as the build tool
+- **Backend**: Node.js with Express.js server
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: Passport.js with local strategy
+- **UI Framework**: Tailwind CSS with Radix UI components (shadcn/ui)
+- **File Storage**: Local file system with multer for uploads
+- **AI Integration**: OpenAI GPT-4o and Perplexity AI for intelligent assistance
+
+## Key Components
+
+### Frontend Architecture
+- React 18 with TypeScript for type safety
+- Vite for fast development and optimized builds
+- TanStack Query for server state management
+- React Hook Form with Zod validation
+- Responsive design with Tailwind CSS
+- Component library built on Radix UI primitives
+
+### Backend Architecture
+- Express.js server with TypeScript
+- RESTful API design with comprehensive error handling
+- Session-based authentication with PostgreSQL session store
+- File upload handling with type validation
+- Database migrations system for schema evolution
+- Comprehensive logging and monitoring
+
+### Database Schema
+The system manages multiple interconnected entities:
+- **Schools**: Three naval academies (KFNA, NFS East, NFS West)
+- **Instructors**: ELT instructors with personal and professional details
+- **Students**: Student enrollment and tracking
+- **Courses**: Course management and scheduling
+- **Evaluations**: Performance evaluations with scoring
+- **Test Results**: ALCPT, Book tests, and ECL test tracking
+- **Attendance**: Staff attendance monitoring
+- **Events**: Calendar and scheduling system
+- **Documents**: File management for policies and procedures
+
+## Data Flow
+
+1. **Authentication Flow**: Users authenticate via username/password, creating secure sessions
+2. **Dashboard Analytics**: Real-time statistics aggregated from multiple data sources
+3. **CRUD Operations**: Standard create, read, update, delete operations for all entities
+4. **File Processing**: Resume uploads processed with AI for candidate information extraction
+5. **AI Integration**: Natural language queries processed by OpenAI and Perplexity APIs
+6. **Real-time Updates**: Live data updates through API polling
+
+## External Dependencies
+
+### Database
+- PostgreSQL 16 for data persistence
+- Connection pooling for performance optimization
+- SSL support for production environments
+
+### AI Services
+- **OpenAI GPT-4o**: Advanced text analysis, data insights, and chat assistance
+- **Perplexity AI**: Web-enabled search and current information retrieval
+- **Anthropic Claude**: Secondary AI service for specialized tasks
+
+### Email Services
+- SendGrid for automated email notifications
+- Password reset and administrative communications
+
+### File Processing
+- PDF parsing capabilities for resume analysis
+- Image processing for instructor photos
+- Document type validation and security checks
+
+## Deployment Strategy
+
+### Development Environment
+- Replit with Node.js 20 runtime
+- PostgreSQL 16 database
+- Hot module replacement for rapid development
+- Automatic dependency management
+
+### Production Deployment
+- Docker containerization with multi-stage builds
+- Render.com cloud deployment with auto-scaling
+- Environment variable management for secrets
+- Database migrations run automatically on deployment
+- Health checks and monitoring
+
+### Build Process
+1. Frontend assets compiled with Vite
+2. Backend TypeScript compiled with esbuild
+3. Database schema pushed with Drizzle migrations
+4. Static assets served from Express server
+
+## Changelog
+- June 24, 2025. Initial setup
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
