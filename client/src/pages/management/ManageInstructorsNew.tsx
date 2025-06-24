@@ -350,12 +350,41 @@ export default function ManageInstructors() {
     ? instructors?.filter(instructor => instructor.schoolId === selectedSchoolId)
     : instructors;
 
+  // Calculate nationality distribution
+  const nationalityDistribution = filteredInstructors?.reduce((acc, instructor) => {
+    const nationality = instructor.nationality;
+    acc[nationality] = (acc[nationality] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>) || {};
+
+  // Flag emoji mapping for nationalities
+  const getFlagEmoji = (nationality: string) => {
+    const flagMap: Record<string, string> = {
+      'American': '🇺🇸',
+      'British': '🇬🇧',
+      'Canadian': '🇨🇦',
+      'Australian': '🇦🇺',
+      'Irish': '🇮🇪',
+      'South African': '🇿🇦',
+      'New Zealander': '🇳🇿',
+      'Other': '🌍'
+    };
+    return flagMap[nationality] || '🌍';
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Manage Instructors</h1>
+      <div className="flex flex-col space-y-6 mb-8">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Manage Instructors</h1>
+            <p className="text-gray-600 mt-1">
+              {filteredInstructors?.length || 0} total instructors
+              {selectedSchoolId && ` at ${schools?.find(s => s.id === selectedSchoolId)?.name}`}
+            </p>
+          </div>
 
-        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
           <div className="w-64">
             <Select 
               onValueChange={(value) => setSelectedSchoolId(value === "all" ? null : parseInt(value))}
@@ -375,13 +404,13 @@ export default function ManageInstructors() {
             </Select>
           </div>
 
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button size="lg" className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md transition-all hover:shadow-lg">
-                <Plus className="mr-2 h-5 w-5" />
-                <span className="font-semibold">Add Instructor</span>
-              </Button>
-            </DialogTrigger>
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg" className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md transition-all hover:shadow-lg">
+                  <Plus className="mr-2 h-5 w-5" />
+                  <span className="font-semibold">Add Instructor</span>
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
               <DialogHeader className="sticky top-0 bg-white z-10 pb-2">
                 <DialogTitle className="text-xl">Add New Instructor</DialogTitle>
@@ -829,8 +858,31 @@ export default function ManageInstructors() {
                 </form>
               </Form>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          </div>
         </div>
+
+        {/* Nationality Distribution Display */}
+        {Object.keys(nationalityDistribution).length > 0 && (
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Staff Nationality Distribution</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+              {Object.entries(nationalityDistribution)
+                .sort(([,a], [,b]) => b - a) // Sort by count descending
+                .map(([nationality, count]) => (
+                  <div 
+                    key={nationality}
+                    className="flex flex-col items-center p-4 bg-gray-50 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors"
+                  >
+                    <span className="text-4xl mb-2">{getFlagEmoji(nationality)}</span>
+                    <span className="text-sm font-medium text-gray-800 text-center">{nationality}</span>
+                    <span className="text-2xl font-bold text-[#0A2463] mt-1">{count}</span>
+                    <span className="text-xs text-gray-500">instructor{count > 1 ? 's' : ''}</span>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {isLoadingInstructors ? (
