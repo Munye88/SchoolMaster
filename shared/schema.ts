@@ -28,6 +28,18 @@ export const instructors = pgTable("instructors", {
   accompaniedStatus: text("accompanied_status").notNull(),
   imageUrl: text("image_url"),
   role: text("role"),
+  email: text("email"),
+  dateOfBirth: date("date_of_birth"),
+  passportNumber: text("passport_number"),
+  emergencyContact: text("emergency_contact"),
+  emergencyPhone: text("emergency_phone"),
+  contractEndDate: date("contract_end_date"),
+  salary: integer("salary"),
+  department: text("department"),
+  status: text("status").default("Active"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const insertInstructorSchema = createInsertSchema(instructors).pick({
@@ -41,6 +53,19 @@ export const insertInstructorSchema = createInsertSchema(instructors).pick({
   accompaniedStatus: true,
   imageUrl: true,
   role: true,
+  email: true,
+  dateOfBirth: true,
+  passportNumber: true,
+  emergencyContact: true,
+  emergencyPhone: true,
+  contractEndDate: true,
+  salary: true,
+  department: true,
+  status: true,
+  notes: true,
+}).extend({
+  email: z.string().email("Invalid email format").optional(),
+  salary: z.number().positive("Salary must be positive").optional(),
 });
 
 export const courses = pgTable("courses", {

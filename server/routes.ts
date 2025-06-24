@@ -274,12 +274,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("🚀 POST /api/instructors - Request body:", req.body);
       
-      // Check for fields mismatch
-      const { status, position, ...rest } = req.body;
+      // Check for fields mismatch and process form data
+      const { status, position, instructorStatus, salary, ...rest } = req.body;
       const processedData = {
         ...rest,
         accompaniedStatus: status, // Map from 'status' to 'accompaniedStatus'
         role: position, // Map from 'position' to 'role'
+        status: instructorStatus, // Map from 'instructorStatus' to 'status'
+        salary: salary ? parseInt(salary) : undefined, // Convert salary to number
       };
       
       console.log("🚀 Processed data before schema validation:", processedData);
@@ -321,12 +323,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           `Contains imageUrl (length: ${req.body.imageUrl?.length || 0} chars)` : 
           "No imageUrl provided");
       
-      // Check for fields mismatch
-      const { status, position, ...rest } = req.body;
+      // Check for fields mismatch and process form data
+      const { status, position, instructorStatus, salary, ...rest } = req.body;
       const processedData = {
         ...rest,
         ...(status && { accompaniedStatus: status }), // Only add if status exists
-        ...(position && { role: position }) // Only add if position exists
+        ...(position && { role: position }), // Only add if position exists
+        ...(instructorStatus && { status: instructorStatus }), // Map from 'instructorStatus' to 'status'
+        ...(salary && { salary: parseInt(salary) }), // Convert salary to number
       };
       
       // Handle image URL specifically - log details
