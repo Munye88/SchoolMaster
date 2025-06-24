@@ -107,6 +107,9 @@ The system manages multiple interconnected entities:
 - January 2025: Fixed distribution by school to show student counts
 - June 24, 2025: Fixed instructor update functionality with proper cache invalidation
 - June 24, 2025: Created school home pages with navigation to staff attendance and other school-specific features
+- June 24, 2025: Enhanced instructor records with comprehensive fields including email, passport, emergency contacts, salary, department, and employment status
+- June 24, 2025: Updated database schema to support extended instructor information
+- June 24, 2025: Improved instructor management UI with enhanced forms and better data display
 
 ## User Preferences
 
