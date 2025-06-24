@@ -44,6 +44,7 @@ import {
   schoolSchedules
 } from "@shared/schema";
 import { setupAuth } from "./auth";
+import documentRoutes from "./documents";
 import { generateAIResponse } from "./services/ai";
 import { processAssistantQuery, chatWithMoonsAssistant, MoonsAssistantRequest } from "./services/aiAssistant";
 import { AIChatRequest } from "../client/src/lib/ai-types";
@@ -78,6 +79,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Set up authentication
   setupAuth(app);
+  
+  // Document management routes
+  app.use(documentRoutes);
   
   // File upload directory setup
   const uploadDir = path.join(process.cwd(), 'uploads');

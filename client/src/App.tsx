@@ -51,6 +51,8 @@ import ManageInstructors from "./pages/management/ManageInstructorsNew";
 import ManageStudents from "./pages/management/ManageStudents";
 import ManageCourses from "./pages/management/ManageCoursesFixed";
 import ScheduleManager from "./pages/admin/ScheduleManager";
+import DocumentManager from "./pages/administration/DocumentManager";
+import ReportsEnhanced from "./pages/reports/ReportsEnhanced";
 
 function SidebarWithAuth() {
   const { user } = useAuth();
@@ -90,7 +92,7 @@ function Router() {
           <ProtectedRoute path="/dli/alcpt-order" component={AlcptOrder} />
           <ProtectedRoute path="/dli/answer-sheets" component={AnswerSheets} />
           <ProtectedRoute path="/test-tracker" component={TestTracker} />
-          <ProtectedRoute path="/reports" component={Reports} />
+          <ProtectedRoute path="/reports" component={ReportsEnhanced} />
           <ProtectedRoute path="/documents" component={Documents} />
           <ProtectedRoute path="/action-log" component={ActionLogPage} />
           <ProtectedRoute
@@ -188,6 +190,10 @@ function Router() {
           <ProtectedRoute
             path="/admin/schedules"
             component={ScheduleManager}
+          />
+          <ProtectedRoute
+            path="/administration/document-manager"
+            component={DocumentManager}
           />
 
           {/* School-specific document routes */}

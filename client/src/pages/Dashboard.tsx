@@ -372,9 +372,6 @@ const Dashboard = () => {
                           </div>
                           <div className="text-xs mb-1">
                             <span className={`${scheme.text} opacity-75`}>{schoolName}</span>
-                            {instructor && (
-                              <span className={`${scheme.text} opacity-75 block`}>Instructor: {instructor.name}</span>
-                            )}
                           </div>
                           <div>
                             <div className={`flex items-center justify-between text-sm ${scheme.text} mb-1`}>
