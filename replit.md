@@ -97,9 +97,19 @@ The system manages multiple interconnected entities:
 3. Database schema pushed with Drizzle migrations
 4. Static assets served from Express server
 
-## Changelog
-- June 24, 2025. Initial setup
+## Recent Changes
+- June 24, 2025: Initial setup and basic functionality
+- January 2025: Replaced sidebar navigation with top navigation layout
+- January 2025: Enhanced test tracker with Excel upload functionality
+- January 2025: Updated color scheme to navy blue (#0A2463) primary color
+- January 2025: Added nationality flags display in dashboard header
+- January 2025: Integrated quick links directly into dashboard
+- January 2025: Fixed distribution by school to show student counts
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Navigation preference: Top navigation instead of sidebar for better screen utilization.
+Color scheme: Navy blue primary (#0A2463) with school-specific colors (KFNA: red #E4424D, NFS East: green #22A783, NFS West: purple #6247AA).
+Dashboard layout: Nationality flags with counts in header, integrated quick links, removed leadership quote.
+Test tracker: Excel upload functionality for ALCPT, Book Test, ECL, and OPI scores with automatic calculations.

@@ -18,7 +18,7 @@ import InstructorRecognition from "@/pages/InstructorRecognition";
 import ActionLogPage from "@/pages/action-log";
 import QuarterlyCheckins from "@/pages/QuarterlyCheckins";
 import RecruitmentPage from "@/pages/recruitment";
-import Sidebar from "@/components/layout/Sidebar";
+import TopNavigation from "./components/layout/TopNavigation";
 import SchoolInstructorProfiles from "./pages/school/InstructorProfiles";
 import SchoolTimetable from "./pages/school/Timetable";
 import SchoolStudentDaySchedule from "./pages/school/StudentDaySchedule";
@@ -55,11 +55,10 @@ import DocumentManager from "./pages/administration/DocumentManager";
 import ReportsEnhanced from "./pages/reports/ReportsEnhanced";
 import TestTrackerEnhanced from "./pages/test-tracker/TestTrackerEnhanced";
 
-function SidebarWithAuth() {
+function NavigationWithAuth() {
   const { user } = useAuth();
 
-  // Don't show sidebar on the auth page
-  return user ? <Sidebar /> : null;
+  return user ? <TopNavigation /> : null;
 }
 
 function Router() {
@@ -67,8 +66,8 @@ function Router() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <SidebarWithAuth />
-      <div className="flex-1 overflow-auto pl-0 lg:pl-56 pt-16">
+      <NavigationWithAuth />
+      <div className="flex-1 overflow-auto">
         <Switch>
           {/* Auth route - public */}
           <Route path="/auth" component={AuthPage} />
