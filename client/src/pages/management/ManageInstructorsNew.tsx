@@ -157,13 +157,19 @@ export default function ManageInstructors() {
       // Invalidate all school-specific instructor queries too
       schools?.forEach(school => {
         queryClient.invalidateQueries({ queryKey: ['/api/instructors', school.code] });
+        queryClient.invalidateQueries({ queryKey: ['/api/schools', school.id, 'instructors'] });
       });
+      
+      // Force a refetch of the current data
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
       
       setIsEditDialogOpen(false);
       setSelectedInstructor(null);
       toast({
         title: "Instructor updated",
-        description: "The instructor has been updated successfully."
+        description: "The instructor has been updated successfully and the page will refresh."
       });
     },
     onError: (error) => {

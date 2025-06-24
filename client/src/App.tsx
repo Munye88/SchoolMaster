@@ -54,6 +54,7 @@ import ScheduleManager from "./pages/admin/ScheduleManager";
 import DocumentManager from "./pages/administration/DocumentManager";
 import ReportsEnhanced from "./pages/reports/ReportsEnhanced";
 import TestTrackerEnhanced from "./pages/test-tracker/TestTrackerEnhanced";
+import SchoolHome from "./pages/schools/SchoolHome";
 
 function NavigationWithAuth() {
   const { user } = useAuth();
@@ -196,6 +197,8 @@ function Router() {
             component={DocumentManager}
           />
 
+          {/* School home pages - must come after specific routes */}
+
           {/* School-specific document routes */}
           <ProtectedRoute
             path="/schools/:schoolCode/instructor-profiles"
@@ -236,6 +239,12 @@ function Router() {
           <ProtectedRoute
             path="/schools/:schoolCode/staff-counseling"
             component={StaffCounseling}
+          />
+
+          {/* School home pages - must come after all specific routes */}
+          <ProtectedRoute
+            path="/schools/:schoolCode"
+            component={SchoolHome}
           />
 
           {/* Fallback to 404 */}
