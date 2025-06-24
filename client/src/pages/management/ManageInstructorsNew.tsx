@@ -168,8 +168,8 @@ export default function ManageInstructors() {
       setIsEditDialogOpen(false);
       setSelectedInstructor(null);
       toast({
-        title: "Instructor updated",
-        description: "The instructor has been updated successfully and the page will refresh."
+        title: "Instructor updated", 
+        description: "The instructor has been updated successfully."
       });
     },
     onError: (error) => {

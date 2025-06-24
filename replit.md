@@ -105,6 +105,8 @@ The system manages multiple interconnected entities:
 - January 2025: Added nationality flags display in dashboard header
 - January 2025: Integrated quick links directly into dashboard
 - January 2025: Fixed distribution by school to show student counts
+- June 24, 2025: Fixed instructor update functionality with proper cache invalidation
+- June 24, 2025: Created school home pages with navigation to staff attendance and other school-specific features
 
 ## User Preferences
 
