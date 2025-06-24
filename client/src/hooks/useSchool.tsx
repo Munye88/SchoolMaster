@@ -8,6 +8,7 @@ type SchoolContextType = {
   error: Error | null;
   selectedSchool: School | null;
   selectSchool: (school: School | null) => void;
+  setSelectedSchool: (school: School | null) => void;
 };
 
 export const SchoolContext = createContext<SchoolContextType | null>(null);
@@ -28,6 +29,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
         error: error || null,
         selectedSchool,
         selectSchool: setSelectedSchool,
+        setSelectedSchool,
       }}
     >
       {children}

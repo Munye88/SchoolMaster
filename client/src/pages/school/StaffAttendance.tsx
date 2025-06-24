@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "wouter";
 import { Instructor } from "@shared/schema";
 import { useSchool } from "@/hooks/useSchool";
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card";
@@ -572,11 +573,29 @@ const AttendanceForm: React.FC<{
 };
 
 const StaffAttendance = () => {
+  // Get school code from URL parameters
+  const { schoolCode } = useParams<{ schoolCode: string }>();
+  
   // Context hooks
-  const { selectedSchool } = useSchool();
+  const { selectedSchool, schools, setSelectedSchool } = useSchool();
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+
+  // Fetch schools data
+  const { data: schoolsData = [] } = useQuery({
+    queryKey: ['/api/schools'],
+  });
+
+  // Set the selected school based on the URL parameter
+  useEffect(() => {
+    if (schoolCode && schoolsData.length > 0) {
+      const school = schoolsData.find(s => s.code === schoolCode);
+      if (school && (!selectedSchool || selectedSchool.id !== school.id)) {
+        setSelectedSchool(school);
+      }
+    }
+  }, [schoolCode, schoolsData, selectedSchool, setSelectedSchool]);
   
   // State hooks
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -594,14 +613,13 @@ const StaffAttendance = () => {
   }>({});
   const [bulkDate, setBulkDate] = useState<Date>(new Date());
   
-  // Queries
   const { data: instructors = [], isLoading: instructorsLoading } = useQuery<Instructor[]>({
     queryKey: ['/api/instructors'],
   });
   
   // Filter instructors by the selected school
   const schoolInstructors = instructors.filter(instructor => 
-    !selectedSchool || instructor.schoolId === selectedSchool?.id
+    selectedSchool && instructor.schoolId === selectedSchool.id
   );
   
   // Format selected date for API request
@@ -952,6 +970,32 @@ const StaffAttendance = () => {
     setSelectedInstructors(updatedSelections);
   };
 
+  // Show loading state while school is being determined
+  if (!selectedSchool && schoolCode) {
+    return (
+      <div className="flex-1 p-8 bg-gray-50">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-[#0A2463] mx-auto mb-4" />
+            <p className="text-gray-600">Loading school information...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if school not found
+  if (schoolCode && !selectedSchool) {
+    return (
+      <div className="flex-1 p-8 bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">School Not Found</h1>
+          <p className="text-gray-600">The requested school "{schoolCode}" could not be found.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div id="staffAttendanceContent" className="flex-1 p-8 bg-gray-50 overflow-y-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -959,7 +1003,7 @@ const StaffAttendance = () => {
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-blue-500 text-transparent bg-clip-text">
             {selectedSchool ? `${selectedSchool.name} Staff Attendance` : 'Staff Attendance'}
           </h1>
-          <p className="text-gray-500">Track and monitor instructor attendance records</p>
+          <p className="text-gray-500">Track and monitor instructor attendance records for {schoolInstructors.length} instructors</p>
         </div>
         
         <div className="flex gap-2">
