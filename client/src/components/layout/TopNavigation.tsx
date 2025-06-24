@@ -94,7 +94,7 @@ export default function TopNavigation() {
   };
 
   return (
-    <nav className="bg-[#0A2463] shadow-lg sticky top-0 z-50">
+    <nav className="bg-[#2563EB] shadow-lg sticky top-0 z-50">
       <div className="max-w-full mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}

@@ -192,7 +192,7 @@ const Dashboard = () => {
   return (
     <div className="flex-1 overflow-y-auto py-6 px-6 bg-gradient-to-b from-gray-50 to-white">
       {/* Dashboard Header with Staff Nationality Flags */}
-      <div className="bg-gradient-to-r from-[#0A2463] to-[#1e3a8a] text-white mb-6 rounded-lg shadow-md overflow-hidden relative">
+      <div className="bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white mb-6 rounded-lg shadow-md overflow-hidden relative">
         <div className="absolute inset-0 bg-grid-white/5 bg-[length:16px_16px]"></div>
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.1),_transparent)]"></div>
         <div className="flex justify-between items-center px-6 py-4 relative z-10">
