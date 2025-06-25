@@ -41,7 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 // Create a form-specific validation schema that matches our form field names
@@ -281,6 +281,11 @@ export default function ManageInstructors() {
   const handleEditInstructor = (instructor: Instructor) => {
     setSelectedInstructor(instructor);
     setIsEditDialogOpen(true);
+  };
+
+  // Handle view profile button click
+  const handleViewProfile = (instructor: Instructor) => {
+    setLocation(`/instructor/profile/${instructor.id}`);
   };
 
   // Filter instructors by selected school
@@ -660,7 +665,16 @@ export default function ManageInstructors() {
                 <Button
                   variant="outline"
                   size="icon"
+                  onClick={() => handleViewProfile(instructor)}
+                  title="View Profile"
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
                   onClick={() => handleEditInstructor(instructor)}
+                  title="Edit Instructor"
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -669,6 +683,7 @@ export default function ManageInstructors() {
                   size="icon"
                   className="text-red-500 hover:text-red-700 hover:bg-red-50"
                   onClick={() => handleDeleteInstructor(instructor.id)}
+                  title="Delete Instructor"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

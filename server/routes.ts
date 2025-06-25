@@ -242,22 +242,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Instructors
   app.get("/api/instructors", async (req, res) => {
-    const instructors = await dbStorage.getInstructors();
-    res.json(instructors);
+    try {
+      const instructors = await dbStorage.getInstructors();
+      console.log(`📋 Fetched ${instructors.length} instructors from database`);
+      res.json(instructors);
+    } catch (error) {
+      console.error("Error fetching instructors:", error);
+      res.status(500).json({ message: "Failed to fetch instructors" });
+    }
   });
   
   app.get("/api/instructors/:id", async (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid instructor ID" });
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid instructor ID" });
+      }
+      
+      const instructor = await dbStorage.getInstructorById(id);
+      if (!instructor) {
+        return res.status(404).json({ message: "Instructor not found" });
+      }
+      
+      console.log(`📋 Fetched instructor profile for ID: ${id}`);
+      res.json(instructor);
+    } catch (error) {
+      console.error("Error fetching instructor:", error);
+      res.status(500).json({ message: "Failed to fetch instructor" });
     }
-    
-    const instructor = await dbStorage.getInstructor(id);
-    if (!instructor) {
-      return res.status(404).json({ message: "Instructor not found" });
-    }
-    
-    res.json(instructor);
   });
   
   app.get("/api/schools/:schoolId/instructors", async (req, res) => {
