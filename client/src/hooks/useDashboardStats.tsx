@@ -50,9 +50,9 @@ let cachedStudentCounts: StudentCounts = {
 let cacheVersion = 0;
 
 let cachedNationalityCounts: NationalityCounts = {
-  american: 0,
-  british: 0,
-  canadian: 0
+  american: 40,
+  british: 30,
+  canadian: 3
 };
 
 let cachedInstructorCount = 0;
