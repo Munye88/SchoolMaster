@@ -4,8 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
-import InstructorProfile from "@/pages/InstructorProfile";
 import InstructorLookup from "@/pages/instructor/InstructorLookup";
+import NewInstructorProfile from "@/pages/instructor/InstructorProfile";
 import Courses from "@/pages/Courses";
 import CourseDetails from "@/pages/CourseDetails";
 import TestTracker from "@/pages/TestTracker";
@@ -196,6 +196,16 @@ function Router() {
           <ProtectedRoute
             path="/administration/document-manager"
             component={DocumentManager}
+          />
+          
+          {/* Instructor Profile Routes */}
+          <ProtectedRoute
+            path="/instructor/profile/:id"
+            component={NewInstructorProfile}
+          />
+          <ProtectedRoute
+            path="/instructor/lookup"
+            component={InstructorLookup}
           />
 
           {/* School home pages - must come after specific routes */}

@@ -65,6 +65,7 @@ type InstructorFormValues = z.infer<typeof instructorFormSchema>;
 
 export default function ManageInstructors() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);
