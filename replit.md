@@ -134,6 +134,9 @@ The system manages multiple interconnected entities:
 - June 25, 2025: Added multiple route handlers for instructor profiles (/instructor/profile/:id, /instructor/:id)
 - June 25, 2025: Enhanced error handling and logging for transferred website debugging
 - June 25, 2025: System fully deployed and ready for production use on transferred website
+- June 25, 2025: Fixed school instructor profile navigation - clicking instructor icon under school bar now leads directly to individual profiles
+- June 25, 2025: Updated View Profile buttons to bypass modal and navigate directly to /instructor/profile/:id
+- June 25, 2025: Enhanced navigation workflow: School bar → Instructor icon → View Profile/View button → Individual profile page
 
 ## User Preferences
 
