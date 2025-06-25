@@ -541,18 +541,18 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Calendar added at the bottom of Left Column */}
-          <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-1">
-              <CardTitle className="text-lg text-[#0A2463]">Calendar</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4">
+          <div className="bg-white border border-gray-200 shadow-sm">
+            <div className="p-4 pb-2 border-b border-gray-100">
+              <h3 className="text-lg font-semibold text-[#0A2463]">Calendar</h3>
+            </div>
+            <div className="p-4">
               <CalendarComponent className="shadow-none" />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
         </div>
 
@@ -569,8 +569,8 @@ const Dashboard = () => {
 
 
           {/* To-Do List */}
-          <Card className="shadow-sm">
-            <CardContent className="p-0">
+          <div className="bg-white border border-gray-200 shadow-sm">
+            <div className="p-0">
               <div className="p-3 pb-1">
                 <h2 className="text-lg font-semibold text-gray-800">My Tasks</h2>
               </div>
@@ -645,8 +645,8 @@ const Dashboard = () => {
                 
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Quick Links */}
           <QuickLinks />
