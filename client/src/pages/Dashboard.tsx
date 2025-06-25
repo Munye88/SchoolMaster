@@ -250,34 +250,58 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Stats Overview - Fixed centering with proper CSS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6">
+      {/* Stats Overview - Compact Professional Design */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {/* Students Card */}
-        <div className="bg-[#3B82F6] rounded-lg shadow-md text-white p-4 h-32 flex flex-col items-center justify-center text-center">
-          <Users className="h-8 w-8 mb-2 text-white" />
-          <div className="text-3xl font-bold text-white">{statistics.totalStudents}</div>
-          <div className="uppercase text-xs mt-1 font-medium">TOTAL STUDENTS</div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-md transition-shadow">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-50 rounded-lg">
+              <Users className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{statistics.totalStudents}</div>
+              <div className="text-xs text-gray-500 font-medium">Students</div>
+            </div>
+          </div>
         </div>
 
         {/* Instructors Card */}
-        <div className="bg-[#3BB99B] rounded-lg shadow-md text-white p-4 h-32 flex flex-col items-center justify-center text-center">
-          <UserCircle className="h-8 w-8 mb-2 text-white" />
-          <div className="text-3xl font-bold text-white">{statistics.activeInstructors}</div>
-          <div className="uppercase text-xs mt-1 font-medium">INSTRUCTORS</div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-md transition-shadow">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-green-50 rounded-lg">
+              <UserCircle className="h-5 w-5 text-green-600" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{statistics.activeInstructors}</div>
+              <div className="text-xs text-gray-500 font-medium">Instructors</div>
+            </div>
+          </div>
         </div>
 
         {/* Schools Card */}
-        <div className="bg-[#4DB6AC] rounded-lg shadow-md text-white p-4 h-32 flex flex-col items-center justify-center text-center">
-          <School className="h-8 w-8 mb-2 text-white" />
-          <div className="text-3xl font-bold text-white">{statistics.totalSchools}</div>
-          <div className="uppercase text-xs mt-1 font-medium">SCHOOLS</div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-md transition-shadow">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-teal-50 rounded-lg">
+              <School className="h-5 w-5 text-teal-600" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{statistics.totalSchools}</div>
+              <div className="text-xs text-gray-500 font-medium">Schools</div>
+            </div>
+          </div>
         </div>
 
         {/* Courses Card */}
-        <div className="bg-[#F59E0B] rounded-lg shadow-md text-white p-4 h-32 flex flex-col items-center justify-center text-center">
-          <FileText className="h-8 w-8 mb-2 text-white" />
-          <div className="text-3xl font-bold text-white">{statistics.totalCourses}</div>
-          <div className="uppercase text-xs mt-1 font-medium">COURSES</div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-md transition-shadow">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-amber-50 rounded-lg">
+              <FileText className="h-5 w-5 text-amber-600" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-gray-900">{statistics.totalCourses}</div>
+              <div className="text-xs text-gray-500 font-medium">Courses</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -295,11 +319,13 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
-                {/* Overview and Total - Green background with centered content */}
-                <div className="bg-[#399165] rounded-lg shadow-md p-4 text-white h-32 flex flex-col items-center justify-center text-center">
-                  <BookOpen className="w-8 h-8 mb-2 text-white" />
-                  <h3 className="text-lg font-semibold uppercase tracking-wider">ACTIVE COURSES</h3>
-                  <p className="text-3xl font-bold mt-1">{statistics.activeCourses}</p>
+                {/* Overview and Total - Compact design */}
+                <div className="bg-[#399165] rounded-lg shadow-sm p-3 text-white h-16 flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <BookOpen className="w-5 h-5 text-white" />
+                    <span className="text-sm font-medium">Active Courses</span>
+                  </div>
+                  <span className="text-2xl font-bold">{statistics.activeCourses}</span>
                 </div>
                 
                 {/* Course Cards - Dynamic from API data with better alignment */}
@@ -374,35 +400,18 @@ const Dashboard = () => {
                       const courseProgress = calculateCourseProgress(course);
                       
                       return (
-                        <div key={course.id} className={`rounded-lg shadow-sm ${scheme.bg} p-3`}>
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center">
-                              <div className={`w-2 h-2 rounded-full ${scheme.dot} mr-1`}></div>
-                              <span className={`text-base font-medium ${scheme.text}`}>{course.name}</span>
+                        <div key={course.id} className={`rounded-lg shadow-sm ${scheme.bg} p-3 h-20`}>
+                          <div className="flex items-center justify-between h-full">
+                            <div className="flex items-center space-x-2">
+                              <div className={`w-2 h-2 rounded-full ${scheme.dot}`}></div>
+                              <div>
+                                <div className={`text-sm font-medium ${scheme.text}`}>{course.name}</div>
+                                <div className={`text-xs ${scheme.text} opacity-75`}>{schoolName}</div>
+                              </div>
                             </div>
-                            <div className={`w-8 h-8 rounded-full ${scheme.icon} flex items-center justify-center text-center text-xl`}>
-                              <BookOpen className={`w-5 h-5 ${scheme.iconColor}`} />
-                            </div>
-                          </div>
-                          <div className="mt-2 mb-2">
-                            <span className={`text-3xl font-bold ${scheme.text}`}>{course.studentCount || 0}</span>
-                            <span className={`text-base font-medium ${scheme.text} ml-2`}>Students</span>
-                          </div>
-                          <div className="text-xs mb-1">
-                            <span className={`${scheme.text} opacity-75`}>
-                              {schoolName} • {course.benchmark || 'Standard curriculum'}
-                            </span>
-                          </div>
-                          <div>
-                            <div className={`flex items-center justify-between text-sm ${scheme.text} mb-1`}>
-                              <span>Progress</span>
-                              <span>{courseProgress}%</span>
-                            </div>
-                            <div className={`w-full ${scheme.progress} rounded-full h-2.5 overflow-hidden`}>
-                              <div 
-                                className={`h-full ${scheme.progressBar} rounded-full transition-all duration-300`} 
-                                style={{ width: `${courseProgress}%` }}
-                              ></div>
+                            <div className="text-right">
+                              <div className={`text-xl font-bold ${scheme.text}`}>{course.studentCount || 0}</div>
+                              <div className={`text-xs ${scheme.text} opacity-75`}>Students</div>
                             </div>
                           </div>
                         </div>
@@ -539,13 +548,13 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
-                {/* Overview and Total - Centered content */}
-                <div className="bg-[#951B5C] rounded-lg shadow-md p-4 text-white min-h-[120px] flex items-center justify-center">
-                  <div className="text-center">
-                    <GraduationCap className="w-8 h-8 mb-2 text-white mx-auto" />
-                    <h3 className="text-lg font-semibold uppercase tracking-wider">TOTAL STUDENTS</h3>
-                    <p className="text-3xl font-bold mt-1">{statistics.totalStudents}</p>
+                {/* Overview and Total - Compact design */}
+                <div className="bg-[#951B5C] rounded-lg shadow-sm p-3 text-white h-16 flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <GraduationCap className="w-5 h-5 text-white" />
+                    <span className="text-sm font-medium">Total Students</span>
                   </div>
+                  <span className="text-2xl font-bold">{statistics.totalStudents}</span>
                 </div>
                 
                 {/* School Cards - Responsive grid layout */}
