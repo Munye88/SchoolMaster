@@ -1520,26 +1520,36 @@ const StaffAttendance = () => {
                                                 <TableCell>{record.timeIn || "N/A"}</TableCell>
                                                 <TableCell>{record.comments || "-"}</TableCell>
                                                 <TableCell>
-                                                  <Dialog>
-                                                    <DialogTrigger asChild>
-                                                      <Button variant="ghost" size="icon" title="Edit attendance record">
-                                                        <Edit size={16} className="text-gray-500 hover:text-blue-600" />
-                                                      </Button>
-                                                    </DialogTrigger>
-                                                    <DialogContent className="sm:max-w-[525px]">
-                                                      <DialogHeader>
-                                                        <DialogTitle>Edit Attendance Record</DialogTitle>
-                                                        <DialogDescription>
-                                                          Update attendance details for {item.name} on {format(new Date(record.date), "MMMM dd, yyyy")}.
-                                                        </DialogDescription>
-                                                      </DialogHeader>
-                                                      <EditAttendanceForm 
-                                                        record={record}
-                                                        instructorName={item.name}
-                                                        onClose={() => {}}
-                                                      />
-                                                    </DialogContent>
-                                                  </Dialog>
+                                                  <div className="flex items-center gap-1">
+                                                    <Dialog>
+                                                      <DialogTrigger asChild>
+                                                        <Button variant="ghost" size="icon" title="Edit attendance record">
+                                                          <Edit size={16} className="text-gray-500 hover:text-blue-600" />
+                                                        </Button>
+                                                      </DialogTrigger>
+                                                      <DialogContent className="sm:max-w-[525px]">
+                                                        <DialogHeader>
+                                                          <DialogTitle>Edit Attendance Record</DialogTitle>
+                                                          <DialogDescription>
+                                                            Update attendance details for {item.name} on {format(new Date(record.date), "MMMM dd, yyyy")}.
+                                                          </DialogDescription>
+                                                        </DialogHeader>
+                                                        <EditAttendanceForm 
+                                                          record={record}
+                                                          instructorName={item.name}
+                                                          onClose={() => {}}
+                                                        />
+                                                      </DialogContent>
+                                                    </Dialog>
+                                                    <Button 
+                                                      variant="ghost" 
+                                                      size="icon" 
+                                                      title="Delete attendance record"
+                                                      onClick={() => handleDeleteRecord(record.id, item.name, record.date)}
+                                                    >
+                                                      <X size={16} className="text-gray-500 hover:text-red-600" />
+                                                    </Button>
+                                                  </div>
                                                 </TableCell>
                                               </TableRow>
                                             ))
