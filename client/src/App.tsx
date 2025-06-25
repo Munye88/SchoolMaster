@@ -78,10 +78,10 @@ function Router() {
 
           {/* Protected routes */}
           <ProtectedRoute path="/" component={Dashboard} />
-          <ProtectedRoute path="/instructors" component={InstructorProfile} />
+          <ProtectedRoute path="/instructors" component={NewInstructorProfile} />
           <ProtectedRoute
             path="/instructors/:id"
-            component={InstructorProfile}
+            component={NewInstructorProfile}
           />
           <ProtectedRoute
             path="/instructor-lookup"
