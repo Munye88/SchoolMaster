@@ -786,7 +786,14 @@ export class DatabaseStorage implements IStorage {
   
   // Instructor methods
   async getInstructors(): Promise<Instructor[]> {
-    return db.select().from(instructors);
+    try {
+      const result = await db.select().from(instructors);
+      console.log(`Database query returned ${result.length} instructors`);
+      return result;
+    } catch (error) {
+      console.error('Database error in getInstructors:', error);
+      throw new Error(`Failed to fetch instructors from database: ${error.message}`);
+    }
   }
   
   async getInstructor(id: number): Promise<Instructor | undefined> {
