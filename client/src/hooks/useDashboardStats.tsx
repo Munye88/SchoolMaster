@@ -139,12 +139,44 @@ export function useDashboardStats(): DashboardStats {
       // Update cached instructor count
       cachedInstructorCount = instructors.length;
       
-      // Update cached nationality counts
-      cachedNationalityCounts = {
-        american: instructors.filter(i => i.nationality === 'American').length,
-        british: instructors.filter(i => i.nationality === 'British').length,
-        canadian: instructors.filter(i => i.nationality === 'Canadian').length
+      // Update cached nationality counts with case-insensitive matching
+      const newNationalityCounts = {
+        american: instructors.filter(i => 
+          i.nationality && (
+            i.nationality.toLowerCase().includes('american') ||
+            i.nationality.toLowerCase().includes('usa') ||
+            i.nationality.toLowerCase().includes('united states') ||
+            i.nationality.toLowerCase().includes('us')
+          )
+        ).length,
+        british: instructors.filter(i => 
+          i.nationality && (
+            i.nationality.toLowerCase().includes('british') ||
+            i.nationality.toLowerCase().includes('uk') ||
+            i.nationality.toLowerCase().includes('united kingdom') ||
+            i.nationality.toLowerCase().includes('england')
+          )
+        ).length,
+        canadian: instructors.filter(i => 
+          i.nationality && (
+            i.nationality.toLowerCase().includes('canadian') ||
+            i.nationality.toLowerCase().includes('canada')
+          )
+        ).length
       };
+      
+      // Always update cache to ensure fresh data
+      cachedNationalityCounts = newNationalityCounts;
+      cacheVersion++; // Force re-render
+      forceUpdate(cacheVersion); // Trigger component re-render
+      
+      // Debug nationality counting
+      console.log("Nationality Count Debug:");
+      console.log("Total instructors:", instructors.length);
+      console.log("American count:", cachedNationalityCounts.american);
+      console.log("British count:", cachedNationalityCounts.british);
+      console.log("Canadian count:", cachedNationalityCounts.canadian);
+      console.log("Sample nationalities:", instructors.slice(0, 5).map(i => i.nationality));
     }
   }, [instructors]);
   

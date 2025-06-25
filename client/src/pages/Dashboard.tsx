@@ -152,6 +152,13 @@ const Dashboard = () => {
     console.log("NFS East Instructors:", instructors.filter(i => i.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id).length);
     console.log("NFS West Instructors:", instructors.filter(i => i.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id).length);
     
+    // Debug nationality data
+    console.log("Nationality debug - Total instructors:", instructors.length);
+    console.log("American instructors:", instructors.filter(i => i.nationality?.toLowerCase().includes('american')).length);
+    console.log("British instructors:", instructors.filter(i => i.nationality?.toLowerCase().includes('british')).length);
+    console.log("Canadian instructors:", instructors.filter(i => i.nationality?.toLowerCase().includes('canadian')).length);
+    console.log("Nationality values:", [...new Set(instructors.map(i => i.nationality))].filter(Boolean));
+    
     console.log("KFNA Courses:", courses.filter(c => c.schoolId === schools.find(s => s.code === 'KFNA')?.id && c.status !== 'Completed').length);
     console.log("NFS East Courses:", courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id && c.status !== 'Completed').length);
     console.log("NFS West Courses:", courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_WEST')?.id && c.status !== 'Completed').length);
@@ -208,7 +215,7 @@ const Dashboard = () => {
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-blue-200">American</div>
-                  <div className="text-lg font-bold">{dashboardStats.nationalityCounts.american}</div>
+                  <div className="text-lg font-bold">{dashboardStats.nationalityCounts.american || 0}</div>
                 </div>
               </div>
               
@@ -218,7 +225,7 @@ const Dashboard = () => {
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-blue-200">British</div>
-                  <div className="text-lg font-bold">{dashboardStats.nationalityCounts.british}</div>
+                  <div className="text-lg font-bold">{dashboardStats.nationalityCounts.british || 0}</div>
                 </div>
               </div>
               
@@ -228,7 +235,7 @@ const Dashboard = () => {
                 </div>
                 <div className="text-center">
                   <div className="text-xs text-blue-200">Canadian</div>
-                  <div className="text-lg font-bold">{dashboardStats.nationalityCounts.canadian}</div>
+                  <div className="text-lg font-bold">{dashboardStats.nationalityCounts.canadian || 0}</div>
                 </div>
               </div>
             </div>
