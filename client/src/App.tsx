@@ -198,7 +198,7 @@ function Router() {
             component={DocumentManager}
           />
           
-          {/* Instructor Profile Routes */}
+          {/* Instructor Profile Routes - Enhanced for transferred website */}
           <ProtectedRoute
             path="/instructor/profile/:id"
             component={NewInstructorProfile}
@@ -206,6 +206,16 @@ function Router() {
           <ProtectedRoute
             path="/instructor/lookup"
             component={InstructorLookup}
+          />
+          
+          {/* Additional instructor routes for compatibility */}
+          <ProtectedRoute
+            path="/instructor/:id"
+            component={NewInstructorProfile}
+          />
+          <ProtectedRoute
+            path="/instructors/profile/:id"
+            component={NewInstructorProfile}
           />
 
           {/* School home pages - must come after specific routes */}

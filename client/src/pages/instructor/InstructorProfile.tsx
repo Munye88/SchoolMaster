@@ -11,10 +11,18 @@ const InstructorProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   
-  // Fetch instructor data
+  // Fetch instructor data with enhanced error handling for transferred website
   const { data: instructor, isLoading: isLoadingInstructor, error } = useQuery<Instructor>({
     queryKey: ['/api/instructors', id],
     enabled: !!id,
+    retry: 3,
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
+    onError: (error) => {
+      console.error(`❌ Failed to fetch instructor ${id}:`, error);
+    },
+    onSuccess: (data) => {
+      console.log(`✅ Successfully loaded instructor profile: ${data.name} (ID: ${id})`);
+    }
   });
 
   // Fetch schools for name resolution
@@ -47,10 +55,16 @@ const InstructorProfile: React.FC = () => {
   }
 
   if (error || !instructor) {
+    console.error(`❌ Instructor profile error for ID ${id}:`, error);
     return (
       <div className="text-center py-12">
         <div className="text-red-500 text-lg">Error loading instructor profile</div>
-        <p className="text-gray-400 mt-2">The instructor profile could not be found or loaded.</p>
+        <p className="text-gray-400 mt-2">
+          The instructor profile (ID: {id}) could not be found or loaded.
+        </p>
+        <p className="text-gray-500 text-sm mt-1">
+          Error: {error?.message || 'Unknown error occurred'}
+        </p>
         <Button onClick={handleBack} className="mt-4">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Instructors
