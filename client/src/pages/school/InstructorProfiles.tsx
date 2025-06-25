@@ -50,7 +50,7 @@ const InstructorProfile = ({ instructor, schoolName, onBack }: {
 };
 
 const SchoolInstructorProfiles = () => {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const schoolCode = location.split("/")[2]; // Get the school code from the URL
   const { schools } = useSchool();
   const [searchQuery, setSearchQuery] = useState("");
@@ -116,8 +116,8 @@ const SchoolInstructorProfiles = () => {
   
   // Handle clicking on instructor to view their profile
   const handleViewInstructor = (instructor: Instructor) => {
-    console.log("Selected instructor:", instructor);
-    setSelectedInstructor(instructor);
+    console.log("Navigating to instructor profile from school page:", instructor.id);
+    setLocation(`/instructor/profile/${instructor.id}`);
   };
   
   if (isLoadingAllInstructors || !currentSchool) {
@@ -349,7 +349,10 @@ const SchoolInstructorProfiles = () => {
                       <Button 
                         size="sm" 
                         className={`w-full ${getSchoolColorClass(currentSchool?.name || '')} hover:opacity-90`}
-                        onClick={() => handleViewInstructor(instructor)}
+                        onClick={() => {
+                          console.log(`School view: Navigating to instructor profile ${instructor.id}`);
+                          setLocation(`/instructor/profile/${instructor.id}`);
+                        }}
                       >
                         View Full Profile
                       </Button>
@@ -426,7 +429,10 @@ const SchoolInstructorProfiles = () => {
                             className={`text-${currentSchool?.name.includes("NFS East") ? "green" : 
                                                 currentSchool?.name.includes("NFS West") ? "purple" : 
                                                 "blue"}-600`}
-                            onClick={() => handleViewInstructor(instructor)}
+                            onClick={() => {
+                              console.log(`School table: Navigating to instructor profile ${instructor.id}`);
+                              setLocation(`/instructor/profile/${instructor.id}`);
+                            }}
                           >
                             View
                           </Button>
