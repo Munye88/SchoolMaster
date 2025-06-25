@@ -250,49 +250,41 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Stats Overview - Simple Card Design matching screenshot */}
+      {/* Stats Overview - Improved alignment and centering */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6">
         {/* Students Card */}
-        <div className="bg-[#3B82F6] rounded-lg shadow-md text-white p-2 flex items-center">
-          <div className="text-white mr-2">
-            <Users className="h-7 w-7" />
-          </div>
-          <div>
+        <div className="bg-[#3B82F6] rounded-lg shadow-md text-white p-4 text-center">
+          <div className="flex flex-col items-center justify-center h-full">
+            <Users className="h-8 w-8 mb-2 text-white" />
             <div className="text-3xl font-bold text-white">{statistics.totalStudents}</div>
-            <div className="uppercase text-xs mt-0">TOTAL STUDENTS</div>
+            <div className="uppercase text-xs mt-1 font-medium">TOTAL STUDENTS</div>
           </div>
         </div>
 
         {/* Instructors Card */}
-        <div className="bg-[#3BB99B] rounded-lg shadow-md text-white p-2 flex items-center">
-          <div className="text-white mr-2">
-            <UserCircle className="h-7 w-7" />
-          </div>
-          <div>
+        <div className="bg-[#3BB99B] rounded-lg shadow-md text-white p-4 text-center">
+          <div className="flex flex-col items-center justify-center h-full">
+            <UserCircle className="h-8 w-8 mb-2 text-white" />
             <div className="text-3xl font-bold text-white">{statistics.activeInstructors}</div>
-            <div className="uppercase text-xs mt-0">INSTRUCTORS</div>
+            <div className="uppercase text-xs mt-1 font-medium">INSTRUCTORS</div>
           </div>
         </div>
 
         {/* Schools Card */}
-        <div className="bg-[#4DB6AC] rounded-lg shadow-md text-white p-2 flex items-center">
-          <div className="text-white mr-2">
-            <School className="h-7 w-7" />
-          </div>
-          <div>
+        <div className="bg-[#4DB6AC] rounded-lg shadow-md text-white p-4 text-center">
+          <div className="flex flex-col items-center justify-center h-full">
+            <School className="h-8 w-8 mb-2 text-white" />
             <div className="text-3xl font-bold text-white">{statistics.totalSchools}</div>
-            <div className="uppercase text-xs mt-0">SCHOOLS</div>
+            <div className="uppercase text-xs mt-1 font-medium">SCHOOLS</div>
           </div>
         </div>
 
-        {/* Courses Card - Double-width */}
-        <div className="bg-[#F59E0B] rounded-lg shadow-md text-white p-2 flex items-center">
-          <div className="text-white mr-2">
-            <FileText className="h-7 w-7" />
-          </div>
-          <div>
+        {/* Courses Card */}
+        <div className="bg-[#F59E0B] rounded-lg shadow-md text-white p-4 text-center">
+          <div className="flex flex-col items-center justify-center h-full">
+            <FileText className="h-8 w-8 mb-2 text-white" />
             <div className="text-3xl font-bold text-white">{statistics.totalCourses}</div>
-            <div className="uppercase text-xs mt-0">COURSES</div>
+            <div className="uppercase text-xs mt-1 font-medium">COURSES</div>
           </div>
         </div>
       </div>
@@ -311,21 +303,17 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
-                {/* Overview and Total - Green background from screenshot */}
-                <div className="bg-[#399165] rounded-lg shadow-md p-2 text-white">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="text-lg font-semibold uppercase tracking-wider">ACTIVE COURSES</h3>
-                      <p className="text-3xl font-bold mt-0">{statistics.activeCourses}</p>
-                    </div>
-                    <div className="p-1">
-                      <BookOpen className="w-7 w-7 text-white" />
-                    </div>
+                {/* Overview and Total - Green background with centered content */}
+                <div className="bg-[#399165] rounded-lg shadow-md p-4 text-white text-center">
+                  <div className="flex flex-col items-center justify-center">
+                    <BookOpen className="w-8 h-8 mb-2 text-white" />
+                    <h3 className="text-lg font-semibold uppercase tracking-wider">ACTIVE COURSES</h3>
+                    <p className="text-3xl font-bold mt-1">{statistics.activeCourses}</p>
                   </div>
                 </div>
                 
-                {/* Course Cards - Dynamic from API data */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Course Cards - Dynamic from API data with better alignment */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {courses
                     .filter(course => {
                       const status = getCourseStatus(course, true);
@@ -453,21 +441,17 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
-                {/* Overview and Total - Blue background from screenshot */}
-                <div className="bg-[#3046C5] rounded-lg shadow-md p-2 text-white">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="text-lg font-semibold uppercase tracking-wider">TOTAL INSTRUCTORS</h3>
-                      <p className="text-3xl font-bold mt-0">{statistics.activeInstructors}</p>
-                    </div>
-                    <div className="p-1 bg-[#4D5FC9] text-white rounded-lg">
-                      <User className="w-7 h-7 text-white" />
-                    </div>
+                {/* Overview and Total - Blue background with centered content */}
+                <div className="bg-[#3046C5] rounded-lg shadow-md p-4 text-white text-center">
+                  <div className="flex flex-col items-center justify-center">
+                    <User className="w-8 h-8 mb-2 text-white" />
+                    <h3 className="text-lg font-semibold uppercase tracking-wider">TOTAL INSTRUCTORS</h3>
+                    <p className="text-3xl font-bold mt-1">{statistics.activeInstructors}</p>
                   </div>
                 </div>
                 
-                {/* Nationality Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Nationality Cards - Better responsive grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {/* American */}
                   <div className="rounded-lg shadow-sm bg-[#EEF5FD] p-3">
                     <div className="flex items-center justify-between mb-1">
@@ -567,21 +551,17 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
-                {/* Overview and Total */}
-                <div className="bg-[#951B5C] rounded-lg shadow-md p-2 text-white">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="text-lg font-semibold uppercase tracking-wider">TOTAL STUDENTS</h3>
-                      <p className="text-3xl font-bold mt-0">{statistics.totalStudents}</p>
-                    </div>
-                    <div className="p-1 bg-[#A93F78] text-white rounded-lg">
-                      <GraduationCap className="w-7 h-7 text-white" />
-                    </div>
+                {/* Overview and Total - Centered content */}
+                <div className="bg-[#951B5C] rounded-lg shadow-md p-4 text-white text-center">
+                  <div className="flex flex-col items-center justify-center">
+                    <GraduationCap className="w-8 h-8 mb-2 text-white" />
+                    <h3 className="text-lg font-semibold uppercase tracking-wider">TOTAL STUDENTS</h3>
+                    <p className="text-3xl font-bold mt-1">{statistics.totalStudents}</p>
                   </div>
                 </div>
                 
-                {/* School Cards - Matching Staff Nationality styling */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* School Cards - Responsive grid layout */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {/* KFNA */}
                   <div className="rounded-lg shadow-sm bg-[#FDE7E9] p-3">
                     <div className="flex items-center justify-between mb-1">

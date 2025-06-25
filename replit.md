@@ -137,6 +137,8 @@ The system manages multiple interconnected entities:
 - June 25, 2025: Fixed school instructor profile navigation - clicking instructor icon under school bar now leads directly to individual profiles
 - June 25, 2025: Updated View Profile buttons to bypass modal and navigate directly to /instructor/profile/:id
 - June 25, 2025: Enhanced navigation workflow: School bar → Instructor icon → View Profile/View button → Individual profile page
+- June 25, 2025: Fixed dashboard box alignment and title centering issues for better visual consistency
+- June 25, 2025: Improved dashboard layout with centered content and responsive grid system
 
 ## User Preferences
 
