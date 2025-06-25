@@ -296,12 +296,14 @@ export default function ManageInstructors() {
     : instructors;
 
   // Debug logging
-  console.log('Instructors data:', {
+  console.log('ManageInstructors - Data Status:', {
     total: instructors?.length || 0,
     filtered: filteredInstructors?.length || 0,
     selectedSchool: selectedSchoolId,
     loading: isLoadingInstructors,
-    error: instructorsError
+    error: instructorsError,
+    hasInstructors: !!instructors,
+    instructorSample: instructors?.slice(0, 3).map(i => ({ id: i.id, name: i.name, schoolId: i.schoolId }))
   });
 
   return (

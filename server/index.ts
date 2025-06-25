@@ -6,6 +6,7 @@ import { seedDatabase } from "./seed";
 import { seedSchools } from "./schoolSeed";
 import { seedCompleteInstructors } from "./completeInstructorSeed";
 import { ensureCompleteSchema } from "./migrations/ensure-complete-schema";
+import { healthCheck } from "./health";
 
 const app = express();
 // Increase JSON body size limit to handle large base64 encoded images (50MB)
@@ -61,6 +62,9 @@ app.use((req, res, next) => {
   } catch (error) {
     log(`Error initializing database: ${error}`);
   }
+  
+  // Add health check endpoint for Render
+  app.get('/api/health', healthCheck);
   
   const server = await registerRoutes(app);
 
