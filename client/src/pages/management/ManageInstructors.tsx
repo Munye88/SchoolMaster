@@ -593,10 +593,10 @@ export default function ManageInstructors() {
         <div className="flex justify-center items-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-[#0A2463]" />
         </div>
-      ) : (
+      ) : filteredInstructors && filteredInstructors.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredInstructors?.map((instructor) => (
-            <Card key={instructor.id}>
+          {filteredInstructors.map((instructor) => (
+            <Card key={instructor.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="flex flex-row items-center gap-4">
                 {instructor.imageUrl ? (
                   <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#3E92CC] shadow-md">
@@ -655,6 +655,13 @@ export default function ManageInstructors() {
               </CardFooter>
             </Card>
           ))}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <div className="text-gray-500 text-lg">No instructors found</div>
+          <p className="text-gray-400 mt-2">
+            {selectedSchoolId ? "No instructors found for the selected school." : "Add instructors to get started."}
+          </p>
         </div>
       )}
 
