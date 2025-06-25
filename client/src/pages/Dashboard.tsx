@@ -320,7 +320,7 @@ const Dashboard = () => {
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Compact design */}
-                <div className="bg-[#399165] rounded-lg shadow-sm p-3 text-white h-16 flex items-center justify-between">
+                <div className="bg-[#399165] shadow-md p-3 text-white h-16 flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <BookOpen className="w-5 h-5 text-white" />
                     <span className="text-sm font-medium">Active Courses</span>
@@ -400,10 +400,10 @@ const Dashboard = () => {
                       const courseProgress = calculateCourseProgress(course);
                       
                       return (
-                        <div key={course.id} className={`rounded-lg shadow-sm ${scheme.bg} p-3 h-20`}>
+                        <div key={course.id} className={`shadow-md ${scheme.bg} p-3 h-20`}>
                           <div className="flex items-center justify-between h-full">
                             <div className="flex items-center space-x-2">
-                              <div className={`w-2 h-2 rounded-full ${scheme.dot}`}></div>
+                              <div className={`w-2 h-2 ${scheme.dot}`}></div>
                               <div>
                                 <div className={`text-sm font-medium ${scheme.text}`}>{course.name}</div>
                                 <div className={`text-xs ${scheme.text} opacity-75`}>{schoolName}</div>
@@ -441,7 +441,7 @@ const Dashboard = () => {
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Blue background with centered content */}
-                <div className="bg-[#3046C5] rounded-lg shadow-md p-4 text-white h-32 flex flex-col items-center justify-center text-center">
+                <div className="bg-[#3046C5] shadow-md p-4 text-white h-32 flex flex-col items-center justify-center text-center">
                   <User className="w-8 h-8 mb-2 text-white" />
                   <h3 className="text-lg font-semibold uppercase tracking-wider">TOTAL INSTRUCTORS</h3>
                   <p className="text-3xl font-bold mt-1">{statistics.activeInstructors}</p>
@@ -577,7 +577,7 @@ const Dashboard = () => {
                   </div>
                   
                   {/* NFS East */}
-                  <div className="rounded-lg shadow-sm bg-[#E9F7F2] p-3 h-20">
+                  <div className="shadow-md bg-[#E9F7F2] p-3 h-20">
                     <div className="flex items-center justify-between h-full">
                       <div className="flex items-center space-x-2">
                         <Building className="w-4 h-4 text-[#22A783]" />
@@ -594,7 +594,7 @@ const Dashboard = () => {
                   </div>
                   
                   {/* NFS West */}
-                  <div className="rounded-lg shadow-sm bg-[#F2EFFA] p-3 h-20">
+                  <div className="shadow-md bg-[#F2EFFA] p-3 h-20">
                     <div className="flex items-center justify-between h-full">
                       <div className="flex items-center space-x-2">
                         <Building className="w-4 h-4 text-[#6247AA]" />
