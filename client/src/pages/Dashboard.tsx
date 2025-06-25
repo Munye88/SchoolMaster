@@ -646,12 +646,12 @@ const Dashboard = () => {
               </div>
               
               <div className="px-3 pb-3">
-                <div className="flex mb-4 relative border rounded-md">
+                <div className="flex mb-4 relative border">
                   <Input 
                     value={newTask} 
                     onChange={(e) => setNewTask(e.target.value)}
                     placeholder="Add a new task..."
-                    className="border-0 flex-1 py-2 rounded-md text-xs"
+                    className="border-0 flex-1 py-2 text-xs"
                     onKeyDown={(e) => e.key === 'Enter' && addTask()}
                   />
                   <Button 
@@ -693,10 +693,10 @@ const Dashboard = () => {
                     return (
                       <div 
                         key={task.id} 
-                        className={`flex items-center justify-between py-2 px-2 rounded-md border ${borderClass}`}
+                        className={`flex items-center justify-between py-2 px-2 border ${borderClass}`}
                       >
                         <div className="flex items-center gap-2">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center ${checkClass}`}>
+                          <div className={`w-5 h-5 flex items-center justify-center ${checkClass}`}>
                             <Check className="h-3 w-3" />
                           </div>
                           <span className="text-gray-800 text-sm font-normal">
