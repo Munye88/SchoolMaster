@@ -338,6 +338,10 @@ export class MemStorage implements IStorage {
     return this.instructors.get(id);
   }
   
+  async getInstructorById(id: number): Promise<Instructor | undefined> {
+    return this.instructors.get(id);
+  }
+  
   async getInstructorsBySchool(schoolId: number): Promise<Instructor[]> {
     return Array.from(this.instructors.values()).filter(
       (instructor) => instructor.schoolId === schoolId,
