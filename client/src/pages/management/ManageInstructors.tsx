@@ -70,9 +70,12 @@ export default function ManageInstructors() {
   const [selectedInstructor, setSelectedInstructor] = useState<Instructor | null>(null);
   const [selectedSchoolId, setSelectedSchoolId] = useState<number | null>(null);
 
-  // Fetch instructors with school filter dependency
-  const { data: instructors, isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
-    queryKey: ['/api/instructors', selectedSchoolId],
+  // Fetch all instructors - comprehensive data fetch
+  const { data: instructors, isLoading: isLoadingInstructors, error: instructorsError } = useQuery<Instructor[]>({
+    queryKey: ['/api/instructors'],
+    staleTime: 5 * 60 * 1000, // 5 minutes cache
+    retry: 3,
+    refetchOnWindowFocus: false,
   });
 
   // Fetch schools for the dropdown

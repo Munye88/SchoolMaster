@@ -36,6 +36,7 @@ export interface IStorage {
   // Instructor methods
   getInstructors(): Promise<Instructor[]>;
   getInstructor(id: number): Promise<Instructor | undefined>;
+  getInstructorById(id: number): Promise<Instructor | undefined>;
   getInstructorsBySchool(schoolId: number): Promise<Instructor[]>;
   createInstructor(instructor: InsertInstructor): Promise<Instructor>;
   updateInstructor(id: number, instructor: Partial<InsertInstructor>): Promise<Instructor | undefined>;
