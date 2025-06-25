@@ -157,7 +157,7 @@ const Dashboard = () => {
     console.log("American instructors:", instructors.filter(i => i.nationality?.toLowerCase().includes('american')).length);
     console.log("British instructors:", instructors.filter(i => i.nationality?.toLowerCase().includes('british')).length);
     console.log("Canadian instructors:", instructors.filter(i => i.nationality?.toLowerCase().includes('canadian')).length);
-    console.log("Nationality values:", [...new Set(instructors.map(i => i.nationality))].filter(Boolean));
+    console.log("Nationality values:", Array.from(new Set(instructors.map(i => i.nationality))).filter(Boolean));
     
     console.log("KFNA Courses:", courses.filter(c => c.schoolId === schools.find(s => s.code === 'KFNA')?.id && c.status !== 'Completed').length);
     console.log("NFS East Courses:", courses.filter(c => c.schoolId === schools.find(s => s.code === 'NFS_EAST')?.id && c.status !== 'Completed').length);
@@ -440,99 +440,47 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
-                {/* Overview and Total - Blue background with centered content */}
-                <div className="bg-[#3046C5] shadow-md p-4 text-white h-32 flex flex-col items-center justify-center text-center">
-                  <User className="w-8 h-8 mb-2 text-white" />
-                  <h3 className="text-lg font-semibold uppercase tracking-wider">TOTAL INSTRUCTORS</h3>
-                  <p className="text-3xl font-bold mt-1">{statistics.activeInstructors}</p>
+                {/* Overview and Total - Compact header */}
+                <div className="bg-[#3046C5] shadow-sm p-3 text-white h-14 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <User className="w-5 h-5 text-white" />
+                    <span className="text-sm font-semibold uppercase tracking-wider">TOTAL INSTRUCTORS</span>
+                  </div>
+                  <span className="text-xl font-bold">{statistics.activeInstructors}</span>
                 </div>
                 
-                {/* Nationality Cards - Better responsive grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Nationality Cards - Compact rectangular grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {/* American */}
-                  <div className="rounded-lg shadow-sm bg-[#EEF5FD] p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-blue-600 mr-1"></div>
-                        <span className="text-base font-medium text-blue-900">American</span>
+                  <div className="shadow-sm bg-[#EEF5FD] p-2 border border-blue-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🇺🇸</span>
+                        <span className="text-sm font-medium text-blue-900">American</span>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-center text-xl">
-                        🇺🇸
-                      </div>
-                    </div>
-                    <div className="mt-2 mb-2">
-                      <span className="text-3xl font-bold text-blue-950">{dashboardStats.nationalityCounts.american}</span>
-                      <span className="text-base font-medium text-blue-900 ml-2">Instructors</span>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-between text-sm text-blue-800 mb-1">
-                        <span>Distribution</span>
-                        <span>{(dashboardStats.nationalityCounts.american/statistics.activeInstructors*100).toFixed(1)}%</span>
-                      </div>
-                      <div className="w-full bg-blue-200 rounded-full h-2.5 overflow-hidden">
-                        <div 
-                          className="h-full bg-blue-600 rounded-full" 
-                          style={{ width: `${(dashboardStats.nationalityCounts.american/statistics.activeInstructors*100).toFixed(1)}%` }}
-                        ></div>
-                      </div>
+                      <span className="text-lg font-bold text-blue-950">{dashboardStats.nationalityCounts.american}</span>
                     </div>
                   </div>
                   
                   {/* British */}
-                  <div className="rounded-lg shadow-sm bg-[#F0F9F5] p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-green-600 mr-1"></div>
-                        <span className="text-base font-medium text-green-800">British</span>
+                  <div className="shadow-sm bg-[#F0F9F5] p-2 border border-green-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🇬🇧</span>
+                        <span className="text-sm font-medium text-green-800">British</span>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-center text-xl">
-                        🇬🇧
-                      </div>
-                    </div>
-                    <div className="mt-2 mb-2">
-                      <span className="text-3xl font-bold text-green-900">{dashboardStats.nationalityCounts.british}</span>
-                      <span className="text-base font-medium text-green-800 ml-2">Instructors</span>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-between text-sm text-green-800 mb-1">
-                        <span>Distribution</span>
-                        <span>{(dashboardStats.nationalityCounts.british/statistics.activeInstructors*100).toFixed(1)}%</span>
-                      </div>
-                      <div className="w-full bg-green-200 rounded-full h-2.5 overflow-hidden">
-                        <div 
-                          className="h-full bg-green-600 rounded-full" 
-                          style={{ width: `${(dashboardStats.nationalityCounts.british/statistics.activeInstructors*100).toFixed(1)}%` }}
-                        ></div>
-                      </div>
+                      <span className="text-lg font-bold text-green-900">{dashboardStats.nationalityCounts.british}</span>
                     </div>
                   </div>
                   
                   {/* Canadian */}
-                  <div className="rounded-lg shadow-sm bg-[#F5F2FA] p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center">
-                        <div className="w-2 h-2 rounded-full bg-purple-600 mr-1"></div>
-                        <span className="text-base font-medium text-purple-800">Canadian</span>
+                  <div className="shadow-sm bg-[#F5F2FA] p-2 border border-purple-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🇨🇦</span>
+                        <span className="text-sm font-medium text-purple-800">Canadian</span>
                       </div>
-                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-center text-xl">
-                        🇨🇦
-                      </div>
-                    </div>
-                    <div className="mt-2 mb-2">
-                      <span className="text-3xl font-bold text-purple-900">{dashboardStats.nationalityCounts.canadian}</span>
-                      <span className="text-base font-medium text-purple-800 ml-2">Instructors</span>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-between text-sm text-purple-800 mb-1">
-                        <span>Distribution</span>
-                        <span>{(dashboardStats.nationalityCounts.canadian/statistics.activeInstructors*100).toFixed(1)}%</span>
-                      </div>
-                      <div className="w-full bg-purple-200 rounded-full h-2.5 overflow-hidden">
-                        <div 
-                          className="h-full bg-purple-600 rounded-full" 
-                          style={{ width: `${(dashboardStats.nationalityCounts.canadian/statistics.activeInstructors*100).toFixed(1)}%` }}
-                        ></div>
-                      </div>
+                      <span className="text-lg font-bold text-purple-900">{dashboardStats.nationalityCounts.canadian}</span>
                     </div>
                   </div>
                 </div>
@@ -548,65 +496,47 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
-                {/* Overview and Total - Compact design */}
-                <div className="bg-[#951B5C] rounded-lg shadow-sm p-3 text-white h-16 flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
+                {/* Overview and Total - Compact header */}
+                <div className="bg-[#951B5C] shadow-sm p-3 text-white h-14 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
                     <GraduationCap className="w-5 h-5 text-white" />
-                    <span className="text-sm font-medium">Total Students</span>
+                    <span className="text-sm font-semibold uppercase tracking-wider">TOTAL STUDENTS</span>
                   </div>
-                  <span className="text-2xl font-bold">{statistics.totalStudents}</span>
+                  <span className="text-xl font-bold">{statistics.totalStudents}</span>
                 </div>
                 
-                {/* School Cards - Compact grid layout */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* School Cards - Compact rectangular layout */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {/* KFNA */}
-                  <div className="rounded-lg shadow-sm bg-[#FDE7E9] p-3 h-20">
-                    <div className="flex items-center justify-between h-full">
-                      <div className="flex items-center space-x-2">
-                        <Building className="w-4 h-4 text-[#E4424D]" />
-                        <div>
-                          <div className="text-sm font-medium text-[#8F1D25]">KFNA</div>
-                          <div className="text-xs text-[#E4424D]">King Fahd Naval Academy</div>
-                        </div>
+                  <div className="shadow-sm bg-[#FDE7E9] p-2 border border-red-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-red-500"></div>
+                        <span className="text-sm font-medium text-[#8F1D25]">KFNA</span>
                       </div>
-                      <div className="text-right">
-                        <div className="text-xl font-bold text-[#8F1D25]">{statistics.studentsBySchool.knfa}</div>
-                        <div className="text-xs text-[#E4424D]">Cadets</div>
-                      </div>
+                      <span className="text-lg font-bold text-[#8F1D25]">{statistics.studentsBySchool.knfa}</span>
                     </div>
                   </div>
                   
                   {/* NFS East */}
-                  <div className="shadow-md bg-[#E9F7F2] p-3 h-20">
-                    <div className="flex items-center justify-between h-full">
-                      <div className="flex items-center space-x-2">
-                        <Building className="w-4 h-4 text-[#22A783]" />
-                        <div>
-                          <div className="text-sm font-medium text-[#0E6E55]">NFS East</div>
-                          <div className="text-xs text-[#22A783]">Navy Flight School East</div>
-                        </div>
+                  <div className="shadow-sm bg-[#E9F7F2] p-2 border border-green-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-500"></div>
+                        <span className="text-sm font-medium text-[#0E6E55]">NFS East</span>
                       </div>
-                      <div className="text-right">
-                        <div className="text-xl font-bold text-[#0E6E55]">{statistics.studentsBySchool.nfsEast}</div>
-                        <div className="text-xs text-[#22A783]">Students</div>
-                      </div>
+                      <span className="text-lg font-bold text-[#0E6E55]">{statistics.studentsBySchool.nfsEast}</span>
                     </div>
                   </div>
                   
                   {/* NFS West */}
-                  <div className="shadow-md bg-[#F2EFFA] p-3 h-20">
-                    <div className="flex items-center justify-between h-full">
-                      <div className="flex items-center space-x-2">
-                        <Building className="w-4 h-4 text-[#6247AA]" />
-                        <div>
-                          <div className="text-sm font-medium text-[#402F70]">NFS West</div>
-                          <div className="text-xs text-[#6247AA]">Navy Flight School West</div>
-                        </div>
+                  <div className="shadow-sm bg-[#F2EFFA] p-2 border border-purple-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-purple-500"></div>
+                        <span className="text-sm font-medium text-[#402F70]">NFS West</span>
                       </div>
-                      <div className="text-right">
-                        <div className="text-xl font-bold text-[#402F70]">{statistics.studentsBySchool.nfsWest}</div>
-                        <div className="text-xs text-[#6247AA]">Students</div>
-                      </div>
+                      <span className="text-lg font-bold text-[#402F70]">{statistics.studentsBySchool.nfsWest}</span>
                     </div>
                   </div>
                 </div>
@@ -693,7 +623,7 @@ const Dashboard = () => {
                     return (
                       <div 
                         key={task.id} 
-                        className={`flex items-center justify-between py-2 px-2 border ${borderClass}`}
+                        className={`flex items-center justify-between py-2 px-2 border ${borderClass} bg-gray-50`}
                       >
                         <div className="flex items-center gap-2">
                           <div className={`w-5 h-5 flex items-center justify-center ${checkClass}`}>
