@@ -76,8 +76,9 @@ export default function ManageInstructors() {
   });
 
   // Fetch schools for the dropdown
-  const { data: schools } = useQuery<School[]>({
+  const { data: schools, error: schoolsError } = useQuery<School[]>({
     queryKey: ['/api/schools'],
+    retry: 3,
   });
 
   // Create instructor mutation
@@ -283,6 +284,15 @@ export default function ManageInstructors() {
   const filteredInstructors = selectedSchoolId 
     ? instructors?.filter(instructor => instructor.schoolId === selectedSchoolId)
     : instructors;
+
+  // Debug logging
+  console.log('Instructors data:', {
+    total: instructors?.length || 0,
+    filtered: filteredInstructors?.length || 0,
+    selectedSchool: selectedSchoolId,
+    loading: isLoadingInstructors,
+    error: instructorsError
+  });
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -589,13 +599,20 @@ export default function ManageInstructors() {
         </Dialog>
       </div>
 
-      {isLoadingInstructors ? (
+      {instructorsError ? (
+        <div className="text-center py-12">
+          <div className="text-red-500 text-lg">Error loading instructors</div>
+          <p className="text-gray-400 mt-2">
+            {instructorsError instanceof Error ? instructorsError.message : 'Please try refreshing the page.'}
+          </p>
+        </div>
+      ) : isLoadingInstructors ? (
         <div className="flex justify-center items-center h-64">
           <Loader2 className="h-8 w-8 animate-spin text-[#0A2463]" />
         </div>
       ) : filteredInstructors && filteredInstructors.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredInstructors.map((instructor) => (
+          {(filteredInstructors || []).map((instructor) => (
             <Card key={instructor.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="flex flex-row items-center gap-4">
                 {instructor.imageUrl ? (
@@ -660,8 +677,13 @@ export default function ManageInstructors() {
         <div className="text-center py-12">
           <div className="text-gray-500 text-lg">No instructors found</div>
           <p className="text-gray-400 mt-2">
-            {selectedSchoolId ? "No instructors found for the selected school." : "Add instructors to get started."}
+            {selectedSchoolId ? "No instructors found for the selected school." : "Loading instructor data..."}
           </p>
+          {instructors && instructors.length > 0 && (
+            <p className="text-blue-600 mt-2">
+              Found {instructors.length} total instructors. Try clearing the school filter.
+            </p>
+          )}
         </div>
       )}
 
