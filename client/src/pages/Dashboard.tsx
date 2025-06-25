@@ -253,9 +253,9 @@ const Dashboard = () => {
       {/* Stats Overview - Compact Professional Design */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {/* Students Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white shadow-md border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-lg transition-shadow">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-50 rounded-lg">
+            <div className="p-2 bg-blue-50">
               <Users className="h-5 w-5 text-blue-600" />
             </div>
             <div>
@@ -266,9 +266,9 @@ const Dashboard = () => {
         </div>
 
         {/* Instructors Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white shadow-md border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-lg transition-shadow">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-green-50 rounded-lg">
+            <div className="p-2 bg-green-50">
               <UserCircle className="h-5 w-5 text-green-600" />
             </div>
             <div>
@@ -279,9 +279,9 @@ const Dashboard = () => {
         </div>
 
         {/* Schools Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white shadow-md border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-lg transition-shadow">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-teal-50 rounded-lg">
+            <div className="p-2 bg-teal-50">
               <School className="h-5 w-5 text-teal-600" />
             </div>
             <div>
@@ -292,9 +292,9 @@ const Dashboard = () => {
         </div>
 
         {/* Courses Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-md transition-shadow">
+        <div className="bg-white shadow-md border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-lg transition-shadow">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-amber-50 rounded-lg">
+            <div className="p-2 bg-amber-50">
               <FileText className="h-5 w-5 text-amber-600" />
             </div>
             <div>
