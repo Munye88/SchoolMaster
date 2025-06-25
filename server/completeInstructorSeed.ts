@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { instructors, schools } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 interface InstructorSeedData {
   name: string;
@@ -130,6 +130,36 @@ const instructorsData: InstructorSeedData[] = [
 export async function seedCompleteInstructors() {
   try {
     console.log("👨‍🏫 Starting instructor database seeding with complete data...");
+    
+    // Ensure all required columns exist before seeding
+    const columnsToEnsure = [
+      'email TEXT',
+      'date_of_birth DATE',
+      'passport_number TEXT',
+      'emergency_contact TEXT',
+      'emergency_phone TEXT',
+      'contract_end_date DATE',
+      'salary INTEGER',
+      'department TEXT',
+      'status TEXT DEFAULT \'Active\'',
+      'notes TEXT',
+      'created_at TIMESTAMP DEFAULT NOW()',
+      'updated_at TIMESTAMP DEFAULT NOW()',
+      'emergency_contact_name TEXT',
+      'emergency_contact_phone TEXT',
+      'employment_status TEXT DEFAULT \'active\'',
+      'hire_date DATE'
+    ];
+
+    console.log("🔧 Ensuring all instructor columns exist for Render deployment...");
+    for (const column of columnsToEnsure) {
+      try {
+        await db.execute(sql.raw(`ALTER TABLE instructors ADD COLUMN IF NOT EXISTS ${column}`));
+      } catch (error) {
+        // Column might already exist, continue
+      }
+    }
+    console.log("✅ All instructor columns ensured for fresh deployment");
     
     // Check if instructors already exist
     const existingInstructors = await db.select().from(instructors);

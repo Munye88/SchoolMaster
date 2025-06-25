@@ -57,6 +57,35 @@ export async function ensureCompleteSchema() {
       );
     `);
 
+    // Add all missing columns to existing instructors table if they don't exist
+    const columnsToAdd = [
+      'email TEXT',
+      'date_of_birth DATE',
+      'passport_number TEXT',
+      'emergency_contact TEXT',
+      'emergency_phone TEXT',
+      'contract_end_date DATE',
+      'salary INTEGER',
+      'department TEXT',
+      'status TEXT DEFAULT \'Active\'',
+      'notes TEXT',
+      'created_at TIMESTAMP DEFAULT NOW()',
+      'updated_at TIMESTAMP DEFAULT NOW()',
+      'emergency_contact_name TEXT',
+      'emergency_contact_phone TEXT',
+      'employment_status TEXT DEFAULT \'active\'',
+      'hire_date DATE'
+    ];
+
+    for (const column of columnsToAdd) {
+      try {
+        await db.execute(sql.raw(`ALTER TABLE instructors ADD COLUMN IF NOT EXISTS ${column}`));
+      } catch (error) {
+        // Column might already exist, continue
+        console.log(`Column already exists or error adding: ${column}`);
+      }
+    }
+
     // Create all other required tables
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS courses (

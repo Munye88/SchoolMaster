@@ -1,5 +1,6 @@
--- Production Database Fix for Render Deployment
--- Run this on the production PostgreSQL database if columns are missing
+-- CRITICAL: Render Deployment Database Fix
+-- This SQL fixes the "email column does not exist" error on fresh deployments
+-- Run this BEFORE instructor seeding operations
 
 -- Ensure instructors table has all required columns
 ALTER TABLE instructors ADD COLUMN IF NOT EXISTS email text;
