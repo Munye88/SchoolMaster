@@ -633,20 +633,26 @@ const StaffAttendance = () => {
     `?schoolId=${selectedSchool.id}${formattedSelectedDate ? `&date=${formattedSelectedDate}` : ''}` : 
     formattedSelectedDate ? `?date=${formattedSelectedDate}` : ''}`;
   
-  // Fetch attendance data from API with proper filtering
+  // Fetch attendance data from API with proper filtering - auto-refresh when date changes
   const { data: attendanceRecords = [], isLoading: attendanceLoading, refetch: refetchAttendance } = useQuery<StaffAttendance[]>({
-    queryKey: ['/api/staff-attendance', selectedSchool?.id, formattedSelectedDate], // Update key when school or date changes
+    queryKey: ['/api/staff-attendance', selectedSchool?.id, formattedMonth], // Use month for consistent data fetching
     queryFn: async () => {
-      console.log("Fetching attendance data with URL:", requestUrl);
-      const response = await fetch(requestUrl);
+      let url = `/api/staff-attendance?date=${formattedMonth}`;
+      if (selectedSchool) {
+        url += `&schoolId=${selectedSchool.id}`;
+      }
+      console.log("Fetching attendance data with URL:", url);
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch attendance records');
       }
       const data = await response.json();
-      console.log(`Fetched ${data.length} attendance records from API for school:`, selectedSchool?.name);
+      console.log(`Fetched ${data.length} attendance records for ${formattedMonth} - ${selectedSchool?.name}`);
       return data;
     },
-    enabled: !!selectedSchool
+    enabled: !!selectedSchool && !!formattedMonth,
+    refetchOnWindowFocus: false,
+    staleTime: 30000 // Data is fresh for 30 seconds
   });
   
   // Force refetch when date or school changes
@@ -1663,26 +1669,37 @@ const StaffAttendance = () => {
                               <TableCell>{record.timeOut || 'N/A'}</TableCell>
                               <TableCell>{record.comments || 'No comments'}</TableCell>
                               <TableCell className="text-right">
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                                      <Edit className="h-4 w-4" />
-                                    </Button>
-                                  </DialogTrigger>
-                                  <DialogContent className="sm:max-w-[525px]">
-                                    <DialogHeader>
-                                      <DialogTitle>Edit Attendance Record</DialogTitle>
-                                      <DialogDescription>
-                                        Update attendance details for {instructor ? instructor.name : 'Unknown'} on {format(new Date(record.date), "MMMM dd, yyyy")}.
-                                      </DialogDescription>
-                                    </DialogHeader>
-                                    <EditAttendanceForm 
-                                      record={record}
-                                      instructorName={instructor ? instructor.name : 'Unknown'}
-                                      onClose={() => document.querySelector('[data-state="open"]')?.querySelector('[aria-label="Close"]')?.click()}
-                                    />
-                                  </DialogContent>
-                                </Dialog>
+                                <div className="flex items-center justify-end gap-1">
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button variant="ghost" size="icon" className="h-8 w-8" title="Edit attendance record">
+                                        <Edit className="h-4 w-4 text-gray-500 hover:text-blue-600" />
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[525px]">
+                                      <DialogHeader>
+                                        <DialogTitle>Edit Attendance Record</DialogTitle>
+                                        <DialogDescription>
+                                          Update attendance details for {instructor ? instructor.name : 'Unknown'} on {format(new Date(record.date), "MMMM dd, yyyy")}.
+                                        </DialogDescription>
+                                      </DialogHeader>
+                                      <EditAttendanceForm 
+                                        record={record}
+                                        instructorName={instructor ? instructor.name : 'Unknown'}
+                                        onClose={() => document.querySelector('[data-state="open"]')?.querySelector('[aria-label="Close"]')?.click()}
+                                      />
+                                    </DialogContent>
+                                  </Dialog>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="h-8 w-8"
+                                    title="Delete attendance record"
+                                    onClick={() => handleDeleteRecord(record.id, instructor?.name || 'Unknown', record.date)}
+                                  >
+                                    <X className="h-4 w-4 text-gray-500 hover:text-red-600" />
+                                  </Button>
+                                </div>
                               </TableCell>
                             </TableRow>
                           );
@@ -1691,7 +1708,7 @@ const StaffAttendance = () => {
                       {monthlyRecords.filter(record => record.date.split('T')[0] === format(date, 'yyyy-MM-dd')).length === 0 && (
                         <TableRow>
                           <TableCell colSpan={6} className="text-center py-6 text-gray-500">
-                            No attendance records found for this date. Use the "Record Individual" or "Take Attendance" buttons to add records.
+                            No attendance records found for {format(date, 'MMMM dd, yyyy')}. Use the "Record Individual" or "Take Attendance" buttons to add records.
                           </TableCell>
                         </TableRow>
                       )}
