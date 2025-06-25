@@ -40,6 +40,10 @@ export const instructors = pgTable("instructors", {
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  emergencyContactName: text("emergency_contact_name"),
+  emergencyContactPhone: text("emergency_contact_phone"),
+  employmentStatus: text("employment_status").default("active"),
+  hireDate: date("hire_date"),
 });
 
 export const insertInstructorSchema = createInsertSchema(instructors).pick({
@@ -63,6 +67,10 @@ export const insertInstructorSchema = createInsertSchema(instructors).pick({
   department: true,
   status: true,
   notes: true,
+  emergencyContactName: true,
+  emergencyContactPhone: true,
+  employmentStatus: true,
+  hireDate: true,
 }).extend({
   email: z.string().email("Invalid email format").optional(),
   salary: z.number().positive("Salary must be positive").optional(),
