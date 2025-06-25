@@ -320,7 +320,10 @@ const Dashboard = () => {
                 {/* Course Cards - Dynamic from API data */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {courses
-                    .filter(course => course.status === 'In Progress')
+                    .filter(course => {
+                      const status = getCourseStatus(course, true);
+                      return status === 'In Progress';
+                    })
                     .slice(0, 6)
                     .map((course, index) => {
                       // Color schemes for variety
@@ -383,7 +386,7 @@ const Dashboard = () => {
                       
                       const scheme = colorSchemes[index % colorSchemes.length];
                       const schoolName = schools.find(s => s.id === course.schoolId)?.name || 'Unknown';
-                      const instructor = instructors.find(i => i.id === course.instructorId);
+                      const courseProgress = calculateCourseProgress(course);
                       
                       return (
                         <div key={course.id} className={`rounded-lg shadow-sm ${scheme.bg} p-3`}>
@@ -401,17 +404,19 @@ const Dashboard = () => {
                             <span className={`text-base font-medium ${scheme.text} ml-2`}>Students</span>
                           </div>
                           <div className="text-xs mb-1">
-                            <span className={`${scheme.text} opacity-75`}>{schoolName}</span>
+                            <span className={`${scheme.text} opacity-75`}>
+                              {schoolName} • {course.benchmark || 'Standard curriculum'}
+                            </span>
                           </div>
                           <div>
                             <div className={`flex items-center justify-between text-sm ${scheme.text} mb-1`}>
                               <span>Progress</span>
-                              <span>{course.progress || 0}%</span>
+                              <span>{courseProgress}%</span>
                             </div>
                             <div className={`w-full ${scheme.progress} rounded-full h-2.5 overflow-hidden`}>
                               <div 
-                                className={`h-full ${scheme.progressBar} rounded-full`} 
-                                style={{ width: `${course.progress || 0}%` }}
+                                className={`h-full ${scheme.progressBar} rounded-full transition-all duration-300`} 
+                                style={{ width: `${courseProgress}%` }}
                               ></div>
                             </div>
                           </div>
@@ -420,7 +425,10 @@ const Dashboard = () => {
                     })}
                     
                   {/* Show message if no active courses */}
-                  {courses.filter(course => course.status === 'In Progress').length === 0 && (
+                  {courses.filter(course => {
+                    const status = getCourseStatus(course, true);
+                    return status === 'In Progress';
+                  }).length === 0 && (
                     <div className="col-span-full text-center py-8 text-gray-500">
                       <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
                       <p>No active courses at the moment</p>

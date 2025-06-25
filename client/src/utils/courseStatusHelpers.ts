@@ -6,14 +6,10 @@ import { Course } from '@shared/schema';
  * @returns A number between 0-100 representing the course progress
  */
 export function calculateCourseProgress(course: Course): number {
-  // If we already have a progress value > 0, use it
-  if (course.progress > 0) {
-    return course.progress;
-  }
-
   // Cannot calculate progress without valid dates
   if (!course.startDate || !course.endDate) {
-    return 0;
+    // Use stored progress if no dates available
+    return course.progress || 0;
   }
 
   try {
@@ -25,13 +21,13 @@ export function calculateCourseProgress(course: Course): number {
     // Ensure dates are valid
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       console.warn(`Invalid date format for course ${course.name}`);
-      return 0;
+      return course.progress || 0;
     }
     
     // Handle case where end date is before start date (incorrect data)
     if (endDate < startDate) {
-      console.warn(`Course ${course.name} has end date before start date. Returning manual progress.`);
-      return course.progress;
+      console.warn(`Course ${course.name} has end date before start date. Using stored progress.`);
+      return course.progress || 0;
     }
     
     // If course hasn't started yet
@@ -51,10 +47,13 @@ export function calculateCourseProgress(course: Course): number {
     const progressPercent = Math.round((elapsedDuration / totalDuration) * 100);
     
     // Ensure progress is between 0-100
-    return Math.max(0, Math.min(100, progressPercent));
+    const calculatedProgress = Math.max(0, Math.min(100, progressPercent));
+    
+    // Use the higher of calculated or stored progress (courses can be manually advanced)
+    return Math.max(calculatedProgress, course.progress || 0);
   } catch (error) {
     console.error(`Error calculating progress for course:`, course, error);
-    return 0;
+    return course.progress || 0;
   }
 }
 

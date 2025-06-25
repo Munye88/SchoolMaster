@@ -116,12 +116,10 @@ export function useDashboardStats(): DashboardStats {
         nfsWest: calculateStudentCountFromCourses(351)
       };
       
-      // Only update cache if values have changed
-      if (JSON.stringify(cachedStudentCounts) !== JSON.stringify(newStudentCounts)) {
-        cachedStudentCounts = newStudentCounts;
-        cacheVersion++; // Force re-render
-        forceUpdate(cacheVersion); // Trigger component re-render
-      }
+      // Always update cache to ensure we show latest data
+      cachedStudentCounts = newStudentCounts;
+      cacheVersion++; // Force re-render
+      forceUpdate(cacheVersion); // Trigger component re-render
       
       console.log("KFNA Students:", cachedStudentCounts.knfa);
       console.log("NFS East Students:", cachedStudentCounts.nfsEast);
@@ -161,10 +159,12 @@ export function useDashboardStats(): DashboardStats {
         totalCourses: courses.length,
         // Count courses with "In Progress" status in the database
         activeCourses: courses.filter(course => {
-          return course.status === 'In Progress';
+          const status = getCourseStatus(course, true);
+          return status === 'In Progress';
         }).length,
         completedCourses: courses.filter(course => {
-          return course.status === 'Completed';
+          const status = getCourseStatus(course, true);
+          return status === 'Completed';
         }).length
       };
       

@@ -55,6 +55,7 @@ import DocumentManager from "./pages/administration/DocumentManager";
 import ReportsEnhanced from "./pages/reports/ReportsEnhanced";
 import TestTrackerEnhanced from "./pages/test-tracker/TestTrackerEnhanced";
 import SchoolHome from "./pages/schools/SchoolHome";
+import EmployeeHandbook from "./pages/administration/EmployeeHandbook";
 
 function NavigationWithAuth() {
   const { user } = useAuth();
