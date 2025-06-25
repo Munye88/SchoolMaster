@@ -250,42 +250,34 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Stats Overview - Improved alignment and centering */}
+      {/* Stats Overview - Fixed centering with proper CSS */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6">
         {/* Students Card */}
-        <div className="bg-[#3B82F6] rounded-lg shadow-md text-white p-4 min-h-[120px] flex items-center justify-center">
-          <div className="text-center">
-            <Users className="h-8 w-8 mb-2 text-white mx-auto" />
-            <div className="text-3xl font-bold text-white">{statistics.totalStudents}</div>
-            <div className="uppercase text-xs mt-1 font-medium">TOTAL STUDENTS</div>
-          </div>
+        <div className="bg-[#3B82F6] rounded-lg shadow-md text-white p-4 h-32 flex flex-col items-center justify-center text-center">
+          <Users className="h-8 w-8 mb-2 text-white" />
+          <div className="text-3xl font-bold text-white">{statistics.totalStudents}</div>
+          <div className="uppercase text-xs mt-1 font-medium">TOTAL STUDENTS</div>
         </div>
 
         {/* Instructors Card */}
-        <div className="bg-[#3BB99B] rounded-lg shadow-md text-white p-4 min-h-[120px] flex items-center justify-center">
-          <div className="text-center">
-            <UserCircle className="h-8 w-8 mb-2 text-white mx-auto" />
-            <div className="text-3xl font-bold text-white">{statistics.activeInstructors}</div>
-            <div className="uppercase text-xs mt-1 font-medium">INSTRUCTORS</div>
-          </div>
+        <div className="bg-[#3BB99B] rounded-lg shadow-md text-white p-4 h-32 flex flex-col items-center justify-center text-center">
+          <UserCircle className="h-8 w-8 mb-2 text-white" />
+          <div className="text-3xl font-bold text-white">{statistics.activeInstructors}</div>
+          <div className="uppercase text-xs mt-1 font-medium">INSTRUCTORS</div>
         </div>
 
         {/* Schools Card */}
-        <div className="bg-[#4DB6AC] rounded-lg shadow-md text-white p-4 min-h-[120px] flex items-center justify-center">
-          <div className="text-center">
-            <School className="h-8 w-8 mb-2 text-white mx-auto" />
-            <div className="text-3xl font-bold text-white">{statistics.totalSchools}</div>
-            <div className="uppercase text-xs mt-1 font-medium">SCHOOLS</div>
-          </div>
+        <div className="bg-[#4DB6AC] rounded-lg shadow-md text-white p-4 h-32 flex flex-col items-center justify-center text-center">
+          <School className="h-8 w-8 mb-2 text-white" />
+          <div className="text-3xl font-bold text-white">{statistics.totalSchools}</div>
+          <div className="uppercase text-xs mt-1 font-medium">SCHOOLS</div>
         </div>
 
         {/* Courses Card */}
-        <div className="bg-[#F59E0B] rounded-lg shadow-md text-white p-4 min-h-[120px] flex items-center justify-center">
-          <div className="text-center">
-            <FileText className="h-8 w-8 mb-2 text-white mx-auto" />
-            <div className="text-3xl font-bold text-white">{statistics.totalCourses}</div>
-            <div className="uppercase text-xs mt-1 font-medium">COURSES</div>
-          </div>
+        <div className="bg-[#F59E0B] rounded-lg shadow-md text-white p-4 h-32 flex flex-col items-center justify-center text-center">
+          <FileText className="h-8 w-8 mb-2 text-white" />
+          <div className="text-3xl font-bold text-white">{statistics.totalCourses}</div>
+          <div className="uppercase text-xs mt-1 font-medium">COURSES</div>
         </div>
       </div>
 
@@ -304,12 +296,10 @@ const Dashboard = () => {
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Green background with centered content */}
-                <div className="bg-[#399165] rounded-lg shadow-md p-4 text-white min-h-[120px] flex items-center justify-center">
-                  <div className="text-center">
-                    <BookOpen className="w-8 h-8 mb-2 text-white mx-auto" />
-                    <h3 className="text-lg font-semibold uppercase tracking-wider">ACTIVE COURSES</h3>
-                    <p className="text-3xl font-bold mt-1">{statistics.activeCourses}</p>
-                  </div>
+                <div className="bg-[#399165] rounded-lg shadow-md p-4 text-white h-32 flex flex-col items-center justify-center text-center">
+                  <BookOpen className="w-8 h-8 mb-2 text-white" />
+                  <h3 className="text-lg font-semibold uppercase tracking-wider">ACTIVE COURSES</h3>
+                  <p className="text-3xl font-bold mt-1">{statistics.activeCourses}</p>
                 </div>
                 
                 {/* Course Cards - Dynamic from API data with better alignment */}
@@ -442,12 +432,10 @@ const Dashboard = () => {
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Blue background with centered content */}
-                <div className="bg-[#3046C5] rounded-lg shadow-md p-4 text-white min-h-[120px] flex items-center justify-center">
-                  <div className="text-center">
-                    <User className="w-8 h-8 mb-2 text-white mx-auto" />
-                    <h3 className="text-lg font-semibold uppercase tracking-wider">TOTAL INSTRUCTORS</h3>
-                    <p className="text-3xl font-bold mt-1">{statistics.activeInstructors}</p>
-                  </div>
+                <div className="bg-[#3046C5] rounded-lg shadow-md p-4 text-white h-32 flex flex-col items-center justify-center text-center">
+                  <User className="w-8 h-8 mb-2 text-white" />
+                  <h3 className="text-lg font-semibold uppercase tracking-wider">TOTAL INSTRUCTORS</h3>
+                  <p className="text-3xl font-bold mt-1">{statistics.activeInstructors}</p>
                 </div>
                 
                 {/* Nationality Cards - Better responsive grid */}
