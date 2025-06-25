@@ -310,14 +310,14 @@ const Dashboard = () => {
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
           {/* Current Courses */}
-          <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-1">
+          <div className="bg-white border border-gray-200 shadow-sm">
+            <div className="p-4 pb-1 border-b border-gray-100">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-lg text-[#0A2463]">Active Courses</CardTitle>
+                <h3 className="text-lg font-semibold text-[#0A2463]">Active Courses</h3>
                 <Link href="/courses" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
               </div>
-            </CardHeader>
-            <CardContent className="p-4 pb-5">
+            </div>
+            <div className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Compact design */}
                 <div className="bg-[#399165] shadow-md p-2 text-white h-12 flex items-center justify-between">
@@ -329,7 +329,7 @@ const Dashboard = () => {
                 </div>
                 
                 {/* Course Cards - Dynamic from API data with better alignment */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 overflow-hidden">
                   {courses
                     .filter(course => {
                       const status = getCourseStatus(course, true);
@@ -430,15 +430,15 @@ const Dashboard = () => {
                   )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Staff Nationality */}
-          <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-1">
-              <CardTitle className="text-lg text-[#0A2463]">Staff Nationality</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 pb-5">
+          <div className="bg-white border border-gray-200 shadow-sm">
+            <div className="p-4 pb-2 border-b border-gray-100">
+              <h3 className="text-lg font-semibold text-[#0A2463]">Staff Nationality</h3>
+            </div>
+            <div className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Compact header */}
                 <div className="bg-[#3046C5] shadow-sm p-2 text-white h-12 flex items-center justify-between">
@@ -450,7 +450,7 @@ const Dashboard = () => {
                 </div>
                 
                 {/* Nationality Cards - Compact rectangular grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 overflow-hidden">
                   {/* American */}
                   <div className="shadow-sm bg-[#EEF5FD] p-1.5 border border-blue-200">
                     <div className="flex items-center justify-between">
@@ -485,16 +485,16 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
 
           {/* Student Distribution */}
-          <Card className="shadow-sm">
-            <CardHeader className="p-4 pb-1">
-              <CardTitle className="text-lg text-[#0A2463]">Distribution by School</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 pb-5">
+          <div className="bg-white border border-gray-200 shadow-sm">
+            <div className="p-4 pb-2 border-b border-gray-100">
+              <h3 className="text-lg font-semibold text-[#0A2463]">Distribution by School</h3>
+            </div>
+            <div className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Compact header */}
                 <div className="bg-[#951B5C] shadow-sm p-2 text-white h-12 flex items-center justify-between">
@@ -506,7 +506,7 @@ const Dashboard = () => {
                 </div>
                 
                 {/* School Cards - Compact rectangular layout */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 overflow-hidden">
                   {/* KFNA */}
                   <div className="shadow-sm bg-[#FDE7E9] p-1.5 border border-red-200">
                     <div className="flex items-center justify-between">
