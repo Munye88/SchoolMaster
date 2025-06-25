@@ -253,52 +253,52 @@ const Dashboard = () => {
       {/* Stats Overview - Compact Professional Design */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {/* Students Card */}
-        <div className="bg-white shadow-md border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-50">
-              <Users className="h-5 w-5 text-blue-600" />
+        <div className="bg-white shadow-md border border-gray-200 p-3 h-16 flex items-center justify-between hover:shadow-lg transition-shadow">
+          <div className="flex items-center space-x-2">
+            <div className="p-1.5 bg-blue-50">
+              <Users className="h-4 w-4 text-blue-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900">{statistics.totalStudents}</div>
+              <div className="text-lg font-bold text-gray-900">{statistics.totalStudents}</div>
               <div className="text-xs text-gray-500 font-medium">Students</div>
             </div>
           </div>
         </div>
 
         {/* Instructors Card */}
-        <div className="bg-white shadow-md border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-green-50">
-              <UserCircle className="h-5 w-5 text-green-600" />
+        <div className="bg-white shadow-md border border-gray-200 p-3 h-16 flex items-center justify-between hover:shadow-lg transition-shadow">
+          <div className="flex items-center space-x-2">
+            <div className="p-1.5 bg-green-50">
+              <UserCircle className="h-4 w-4 text-green-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900">{statistics.activeInstructors}</div>
+              <div className="text-lg font-bold text-gray-900">{statistics.activeInstructors}</div>
               <div className="text-xs text-gray-500 font-medium">Instructors</div>
             </div>
           </div>
         </div>
 
         {/* Schools Card */}
-        <div className="bg-white shadow-md border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-teal-50">
-              <School className="h-5 w-5 text-teal-600" />
+        <div className="bg-white shadow-md border border-gray-200 p-3 h-16 flex items-center justify-between hover:shadow-lg transition-shadow">
+          <div className="flex items-center space-x-2">
+            <div className="p-1.5 bg-teal-50">
+              <School className="h-4 w-4 text-teal-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900">{statistics.totalSchools}</div>
+              <div className="text-lg font-bold text-gray-900">{statistics.totalSchools}</div>
               <div className="text-xs text-gray-500 font-medium">Schools</div>
             </div>
           </div>
         </div>
 
         {/* Courses Card */}
-        <div className="bg-white shadow-md border border-gray-200 p-4 h-20 flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-amber-50">
-              <FileText className="h-5 w-5 text-amber-600" />
+        <div className="bg-white shadow-md border border-gray-200 p-3 h-16 flex items-center justify-between hover:shadow-lg transition-shadow">
+          <div className="flex items-center space-x-2">
+            <div className="p-1.5 bg-amber-50">
+              <FileText className="h-4 w-4 text-amber-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900">{statistics.totalCourses}</div>
+              <div className="text-lg font-bold text-gray-900">{statistics.totalCourses}</div>
               <div className="text-xs text-gray-500 font-medium">Courses</div>
             </div>
           </div>
@@ -320,12 +320,12 @@ const Dashboard = () => {
             <CardContent className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
                 {/* Overview and Total - Compact design */}
-                <div className="bg-[#399165] shadow-md p-3 text-white h-16 flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <BookOpen className="w-5 h-5 text-white" />
+                <div className="bg-[#399165] shadow-md p-2 text-white h-12 flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <BookOpen className="w-4 h-4 text-white" />
                     <span className="text-sm font-medium">Active Courses</span>
                   </div>
-                  <span className="text-2xl font-bold">{statistics.activeCourses}</span>
+                  <span className="text-lg font-bold">{statistics.activeCourses}</span>
                 </div>
                 
                 {/* Course Cards - Dynamic from API data with better alignment */}
@@ -400,17 +400,17 @@ const Dashboard = () => {
                       const courseProgress = calculateCourseProgress(course);
                       
                       return (
-                        <div key={course.id} className={`shadow-md ${scheme.bg} p-3 h-20`}>
+                        <div key={course.id} className={`shadow-md ${scheme.bg} p-2 h-16`}>
                           <div className="flex items-center justify-between h-full">
-                            <div className="flex items-center space-x-2">
-                              <div className={`w-2 h-2 ${scheme.dot}`}></div>
+                            <div className="flex items-center space-x-1.5">
+                              <div className={`w-1.5 h-1.5 ${scheme.dot}`}></div>
                               <div>
                                 <div className={`text-sm font-medium ${scheme.text}`}>{course.name}</div>
                                 <div className={`text-xs ${scheme.text} opacity-75`}>{schoolName}</div>
                               </div>
                             </div>
                             <div className="text-right">
-                              <div className={`text-xl font-bold ${scheme.text}`}>{course.studentCount || 0}</div>
+                              <div className={`text-lg font-bold ${scheme.text}`}>{course.studentCount || 0}</div>
                               <div className={`text-xs ${scheme.text} opacity-75`}>Students</div>
                             </div>
                           </div>
