@@ -5,6 +5,7 @@ import { initDatabase } from "./initDb";
 import { seedDatabase } from "./seed";
 import { seedSchools } from "./schoolSeed";
 import { seedCompleteInstructors } from "./completeInstructorSeed";
+import { ensureCompleteSchema } from "./migrations/ensure-complete-schema";
 
 const app = express();
 // Increase JSON body size limit to handle large base64 encoded images (50MB)
@@ -43,7 +44,10 @@ app.use((req, res, next) => {
 
 (async () => {
   try {
-    // Initialize the database
+    // Ensure complete database schema for fresh deployments
+    await ensureCompleteSchema();
+    
+    // Initialize the database with migrations
     await initDatabase();
     
     // Seed the database with initial admin user
