@@ -666,7 +666,10 @@ export default function ManageInstructors() {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => handleViewProfile(instructor)}
+                  onClick={() => {
+                    console.log(`Navigating to instructor profile: ${instructor.id}`);
+                    setLocation(`/instructor/profile/${instructor.id}`);
+                  }}
                   title="View Profile"
                 >
                   <Eye className="h-4 w-4" />
