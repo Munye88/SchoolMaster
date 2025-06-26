@@ -198,46 +198,65 @@ const Dashboard = () => {
 
   return (
     <div className="flex-1 overflow-y-auto py-6 px-6 bg-gradient-to-b from-gray-50 to-white">
-      {/* Quick Access Tools Header */}
-      <div className="bg-gradient-to-r from-[#0A2463] to-[#1A3473] text-white mb-6 shadow-md overflow-hidden relative">
+      {/* Quick Access Tools Header - Restructured Layout */}
+      <div className="bg-gradient-to-r from-[#0A2463] to-[#1A3473] text-white mb-6 shadow-lg overflow-hidden relative rounded-lg">
         <div className="absolute inset-0 bg-grid-white/5 bg-[length:16px_16px]"></div>
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.1),_transparent)]"></div>
-        <div className="flex items-center px-6 py-4 relative z-10">
-          {/* Left section with title */}
-          <div className="flex items-center gap-4 mr-6">
-            <div className="w-1 h-8 bg-white/60 rounded-full"></div>
-            <div className="text-sm font-semibold whitespace-nowrap">Quick Access Tools</div>
+        
+        {/* Header section with title and date */}
+        <div className="flex justify-between items-center px-8 py-3 border-b border-white/10 relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-6 bg-white/60 rounded-full"></div>
+            <h2 className="text-lg font-semibold">Quick Access Tools</h2>
           </div>
-          
-          {/* Quick Access Tools - Four tabs covering full width */}
-          <div className="flex-1 grid grid-cols-4 gap-2">
-            <Link to="/instructor-lookup" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
-              <Users className="h-4 w-4 text-white/90" />
-              <span className="text-sm font-medium whitespace-nowrap">Instructor Lookup</span>
-            </Link>
-            
-            <Link to="/management/courses" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
-              <BookOpen className="h-4 w-4 text-white/90" />
-              <span className="text-sm font-medium whitespace-nowrap">Course Management</span>
-            </Link>
-            
-            <Link to="/management/students" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
-              <GraduationCap className="h-4 w-4 text-white/90" />
-              <span className="text-sm font-medium whitespace-nowrap">Student Records</span>
-            </Link>
-            
-            <Link to="/reports" className="flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
-              <BarChart2 className="h-4 w-4 text-white/90" />
-              <span className="text-sm font-medium whitespace-nowrap">Reports & Analytics</span>
-            </Link>
+          <div className="flex items-center gap-2 text-white/80">
+            <Calendar className="h-4 w-4" />
+            <span className="text-sm font-medium">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
           </div>
-          
-          {/* Right section with date */}
-          <div className="ml-6">
-            <div className="bg-white/10 backdrop-blur-sm text-white px-4 py-2 flex items-center border border-white/20 shadow-inner rounded-lg">
-              <Calendar className="h-4 w-4 mr-2 text-white/90" /> 
-              <span className="font-medium text-sm">{format(new Date(), "EEEE, MMMM dd, yyyy")}</span>
-            </div>
+        </div>
+        
+        {/* Main tools section */}
+        <div className="px-8 py-5 relative z-10">
+          <div className="grid grid-cols-4 gap-4">
+            <Link 
+              to="/instructor-lookup" 
+              className="group flex flex-col items-center gap-3 bg-white/5 hover:bg-white/15 backdrop-blur-sm p-6 rounded-xl border border-white/10 hover:border-white/30 transition-all duration-200 hover:scale-105"
+            >
+              <div className="p-3 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
+                <Users className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-center leading-tight">Instructor<br />Lookup</span>
+            </Link>
+            
+            <Link 
+              to="/management/courses" 
+              className="group flex flex-col items-center gap-3 bg-white/5 hover:bg-white/15 backdrop-blur-sm p-6 rounded-xl border border-white/10 hover:border-white/30 transition-all duration-200 hover:scale-105"
+            >
+              <div className="p-3 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
+                <BookOpen className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-center leading-tight">Course<br />Management</span>
+            </Link>
+            
+            <Link 
+              to="/management/students" 
+              className="group flex flex-col items-center gap-3 bg-white/5 hover:bg-white/15 backdrop-blur-sm p-6 rounded-xl border border-white/10 hover:border-white/30 transition-all duration-200 hover:scale-105"
+            >
+              <div className="p-3 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
+                <GraduationCap className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-center leading-tight">Student<br />Records</span>
+            </Link>
+            
+            <Link 
+              to="/reports" 
+              className="group flex flex-col items-center gap-3 bg-white/5 hover:bg-white/15 backdrop-blur-sm p-6 rounded-xl border border-white/10 hover:border-white/30 transition-all duration-200 hover:scale-105"
+            >
+              <div className="p-3 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
+                <BarChart2 className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-center leading-tight">Reports &<br />Analytics</span>
+            </Link>
           </div>
         </div>
       </div>
