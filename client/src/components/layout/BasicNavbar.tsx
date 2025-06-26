@@ -78,7 +78,7 @@ const BasicNavbar = () => {
         
         {/* Text in center */}
         <div className="flex-grow flex justify-center">
-          <span className="font-bold text-xs tracking-wide">GOVCIO-SAMS ELT</span>
+          <span className="font-medium text-[10px] tracking-wide">GOVCIO-SAMS ELT</span>
         </div>
         
         {/* User menu */}

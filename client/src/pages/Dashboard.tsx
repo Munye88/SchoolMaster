@@ -207,24 +207,24 @@ const Dashboard = () => {
             <div className="w-1 h-8 bg-white/60 rounded-full"></div>
             <div className="text-sm font-semibold whitespace-nowrap">Quick Access Tools</div>
             
-            {/* Quick Access Tools - Four tabs to fill the space */}
-            <div className="flex items-center justify-between w-full max-w-4xl">
-              <Link to="/instructor-lookup" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
+            {/* Quick Access Tools - Four tabs spaced evenly */}
+            <div className="flex items-center justify-evenly w-full max-w-5xl gap-8">
+              <Link to="/instructor-lookup" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
                 <Users className="h-4 w-4 text-white/90" />
                 <span className="text-sm font-medium whitespace-nowrap">Instructor Lookup</span>
               </Link>
               
-              <Link to="/management/courses" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
+              <Link to="/management/courses" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
                 <BookOpen className="h-4 w-4 text-white/90" />
                 <span className="text-sm font-medium whitespace-nowrap">Course Management</span>
               </Link>
               
-              <Link to="/management/students" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
+              <Link to="/management/students" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
                 <GraduationCap className="h-4 w-4 text-white/90" />
                 <span className="text-sm font-medium whitespace-nowrap">Student Records</span>
               </Link>
               
-              <Link to="/reports" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
+              <Link to="/reports" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
                 <BarChart2 className="h-4 w-4 text-white/90" />
                 <span className="text-sm font-medium whitespace-nowrap">Reports & Analytics</span>
               </Link>
