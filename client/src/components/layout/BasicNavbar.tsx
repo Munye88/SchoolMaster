@@ -103,15 +103,15 @@ const BasicNavbar = () => {
       </div>
       
       {/* Main navigation */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-[#0A2463] border-b border-white/20">
         <div className="max-w-screen-xl mx-auto px-4">
           <div className="flex items-center h-14 relative">
             {/* Main nav items */}
             <div className="flex items-center space-x-2">
               {/* Dashboard */}
               <Link href="/" className={cn(
-                "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md",
-                isActive("/") && "text-[#0A2463] bg-gray-100 font-medium"
+                "flex items-center h-10 px-3 py-2 text-sm text-white hover:text-white hover:bg-white/20 rounded-md",
+                isActive("/") && "text-white bg-white/20 font-medium"
               )}>
                 <Home className="h-4 w-4 mr-2" />
                 <span>Dashboard</span>
@@ -120,8 +120,8 @@ const BasicNavbar = () => {
               {/* Schools */}
               <div className="relative">
                 <button onClick={handleToggleSchool} className={cn(
-                  "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md",
-                  (isActive("/schools") || showSchoolLinks) && "text-[#0A2463] bg-gray-100 font-medium"
+                  "flex items-center h-10 px-3 py-2 text-sm text-white hover:text-white hover:bg-white/20 rounded-md",
+                  (isActive("/schools") || showSchoolLinks) && "text-white bg-white/20 font-medium"
                 )}>
                   <School className="h-4 w-4 mr-2" />
                   <span>Schools</span>
@@ -194,8 +194,8 @@ const BasicNavbar = () => {
               
               {/* Courses */}
               <Link href="/courses" className={cn(
-                "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md",
-                isActive("/courses") && "text-[#0A2463] bg-gray-100 font-medium"
+                "flex items-center h-10 px-3 py-2 text-sm text-white hover:text-white hover:bg-white/20 rounded-md",
+                isActive("/courses") && "text-white bg-white/20 font-medium"
               )}>
                 <BookOpen className="h-4 w-4 mr-2" />
                 <span>Courses</span>
@@ -204,28 +204,28 @@ const BasicNavbar = () => {
               {/* DLI */}
               <div className="relative">
                 <button onClick={handleToggleDLI} className={cn(
-                  "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md",
-                  (isActive("/dli") || showDLILinks) && "text-[#0A2463] bg-gray-100 font-medium"
+                  "flex items-center h-10 px-3 py-2 text-sm text-white hover:text-white hover:bg-white/20 rounded-md",
+                  (isActive("/dli") || showDLILinks) && "text-white bg-white/20 font-medium"
                 )}>
                   <BookText className="h-4 w-4 mr-2" />
                   <span>DLI</span>
                 </button>
                 
                 {showDLILinks && (
-                  <div className="absolute left-0 top-full mt-1 bg-white border rounded shadow-lg z-50">
+                  <div className="absolute left-0 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50">
                     <Link href="/dli/book-order" onClick={() => setShowDLILinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100">
-                      <BookOpen className="h-4 w-4 mr-2 text-indigo-600" />
+                      className="flex items-center px-4 py-2 text-sm text-white hover:bg-[#1A3473]">
+                      <BookOpen className="h-4 w-4 mr-2 text-white/90" />
                       DLI Book Inventory
                     </Link>
                     <Link href="/dli/alcpt-order" onClick={() => setShowDLILinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100">
-                      <ListChecks className="h-4 w-4 mr-2 text-emerald-600" />
+                      className="flex items-center px-4 py-2 text-sm text-white hover:bg-[#1A3473]">
+                      <ListChecks className="h-4 w-4 mr-2 text-white/90" />
                       ALCPT Forms
                     </Link>
                     <Link href="/dli/answer-sheets" onClick={() => setShowDLILinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100">
-                      <FileText className="h-4 w-4 mr-2 text-purple-600" />
+                      className="flex items-center px-4 py-2 text-sm text-white hover:bg-[#1A3473]">
+                      <FileText className="h-4 w-4 mr-2 text-white/90" />
                       Answer Sheets
                     </Link>
                   </div>
@@ -234,8 +234,8 @@ const BasicNavbar = () => {
               
               {/* Test Tracker */}
               <Link href="/test-tracker" className={cn(
-                "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md",
-                isActive("/test-tracker") && "text-[#0A2463] bg-gray-100 font-medium"
+                "flex items-center h-10 px-3 py-2 text-sm text-white hover:text-white hover:bg-white/20 rounded-md",
+                isActive("/test-tracker") && "text-white bg-white/20 font-medium"
               )}>
                 <ListChecks className="h-4 w-4 mr-2" />
                 <span>Test Tracker</span>
@@ -243,8 +243,8 @@ const BasicNavbar = () => {
               
               {/* Reports */}
               <Link href="/reports" className={cn(
-                "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md",
-                isActive("/reports") && "text-[#0A2463] bg-gray-100 font-medium"
+                "flex items-center h-10 px-3 py-2 text-sm text-white hover:text-white hover:bg-white/20 rounded-md",
+                isActive("/reports") && "text-white bg-white/20 font-medium"
               )}>
                 <BarChart2 className="h-4 w-4 mr-2" />
                 <span>Reports</span>
@@ -253,15 +253,15 @@ const BasicNavbar = () => {
               {/* Training & Development */}
               <div className="relative">
                 <button onClick={handleToggleTraining} className={cn(
-                  "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md",
-                  (isActive("/training-development") || showTrainingLinks) && "text-[#0A2463] bg-gray-100 font-medium"
+                  "flex items-center h-10 px-3 py-2 text-sm text-white hover:text-white hover:bg-white/20 rounded-md",
+                  (isActive("/training-development") || showTrainingLinks) && "text-white bg-white/20 font-medium"
                 )}>
                   <Lightbulb className="h-4 w-4 mr-2" />
                   <span>Training</span>
                 </button>
                 
                 {showTrainingLinks && (
-                  <div className="absolute left-0 top-full mt-1 bg-white border rounded shadow-lg z-50">
+                  <div className="absolute left-0 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50">
                     <div className="px-4 py-2 bg-gradient-to-r from-purple-50 to-blue-50 border-b border-gray-200 text-xs font-medium uppercase text-gray-500">
                       Leadership Resources
                     </div>
