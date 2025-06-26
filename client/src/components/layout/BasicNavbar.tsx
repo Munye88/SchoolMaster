@@ -66,7 +66,7 @@ const BasicNavbar = () => {
   return (
     <div className="flex flex-col">
       {/* Top bar with brand */}
-      <div className="bg-white text-[#0A2463] h-16 flex items-center px-6 border-b">
+      <div className="bg-[#0A2463] text-white h-16 flex items-center px-6 border-b">
         {/* Logo on left */}
         <div className="flex items-center">
           <img 
@@ -78,24 +78,24 @@ const BasicNavbar = () => {
         
         {/* Text in center */}
         <div className="flex-grow flex justify-center">
-          <span className="font-bold text-xl tracking-wide">GOVCIO-SAMS ELT PROGRAM</span>
+          <span className="font-bold text-lg tracking-wide">GOVCIO-SAMS ELT</span>
         </div>
         
         {/* User menu */}
         <div className="flex items-center space-x-4">
-          <button onClick={() => setShowUserMenu(!showUserMenu)} className="text-[#0A2463]">
+          <button onClick={() => setShowUserMenu(!showUserMenu)} className="text-white">
             <UserCircle className="h-6 w-6" />
           </button>
           
           {showUserMenu && (
-            <div className="absolute right-6 top-12 bg-white shadow-lg rounded p-2 z-50">
+            <div className="absolute right-6 top-12 bg-[#0A2463] border border-white/20 shadow-lg rounded p-2 z-50">
               {user ? (
-                <button onClick={handleLogout} className="text-red-500 flex items-center">
+                <button onClick={handleLogout} className="text-red-400 flex items-center hover:text-red-300">
                   <LogOut className="h-4 w-4 mr-2" />
                   <span>Sign out</span>
                 </button>
               ) : (
-                <Link href="/auth" className="text-blue-500">Sign in</Link>
+                <Link href="/auth" className="text-blue-300 hover:text-blue-200">Sign in</Link>
               )}
             </div>
           )}
@@ -128,12 +128,12 @@ const BasicNavbar = () => {
                 </button>
                 
                 {showSchoolLinks === 'main' && (
-                  <div className="absolute left-0 top-full mt-1 bg-white border rounded shadow-lg z-50">
+                  <div className="absolute left-0 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50">
                     {schools.map(school => (
                       <button
                         key={school.id}
                         onClick={() => handleSelectSchool(school)}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left"
+                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] w-full text-left text-white"
                       >
                         {school.name}
                       </button>
@@ -142,49 +142,49 @@ const BasicNavbar = () => {
                 )}
                 
                 {showSchoolLinks && showSchoolLinks !== 'main' && (
-                  <div className="absolute left-0 top-full mt-1 bg-white border rounded shadow-lg z-50 w-64">
-                    <div className="px-4 py-2 bg-gray-50 border-b font-medium">
+                  <div className="absolute left-0 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50 w-64">
+                    <div className="px-4 py-2 bg-[#1A3473] border-b border-white/20 font-medium text-white">
                       {schools.find(s => s.code === showSchoolLinks)?.name} Documents
                     </div>
                     <div className="py-1">
                       <Link href={`/schools/${showSchoolLinks}/instructor-profiles`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100">
+                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
                         Instructor Profiles
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/timetable`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100">
+                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
                         Timetable
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/student-day-schedule`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100">
+                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
                         Student Day Schedule
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/yearly-schedule`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100">
+                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
                         Yearly Schedule
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/sop`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100">
+                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
                         SOP
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/staff-evaluations`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100">
+                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
                         Staff Evaluations
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/staff-attendance`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100">
+                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
                         Staff Attendance
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/book-inventory`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100">
+                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
                         Book Inventory
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/staff-leave-tracker`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100 font-medium text-[#0A2463]">
+                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] font-medium text-blue-200">
                         Staff Leave Tracker
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/staff-counseling`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100">
+                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
                         Staff Counseling
                       </Link>
                     </div>
