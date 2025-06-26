@@ -16,7 +16,7 @@ import { Calendar as CalendarComponent } from "@/components/dashboard/Calendar";
 import Notifications from "@/components/dashboard/Notifications";
 import StaticNotifications from "@/components/dashboard/StaticNotifications";
 import UpcomingEvents from "@/components/dashboard/UpcomingEvents";
-import QuickLinks from "@/components/dashboard/QuickLinks";
+
 import { useQuery } from "@tanstack/react-query";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip, Cell } from 'recharts';
 import { Input } from "@/components/ui/input";
@@ -198,46 +198,32 @@ const Dashboard = () => {
 
   return (
     <div className="flex-1 overflow-y-auto py-6 px-6 bg-gradient-to-b from-gray-50 to-white">
-      {/* Dashboard Header with Staff Nationality Flags */}
+      {/* Quick Access Tools Header */}
       <div className="bg-gradient-to-r from-[#2563EB] to-[#1D4ED8] text-white mb-6 shadow-md overflow-hidden relative">
         <div className="absolute inset-0 bg-grid-white/5 bg-[length:16px_16px]"></div>
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.1),_transparent)]"></div>
         <div className="flex justify-between items-center px-6 py-4 relative z-10">
           <div className="flex items-center gap-6">
             <div className="w-1 h-8 bg-blue-400 rounded-full"></div>
-            <div className="text-lg font-semibold">Staff Nationality Distribution</div>
+            <div className="text-lg font-semibold">Quick Access Tools</div>
             
-            {/* Nationality Flags with Counts */}
+            {/* Instructor Lookup and Course Management */}
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg border border-white/20">
-                <div className="w-8 h-8 bg-gradient-to-br from-red-500 via-white to-blue-500 flex items-center justify-center text-xs font-bold text-blue-800 shadow-md">
-                  🇺🇸
-                </div>
+              <Link to="/management/instructors" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
+                <Users className="h-5 w-5 text-blue-300" />
                 <div className="text-center">
-                  <div className="text-xs text-blue-200">American</div>
-                  <div className="text-lg font-bold">{dashboardStats.nationalityCounts.american || 0}</div>
+                  <div className="text-sm font-medium">Instructor Lookup</div>
+                  <div className="text-xs text-blue-200">Search & Manage</div>
                 </div>
-              </div>
+              </Link>
               
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 border border-white/20">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 via-white to-red-600 flex items-center justify-center text-xs font-bold text-blue-800 shadow-md">
-                  🇬🇧
-                </div>
+              <Link to="/management/courses" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
+                <BookOpen className="h-5 w-5 text-blue-300" />
                 <div className="text-center">
-                  <div className="text-xs text-blue-200">British</div>
-                  <div className="text-lg font-bold">{dashboardStats.nationalityCounts.british || 0}</div>
+                  <div className="text-sm font-medium">Course Management</div>
+                  <div className="text-xs text-blue-200">Create & Track</div>
                 </div>
-              </div>
-              
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-2 border border-white/20">
-                <div className="w-8 h-8 bg-gradient-to-br from-red-500 via-white to-red-500 flex items-center justify-center text-xs font-bold text-red-800 shadow-md">
-                  🇨🇦
-                </div>
-                <div className="text-center">
-                  <div className="text-xs text-blue-200">Canadian</div>
-                  <div className="text-lg font-bold">{dashboardStats.nationalityCounts.canadian || 0}</div>
-                </div>
-              </div>
+              </Link>
             </div>
           </div>
           
@@ -648,8 +634,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <QuickLinks />
+
 
           {/* Notifications Card - Using dynamic notifications */}
           <Notifications 

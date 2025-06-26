@@ -158,6 +158,7 @@ The system manages multiple interconnected entities:
 - June 25, 2025: Created comprehensive deployment documentation (RENDER_DEPLOYMENT_FIX.md) for production troubleshooting
 - June 25, 2025: System confirmed working with health check endpoint and all 73 instructor profiles accessible
 - June 25, 2025: Render deployment now handles fresh database initialization properly with complete schema migration
+- June 26, 2025: Updated dashboard layout - moved instructor lookup and course management to top header, removed duplicate nationality distribution, kept nationality chart at bottom only
 
 ## User Preferences
 
