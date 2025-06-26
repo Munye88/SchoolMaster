@@ -208,7 +208,7 @@ const Dashboard = () => {
             <div className="text-lg font-semibold">Quick Access Tools</div>
             
             {/* Instructor Lookup and Course Management */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center justify-between w-full max-w-2xl">
               <Link to="/instructor-lookup" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
                 <Users className="h-5 w-5 text-blue-300" />
                 <div className="text-center">
