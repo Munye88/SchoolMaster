@@ -209,11 +209,11 @@ const Dashboard = () => {
             
             {/* Instructor Lookup and Course Management */}
             <div className="flex items-center gap-4">
-              <Link to="/management/instructors" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
+              <Link to="/instructor-lookup" className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:bg-white/20 transition-colors">
                 <Users className="h-5 w-5 text-blue-300" />
                 <div className="text-center">
                   <div className="text-sm font-medium">Instructor Lookup</div>
-                  <div className="text-xs text-blue-200">Search & Manage</div>
+                  <div className="text-xs text-blue-200">Search & Find</div>
                 </div>
               </Link>
               
