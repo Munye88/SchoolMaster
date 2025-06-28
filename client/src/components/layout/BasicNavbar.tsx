@@ -130,7 +130,7 @@ const BasicNavbar = () => {
                 </button>
                 
                 {showSchoolLinks === 'main' && (
-                  <div className="absolute left-0 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50 min-w-[200px]">
+                  <div className="absolute left-1/2 transform -translate-x-1/2 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50 min-w-[200px]">
                     {schools.map(school => (
                       <button
                         key={school.id}
@@ -144,7 +144,7 @@ const BasicNavbar = () => {
                 )}
                 
                 {showSchoolLinks && showSchoolLinks !== 'main' && (
-                  <div className="absolute left-0 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50 w-64">
+                  <div className="absolute left-1/2 transform -translate-x-1/2 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50 w-64">
                     <div className="px-6 py-4 bg-[#1A3473] border-b border-white/20 font-medium text-white flex items-center justify-center">
                       {schools.find(s => s.code === showSchoolLinks)?.name} Documents
                     </div>
