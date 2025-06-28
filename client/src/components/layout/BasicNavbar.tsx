@@ -66,7 +66,7 @@ const BasicNavbar = () => {
   return (
     <div className="flex flex-col">
       {/* Top bar with brand */}
-      <div className="bg-[#0A2463] text-white h-16 flex items-center px-6 border-b">
+      <div className="bg-gradient-to-r from-[#0A2463] to-[#1A3473] text-white h-16 flex items-center px-6 border-b shadow-lg">
         {/* Logo on left */}
         <div className="flex items-center">
           <img 
