@@ -317,7 +317,7 @@ const Dashboard = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* Current Courses */}
           <div className="bg-white border border-gray-200 shadow-sm">
-            <div className="p-4 pb-1 border-b border-gray-100">
+            <div className="p-4 border-b border-gray-100">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold text-[#0A2463]">Active Courses</h3>
                 <Link href="/courses" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
@@ -406,16 +406,16 @@ const Dashboard = () => {
                       const courseProgress = calculateCourseProgress(course);
                       
                       return (
-                        <div key={course.id} className={`shadow-md ${scheme.bg} p-2 h-16`}>
-                          <div className="flex items-center justify-between h-full">
-                            <div className="flex items-center space-x-1.5">
-                              <div className={`w-1.5 h-1.5 ${scheme.dot}`}></div>
-                              <div>
-                                <div className={`text-sm font-medium ${scheme.text}`}>{course.name}</div>
-                                <div className={`text-xs ${scheme.text} opacity-75`}>{schoolName}</div>
+                        <div key={course.id} className={`shadow-md ${scheme.bg} p-3 h-16 flex items-center`}>
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center space-x-2">
+                              <div className={`w-2 h-2 rounded-full ${scheme.dot}`}></div>
+                              <div className="min-w-0">
+                                <div className={`text-sm font-medium ${scheme.text} truncate`}>{course.name}</div>
+                                <div className={`text-xs ${scheme.text} opacity-75 truncate`}>{schoolName}</div>
                               </div>
                             </div>
-                            <div className="text-right">
+                            <div className="text-right flex-shrink-0 ml-2">
                               <div className={`text-lg font-bold ${scheme.text}`}>{course.studentCount || 0}</div>
                               <div className={`text-xs ${scheme.text} opacity-75`}>Students</div>
                             </div>
@@ -456,37 +456,37 @@ const Dashboard = () => {
                 </div>
                 
                 {/* Nationality Cards - Compact rectangular grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 overflow-hidden">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                   {/* American */}
-                  <div className="shadow-sm bg-[#EEF5FD] p-1.5 border border-blue-200">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-base">🇺🇸</span>
+                  <div className="shadow-sm bg-[#EEF5FD] p-3 border border-blue-200 h-16 flex items-center">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🇺🇸</span>
                         <span className="text-sm font-medium text-blue-900">American</span>
                       </div>
-                      <span className="text-base font-bold text-blue-950">{dashboardStats.nationalityCounts.american}</span>
+                      <span className="text-lg font-bold text-blue-950">{dashboardStats.nationalityCounts.american}</span>
                     </div>
                   </div>
                   
                   {/* British */}
-                  <div className="shadow-sm bg-[#F0F9F5] p-1.5 border border-green-200">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-base">🇬🇧</span>
+                  <div className="shadow-sm bg-[#F0F9F5] p-3 border border-green-200 h-16 flex items-center">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🇬🇧</span>
                         <span className="text-sm font-medium text-green-800">British</span>
                       </div>
-                      <span className="text-base font-bold text-green-900">{dashboardStats.nationalityCounts.british}</span>
+                      <span className="text-lg font-bold text-green-900">{dashboardStats.nationalityCounts.british}</span>
                     </div>
                   </div>
                   
                   {/* Canadian */}
-                  <div className="shadow-sm bg-[#F5F2FA] p-1.5 border border-purple-200">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-base">🇨🇦</span>
+                  <div className="shadow-sm bg-[#F5F2FA] p-3 border border-purple-200 h-16 flex items-center">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🇨🇦</span>
                         <span className="text-sm font-medium text-purple-800">Canadian</span>
                       </div>
-                      <span className="text-base font-bold text-purple-900">{dashboardStats.nationalityCounts.canadian}</span>
+                      <span className="text-lg font-bold text-purple-900">{dashboardStats.nationalityCounts.canadian}</span>
                     </div>
                   </div>
                 </div>
@@ -512,37 +512,37 @@ const Dashboard = () => {
                 </div>
                 
                 {/* School Cards - Compact rectangular layout */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 overflow-hidden">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                   {/* KFNA */}
-                  <div className="shadow-sm bg-[#FDE7E9] p-1.5 border border-red-200">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 bg-red-500"></div>
+                  <div className="shadow-sm bg-[#FDE7E9] p-3 border border-red-200 h-16 flex items-center">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                         <span className="text-sm font-medium text-[#8F1D25]">KFNA</span>
                       </div>
-                      <span className="text-base font-bold text-[#8F1D25]">{statistics.studentsBySchool.knfa}</span>
+                      <span className="text-lg font-bold text-[#8F1D25]">{statistics.studentsBySchool.knfa}</span>
                     </div>
                   </div>
                   
                   {/* NFS East */}
-                  <div className="shadow-sm bg-[#E9F7F2] p-1.5 border border-green-200">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 bg-green-500"></div>
+                  <div className="shadow-sm bg-[#E9F7F2] p-3 border border-green-200 h-16 flex items-center">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                         <span className="text-sm font-medium text-[#0E6E55]">NFS East</span>
                       </div>
-                      <span className="text-base font-bold text-[#0E6E55]">{statistics.studentsBySchool.nfsEast}</span>
+                      <span className="text-lg font-bold text-[#0E6E55]">{statistics.studentsBySchool.nfsEast}</span>
                     </div>
                   </div>
                   
                   {/* NFS West */}
-                  <div className="shadow-sm bg-[#F2EFFA] p-1.5 border border-purple-200">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 bg-purple-500"></div>
+                  <div className="shadow-sm bg-[#F2EFFA] p-3 border border-purple-200 h-16 flex items-center">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
                         <span className="text-sm font-medium text-[#402F70]">NFS West</span>
                       </div>
-                      <span className="text-base font-bold text-[#402F70]">{statistics.studentsBySchool.nfsWest}</span>
+                      <span className="text-lg font-bold text-[#402F70]">{statistics.studentsBySchool.nfsWest}</span>
                     </div>
                   </div>
                 </div>
