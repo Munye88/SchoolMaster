@@ -317,8 +317,8 @@ const BasicNavbar = () => {
               
               {/* Action Log */}
               <Link href="/action-log" className={cn(
-                "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md",
-                isActive("/action-log") && "text-[#0A2463] bg-gray-100 font-medium"
+                "flex items-center h-10 px-3 py-2 text-sm text-white hover:text-white hover:bg-white/20 rounded-md",
+                isActive("/action-log") && "text-white bg-white/20 font-medium"
               )}>
                 <ClipboardList className="h-4 w-4 mr-2" />
                 <span>Action Log</span>
@@ -326,8 +326,8 @@ const BasicNavbar = () => {
               
               {/* Recruitment */}
               <Link href="/recruitment" className={cn(
-                "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md",
-                isActive("/recruitment") && "text-[#0A2463] bg-gray-100 font-medium"
+                "flex items-center h-10 px-3 py-2 text-sm text-white hover:text-white hover:bg-white/20 rounded-md",
+                isActive("/recruitment") && "text-white bg-white/20 font-medium"
               )}>
                 <Users className="h-4 w-4 mr-2" />
                 <span>Recruitment</span>
@@ -336,8 +336,8 @@ const BasicNavbar = () => {
               {/* Administration */}
               <div className="relative">
                 <button onClick={handleToggleAdmin} className={cn(
-                  "flex items-center h-10 px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md",
-                  (isActive("/administration") || showAdminLinks) && "text-[#0A2463] bg-gray-100 font-medium"
+                  "flex items-center h-10 px-3 py-2 text-sm text-white hover:text-white hover:bg-white/20 rounded-md",
+                  (isActive("/administration") || showAdminLinks) && "text-white bg-white/20 font-medium"
                 )}>
                   <Settings className="h-4 w-4 mr-2" />
                   <span>Admin</span>

@@ -180,6 +180,7 @@ The system manages multiple interconnected entities:
 - June 28, 2025: Fixed dashboard box centering and alignment - all statistics cards now properly centered with consistent layouts
 - June 28, 2025: Improved staff nationality section responsive design - consistent display across mobile and desktop devices
 - June 28, 2025: Centered section titles throughout dashboard for better visual hierarchy and professional appearance
+- June 28, 2025: Fixed all dropdown menu alignment issues - all navigation dropdowns (Schools, DLI, Training, Administration/Management) now properly center-aligned with consistent navy blue theme and improved padding
 
 ## User Preferences
 
