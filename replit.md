@@ -173,6 +173,9 @@ The system manages multiple interconnected entities:
 - June 26, 2025: Redesigned quick access tools to moderate size with compact horizontal layout - reduced height from large cards to single-line buttons for professional appearance
 - June 26, 2025: Fixed dashboard box text alignment issues - all titles and content now properly centered and positioned within their containers with consistent h-16 height and flex alignment
 - June 26, 2025: Fixed dropdown menu text alignment issues - all navigation dropdowns now use consistent navy blue theme, proper flex alignment, increased padding (py-3), and smooth hover transitions
+- June 28, 2025: CRITICAL RESTORE: Fixed test tracker functionality - restored months tabs for viewing monthly ALCPT, ECL, OPI results and cycle tabs for Book tests
+- June 28, 2025: CRITICAL RESTORE: Fixed Reports section - restored attendance, evaluation, performance, and staff leave analysis tabs with full functionality
+- June 28, 2025: Enhanced Recent Test Scores display - removed instructor names as requested, added status indicators, and improved data presentation without personal information
 
 ## User Preferences
 

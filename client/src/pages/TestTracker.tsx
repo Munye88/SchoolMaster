@@ -37,7 +37,8 @@ import {
   CheckSquare,
   Printer,
   Clipboard,
-  Pencil
+  Pencil,
+  Check
 } from "lucide-react";
 import { useSchool } from "@/hooks/useSchool";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -1458,6 +1459,90 @@ const TestTracker = () => {
                 OPI
               </TabsTrigger>
             </TabsList>
+            
+            {/* Monthly Navigation Tabs for ALCPT, ECL, OPI */}
+            {selectedTestType !== 'Book' && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3 text-gray-800">View Monthly Results</h3>
+                <Tabs defaultValue="January" className="mb-4" onValueChange={setSelectedMonth}>
+                  <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
+                    {['January', 'February', 'March', 'April', 'May', 'June', 
+                      'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                      <TabsTrigger 
+                        key={month} 
+                        value={month}
+                        className="text-xs px-2 py-1"
+                      >
+                        {month.slice(0, 3)}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  
+                  {/* Month Content */}
+                  {['January', 'February', 'March', 'April', 'May', 'June', 
+                    'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                    <TabsContent key={month} value={month}>
+                      <Card className="shadow-md border border-gray-200">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
+                            <Calendar className="mr-2 h-5 w-5" />
+                            {selectedTestType} Results - {month} {selectedYear}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-center py-8 text-gray-500">
+                            <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                            <p>No {selectedTestType} test data available for {month} {selectedYear}</p>
+                            <p className="text-sm mt-2">Use the Import Excel or Data Entry options to add results</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              </div>
+            )}
+            
+            {/* Cycle Navigation for Book Tests */}
+            {selectedTestType === 'Book' && (
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3 text-gray-800">View Cycle Results</h3>
+                <Tabs defaultValue="1" className="mb-4" onValueChange={(value) => setSelectedCycle(parseInt(value))}>
+                  <TabsList className="grid w-full grid-cols-5 lg:grid-cols-15">
+                    {Array.from({ length: 15 }, (_, i) => (
+                      <TabsTrigger 
+                        key={i+1} 
+                        value={(i+1).toString()}
+                        className="text-xs px-2 py-1"
+                      >
+                        C{i+1}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  
+                  {/* Cycle Content */}
+                  {Array.from({ length: 15 }, (_, i) => (
+                    <TabsContent key={i+1} value={(i+1).toString()}>
+                      <Card className="shadow-md border border-gray-200">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-lg font-semibold text-[#0A2463] flex items-center">
+                            <BookOpen className="mr-2 h-5 w-5" />
+                            Book Test Results - Cycle {i+1}, {selectedYear}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-center py-8 text-gray-500">
+                            <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                            <p>No Book test data available for Cycle {i+1}, {selectedYear}</p>
+                            <p className="text-sm mt-2">Use the Import Excel or Data Entry options to add results</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              </div>
+            )}
           </Tabs>
         </TabsContent>
         
@@ -1648,8 +1733,9 @@ const TestTracker = () => {
               </div>
             </form>
             
+            {/* Recent Test Scores Section */}
             <div className="mt-8 border-t pt-6">
-              <h3 className="text-lg font-medium mb-4">Recent Data Entries</h3>
+              <h3 className="text-lg font-medium mb-4">Recent Test Scores</h3>
               
               {importedTestData.length > 0 ? (
                 <div className="overflow-x-auto">
@@ -1663,29 +1749,30 @@ const TestTracker = () => {
                         <TableHead>Students</TableHead>
                         <TableHead>Avg. Score</TableHead>
                         <TableHead>Pass Rate</TableHead>
+                        <TableHead>Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {importedTestData
                         .sort((a, b) => b.id - a.id) // Show newest first
-                        .slice(0, 5) // Show only last 5 entries
+                        .slice(0, 10) // Show last 10 entries
                         .map(data => (
                         <TableRow key={data.id}>
-                          <TableCell>{data.schoolName}</TableCell>
+                          <TableCell className="font-medium">{data.schoolName}</TableCell>
                           <TableCell>
                             <Badge className={`
-                              ${data.testType === 'Book' ? 'bg-blue-100 text-blue-800' : ''}
-                              ${data.testType === 'ALCPT' ? 'bg-green-100 text-green-800' : ''}
-                              ${data.testType === 'ECL' ? 'bg-purple-100 text-purple-800' : ''}
-                              ${data.testType === 'OPI' ? 'bg-amber-100 text-amber-800' : ''}
+                              ${data.testType === 'Book' ? 'bg-blue-100 text-blue-800 border-blue-200' : ''}
+                              ${data.testType === 'ALCPT' ? 'bg-green-100 text-green-800 border-green-200' : ''}
+                              ${data.testType === 'ECL' ? 'bg-purple-100 text-purple-800 border-purple-200' : ''}
+                              ${data.testType === 'OPI' ? 'bg-amber-100 text-amber-800 border-amber-200' : ''}
                             `}>
                               {data.testType}
                             </Badge>
                           </TableCell>
                           <TableCell>{data.cycle ? `Cycle ${data.cycle}` : data.month}</TableCell>
                           <TableCell>{data.year}</TableCell>
-                          <TableCell>{data.studentCount}</TableCell>
-                          <TableCell>{data.averageScore}</TableCell>
+                          <TableCell className="text-center">{data.studentCount}</TableCell>
+                          <TableCell className="font-semibold text-blue-600">{data.averageScore}</TableCell>
                           <TableCell>
                             <Badge className={data.passingRate >= 70 
                               ? "bg-green-100 text-green-800 border-green-200" 
@@ -1693,6 +1780,24 @@ const TestTracker = () => {
                             }>
                               {data.passingRate}%
                             </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {data.passingRate >= 85 ? (
+                              <div className="flex items-center text-green-600">
+                                <CheckCircle2 className="h-4 w-4 mr-1" />
+                                <span className="text-xs font-medium">Excellent</span>
+                              </div>
+                            ) : data.passingRate >= 70 ? (
+                              <div className="flex items-center text-blue-600">
+                                <Check className="h-4 w-4 mr-1" />
+                                <span className="text-xs font-medium">Good</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center text-red-600">
+                                <XCircle className="h-4 w-4 mr-1" />
+                                <span className="text-xs font-medium">Needs Work</span>
+                              </div>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -1702,7 +1807,8 @@ const TestTracker = () => {
               ) : (
                 <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
                   <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-                  <p>No test data has been added yet. Use the form above to add test results.</p>
+                  <p>No test scores available yet. Use the Import Excel or manual entry options to add results.</p>
+                  <p className="text-sm mt-2">Test scores will appear here without displaying individual student or instructor names.</p>
                 </div>
               )}
             </div>
