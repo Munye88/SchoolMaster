@@ -259,12 +259,12 @@ const Dashboard = () => {
       {/* Stats Overview - Compact Professional Design */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {/* Students Card */}
-        <div className="bg-white shadow-md border border-gray-200 p-3 h-16 flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div className="flex items-center space-x-2">
+        <div className="bg-white shadow-md border border-gray-200 p-3 h-16 flex items-center justify-center hover:shadow-lg transition-shadow">
+          <div className="flex items-center space-x-2 w-full max-w-xs mx-auto">
             <div className="p-1.5 bg-blue-50">
               <Users className="h-4 w-4 text-blue-600" />
             </div>
-            <div>
+            <div className="text-center flex-1">
               <div className="text-lg font-bold text-gray-900">{statistics.totalStudents}</div>
               <div className="text-xs text-gray-500 font-medium">Students</div>
             </div>
@@ -272,12 +272,12 @@ const Dashboard = () => {
         </div>
 
         {/* Instructors Card */}
-        <div className="bg-white shadow-md border border-gray-200 p-3 h-16 flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div className="flex items-center space-x-2">
+        <div className="bg-white shadow-md border border-gray-200 p-3 h-16 flex items-center justify-center hover:shadow-lg transition-shadow">
+          <div className="flex items-center space-x-2 w-full max-w-xs mx-auto">
             <div className="p-1.5 bg-green-50">
               <UserCircle className="h-4 w-4 text-green-600" />
             </div>
-            <div>
+            <div className="text-center flex-1">
               <div className="text-lg font-bold text-gray-900">{statistics.activeInstructors}</div>
               <div className="text-xs text-gray-500 font-medium">Instructors</div>
             </div>
@@ -285,12 +285,12 @@ const Dashboard = () => {
         </div>
 
         {/* Schools Card */}
-        <div className="bg-white shadow-md border border-gray-200 p-3 h-16 flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div className="flex items-center space-x-2">
+        <div className="bg-white shadow-md border border-gray-200 p-3 h-16 flex items-center justify-center hover:shadow-lg transition-shadow">
+          <div className="flex items-center space-x-2 w-full max-w-xs mx-auto">
             <div className="p-1.5 bg-teal-50">
               <School className="h-4 w-4 text-teal-600" />
             </div>
-            <div>
+            <div className="text-center flex-1">
               <div className="text-lg font-bold text-gray-900">{statistics.totalSchools}</div>
               <div className="text-xs text-gray-500 font-medium">Schools</div>
             </div>
@@ -298,12 +298,12 @@ const Dashboard = () => {
         </div>
 
         {/* Courses Card */}
-        <div className="bg-white shadow-md border border-gray-200 p-3 h-16 flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div className="flex items-center space-x-2">
+        <div className="bg-white shadow-md border border-gray-200 p-3 h-16 flex items-center justify-center hover:shadow-lg transition-shadow">
+          <div className="flex items-center space-x-2 w-full max-w-xs mx-auto">
             <div className="p-1.5 bg-amber-50">
               <FileText className="h-4 w-4 text-amber-600" />
             </div>
-            <div>
+            <div className="text-center flex-1">
               <div className="text-lg font-bold text-gray-900">{statistics.totalCourses}</div>
               <div className="text-xs text-gray-500 font-medium">Courses</div>
             </div>
@@ -319,7 +319,7 @@ const Dashboard = () => {
           <div className="bg-white border border-gray-200 shadow-sm">
             <div className="p-4 border-b border-gray-100">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-[#0A2463]">Active Courses</h3>
+                <h3 className="text-lg font-semibold text-[#0A2463] text-center flex-1">Active Courses</h3>
                 <Link href="/courses" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
               </div>
             </div>
@@ -442,7 +442,7 @@ const Dashboard = () => {
           {/* Staff Nationality */}
           <div className="bg-white border border-gray-200 shadow-sm">
             <div className="p-4 pb-2 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-[#0A2463]">Staff Nationality</h3>
+              <h3 className="text-lg font-semibold text-[#0A2463] text-center">Staff Nationality</h3>
             </div>
             <div className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
@@ -455,11 +455,11 @@ const Dashboard = () => {
                   <span className="text-lg font-bold">{statistics.activeInstructors}</span>
                 </div>
                 
-                {/* Nationality Cards - Compact rectangular grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                {/* Nationality Cards - Responsive grid with consistent display */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {/* American */}
-                  <div className="shadow-sm bg-[#EEF5FD] p-3 border border-blue-200 h-16 flex items-center">
-                    <div className="flex items-center justify-between w-full">
+                  <div className="shadow-sm bg-[#EEF5FD] p-3 border border-blue-200 h-16 flex items-center justify-center">
+                    <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
                         <span className="text-lg">🇺🇸</span>
                         <span className="text-sm font-medium text-blue-900">American</span>
@@ -469,8 +469,8 @@ const Dashboard = () => {
                   </div>
                   
                   {/* British */}
-                  <div className="shadow-sm bg-[#F0F9F5] p-3 border border-green-200 h-16 flex items-center">
-                    <div className="flex items-center justify-between w-full">
+                  <div className="shadow-sm bg-[#F0F9F5] p-3 border border-green-200 h-16 flex items-center justify-center">
+                    <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
                         <span className="text-lg">🇬🇧</span>
                         <span className="text-sm font-medium text-green-800">British</span>
@@ -480,8 +480,8 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Canadian */}
-                  <div className="shadow-sm bg-[#F5F2FA] p-3 border border-purple-200 h-16 flex items-center">
-                    <div className="flex items-center justify-between w-full">
+                  <div className="shadow-sm bg-[#F5F2FA] p-3 border border-purple-200 h-16 flex items-center justify-center">
+                    <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
                         <span className="text-lg">🇨🇦</span>
                         <span className="text-sm font-medium text-purple-800">Canadian</span>
