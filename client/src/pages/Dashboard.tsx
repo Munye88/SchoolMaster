@@ -100,19 +100,58 @@ const Dashboard = () => {
   // Use our specialized hook for dashboard statistics
   const dashboardStats = useDashboardStats();
   
-  // Set up statistics object using our hook data
+  // Fetch school statistics from the enhanced endpoint
+  const { data: schoolStatistics = [] } = useQuery<any[]>({
+    queryKey: ['/api/statistics/schools'],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+  });
+
+  // Calculate student counts from the enhanced school statistics endpoint
+  const calculateSchoolStudents = () => {
+    if (schoolStatistics.length === 0) {
+      return {
+        knfa: 0,
+        nfsEast: 0,
+        nfsWest: 0,
+        total: 0
+      };
+    }
+
+    const kfnaSchool = schoolStatistics.find(s => s.code === 'KFNA');
+    const nfsEastSchool = schoolStatistics.find(s => s.code === 'NFS_EAST');
+    const nfsWestSchool = schoolStatistics.find(s => s.code === 'NFS_WEST');
+
+    const counts = {
+      knfa: kfnaSchool?.studentCount || 0,
+      nfsEast: nfsEastSchool?.studentCount || 0,
+      nfsWest: nfsWestSchool?.studentCount || 0,
+      total: (kfnaSchool?.studentCount || 0) + (nfsEastSchool?.studentCount || 0) + (nfsWestSchool?.studentCount || 0)
+    };
+
+    console.log("🏫 ENHANCED SCHOOL STATISTICS:");
+    console.log("📊 School statistics data:", schoolStatistics);
+    console.log("📈 Calculated counts:", counts);
+
+    return counts;
+  };
+
+  const schoolStudentCounts = calculateSchoolStudents();
+  
+  // Set up statistics object using enhanced endpoint data for school distribution
   const statistics = {
-    totalStudents: dashboardStats.studentCounts.totalStudents,
+    totalStudents: schoolStudentCounts.total,
     activeInstructors: dashboardStats.instructorCount,
     totalSchools: dashboardStats.schoolCount,
     totalCourses: dashboardStats.totalCourses,
     activeCourses: dashboardStats.activeCourses,
     completedCourses: dashboardStats.completedCourses,
-    // Student counts by school
+    // Student counts by school from enhanced endpoint
     studentsBySchool: {
-      knfa: dashboardStats.studentCounts.knfa,
-      nfsEast: dashboardStats.studentCounts.nfsEast,
-      nfsWest: dashboardStats.studentCounts.nfsWest
+      knfa: schoolStudentCounts.knfa,
+      nfsEast: schoolStudentCounts.nfsEast,
+      nfsWest: schoolStudentCounts.nfsWest
     }
   };
 
