@@ -345,60 +345,60 @@ const BasicNavbar = () => {
                 
                 {showAdminLinks && (
                   <div className="absolute right-0 top-full mt-1 bg-white border rounded shadow-lg z-50 w-64">
-                    <div className="px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 border-b text-xs font-medium uppercase text-gray-500 text-center">
+                    <div className="px-6 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b text-xs font-medium uppercase text-gray-500 text-center">
                       Documentation
                     </div>
                     <Link href="/administration/evaluation-guideline" onClick={() => setShowAdminLinks(false)}
-                      className="flex items-center justify-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
+                      className="flex items-center justify-center px-6 py-4 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
                       <ClipboardList className="h-4 w-4 mr-2 text-blue-600" />
                       Evaluation Guideline
                     </Link>
                     <Link href="/administration/instructor-performance-policy" onClick={() => setShowAdminLinks(false)}
-                      className="flex items-center justify-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
+                      className="flex items-center justify-center px-6 py-4 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
                       <FileText className="h-4 w-4 mr-2 text-blue-600" />
                       Instructor Performance & Evaluation Policy
                     </Link>
                     <Link href="/administration/employee-handbook" onClick={() => setShowAdminLinks(false)}
-                      className="flex items-center justify-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
+                      className="flex items-center justify-center px-6 py-4 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
                       <BookOpen className="h-4 w-4 mr-2 text-blue-600" />
                       SAMS Employee Handbook
                     </Link>
                     <Link href="/administration/instructor-recognition" onClick={() => setShowAdminLinks(false)}
-                      className="flex items-center justify-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
+                      className="flex items-center justify-center px-6 py-4 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
                       <Award className="h-4 w-4 mr-2 text-amber-600" />
                       Instructor Recognition
                     </Link>
                     
-                    <div className="px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-t text-xs font-medium uppercase text-gray-500 mt-1 text-center">
+                    <div className="px-6 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-t text-xs font-medium uppercase text-gray-500 mt-1 text-center">
                       Management
                     </div>
                     <Link href="/management/schools" onClick={() => setShowAdminLinks(false)}
-                      className="flex items-center justify-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
+                      className="flex items-center justify-center px-6 py-4 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
                       <Building2 className="h-4 w-4 mr-2 text-purple-600" />
                       Manage Schools
                     </Link>
                     <Link href="/management/instructors" onClick={() => setShowAdminLinks(false)}
-                      className="flex items-center justify-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
+                      className="flex items-center justify-center px-6 py-4 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
                       <UserCheck className="h-4 w-4 mr-2 text-green-600" />
                       Manage Instructors
                     </Link>
                     <Link href="/management/courses" onClick={() => setShowAdminLinks(false)}
-                      className="flex items-center justify-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
+                      className="flex items-center justify-center px-6 py-4 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
                       <BookMarked className="h-4 w-4 mr-2 text-amber-600" />
                       Manage Courses
                     </Link>
                     <Link href="/events" onClick={() => setShowAdminLinks(false)}
-                      className="flex items-center justify-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
+                      className="flex items-center justify-center px-6 py-4 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
                       <LayoutDashboard className="h-4 w-4 mr-2 text-red-600" />
                       Manage Events
                     </Link>
                     <Link href="/administration/manage-dashboard" onClick={() => setShowAdminLinks(false)}
-                      className="flex items-center justify-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
+                      className="flex items-center justify-center px-6 py-4 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 text-center">
                       <LayoutDashboard className="h-4 w-4 mr-2 text-indigo-600" />
                       Manage Dashboard
                     </Link>
                     <Link href="/administration/users" onClick={() => setShowAdminLinks(false)}
-                      className="flex items-center justify-center px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 border-t border-gray-100 text-center">
+                      className="flex items-center justify-center px-6 py-4 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 border-t border-gray-100 text-center">
                       <Users className="h-4 w-4 mr-2 text-gray-600" />
                       Manage Users
                     </Link>
