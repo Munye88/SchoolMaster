@@ -1159,27 +1159,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Get school statistics
   app.get("/api/statistics/schools", async (req, res) => {
-    const schools = await dbStorage.getSchools();
-    const schoolStats = await Promise.all(
-      schools.map(async (school) => {
-        const instructors = await dbStorage.getInstructorsBySchool(school.id);
-        const courses = await dbStorage.getCoursesBySchool(school.id);
-        
-        // Calculate total students across all courses for this school
-        const totalStudents = courses.reduce((acc, course) => acc + course.studentCount, 0);
-        
-        return {
-          id: school.id,
-          name: school.name,
-          code: school.code,
-          instructorCount: instructors.length,
-          courseCount: courses.length,
-          studentCount: totalStudents
-        };
-      })
-    );
-    
-    res.json(schoolStats);
+    try {
+      console.log("📊 School statistics endpoint called");
+      const schools = await dbStorage.getSchools();
+      console.log(`📚 Found ${schools.length} schools:`, schools.map(s => s.name));
+      
+      const schoolStats = await Promise.all(
+        schools.map(async (school) => {
+          try {
+            const instructors = await dbStorage.getInstructorsBySchool(school.id);
+            const courses = await dbStorage.getCoursesBySchool(school.id);
+            
+            console.log(`🏫 ${school.name} - Instructors: ${instructors.length}, Courses: ${courses.length}`);
+            console.log(`📈 ${school.name} - Course student counts:`, courses.map(c => `${c.name}: ${c.studentCount}`));
+            
+            // Calculate total students across all courses for this school
+            const totalStudents = courses.reduce((acc, course) => acc + (course.studentCount || 0), 0);
+            
+            console.log(`👥 ${school.name} - Total students: ${totalStudents}`);
+            
+            return {
+              id: school.id,
+              name: school.name,
+              code: school.code,
+              instructorCount: instructors.length,
+              courseCount: courses.length,
+              studentCount: totalStudents
+            };
+          } catch (schoolError) {
+            console.error(`❌ Error processing school ${school.name}:`, schoolError);
+            return {
+              id: school.id,
+              name: school.name,
+              code: school.code,
+              instructorCount: 0,
+              courseCount: 0,
+              studentCount: 0
+            };
+          }
+        })
+      );
+      
+      console.log("📊 Final school statistics:", schoolStats);
+      res.json(schoolStats);
+    } catch (error) {
+      console.error("❌ School statistics endpoint error:", error);
+      res.status(500).json({ error: "Failed to fetch school statistics" });
+    }
   });
   
   // Get nationality statistics
