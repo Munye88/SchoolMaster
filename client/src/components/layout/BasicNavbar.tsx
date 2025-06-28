@@ -66,7 +66,7 @@ const BasicNavbar = () => {
   return (
     <div className="flex flex-col">
       {/* Top bar with brand */}
-      <div className="bg-gradient-to-r from-[#0A2463] to-[#1A3473] text-white h-16 flex items-center px-6 border-b shadow-lg">
+      <div className="bg-gradient-to-r from-[#0A2463] via-[#0F2A6B] to-[#1A3473] text-white h-16 flex items-center px-6 border-b shadow-lg" style={{ background: 'linear-gradient(90deg, #0A2463 0%, #0F2A6B 50%, #1A3473 100%)' }}>
         {/* Logo on left */}
         <div className="flex items-center">
           <img 
@@ -78,7 +78,7 @@ const BasicNavbar = () => {
         
         {/* Text in center */}
         <div className="flex-grow flex justify-center">
-          <span className="font-medium text-[10px] tracking-wide">GOVCIO-SAMS ELT</span>
+          <span className="font-medium text-[8px] tracking-wide">GOVCIO-SAMS ELT</span>
         </div>
         
         {/* User menu */}
