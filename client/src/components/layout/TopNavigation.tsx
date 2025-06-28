@@ -103,7 +103,7 @@ export default function TopNavigation() {
               <div className="w-8 h-8 bg-blue-400 rounded-lg flex items-center justify-center">
                 <GraduationCap className="h-5 w-5 text-white" />
               </div>
-              <span className="text-white font-bold text-lg hidden md:block">
+              <span className="text-white font-bold hidden md:block text-[13px]">
                 GOVCIO-SAMS ELT
               </span>
             </Link>
