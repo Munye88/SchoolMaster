@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect } from "react";
 
 interface SchoolStat {
   id: number;
@@ -13,9 +14,35 @@ interface SchoolStat {
 }
 
 const SchoolDistributionChart = () => {
-  const { data: schoolStats, isLoading } = useQuery<SchoolStat[]>({
+  const queryClient = useQueryClient();
+  
+  const { data: schoolStats, isLoading, error } = useQuery<SchoolStat[]>({
     queryKey: ['/api/statistics/schools'],
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
+
+  // Force cache invalidation on mount
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['/api/statistics/schools'] });
+  }, [queryClient]);
+
+  // Add debug logging
+  console.log("🏫 DISTRIBUTION CHART RECEIVING DATA:");
+  console.log("📊 Raw schoolStats:", schoolStats);
+  console.log("⏳ Loading:", isLoading);
+  console.log("❌ Error:", error);
+  
+  if (schoolStats && schoolStats.length > 0) {
+    console.log(`📈 Received ${schoolStats.length} schools from API`);
+    schoolStats.forEach(school => {
+      console.log(`🏛️ ${school.name} (${school.code}): ${school.instructorCount} instructors, ${school.studentCount} students`);
+    });
+  } else {
+    console.log("⚠️ No school statistics data received or empty array");
+  }
 
   if (isLoading || !schoolStats) {
     return (
@@ -30,12 +57,17 @@ const SchoolDistributionChart = () => {
     );
   }
 
+  // Filter out test schools and only show main schools
+  const mainSchools = schoolStats.filter(school => 
+    ['KFNA', 'NFS_EAST', 'NFS_WEST'].includes(school.code)
+  );
+
   // Calculate total students for percentage calculation
-  const totalStudents = schoolStats.reduce((sum, school) => sum + school.studentCount, 0);
+  const totalStudents = mainSchools.reduce((sum, school) => sum + school.studentCount, 0);
 
   // Define color codes for each school
   const schoolColors = {
-    'KNFA': 'bg-[#0A2463]', // Navy
+    'KFNA': 'bg-[#0A2463]', // Navy
     'NFS_EAST': 'bg-[#3E92CC]', // Light blue
     'NFS_WEST': 'bg-[#FFD700]' // Gold
   };
@@ -48,7 +80,7 @@ const SchoolDistributionChart = () => {
       <CardContent>
         <div className="h-64 flex items-center justify-center">
           <div className="w-full">
-            {schoolStats.map(school => {
+            {mainSchools.map(school => {
               const percentage = totalStudents ? Math.round((school.studentCount / totalStudents) * 100) : 0;
               const colorClass = schoolColors[school.code as keyof typeof schoolColors] || 'bg-gray-500';
               
