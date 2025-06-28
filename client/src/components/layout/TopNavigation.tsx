@@ -275,7 +275,7 @@ export default function TopNavigation() {
       {/* Overlay for dropdowns */}
       {activeDropdown && (
         <div
-          className="fixed inset-0 z-40"
+          className="fixed inset-0 z-40 ml-[1px] mr-[1px] mt-[3px] mb-[3px] pt-[3px] pb-[3px] pl-[3px] pr-[3px]"
           onClick={() => setActiveDropdown(null)}
         />
       )}
