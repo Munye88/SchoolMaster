@@ -143,48 +143,48 @@ const BasicNavbar = () => {
                 
                 {showSchoolLinks && showSchoolLinks !== 'main' && (
                   <div className="absolute left-0 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50 w-64">
-                    <div className="px-4 py-2 bg-[#1A3473] border-b border-white/20 font-medium text-white">
+                    <div className="px-4 py-3 bg-[#1A3473] border-b border-white/20 font-medium text-white flex items-center">
                       {schools.find(s => s.code === showSchoolLinks)?.name} Documents
                     </div>
                     <div className="py-1">
                       <Link href={`/schools/${showSchoolLinks}/instructor-profiles`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
+                        className="flex items-center px-4 py-3 text-sm hover:bg-[#1A3473] text-white transition-colors">
                         Instructor Profiles
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/timetable`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
+                        className="flex items-center px-4 py-3 text-sm hover:bg-[#1A3473] text-white transition-colors">
                         Timetable
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/student-day-schedule`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
+                        className="flex items-center px-4 py-3 text-sm hover:bg-[#1A3473] text-white transition-colors">
                         Student Day Schedule
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/yearly-schedule`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
+                        className="flex items-center px-4 py-3 text-sm hover:bg-[#1A3473] text-white transition-colors">
                         Yearly Schedule
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/sop`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
+                        className="flex items-center px-4 py-3 text-sm hover:bg-[#1A3473] text-white transition-colors">
                         SOP
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/staff-evaluations`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
+                        className="flex items-center px-4 py-3 text-sm hover:bg-[#1A3473] text-white transition-colors">
                         Staff Evaluations
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/staff-attendance`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
+                        className="flex items-center px-4 py-3 text-sm hover:bg-[#1A3473] text-white transition-colors">
                         Staff Attendance
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/book-inventory`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
+                        className="flex items-center px-4 py-3 text-sm hover:bg-[#1A3473] text-white transition-colors">
                         Book Inventory
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/staff-leave-tracker`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] font-medium text-blue-200">
+                        className="flex items-center px-4 py-3 text-sm hover:bg-[#1A3473] font-medium text-blue-200 transition-colors">
                         Staff Leave Tracker
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/staff-counseling`} onClick={() => setShowSchoolLinks(null)}
-                        className="block px-4 py-2 text-sm hover:bg-[#1A3473] text-white">
+                        className="flex items-center px-4 py-3 text-sm hover:bg-[#1A3473] text-white transition-colors">
                         Staff Counseling
                       </Link>
                     </div>
@@ -212,22 +212,24 @@ const BasicNavbar = () => {
                 </button>
                 
                 {showDLILinks && (
-                  <div className="absolute left-0 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50">
-                    <Link href="/dli/book-order" onClick={() => setShowDLILinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-white hover:bg-[#1A3473]">
-                      <BookOpen className="h-4 w-4 mr-2 text-white/90" />
-                      DLI Book Inventory
-                    </Link>
-                    <Link href="/dli/alcpt-order" onClick={() => setShowDLILinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-white hover:bg-[#1A3473]">
-                      <ListChecks className="h-4 w-4 mr-2 text-white/90" />
-                      ALCPT Forms
-                    </Link>
-                    <Link href="/dli/answer-sheets" onClick={() => setShowDLILinks(false)}
-                      className="flex items-center px-4 py-2 text-sm text-white hover:bg-[#1A3473]">
-                      <FileText className="h-4 w-4 mr-2 text-white/90" />
-                      Answer Sheets
-                    </Link>
+                  <div className="absolute left-0 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50 w-56">
+                    <div className="py-1">
+                      <Link href="/dli/book-order" onClick={() => setShowDLILinks(false)}
+                        className="flex items-center px-4 py-3 text-sm text-white hover:bg-[#1A3473] transition-colors">
+                        <BookOpen className="h-4 w-4 mr-3 text-white/90" />
+                        DLI Book Inventory
+                      </Link>
+                      <Link href="/dli/alcpt-order" onClick={() => setShowDLILinks(false)}
+                        className="flex items-center px-4 py-3 text-sm text-white hover:bg-[#1A3473] transition-colors">
+                        <ListChecks className="h-4 w-4 mr-3 text-white/90" />
+                        ALCPT Forms
+                      </Link>
+                      <Link href="/dli/answer-sheets" onClick={() => setShowDLILinks(false)}
+                        className="flex items-center px-4 py-3 text-sm text-white hover:bg-[#1A3473] transition-colors">
+                        <FileText className="h-4 w-4 mr-3 text-white/90" />
+                        Answer Sheets
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>
@@ -261,51 +263,52 @@ const BasicNavbar = () => {
                 </button>
                 
                 {showTrainingLinks && (
-                  <div className="absolute left-0 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50">
-                    <div className="px-4 py-2 bg-gradient-to-r from-purple-50 to-blue-50 border-b border-gray-200 text-xs font-medium uppercase text-gray-500">
+                  <div className="absolute left-0 top-full mt-1 bg-[#0A2463] border border-white/20 rounded shadow-lg z-50 w-64">
+                    <div className="px-4 py-3 bg-[#1A3473] border-b border-white/20 font-medium text-white flex items-center">
                       Leadership Resources
                     </div>
-                    
-                    <Link 
-                      href="/training-development/leadership-skills"
-                      onClick={() => setShowTrainingLinks(false)}
-                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
-                    >
-                      <BriefcaseBusiness className="h-4 w-4 mr-2 text-blue-600" />
-                      Leadership Skills
-                    </Link>
-                    <Link 
-                      href="/training-development/communication-techniques"
-                      onClick={() => setShowTrainingLinks(false)}
-                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
-                    >
-                      <MessageSquare className="h-4 w-4 mr-2 text-blue-600" />
-                      Communication Techniques
-                    </Link>
-                    <Link 
-                      href="/training-development/conflict-resolution"
-                      onClick={() => setShowTrainingLinks(false)}
-                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
-                    >
-                      <AlertTriangle className="h-4 w-4 mr-2 text-blue-600" />
-                      Conflict Resolution
-                    </Link>
-                    <Link 
-                      href="/training-development/decision-making"
-                      onClick={() => setShowTrainingLinks(false)}
-                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
-                    >
-                      <BrainCircuit className="h-4 w-4 mr-2 text-blue-600" />
-                      Decision Making
-                    </Link>
-                    <Link 
-                      href="/training-development/team-building"
-                      onClick={() => setShowTrainingLinks(false)}
-                      className="flex items-center h-10 px-4 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50"
-                    >
-                      <Users className="h-4 w-4 mr-2 text-blue-600" />
-                      Team Building
-                    </Link>
+                    <div className="py-1">
+                      <Link 
+                        href="/training-development/leadership-skills"
+                        onClick={() => setShowTrainingLinks(false)}
+                        className="flex items-center px-4 py-3 text-sm text-white hover:bg-[#1A3473] transition-colors"
+                      >
+                        <BriefcaseBusiness className="h-4 w-4 mr-3 text-white/90" />
+                        Leadership Skills
+                      </Link>
+                      <Link 
+                        href="/training-development/communication-techniques"
+                        onClick={() => setShowTrainingLinks(false)}
+                        className="flex items-center px-4 py-3 text-sm text-white hover:bg-[#1A3473] transition-colors"
+                      >
+                        <MessageSquare className="h-4 w-4 mr-3 text-white/90" />
+                        Communication Techniques
+                      </Link>
+                      <Link 
+                        href="/training-development/conflict-resolution"
+                        onClick={() => setShowTrainingLinks(false)}
+                        className="flex items-center px-4 py-3 text-sm text-white hover:bg-[#1A3473] transition-colors"
+                      >
+                        <AlertTriangle className="h-4 w-4 mr-3 text-white/90" />
+                        Conflict Resolution
+                      </Link>
+                      <Link 
+                        href="/training-development/decision-making"
+                        onClick={() => setShowTrainingLinks(false)}
+                        className="flex items-center px-4 py-3 text-sm text-white hover:bg-[#1A3473] transition-colors"
+                      >
+                        <BrainCircuit className="h-4 w-4 mr-3 text-white/90" />
+                        Decision Making
+                      </Link>
+                      <Link 
+                        href="/training-development/team-building"
+                        onClick={() => setShowTrainingLinks(false)}
+                        className="flex items-center px-4 py-3 text-sm text-white hover:bg-[#1A3473] transition-colors"
+                      >
+                        <Users className="h-4 w-4 mr-3 text-white/90" />
+                        Team Building
+                      </Link>
+                    </div>
                   </div>
                 )}
               </div>
