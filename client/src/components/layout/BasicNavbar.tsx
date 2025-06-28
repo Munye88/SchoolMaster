@@ -66,9 +66,11 @@ const BasicNavbar = () => {
   return (
     <div className="flex flex-col">
       {/* Top bar with brand */}
-      <div className="bg-gradient-to-r from-[#0A2463] via-[#0F2A6B] to-[#1A3473] text-white h-16 flex items-center px-6 border-b shadow-lg" style={{ background: 'linear-gradient(90deg, #0A2463 0%, #0F2A6B 50%, #1A3473 100%)' }}>
+      <div className="bg-gradient-to-r from-[#0A2463] to-[#1A3473] text-white shadow-lg overflow-hidden relative h-16 flex items-center px-6 border-b">
+        <div className="absolute inset-0 bg-grid-white/5 bg-[length:16px_16px]"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.1),_transparent)]"></div>
         {/* Logo on left */}
-        <div className="flex items-center">
+        <div className="flex items-center relative z-10">
           <img 
             src="/govcio-logo-transparent-fixed.png" 
             alt="GovCIO Logo" 
@@ -77,12 +79,12 @@ const BasicNavbar = () => {
         </div>
         
         {/* Text in center */}
-        <div className="flex-grow flex justify-center">
-          <span className="font-medium text-[8px] tracking-wide">GOVCIO-SAMS ELT</span>
+        <div className="flex-grow flex justify-center relative z-10">
+          <span className="font-light text-[6px] tracking-wide uppercase">GOVCIO-SAMS ELT</span>
         </div>
         
         {/* User menu */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 relative z-10">
           <button onClick={() => setShowUserMenu(!showUserMenu)} className="text-white">
             <UserCircle className="h-6 w-6" />
           </button>
