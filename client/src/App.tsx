@@ -8,7 +8,7 @@ import InstructorLookup from "@/pages/instructor/InstructorLookup";
 import NewInstructorProfile from "@/pages/instructor/InstructorProfile";
 import Courses from "@/pages/Courses";
 import CourseDetails from "@/pages/CourseDetails";
-import TestTracker from "@/pages/TestTracker";
+import TestTrackerSimple from "@/pages/TestTrackerSimple";
 import Reports from "@/pages/Reports";
 import Documents from "@/pages/Documents";
 import Administration from "@/pages/Administration";
@@ -93,7 +93,7 @@ function Router() {
           <ProtectedRoute path="/dli/book-order" component={BookOrder} />
           <ProtectedRoute path="/dli/alcpt-order" component={AlcptOrder} />
           <ProtectedRoute path="/dli/answer-sheets" component={AnswerSheets} />
-          <ProtectedRoute path="/test-tracker" component={TestTrackerEnhanced} />
+          <ProtectedRoute path="/test-tracker" component={TestTrackerSimple} />
           <ProtectedRoute path="/reports" component={ReportsEnhanced} />
           <ProtectedRoute path="/documents" component={Documents} />
           <ProtectedRoute path="/action-log" component={ActionLogPage} />
