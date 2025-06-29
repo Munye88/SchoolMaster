@@ -6,7 +6,7 @@ import { seedDatabase } from "./seed";
 import { seedSchools } from "./schoolSeed";
 import { seedCompleteInstructors } from "./completeInstructorSeed";
 import { ensureCompleteSchema } from "./migrations/ensure-complete-schema";
-import { seedTestScores } from "./testScoreSeed";
+import { seedComprehensiveTestScores } from "./comprehensiveTestSeed";
 import { healthCheck } from "./health";
 
 const app = express();
@@ -60,6 +60,9 @@ app.use((req, res, next) => {
     
     // Seed instructors with complete data from database export
     await seedCompleteInstructors();
+    
+    // Seed comprehensive test scores for all test categories
+    await seedComprehensiveTestScores();
   } catch (error) {
     log(`Error initializing database: ${error}`);
   }

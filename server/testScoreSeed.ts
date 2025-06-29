@@ -1,15 +1,17 @@
 import { db } from './db';
-import { testScores } from '../shared/schema';
+import { testScores } from '../shared/test-scores-schema';
 
 interface TestScoreData {
   studentName: string;
-  score: number;
-  courseName: string;
-  testDate: string;
-  passingScore: number;
-  type: string;
-  status: "Pass" | "Fail";
   schoolId: number;
+  testType: string;
+  score: number;
+  maxScore: number;
+  percentage: number;
+  testDate: Date;
+  instructor: string;
+  course: string;
+  level: string;
 }
 
 const generateTestScores = (): TestScoreData[] => {
@@ -21,12 +23,13 @@ const generateTestScores = (): TestScoreData[] => {
   ];
 
   const testTypes = [
-    { type: 'ALCPT', courseName: 'ALCPT Assessment', passingScore: 75, months: ['January', 'February', 'March', 'April', 'May'] },
-    { type: 'ECL', courseName: 'ECL Evaluation', passingScore: 80, months: ['January', 'February', 'March', 'April', 'May'] },
-    { type: 'OPI', courseName: 'OPI Speaking Test', passingScore: 70, months: ['January', 'February', 'March', 'April', 'May'] },
-    { type: 'Book', courseName: 'Book Quiz Assessment', passingScore: 65, cycles: [1, 2, 3, 4] }
+    { type: 'ALCPT', course: 'ALCPT Assessment', level: 'Intermediate', maxScore: 100, months: ['January', 'February', 'March', 'April', 'May'] },
+    { type: 'ECL', course: 'ECL Evaluation', level: 'Advanced', maxScore: 100, months: ['January', 'February', 'March', 'April', 'May'] },
+    { type: 'OPI', course: 'OPI Speaking Test', level: 'Conversational', maxScore: 100, months: ['January', 'February', 'March', 'April', 'May'] },
+    { type: 'Book', course: 'Book Quiz Assessment', level: 'Foundation', maxScore: 100, cycles: [1, 2, 3, 4] }
   ];
 
+  const instructors = ['Dr. Smith', 'Prof. Johnson', 'Ms. Wilson', 'Mr. Brown', 'Dr. Davis'];
   const years = [2024, 2025];
   let scoreId = 1;
 
@@ -46,17 +49,19 @@ const generateTestScores = (): TestScoreData[] => {
               
               const baseScore = 65 + Math.random() * 30; // Base score between 65-95
               const score = Math.round(baseScore);
-              const status: "Pass" | "Fail" = score >= testType.passingScore ? "Pass" : "Fail";
+              const percentage = Math.round((score / testType.maxScore) * 100);
 
               scores.push({
                 studentName: `Student ${scoreId}`,
+                schoolId: school.id,
+                testType: testType.type,
                 score,
-                courseName: testType.courseName,
-                testDate: testDate.toISOString(),
-                passingScore: testType.passingScore,
-                type: testType.type,
-                status,
-                schoolId: school.id
+                maxScore: testType.maxScore,
+                percentage,
+                testDate,
+                instructor: instructors[Math.floor(Math.random() * instructors.length)],
+                course: testType.course,
+                level: testType.level
               });
               
               scoreId++;
@@ -79,17 +84,19 @@ const generateTestScores = (): TestScoreData[] => {
               else if (testType.type === 'OPI') baseScore = 70 + Math.random() * 25; // 70-95
               
               const score = Math.round(baseScore);
-              const status: "Pass" | "Fail" = score >= testType.passingScore ? "Pass" : "Fail";
+              const percentage = Math.round((score / testType.maxScore) * 100);
 
               scores.push({
                 studentName: `Student ${scoreId}`,
+                schoolId: school.id,
+                testType: testType.type,
                 score,
-                courseName: testType.courseName,
-                testDate: testDate.toISOString(),
-                passingScore: testType.passingScore,
-                type: testType.type,
-                status,
-                schoolId: school.id
+                maxScore: testType.maxScore,
+                percentage,
+                testDate,
+                instructor: instructors[Math.floor(Math.random() * instructors.length)],
+                course: testType.course,
+                level: testType.level
               });
               
               scoreId++;
