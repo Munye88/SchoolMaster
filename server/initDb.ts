@@ -19,6 +19,7 @@ import { addStaffCounselingTable } from './migrations/add_staff_counseling_table
 import { addPtoBalanceTable } from './migrations/add_pto_balance_table';
 import { dropPtoConstraint } from './migrations/drop_pto_constraint';
 import { fixPtoFunctions } from './migrations/fix_pto_functions';
+import { addSchoolDocumentsTable } from './migrations/add_school_documents_table';
 
 export async function initDatabase() {
   try {
@@ -159,6 +160,9 @@ export async function initDatabase() {
     
     // Fix PTO calculation functions
     await fixPtoFunctions();
+    
+    // Add school documents table
+    await addSchoolDocumentsTable();
     
     return true;
   } catch (error) {

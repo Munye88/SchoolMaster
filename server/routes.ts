@@ -27,6 +27,7 @@ import {
   insertPtoBalanceSchema,
   insertInventoryItemSchema,
   insertInventoryTransactionSchema,
+  insertSchoolDocumentSchema,
   evaluations,
   courses,
   staffLeave,
@@ -41,7 +42,8 @@ import {
   inventoryItems,
   inventoryTransactions,
   schools,
-  schoolSchedules
+  schoolSchedules,
+  schoolDocuments
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import documentRoutes from "./documents";
@@ -2851,7 +2853,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  
+  // School Documents API endpoints
+  app.get("/api/school-documents", async (req, res) => {
+    try {
+      const { schoolId } = req.query;
+      
+      let documents;
+      if (schoolId) {
+        documents = await db
+          .select()
+          .from(schoolDocuments)
+          .where(eq(schoolDocuments.schoolId, parseInt(schoolId as string)));
+      } else {
+        documents = await db.select().from(schoolDocuments);
+      }
+      
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching school documents:", error);
+      res.status(500).json({ message: "Failed to fetch school documents" });
+    }
+  });
+
+  app.post("/api/school-documents", upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const { title, documentType, description, schoolId } = req.body;
+      const userId = req.user?.id || 1; // Default to admin user
+
+      // Create directory for school documents if it doesn't exist
+      const dirPath = path.join("uploads", "school-documents");
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
+
+      // Move the file to the school documents directory
+      const fileName = `${Date.now()}-${req.file.originalname}`;
+      const filePath = path.join(dirPath, fileName);
+      fs.renameSync(req.file.path, filePath);
+
+      const fileUrl = `${req.protocol}://${req.get('host')}/uploads/school-documents/${fileName}`;
+
+      const documentData = insertSchoolDocumentSchema.parse({
+        title,
+        fileName: req.file.originalname,
+        fileUrl,
+        documentType,
+        schoolId: parseInt(schoolId),
+        uploadedBy: userId,
+        description: description || null,
+      });
+
+      const [newDocument] = await db
+        .insert(schoolDocuments)
+        .values(documentData)
+        .returning();
+
+      res.status(201).json(newDocument);
+    } catch (error) {
+      console.error("Error uploading school document:", error);
+      res.status(500).json({ message: "Failed to upload document" });
+    }
+  });
+
+  app.delete("/api/school-documents/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // Get the document to find the file path
+      const [document] = await db
+        .select()
+        .from(schoolDocuments)
+        .where(eq(schoolDocuments.id, id));
+        
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      
+      // Delete the file from disk
+      const fileName = document.fileUrl.split('/').pop();
+      const filePath = path.join("uploads", "school-documents", fileName);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+      
+      // Delete from database
+      await db.delete(schoolDocuments).where(eq(schoolDocuments.id, id));
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting school document:", error);
+      res.status(500).json({ message: "Failed to delete document" });
+    }
+  });
 
 // Resume upload endpoint with AI parsing
   app.post("/api/upload/resume", upload.single('file'), async (req, res) => {
