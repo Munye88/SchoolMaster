@@ -45,6 +45,7 @@ import {
   schoolSchedules,
   schoolDocuments
 } from "@shared/schema";
+import { testScores } from "@shared/test-scores-schema";
 import { setupAuth } from "./auth";
 import documentRoutes from "./documents";
 import { generateAIResponse } from "./services/ai";
@@ -4635,68 +4636,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { school, testType } = req.query;
       
-      // Mock data for demonstration - replace with real database queries
-      const testScores = [
-        {
-          id: 1,
-          studentName: "Ahmed Mohammed",
-          school: "KFNA",
-          schoolId: 349,
-          testType: "ALCPT",
-          score: 75,
-          maxScore: 100,
-          percentage: 75,
-          testDate: "2025-01-15",
-          instructor: "Hurd",
-          course: "Aviation",
-          level: "Intermediate",
-          uploadDate: "2025-01-16"
-        },
-        {
-          id: 2,
-          studentName: "Salim Ahmed",
-          school: "NFS East",
-          schoolId: 350,
-          testType: "Book Test",
-          score: 88,
-          maxScore: 100,
-          percentage: 88,
-          testDate: "2025-01-14",
-          instructor: "Said Ibrahim",
-          course: "Refresher",
-          level: "Advanced",
-          uploadDate: "2025-01-15"
-        },
-        {
-          id: 3,
-          studentName: "Hassan Ali",
-          school: "NFS West",
-          schoolId: 351,
-          testType: "ECL",
-          score: 82,
-          maxScore: 100,
-          percentage: 82,
-          testDate: "2025-01-13",
-          instructor: "Mike Johnson",
-          course: "Cadets",
-          level: "Intermediate",
-          uploadDate: "2025-01-14"
-        }
-      ];
+      // Query real test scores from database
+      const testScoresQuery = await db.select({
+        id: testScores.id,
+        studentName: testScores.studentName,
+        schoolId: testScores.schoolId,
+        testType: testScores.testType,
+        score: testScores.score,
+        maxScore: testScores.maxScore,
+        percentage: testScores.percentage,
+        testDate: testScores.testDate,
+        instructor: testScores.instructor,
+        course: testScores.course,
+        level: testScores.level,
+        uploadDate: testScores.uploadDate
+      }).from(testScores);
 
-      let filteredScores = testScores;
+      // Map school IDs to names
+      const schoolMap = {
+        349: 'KFNA',
+        350: 'NFS East', 
+        351: 'NFS West'
+      };
+
+      // Transform data to match frontend format
+      let transformedScores = testScoresQuery.map(score => ({
+        id: score.id,
+        studentName: score.studentName,
+        school: schoolMap[score.schoolId] || 'Unknown',
+        schoolId: score.schoolId,
+        testType: score.testType,
+        score: score.score,
+        maxScore: score.maxScore,
+        percentage: score.percentage,
+        testDate: score.testDate.toISOString().split('T')[0],
+        instructor: score.instructor,
+        course: score.course,
+        level: score.level,
+        uploadDate: score.uploadDate.toISOString().split('T')[0],
+        courseName: score.course,
+        type: score.testType,
+        passingScore: score.testType === 'Book' ? 65 : score.testType === 'ALCPT' ? 75 : score.testType === 'ECL' ? 80 : 70,
+        status: score.percentage >= (score.testType === 'Book' ? 65 : score.testType === 'ALCPT' ? 75 : score.testType === 'ECL' ? 80 : 70) ? 'Pass' : 'Fail'
+      }));
       
+      // Apply filters
       if (school && school !== 'all') {
-        filteredScores = filteredScores.filter(score => 
+        transformedScores = transformedScores.filter(score => 
           score.school.toUpperCase().replace(' ', '_') === school.toUpperCase()
         );
       }
       
       if (testType && testType !== 'all') {
-        filteredScores = filteredScores.filter(score => score.testType === testType);
+        transformedScores = transformedScores.filter(score => score.testType === testType);
       }
 
-      res.json(filteredScores);
+      res.json(transformedScores);
     } catch (error) {
       console.error('Test scores error:', error);
       res.status(500).json({ error: 'Failed to fetch test scores' });
