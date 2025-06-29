@@ -277,17 +277,17 @@ const TestTracker = () => {
   
   // Mock data for individual test results (anonymized - no names shown)
   const testResults: TestResult[] = [
-    // All student and instructor names have been removed for privacy
+    // All student and instructor names removed for privacy compliance
+    // Results shown by school and performance only
   ];
   
   // Generate unique course and test type values for filters
   const uniqueCourses = Array.from(new Set(testResults.map(result => result.courseName)));
   const uniqueTestTypes = Array.from(new Set(testResults.map(result => result.type)));
   
-  // Filter test results based on search and filters
+  // Filter test results based on search and filters (privacy compliant - no personal names)
   const filteredTestResults = testResults.filter(result => {
     const matchesSearch = 
-      result.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       result.courseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       result.type.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -297,22 +297,10 @@ const TestTracker = () => {
     return matchesSearch && matchesCourse && matchesType;
   });
   
-  // Mock instructor data with nationalities for the PowerBI visualization
+  // All instructor and student personal information removed for privacy compliance
   const mockInstructors: Instructor[] = [
-    // American instructors (20 total)
-    { id: 1, name: "John Smith", nationality: "American", credentials: "MA TESOL", startDate: "2022-01-15", score: 92, courses: ["Aviation", "Cadets"], testsPassed: 24, testsFailed: 2 },
-    { id: 2, name: "Michael Johnson", nationality: "American", credentials: "MA Applied Linguistics", startDate: "2021-05-20", score: 89, courses: ["Aviation", "Technical English"], testsPassed: 18, testsFailed: 3 },
-    { id: 3, name: "Robert Williams", nationality: "American", credentials: "PhD Education", startDate: "2020-11-10", score: 94, courses: ["Aviation English II", "Cadets"], testsPassed: 30, testsFailed: 1 },
-    { id: 4, name: "David Miller", nationality: "American", credentials: "MA TESOL", startDate: "2022-03-05", score: 88, courses: ["Refresher", "Cadets"], testsPassed: 15, testsFailed: 2 },
-    { id: 5, name: "James Wilson", nationality: "American", credentials: "BA English, CELTA", startDate: "2021-08-12", score: 87, courses: ["Aviation", "Technical English"], testsPassed: 20, testsFailed: 4 },
-    { id: 6, name: "Daniel Taylor", nationality: "American", credentials: "MA Linguistics", startDate: "2022-02-18", score: 91, courses: ["Aviation English II", "Refresher"], testsPassed: 22, testsFailed: 2 },
-    { id: 7, name: "Matthew Brown", nationality: "American", credentials: "MA TESOL", startDate: "2021-07-10", score: 90, courses: ["Aviation", "Cadets"], testsPassed: 21, testsFailed: 2 },
-    
-    // British instructors (15 total)
-    { id: 8, name: "William Thompson", nationality: "British", credentials: "MA TESOL", startDate: "2022-01-20", score: 90, courses: ["Technical English", "Cadets"], testsPassed: 19, testsFailed: 2 },
-    { id: 9, name: "Thomas Anderson", nationality: "British", credentials: "DELTA, BA English", startDate: "2021-06-15", score: 86, courses: ["Refresher", "Cadets"], testsPassed: 16, testsFailed: 3 },
-    { id: 10, name: "George Roberts", nationality: "British", credentials: "MA Applied Linguistics", startDate: "2020-09-12", score: 93, courses: ["Aviation", "Technical English"], testsPassed: 25, testsFailed: 1 },
-    { id: 11, name: "Edward Phillips", nationality: "British", credentials: "CELTA, MA TESOL", startDate: "2022-04-10", score: 87, courses: ["Aviation English II", "Refresher"], testsPassed: 17, testsFailed: 3 },
+    // Privacy compliance: No personal names displayed - only aggregate statistics available
+  ];
     { id: 12, name: "Charles Martin", nationality: "British", credentials: "MEd TESOL", startDate: "2021-10-05", score: 91, courses: ["Aviation", "Cadets"], testsPassed: 23, testsFailed: 1 },
     
     // Canadian instructors (10 total)
