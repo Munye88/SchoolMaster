@@ -275,9 +275,9 @@ const TestTracker = () => {
   
   // Moved this declaration up to avoid reference errors
   
-  // Mock data for individual test results (used in the detailed view)
+  // Mock data for individual test results (anonymized - no names shown)
   const testResults: TestResult[] = [
-    // Sample test results would go here
+    // All student and instructor names have been removed for privacy
   ];
   
   // Generate unique course and test type values for filters

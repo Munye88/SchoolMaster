@@ -182,6 +182,29 @@ export default function StaffAttendance() {
     },
   });
 
+  // Mutation for deleting attendance records
+  const deleteAttendanceMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("DELETE", `/api/staff-attendance/${id}`);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Attendance deleted",
+        description: "Staff attendance record has been successfully deleted",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/staff-attendance"] });
+      refetchAttendance();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to delete attendance",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Find instructor name by ID
   const getInstructorName = (id: number) => {
     const instructor = instructors.find((i: Instructor) => i.id === id);
@@ -216,6 +239,13 @@ export default function StaffAttendance() {
         id: record.id,
         comments
       });
+    }
+  };
+
+  // Handle delete attendance record
+  const handleDeleteAttendance = (id: number) => {
+    if (confirm("Are you sure you want to delete this attendance record?")) {
+      deleteAttendanceMutation.mutate(id);
     }
   };
 
@@ -437,6 +467,7 @@ export default function StaffAttendance() {
                     <TableHead>Time In</TableHead>
                     <TableHead>Time Out</TableHead>
                     <TableHead className="w-1/3">Comments</TableHead>
+                    <TableHead className="w-16">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
