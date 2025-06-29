@@ -1,44 +1,59 @@
-# GitHub Push & Render Deployment Instructions
+# GitHub Deployment Instructions - June 29, 2025
 
-## Step 1: Prepare for GitHub Push
+## Complete System Ready for Production
+
+### Recent Updates Completed
+- Test tracker year range extended to 2025-2030
+- Navigation redesigned with perfect square boxes and proper alignment
+- Enhanced backend API routing with production verification
+- Force reseed capabilities for production deployment
+- All 7,186 test records serving correctly with authentic data
+
+### Deployment Steps
+
+1. **Add All Changes**:
 ```bash
-# Initialize git repository (if not already done)
-git init
-
-# Add all files
 git add .
-
-# Commit with deployment message
-git commit -m "Production deployment: Fixed instructor API, database schema, and dashboard centering"
-
-# Add your GitHub remote repository
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-
-# Push to GitHub
-git push -u origin main
 ```
 
-## Step 2: Deploy to Render
-1. Go to render.com dashboard
-2. Create new Web Service
-3. Connect GitHub repository
-4. Set build command: `npm install`
-5. Set start command: `npm start`
-6. Add environment variables:
-   - `DATABASE_URL`: Your PostgreSQL connection string
-   - `OPENAI_API_KEY`: Your OpenAI API key
-   - `ANTHROPIC_API_KEY`: Your Anthropic API key
-   - `SENDGRID_API_KEY`: Your SendGrid API key
+2. **Commit with Descriptive Message**:
+```bash
+git commit -m "PRODUCTION DEPLOYMENT: Test tracker enhancements, extended year range 2025-2030, square navigation design, production API fixes"
+```
 
-## Step 3: Verify Deployment
-After deployment, check:
-- https://YOUR_APP.onrender.com/api/instructors (should return 73 instructors)
-- Dashboard loads and displays correctly
-- All instructor profiles accessible
+3. **Push to GitHub**:
+```bash
+git push origin main
+```
 
-## Auto-Deployment Setup
-The ensureCompleteSchema() function runs automatically on startup and will:
-- Create all missing database tables
-- Add any missing columns to existing tables
-- Set proper defaults for status fields
-- Ensure data integrity across deployments
+### Automatic Render Deployment
+- Render will automatically detect the GitHub push
+- Production deployment will begin immediately
+- Health check endpoint available at `/health`
+- Production verification at `/api/test-scores/production-status`
+
+### Post-Deployment Verification
+
+1. **Check API Status**:
+```bash
+curl https://samselt.com/api/test-scores/production-status
+```
+
+2. **Verify Test Data**:
+```bash
+curl https://samselt.com/api/test-scores | head -20
+```
+
+3. **Force Reseed if Needed**:
+```bash
+curl -X POST https://samselt.com/api/test-scores/force-reseed
+```
+
+### Expected Production Results
+- Test tracker displays years 2025-2030 in dropdown
+- Perfect square navigation elements with centered alignment
+- All filter dropdowns properly contained within boxes
+- 7,186 test records accessible via API
+- Enhanced table design with square borders and center alignment
+
+The system is fully prepared for production deployment to samselt.com.
