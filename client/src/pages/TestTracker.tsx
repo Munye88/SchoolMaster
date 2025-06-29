@@ -206,66 +206,26 @@ const TestTracker: React.FC = () => {
     });
   }, [selectedSchoolFilter, selectedTestType, selectedYear, selectedCycle, selectedMonth, schools]);
 
-  // Handle Excel file upload and processing
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        
-        // Process uploaded data and add to aggregateTestData
-        const processedData = jsonData.map((row: any, index: number) => {
-          if (selectedTestType === 'Book') {
-            return {
-              id: aggregateTestData.length + index + 1,
-              cycle: selectedCycle,
-              year: selectedYear,
-              testType: importTestType,
-              schoolId: schools.find(s => s.name === importSchool)?.id || 349,
-              schoolName: importSchool,
-              studentCount: row.StudentCount || row['Student Count'] || 0,
-              averageScore: row.AverageScore || row['Average Score'] || 0,
-              passingScore: row.PassingScore || row['Passing Score'] || 70,
-              passingRate: row.PassingRate || row['Passing Rate'] || 0
-            };
-          } else {
-            return {
-              id: aggregateTestData.length + index + 1,
-              month: selectedMonth,
-              year: selectedYear,
-              testType: importTestType,
-              schoolId: schools.find(s => s.name === importSchool)?.id || 349,
-              schoolName: importSchool,
-              studentCount: row.StudentCount || row['Student Count'] || 0,
-              averageScore: row.AverageScore || row['Average Score'] || 0,
-              passingScore: row.PassingScore || row['Passing Score'] || 70,
-              passingRate: row.PassingRate || row['Passing Rate'] || 0
-            };
-          }
-        });
-
-        setImportedTestData(prev => [...prev, ...processedData]);
-        toast({
-          title: "Data Imported Successfully",
-          description: `Imported ${processedData.length} test records for ${importTestType}`,
-        });
-        setShowImportModal(false);
-      } catch (error) {
-        toast({
-          title: "Import Error",
-          description: "Failed to process the uploaded file. Please check the format.",
-          variant: "destructive",
-        });
-      }
-    };
-    reader.readAsArrayBuffer(file);
+  // Debug function to test navigation changes
+  const handleNavigationChange = (type: string, value: string) => {
+    console.log(`Navigation changed: ${type} = ${value}`);
+    switch(type) {
+      case 'testType':
+        setSelectedTestType(value as any);
+        break;
+      case 'month':
+        setSelectedMonth(value);
+        break;
+      case 'cycle':
+        setSelectedCycle(parseInt(value));
+        break;
+      case 'year':
+        setSelectedYear(parseInt(value));
+        break;
+      case 'school':
+        setSelectedSchoolFilter(value);
+        break;
+    }
   };
 
   // Calculate statistics
@@ -305,85 +265,94 @@ const TestTracker: React.FC = () => {
       </div>
 
       {/* Navigation Controls */}
-      <Card>
+      <Card className="relative z-10">
         <CardHeader>
           <CardTitle>Navigation & Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Test Type</label>
-              <Select value={selectedTestType} onValueChange={(value) => setSelectedTestType(value as any)}>
-                <SelectTrigger>
-                  <SelectValue />
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Test Type</label>
+              <Select value={selectedTestType} onValueChange={(value) => handleNavigationChange('testType', value)}>
+                <SelectTrigger className="w-full bg-white border border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 cursor-pointer">
+                  <SelectValue placeholder="Select test type" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALCPT">ALCPT</SelectItem>
-                  <SelectItem value="Book">Book Test</SelectItem>
-                  <SelectItem value="ECL">ECL</SelectItem>
-                  <SelectItem value="OPI">OPI</SelectItem>
+                <SelectContent className="z-[100] bg-white border border-gray-200 shadow-xl rounded-md">
+                  <SelectItem value="ALCPT" className="hover:bg-blue-50 cursor-pointer px-4 py-2">ALCPT Tests</SelectItem>
+                  <SelectItem value="Book" className="hover:bg-blue-50 cursor-pointer px-4 py-2">Book Tests</SelectItem>
+                  <SelectItem value="ECL" className="hover:bg-blue-50 cursor-pointer px-4 py-2">ECL Tests</SelectItem>
+                  <SelectItem value="OPI" className="hover:bg-blue-50 cursor-pointer px-4 py-2">OPI Tests</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {selectedTestType !== 'Book' ? (
-              <div>
-                <label className="text-sm font-medium mb-2 block">Month</label>
-                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                  <SelectTrigger>
-                    <SelectValue />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Month</label>
+                <Select value={selectedMonth} onValueChange={(value) => handleNavigationChange('month', value)}>
+                  <SelectTrigger className="w-full bg-white border border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 cursor-pointer">
+                    <SelectValue placeholder="Select month" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[100] bg-white border border-gray-200 shadow-xl rounded-md max-h-60 overflow-y-auto">
                     {months.map(month => (
-                      <SelectItem key={month} value={month}>{month}</SelectItem>
+                      <SelectItem key={month} value={month} className="hover:bg-blue-50 cursor-pointer px-4 py-2">{month}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             ) : (
-              <div>
-                <label className="text-sm font-medium mb-2 block">Cycle</label>
-                <Select value={selectedCycle.toString()} onValueChange={(value) => setSelectedCycle(parseInt(value))}>
-                  <SelectTrigger>
-                    <SelectValue />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Cycle</label>
+                <Select value={selectedCycle.toString()} onValueChange={(value) => handleNavigationChange('cycle', value)}>
+                  <SelectTrigger className="w-full bg-white border border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 cursor-pointer">
+                    <SelectValue placeholder="Select cycle" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-[100] bg-white border border-gray-200 shadow-xl rounded-md">
                     {cycles.map(cycle => (
-                      <SelectItem key={cycle} value={cycle.toString()}>Cycle {cycle}</SelectItem>
+                      <SelectItem key={cycle} value={cycle.toString()} className="hover:bg-blue-50 cursor-pointer px-4 py-2">Cycle {cycle}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             )}
 
-            <div>
-              <label className="text-sm font-medium mb-2 block">Year</label>
-              <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(parseInt(value))}>
-                <SelectTrigger>
-                  <SelectValue />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Year</label>
+              <Select value={selectedYear.toString()} onValueChange={(value) => handleNavigationChange('year', value)}>
+                <SelectTrigger className="w-full bg-white border border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 cursor-pointer">
+                  <SelectValue placeholder="Select year" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[100] bg-white border border-gray-200 shadow-xl rounded-md">
                   {years.map(year => (
-                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                    <SelectItem key={year} value={year.toString()} className="hover:bg-blue-50 cursor-pointer px-4 py-2">{year}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            <div>
-              <label className="text-sm font-medium mb-2 block">School</label>
-              <Select value={selectedSchoolFilter} onValueChange={setSelectedSchoolFilter}>
-                <SelectTrigger>
-                  <SelectValue />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">School Filter</label>
+              <Select value={selectedSchoolFilter} onValueChange={(value) => handleNavigationChange('school', value)}>
+                <SelectTrigger className="w-full bg-white border border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 cursor-pointer">
+                  <SelectValue placeholder="All schools" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Schools</SelectItem>
-                  {schools.map(school => (
-                    <SelectItem key={school.id} value={school.name}>{school.name}</SelectItem>
-                  ))}
+                <SelectContent className="z-[100] bg-white border border-gray-200 shadow-xl rounded-md">
+                  <SelectItem value="all" className="hover:bg-blue-50 cursor-pointer px-4 py-2">All Schools</SelectItem>
+                  <SelectItem value="KFNA" className="hover:bg-blue-50 cursor-pointer px-4 py-2">KFNA</SelectItem>
+                  <SelectItem value="NFS East" className="hover:bg-blue-50 cursor-pointer px-4 py-2">NFS East</SelectItem>
+                  <SelectItem value="NFS West" className="hover:bg-blue-50 cursor-pointer px-4 py-2">NFS West</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          {/* Current Selection Display */}
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Current View:</strong> {selectedTestType} Tests - 
+              {selectedTestType === 'Book' ? ` Cycle ${selectedCycle}` : ` ${selectedMonth}`} {selectedYear}
+              {selectedSchoolFilter !== 'all' && ` - ${selectedSchoolFilter} Only`}
+            </p>
           </div>
         </CardContent>
       </Card>
