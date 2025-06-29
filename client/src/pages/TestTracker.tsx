@@ -561,26 +561,46 @@ const TestTracker: React.FC = () => {
     });
   }, [selectedSchoolFilter, selectedTestType, selectedYear, selectedCycle, selectedMonth, schools]);
 
-  // Debug function to test navigation changes
+  // Enhanced debug function with proper state management
   const handleNavigationChange = (type: string, value: string) => {
-    console.log(`Navigation changed: ${type} = ${value}`);
+    console.log(`📊 Test Tracker Navigation: ${type} changed to ${value}`);
+    console.log('📊 Current state:', { selectedTestType, selectedMonth, selectedCycle, selectedYear, selectedSchoolFilter });
+    
     switch(type) {
       case 'testType':
-        setSelectedTestType(value as any);
+        console.log('📊 Setting test type to:', value);
+        setSelectedTestType(value as 'Book' | 'ALCPT' | 'ECL' | 'OPI');
         break;
       case 'month':
+        console.log('📊 Setting month to:', value);
         setSelectedMonth(value);
         break;
       case 'cycle':
+        console.log('📊 Setting cycle to:', parseInt(value));
         setSelectedCycle(parseInt(value));
         break;
       case 'year':
+        console.log('📊 Setting year to:', parseInt(value));
         setSelectedYear(parseInt(value));
         break;
       case 'school':
+        console.log('📊 Setting school filter to:', value);
         setSelectedSchoolFilter(value);
         break;
+      default:
+        console.warn('📊 Unknown navigation type:', type);
     }
+    
+    // Log updated state after changes
+    setTimeout(() => {
+      console.log('📊 Updated state:', { 
+        testType: selectedTestType, 
+        month: selectedMonth, 
+        cycle: selectedCycle, 
+        year: selectedYear, 
+        school: selectedSchoolFilter 
+      });
+    }, 100);
   };
 
   // Calculate statistics
@@ -618,6 +638,33 @@ const TestTracker: React.FC = () => {
           </p>
         </div>
       </div>
+
+      {/* Current Selection Display */}
+      <Card className="bg-blue-50 border-blue-200">
+        <CardContent className="pt-6">
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm font-medium text-gray-600">Current View:</span>
+            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+              {selectedTestType} Tests
+            </Badge>
+            {selectedTestType !== 'Book' ? (
+              <Badge variant="outline" className="border-blue-300 text-blue-700">
+                {selectedMonth} {selectedYear}
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="border-blue-300 text-blue-700">
+                Cycle {selectedCycle} - {selectedYear}
+              </Badge>
+            )}
+            <Badge variant="outline" className="border-green-300 text-green-700">
+              {selectedSchoolFilter === 'all' ? 'All Schools' : selectedSchoolFilter}
+            </Badge>
+            <span className="text-sm text-gray-500 ml-2">
+              ({filteredTestData.length} records found)
+            </span>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Navigation Controls */}
       <Card className="relative z-10">
