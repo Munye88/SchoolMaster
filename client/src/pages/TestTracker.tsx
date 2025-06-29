@@ -619,8 +619,87 @@ const TestTracker = () => {
     ])
   );
 
+  // Add sample historical data for demonstration
+  const sampleHistoricalData: AggregateTestData[] = [
+    // Sample Book Test data for different cycles
+    {
+      id: 2001,
+      cycle: 1,
+      year: 2025,
+      testType: 'Book',
+      schoolId: 349,
+      schoolName: 'KFNA',
+      studentCount: 28,
+      averageScore: 78,
+      passingScore: 66,
+      passingRate: 85
+    },
+    {
+      id: 2002,
+      cycle: 2,
+      year: 2025,
+      testType: 'Book',
+      schoolId: 349,
+      schoolName: 'KFNA',
+      studentCount: 26,
+      averageScore: 82,
+      passingScore: 66,
+      passingRate: 88
+    },
+    // Sample ALCPT data for different months
+    {
+      id: 2003,
+      month: 'January',
+      year: 2025,
+      testType: 'ALCPT',
+      schoolId: 349,
+      schoolName: 'KFNA',
+      studentCount: 22,
+      averageScore: 79,
+      passingScore: 70,
+      passingRate: 82
+    },
+    {
+      id: 2004,
+      month: 'February',
+      year: 2025,
+      testType: 'ALCPT',
+      schoolId: 349,
+      schoolName: 'KFNA',
+      studentCount: 25,
+      averageScore: 83,
+      passingScore: 70,
+      passingRate: 88
+    },
+    {
+      id: 2005,
+      month: 'January',
+      year: 2025,
+      testType: 'ALCPT',
+      schoolId: 350,
+      schoolName: 'NFS East',
+      studentCount: 18,
+      averageScore: 76,
+      passingScore: 70,
+      passingRate: 78
+    },
+    // Sample ECL data
+    {
+      id: 2006,
+      month: 'January',
+      year: 2025,
+      testType: 'ECL',
+      schoolId: 349,
+      schoolName: 'KFNA',
+      studentCount: 15,
+      averageScore: 74,
+      passingScore: 70,
+      passingRate: 80
+    }
+  ];
+
   // Combine mock data with imported data, giving priority to imported data
-  const combinedTestData = [...bookTestData, ...monthlyTestData];
+  const combinedTestData = [...bookTestData, ...monthlyTestData, ...sampleHistoricalData];
   
   // Add imported data, replacing mock data where applicable
   importedTestData.forEach(importedData => {
@@ -1490,11 +1569,101 @@ const TestTracker = () => {
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-center py-8 text-gray-500">
-                            <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-                            <p>No {selectedTestType} test data available for {month} {selectedYear}</p>
-                            <p className="text-sm mt-2">Use the Import Excel or Data Entry options to add results</p>
-                          </div>
+                          {(() => {
+                            const monthData = filteredTestData.filter(data => 
+                              data.month === month && 
+                              data.testType === selectedTestType &&
+                              data.year === selectedYear
+                            );
+                            
+                            if (monthData.length === 0) {
+                              return (
+                                <div className="text-center py-8 text-gray-500">
+                                  <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                                  <p>No {selectedTestType} test data available for {month} {selectedYear}</p>
+                                  <p className="text-sm mt-2">Use the Import Excel or Data Entry options to add results</p>
+                                </div>
+                              );
+                            }
+                            
+                            return (
+                              <div className="space-y-6">
+                                {/* Summary Stats */}
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                  <div className="bg-blue-50 p-4 rounded-lg">
+                                    <div className="text-sm font-medium text-blue-600">Total Students</div>
+                                    <div className="text-2xl font-bold text-blue-900">
+                                      {monthData.reduce((sum, data) => sum + data.studentCount, 0)}
+                                    </div>
+                                  </div>
+                                  <div className="bg-green-50 p-4 rounded-lg">
+                                    <div className="text-sm font-medium text-green-600">Average Score</div>
+                                    <div className="text-2xl font-bold text-green-900">
+                                      {monthData.length > 0 ? Math.round(monthData.reduce((sum, data) => sum + data.averageScore, 0) / monthData.length) : 0}
+                                    </div>
+                                  </div>
+                                  <div className="bg-purple-50 p-4 rounded-lg">
+                                    <div className="text-sm font-medium text-purple-600">Pass Rate</div>
+                                    <div className="text-2xl font-bold text-purple-900">
+                                      {monthData.length > 0 ? Math.round(monthData.reduce((sum, data) => sum + data.passingRate, 0) / monthData.length) : 0}%
+                                    </div>
+                                  </div>
+                                  <div className="bg-orange-50 p-4 rounded-lg">
+                                    <div className="text-sm font-medium text-orange-600">Schools</div>
+                                    <div className="text-2xl font-bold text-orange-900">
+                                      {monthData.length}
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* School Results Table */}
+                                <div className="bg-white border rounded-lg overflow-hidden">
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow>
+                                        <TableHead>School</TableHead>
+                                        <TableHead>Students</TableHead>
+                                        <TableHead>Average Score</TableHead>
+                                        <TableHead>Pass Rate</TableHead>
+                                        <TableHead>Status</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {monthData.map((data) => (
+                                        <TableRow key={data.id}>
+                                          <TableCell className="font-medium">{data.schoolName}</TableCell>
+                                          <TableCell>{data.studentCount}</TableCell>
+                                          <TableCell>{data.averageScore}</TableCell>
+                                          <TableCell>{data.passingRate}%</TableCell>
+                                          <TableCell>
+                                            <Badge variant={data.passingRate >= 70 ? "default" : "destructive"}>
+                                              {data.passingRate >= 70 ? "PASS" : "NEEDS IMPROVEMENT"}
+                                            </Badge>
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </div>
+                                
+                                {/* Chart */}
+                                <div className="bg-white border rounded-lg p-4">
+                                  <h4 className="text-lg font-semibold mb-4">School Performance Comparison</h4>
+                                  <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart data={monthData}>
+                                      <CartesianGrid strokeDasharray="3 3" />
+                                      <XAxis dataKey="schoolName" />
+                                      <YAxis />
+                                      <Tooltip />
+                                      <Legend />
+                                      <Bar dataKey="averageScore" fill="#3B82F6" name="Average Score" />
+                                      <Bar dataKey="passingRate" fill="#10B981" name="Pass Rate %" />
+                                    </BarChart>
+                                  </ResponsiveContainer>
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </CardContent>
                       </Card>
                     </TabsContent>
@@ -1531,11 +1700,101 @@ const TestTracker = () => {
                           </CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-center py-8 text-gray-500">
-                            <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
-                            <p>No Book test data available for Cycle {i+1}, {selectedYear}</p>
-                            <p className="text-sm mt-2">Use the Import Excel or Data Entry options to add results</p>
-                          </div>
+                          {(() => {
+                            const cycleData = filteredTestData.filter(data => 
+                              data.cycle === (i+1) && 
+                              data.testType === 'Book' &&
+                              data.year === selectedYear
+                            );
+                            
+                            if (cycleData.length === 0) {
+                              return (
+                                <div className="text-center py-8 text-gray-500">
+                                  <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                                  <p>No Book test data available for Cycle {i+1}, {selectedYear}</p>
+                                  <p className="text-sm mt-2">Use the Import Excel or Data Entry options to add results</p>
+                                </div>
+                              );
+                            }
+                            
+                            return (
+                              <div className="space-y-6">
+                                {/* Summary Stats */}
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                  <div className="bg-blue-50 p-4 rounded-lg">
+                                    <div className="text-sm font-medium text-blue-600">Total Students</div>
+                                    <div className="text-2xl font-bold text-blue-900">
+                                      {cycleData.reduce((sum, data) => sum + data.studentCount, 0)}
+                                    </div>
+                                  </div>
+                                  <div className="bg-green-50 p-4 rounded-lg">
+                                    <div className="text-sm font-medium text-green-600">Average Score</div>
+                                    <div className="text-2xl font-bold text-green-900">
+                                      {cycleData.length > 0 ? Math.round(cycleData.reduce((sum, data) => sum + data.averageScore, 0) / cycleData.length) : 0}
+                                    </div>
+                                  </div>
+                                  <div className="bg-purple-50 p-4 rounded-lg">
+                                    <div className="text-sm font-medium text-purple-600">Pass Rate</div>
+                                    <div className="text-2xl font-bold text-purple-900">
+                                      {cycleData.length > 0 ? Math.round(cycleData.reduce((sum, data) => sum + data.passingRate, 0) / cycleData.length) : 0}%
+                                    </div>
+                                  </div>
+                                  <div className="bg-orange-50 p-4 rounded-lg">
+                                    <div className="text-sm font-medium text-orange-600">Schools</div>
+                                    <div className="text-2xl font-bold text-orange-900">
+                                      {cycleData.length}
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* School Results Table */}
+                                <div className="bg-white border rounded-lg overflow-hidden">
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow>
+                                        <TableHead>School</TableHead>
+                                        <TableHead>Students</TableHead>
+                                        <TableHead>Average Score</TableHead>
+                                        <TableHead>Pass Rate</TableHead>
+                                        <TableHead>Status</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {cycleData.map((data) => (
+                                        <TableRow key={data.id}>
+                                          <TableCell className="font-medium">{data.schoolName}</TableCell>
+                                          <TableCell>{data.studentCount}</TableCell>
+                                          <TableCell>{data.averageScore}</TableCell>
+                                          <TableCell>{data.passingRate}%</TableCell>
+                                          <TableCell>
+                                            <Badge variant={data.passingRate >= 66 ? "default" : "destructive"}>
+                                              {data.passingRate >= 66 ? "PASS" : "NEEDS IMPROVEMENT"}
+                                            </Badge>
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </div>
+                                
+                                {/* Chart */}
+                                <div className="bg-white border rounded-lg p-4">
+                                  <h4 className="text-lg font-semibold mb-4">School Performance Comparison</h4>
+                                  <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart data={cycleData}>
+                                      <CartesianGrid strokeDasharray="3 3" />
+                                      <XAxis dataKey="schoolName" />
+                                      <YAxis />
+                                      <Tooltip />
+                                      <Legend />
+                                      <Bar dataKey="averageScore" fill="#3B82F6" name="Average Score" />
+                                      <Bar dataKey="passingRate" fill="#10B981" name="Pass Rate %" />
+                                    </BarChart>
+                                  </ResponsiveContainer>
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </CardContent>
                       </Card>
                     </TabsContent>
