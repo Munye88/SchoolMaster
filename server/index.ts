@@ -6,6 +6,7 @@ import { seedDatabase } from "./seed";
 import { seedSchools } from "./schoolSeed";
 import { seedCompleteInstructors } from "./completeInstructorSeed";
 import { ensureCompleteSchema } from "./migrations/ensure-complete-schema";
+import { seedTestScores } from "./testScoreSeed";
 import { healthCheck } from "./health";
 
 const app = express();

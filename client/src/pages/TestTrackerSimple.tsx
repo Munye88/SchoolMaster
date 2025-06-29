@@ -1,11 +1,30 @@
 import React, { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-interface TestData {
+interface TestResult {
+  id: number;
+  studentName?: string;
+  score: number;
+  courseName: string;
+  testDate: string;
+  passingScore: number;
+  type: string;
+  status: "Pass" | "Fail";
+  schoolId: number;
+}
+
+interface SchoolData {
+  id: number;
+  name: string;
+  code: string;
+}
+
+interface ProcessedTestData {
   id: number;
   testType: 'ALCPT' | 'Book' | 'ECL' | 'OPI';
   month?: string;
@@ -24,27 +43,102 @@ const TestTrackerSimple: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(2025);
   const [selectedSchool, setSelectedSchool] = useState<string>('all');
 
-  // Sample test data
-  const testData: TestData[] = [
-    { id: 1, testType: 'ALCPT', month: 'January', year: 2025, schoolName: 'KFNA', averageScore: 85, passingRate: 78, studentCount: 45 },
-    { id: 2, testType: 'ALCPT', month: 'January', year: 2025, schoolName: 'NFS East', averageScore: 82, passingRate: 75, studentCount: 23 },
-    { id: 3, testType: 'ALCPT', month: 'January', year: 2025, schoolName: 'NFS West', averageScore: 88, passingRate: 82, studentCount: 34 },
-    { id: 4, testType: 'ALCPT', month: 'February', year: 2025, schoolName: 'KFNA', averageScore: 87, passingRate: 80, studentCount: 42 },
-    { id: 5, testType: 'ALCPT', month: 'February', year: 2025, schoolName: 'NFS East', averageScore: 84, passingRate: 77, studentCount: 25 },
-    { id: 6, testType: 'ALCPT', month: 'March', year: 2025, schoolName: 'KFNA', averageScore: 89, passingRate: 85, studentCount: 38 },
-    { id: 7, testType: 'ECL', month: 'January', year: 2025, schoolName: 'KFNA', averageScore: 92, passingRate: 88, studentCount: 28 },
-    { id: 8, testType: 'ECL', month: 'February', year: 2025, schoolName: 'NFS East', averageScore: 90, passingRate: 86, studentCount: 19 },
-    { id: 9, testType: 'Book', cycle: 1, year: 2025, schoolName: 'KFNA', averageScore: 78, passingRate: 72, studentCount: 52 },
-    { id: 10, testType: 'Book', cycle: 2, year: 2025, schoolName: 'NFS West', averageScore: 81, passingRate: 75, studentCount: 47 },
-  ];
+  // Fetch test scores and schools data
+  const { data: testScores = [], isLoading: testLoading } = useQuery<TestResult[]>({
+    queryKey: ['/api/test-scores'],
+    refetchInterval: 30000,
+  });
+
+  const { data: schools = [], isLoading: schoolsLoading } = useQuery<SchoolData[]>({
+    queryKey: ['/api/schools'],
+  });
 
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const cycles = [1, 2, 3, 4];
   const years = [2024, 2025];
 
+  // Process real test data into aggregated format
+  const processedTestData = useMemo(() => {
+    if (testLoading || schoolsLoading || !testScores.length || !schools.length) {
+      return [];
+    }
+
+    const schoolMap = new Map(schools.map(school => [school.id, school.name]));
+    const aggregatedData: ProcessedTestData[] = [];
+
+    // Group test scores by test type, time period, and school
+    const groups = new Map<string, TestResult[]>();
+
+    testScores.forEach(score => {
+      const testDate = new Date(score.testDate);
+      const year = testDate.getFullYear();
+      const month = testDate.toLocaleString('default', { month: 'long' });
+      
+      // Determine test type from course name or type field
+      let testType: 'ALCPT' | 'Book' | 'ECL' | 'OPI' = 'ALCPT';
+      const courseUpper = (score.courseName || '').toUpperCase();
+      const typeUpper = (score.type || '').toUpperCase();
+      
+      if (courseUpper.includes('BOOK') || typeUpper.includes('BOOK')) {
+        testType = 'Book';
+      } else if (courseUpper.includes('ECL') || typeUpper.includes('ECL')) {
+        testType = 'ECL';
+      } else if (courseUpper.includes('OPI') || typeUpper.includes('OPI')) {
+        testType = 'OPI';
+      } else if (courseUpper.includes('ALCPT') || typeUpper.includes('ALCPT')) {
+        testType = 'ALCPT';
+      }
+
+      // Determine cycle for Book tests (quarterly)
+      const cycle = Math.ceil((testDate.getMonth() + 1) / 3);
+      
+      const key = testType === 'Book' 
+        ? `${testType}-${cycle}-${year}-${score.schoolId}`
+        : `${testType}-${month}-${year}-${score.schoolId}`;
+
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key)!.push(score);
+    });
+
+    // Create aggregated records
+    groups.forEach((scores, key) => {
+      const [testType, period, yearStr, schoolIdStr] = key.split('-');
+      const year = parseInt(yearStr);
+      const schoolId = parseInt(schoolIdStr);
+      const schoolName = schoolMap.get(schoolId) || 'Unknown';
+
+      const totalScore = scores.reduce((sum, score) => sum + score.score, 0);
+      const averageScore = Math.round(totalScore / scores.length);
+      const passCount = scores.filter(score => score.status === 'Pass').length;
+      const passingRate = Math.round((passCount / scores.length) * 100);
+
+      const processedItem: ProcessedTestData = {
+        id: aggregatedData.length + 1,
+        testType: testType as 'ALCPT' | 'Book' | 'ECL' | 'OPI',
+        year,
+        schoolName,
+        averageScore,
+        passingRate,
+        studentCount: scores.length
+      };
+
+      if (testType === 'Book') {
+        processedItem.cycle = parseInt(period);
+      } else {
+        processedItem.month = period;
+      }
+
+      aggregatedData.push(processedItem);
+    });
+
+    return aggregatedData;
+  }, [testScores, schools, testLoading, schoolsLoading]);
+
   // Filter data based on selections
   const filteredData = useMemo(() => {
-    return testData.filter(item => {
+    return processedTestData.filter(item => {
       if (item.testType !== selectedTestType) return false;
       if (selectedSchool !== 'all' && item.schoolName !== selectedSchool) return false;
       if (item.year !== selectedYear) return false;
@@ -55,7 +149,7 @@ const TestTrackerSimple: React.FC = () => {
         return item.month === selectedMonth;
       }
     });
-  }, [selectedTestType, selectedMonth, selectedCycle, selectedYear, selectedSchool]);
+  }, [processedTestData, selectedTestType, selectedMonth, selectedCycle, selectedYear, selectedSchool]);
 
   // Chart data
   const chartData = filteredData.map(item => ({
