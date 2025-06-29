@@ -268,7 +268,7 @@ const SimpleHorizontalNavbar = () => {
             {/* Reports */}
             <li>
               <Link href="/reports" className={cn(
-                "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
                 isActive("/reports") && "text-[#0A2463] bg-gray-100 font-medium"
               )}>
                 <BarChart2 className="h-4 w-4 mr-2" />
@@ -281,7 +281,7 @@ const SimpleHorizontalNavbar = () => {
               <button 
                 onClick={() => setAdminDropdownOpen(!adminDropdownOpen)}
                 className={cn(
-                  "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                  "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
                   (isActive("/administration") || adminDropdownOpen) && "text-[#0A2463] bg-gray-100 font-medium"
                 )}
               >
@@ -291,12 +291,12 @@ const SimpleHorizontalNavbar = () => {
               </button>
               
               {adminDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 z-50">
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-none shadow-lg py-1 z-50">
                   <Link 
                     href="/administration/company-policy" 
                     onClick={() => setAdminDropdownOpen(false)}
                     className={cn(
-                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100",
+                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none",
                     isActive("/administration/company-policy") && "text-[#0A2463] bg-gray-100 font-medium"
                   )}>
                     Company Policy
@@ -305,7 +305,7 @@ const SimpleHorizontalNavbar = () => {
                     href="/administration/evaluation-guideline" 
                     onClick={() => setAdminDropdownOpen(false)}
                     className={cn(
-                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100",
+                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none",
                     isActive("/administration/evaluation-guideline") && "text-[#0A2463] bg-gray-100 font-medium"
                   )}>
                     Instructor Evaluation Guideline
@@ -314,7 +314,7 @@ const SimpleHorizontalNavbar = () => {
                     href="/administration/employee-handbook" 
                     onClick={() => setAdminDropdownOpen(false)}
                     className={cn(
-                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100",
+                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none",
                     isActive("/administration/employee-handbook") && "text-[#0A2463] bg-gray-100 font-medium"
                   )}>
                     Employee Handbook
@@ -323,7 +323,7 @@ const SimpleHorizontalNavbar = () => {
                     href="/administration/performance-policy" 
                     onClick={() => setAdminDropdownOpen(false)}
                     className={cn(
-                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100",
+                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none",
                     isActive("/administration/performance-policy") && "text-[#0A2463] bg-gray-100 font-medium"
                   )}>
                     Performance Evaluation Policy
@@ -332,7 +332,7 @@ const SimpleHorizontalNavbar = () => {
                     href="/administration/classroom-evaluation" 
                     onClick={() => setAdminDropdownOpen(false)}
                     className={cn(
-                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100",
+                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none",
                     isActive("/administration/classroom-evaluation") && "text-[#0A2463] bg-gray-100 font-medium"
                   )}>
                     Training Guide Classroom Evaluation
