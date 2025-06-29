@@ -60,26 +60,33 @@ const TestTrackerSimple: React.FC = () => {
   // Process real test data into aggregated format
   const processedTestData = useMemo(() => {
     if (testLoading || schoolsLoading || !testScores.length || !schools.length) {
+      console.log('Data loading or empty:', { testLoading, schoolsLoading, testScoresLength: testScores.length, schoolsLength: schools.length });
       return [];
     }
 
+    console.log('Processing test data:', { testScoresCount: testScores.length, schoolsCount: schools.length });
     const schoolMap = new Map(schools.map(school => [school.id, school.name]));
     const aggregatedData: ProcessedTestData[] = [];
 
     // Group test scores by test type, time period, and school
     const groups = new Map<string, TestResult[]>();
 
-    testScores.forEach(score => {
+    testScores.forEach((score, index) => {
       const testDate = new Date(score.testDate);
       const year = testDate.getFullYear();
       const month = testDate.toLocaleString('default', { month: 'long' });
+      
+      // Debug first few records
+      if (index < 3) {
+        console.log('Processing score:', { score, testDate, year, month });
+      }
       
       // Determine test type from course name or type field
       let testType: 'ALCPT' | 'Book' | 'ECL' | 'OPI' = 'ALCPT';
       const courseUpper = (score.courseName || '').toUpperCase();
       const typeUpper = (score.type || '').toUpperCase();
       
-      if (courseUpper.includes('BOOK') || typeUpper.includes('BOOK')) {
+      if (courseUpper.includes('BOOK') || typeUpper.includes('BOOK') || courseUpper.includes('QUIZ')) {
         testType = 'Book';
       } else if (courseUpper.includes('ECL') || typeUpper.includes('ECL')) {
         testType = 'ECL';
@@ -101,6 +108,8 @@ const TestTrackerSimple: React.FC = () => {
       }
       groups.get(key)!.push(score);
     });
+
+    console.log('Created groups:', groups.size);
 
     // Create aggregated records
     groups.forEach((scores, key) => {
@@ -133,6 +142,7 @@ const TestTrackerSimple: React.FC = () => {
       aggregatedData.push(processedItem);
     });
 
+    console.log('Final aggregated data:', aggregatedData.length);
     return aggregatedData;
   }, [testScores, schools, testLoading, schoolsLoading]);
 
