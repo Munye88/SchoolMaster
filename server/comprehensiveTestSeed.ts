@@ -32,7 +32,7 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
 
     const instructors = ['Dr. Smith', 'Prof. Johnson', 'Ms. Wilson', 'Mr. Brown', 'Dr. Davis'];
     const months = ['January', 'February', 'March', 'April', 'May'];
-    const years = [2024, 2025];
+    const years = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
     const cycles = [1, 2, 3, 4];
 
     const allTestScores = [];

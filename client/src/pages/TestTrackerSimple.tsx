@@ -55,7 +55,7 @@ const TestTrackerSimple: React.FC = () => {
 
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const cycles = [1, 2, 3, 4];
-  const years = [2024, 2025];
+  const years = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
 
   // Process real test data into aggregated format
   const processedTestData = useMemo(() => {
