@@ -43,14 +43,20 @@ const TestTrackerSimple: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<number>(2025);
   const [selectedSchool, setSelectedSchool] = useState<string>('all');
 
-  // Fetch test scores and schools data
+  // Fetch test scores and schools data with production debugging
   const { data: testScores = [], isLoading: testLoading } = useQuery<TestResult[]>({
     queryKey: ['/api/test-scores'],
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
     refetchInterval: 30000,
   });
 
   const { data: schools = [], isLoading: schoolsLoading } = useQuery<SchoolData[]>({
     queryKey: ['/api/schools'],
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
 
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -59,54 +65,92 @@ const TestTrackerSimple: React.FC = () => {
 
   // Process real test data into aggregated format
   const processedTestData = useMemo(() => {
-    if (testLoading || schoolsLoading || !testScores.length || !schools.length) {
-      console.log('Data loading or empty:', { testLoading, schoolsLoading, testScoresLength: testScores.length, schoolsLength: schools.length });
+    // Enhanced production debugging
+    console.log('🔍 Test Tracker Data Processing - API Response Check');
+    console.log('📊 Test Scores Type:', typeof testScores, 'Is Array:', Array.isArray(testScores));
+    console.log('🏫 Schools Type:', typeof schools, 'Is Array:', Array.isArray(schools));
+    console.log('📈 Raw Test Scores Sample:', testScores?.slice(0, 2));
+    console.log('🎯 Loading States:', { testLoading, schoolsLoading });
+    
+    if (testLoading || schoolsLoading) {
+      console.log('⏳ Still loading data...');
+      return [];
+    }
+    
+    if (!testScores || !Array.isArray(testScores) || testScores.length === 0) {
+      console.warn('⚠️ No test scores available for test tracker');
+      console.log('📊 Test scores data:', testScores);
+      return [];
+    }
+    
+    if (!schools || !Array.isArray(schools) || schools.length === 0) {
+      console.warn('⚠️ No schools data available for test tracker');
+      console.log('🏫 Schools data:', schools);
       return [];
     }
 
-    console.log('Processing test data:', { testScoresCount: testScores.length, schoolsCount: schools.length });
+    console.log('✅ Processing test data:', { testScoresCount: testScores.length, schoolsCount: schools.length });
     const schoolMap = new Map(schools.map(school => [school.id, school.name]));
+    console.log('🏫 School mapping created:', Array.from(schoolMap.entries()));
     const aggregatedData: ProcessedTestData[] = [];
 
     // Group test scores by test type, time period, and school
     const groups = new Map<string, TestResult[]>();
 
     testScores.forEach((score, index) => {
-      const testDate = new Date(score.testDate);
-      const year = testDate.getFullYear();
-      const month = testDate.toLocaleString('default', { month: 'long' });
-      
-      // Debug first few records
-      if (index < 3) {
-        console.log('Processing score:', { score, testDate, year, month });
-      }
-      
-      // Determine test type from course name or type field
-      let testType: 'ALCPT' | 'Book' | 'ECL' | 'OPI' = 'ALCPT';
-      const courseUpper = (score.courseName || '').toUpperCase();
-      const typeUpper = (score.type || '').toUpperCase();
-      
-      if (courseUpper.includes('BOOK') || typeUpper.includes('BOOK') || courseUpper.includes('QUIZ')) {
-        testType = 'Book';
-      } else if (courseUpper.includes('ECL') || typeUpper.includes('ECL')) {
-        testType = 'ECL';
-      } else if (courseUpper.includes('OPI') || typeUpper.includes('OPI')) {
-        testType = 'OPI';
-      } else if (courseUpper.includes('ALCPT') || typeUpper.includes('ALCPT')) {
-        testType = 'ALCPT';
-      }
+      // Enhanced error handling for production
+      try {
+        const testDate = new Date(score.testDate);
+        if (isNaN(testDate.getTime())) {
+          console.warn('⚠️ Invalid test date for score:', score);
+          return;
+        }
+        
+        const year = testDate.getFullYear();
+        const month = testDate.toLocaleString('default', { month: 'long' });
+        
+        // Debug first few records with enhanced logging
+        if (index < 3) {
+          console.log('✅ Processing score:', { 
+            id: score.id, 
+            type: score.type, 
+            courseName: score.courseName,
+            testDate: score.testDate, 
+            year, 
+            month,
+            schoolId: score.schoolId
+          });
+        }
+        
+        // Determine test type from course name or type field
+        let testType: 'ALCPT' | 'Book' | 'ECL' | 'OPI' = 'ALCPT';
+        const courseUpper = (score.courseName || '').toUpperCase();
+        const typeUpper = (score.type || '').toUpperCase();
+        
+        if (courseUpper.includes('BOOK') || typeUpper.includes('BOOK') || courseUpper.includes('QUIZ')) {
+          testType = 'Book';
+        } else if (courseUpper.includes('ECL') || typeUpper.includes('ECL')) {
+          testType = 'ECL';
+        } else if (courseUpper.includes('OPI') || typeUpper.includes('OPI')) {
+          testType = 'OPI';
+        } else if (courseUpper.includes('ALCPT') || typeUpper.includes('ALCPT')) {
+          testType = 'ALCPT';
+        }
 
-      // Determine cycle for Book tests (quarterly)
-      const cycle = Math.ceil((testDate.getMonth() + 1) / 3);
-      
-      const key = testType === 'Book' 
-        ? `${testType}-${cycle}-${year}-${score.schoolId}`
-        : `${testType}-${month}-${year}-${score.schoolId}`;
+        // Determine cycle for Book tests (quarterly)
+        const cycle = Math.ceil((testDate.getMonth() + 1) / 3);
+        
+        const key = testType === 'Book' 
+          ? `${testType}-${cycle}-${year}-${score.schoolId}`
+          : `${testType}-${month}-${year}-${score.schoolId}`;
 
-      if (!groups.has(key)) {
-        groups.set(key, []);
+        if (!groups.has(key)) {
+          groups.set(key, []);
+        }
+        groups.get(key)!.push(score);
+      } catch (error) {
+        console.error('Error processing test score:', error, score);
       }
-      groups.get(key)!.push(score);
     });
 
     console.log('Created groups:', groups.size);

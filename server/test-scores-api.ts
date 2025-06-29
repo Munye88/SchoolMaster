@@ -4,9 +4,47 @@ import { testScores } from "@shared/test-scores-schema";
 import { eq, and } from "drizzle-orm";
 
 export function setupTestScoresAPI(app: Express) {
+  // Enhanced production debugging endpoint
+  app.get("/api/test-scores/debug", async (req, res) => {
+    try {
+      console.log('🔍 Test Scores Debug Endpoint Called');
+      const allTestScores = await db.select().from(testScores);
+      
+      const debugInfo = {
+        totalRecords: allTestScores.length,
+        expectedRecords: 7186,
+        sampleRecord: allTestScores[0],
+        schoolBreakdown: {
+          349: allTestScores.filter(s => s.schoolId === 349).length, // KFNA
+          350: allTestScores.filter(s => s.schoolId === 350).length, // NFS East
+          351: allTestScores.filter(s => s.schoolId === 351).length  // NFS West
+        },
+        testTypeBreakdown: {
+          ALCPT: allTestScores.filter(s => s.testType === 'ALCPT').length,
+          Book: allTestScores.filter(s => s.testType === 'Book').length,
+          ECL: allTestScores.filter(s => s.testType === 'ECL').length,
+          OPI: allTestScores.filter(s => s.testType === 'OPI').length
+        },
+        dateRange: {
+          earliest: allTestScores.reduce((min, s) => s.testDate < min ? s.testDate : min, allTestScores[0]?.testDate),
+          latest: allTestScores.reduce((max, s) => s.testDate > max ? s.testDate : max, allTestScores[0]?.testDate)
+        },
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development'
+      };
+      
+      console.log('📊 Debug info compiled:', debugInfo);
+      res.json(debugInfo);
+    } catch (error) {
+      console.error('Debug endpoint error:', error);
+      res.status(500).json({ error: 'Debug endpoint failed', details: error.message });
+    }
+  });
+
   // Replace the existing mock API with real database queries
   app.get("/api/test-scores", async (req, res) => {
     try {
+      console.log('📊 Test Scores API Called - Request Query:', req.query);
       const { school, testType } = req.query;
       
       // Query all test scores from database
