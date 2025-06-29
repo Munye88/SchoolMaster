@@ -20,6 +20,7 @@ import { addPtoBalanceTable } from './migrations/add_pto_balance_table';
 import { dropPtoConstraint } from './migrations/drop_pto_constraint';
 import { fixPtoFunctions } from './migrations/fix_pto_functions';
 import { addSchoolDocumentsTable } from './migrations/add_school_documents_table';
+import { addTestScoresTable } from './migrations/add_test_scores_table';
 
 export async function initDatabase() {
   try {
@@ -163,6 +164,9 @@ export async function initDatabase() {
     
     // Add school documents table
     await addSchoolDocumentsTable();
+    
+    // Add test scores table
+    await addTestScoresTable();
     
     return true;
   } catch (error) {
