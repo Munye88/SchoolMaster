@@ -121,7 +121,7 @@ const SimpleHorizontalNavbar = () => {
               </button>
               
               {schoolDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 z-50">
+                <div className="absolute left-0 mt-2 w-64 bg-white rounded-none shadow-lg py-1 z-50 border border-gray-200">
                   {schools.map(school => (
                     <div key={school.id} className="px-2 py-1">
                       <button
@@ -129,7 +129,7 @@ const SimpleHorizontalNavbar = () => {
                           setSelectedSchool(school.code);
                         }}
                         className={cn(
-                          "w-full flex items-center justify-between px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors text-left",
+                          "w-full flex items-center justify-between px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors text-left",
                           selectedSchool === school.code && "text-[#0A2463] bg-gray-100 font-medium"
                         )}
                       >
@@ -148,7 +148,7 @@ const SimpleHorizontalNavbar = () => {
                           <Link href={`/schools/${school.code}/instructor-profiles`} 
                             onClick={() => setSchoolDropdownOpen(false)}
                             className={cn(
-                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
                             isActive(`/schools/${school.code}/instructor-profiles`) && "text-[#0A2463] bg-gray-100 font-medium"
                           )}>
                             <UserSquare className="h-3.5 w-3.5 mr-2" />
@@ -158,7 +158,7 @@ const SimpleHorizontalNavbar = () => {
                           <Link href={`/schools/${school.code}/timetable`} 
                             onClick={() => setSchoolDropdownOpen(false)}
                             className={cn(
-                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
                             isActive(`/schools/${school.code}/timetable`) && "text-[#0A2463] bg-gray-100 font-medium"
                           )}>
                             <Clock className="h-3.5 w-3.5 mr-2" />
