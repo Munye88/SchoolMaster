@@ -235,7 +235,7 @@ const SimpleHorizontalNavbar = () => {
             {/* Courses */}
             <li>
               <Link href="/courses" className={cn(
-                "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                 isActive("/courses") && "text-[#0A2463] bg-gray-100 font-medium"
               )}>
                 <BookOpen className="h-4 w-4 mr-2" />
@@ -246,7 +246,7 @@ const SimpleHorizontalNavbar = () => {
             {/* Students */}
             <li>
               <Link href="/students" className={cn(
-                "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                 isActive("/students") && "text-[#0A2463] bg-gray-100 font-medium"
               )}>
                 <GraduationCap className="h-4 w-4 mr-2" />
@@ -257,7 +257,7 @@ const SimpleHorizontalNavbar = () => {
             {/* Test Tracker */}
             <li>
               <Link href="/test-tracker" className={cn(
-                "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                 isActive("/test-tracker") && "text-[#0A2463] bg-gray-100 font-medium"
               )}>
                 <ListChecks className="h-4 w-4 mr-2" />
@@ -268,7 +268,7 @@ const SimpleHorizontalNavbar = () => {
             {/* Reports */}
             <li>
               <Link href="/reports" className={cn(
-                "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                 isActive("/reports") && "text-[#0A2463] bg-gray-100 font-medium"
               )}>
                 <BarChart2 className="h-4 w-4 mr-2" />
@@ -281,7 +281,7 @@ const SimpleHorizontalNavbar = () => {
               <button 
                 onClick={() => setAdminDropdownOpen(!adminDropdownOpen)}
                 className={cn(
-                  "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                  "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                   (isActive("/administration") || adminDropdownOpen) && "text-[#0A2463] bg-gray-100 font-medium"
                 )}
               >
@@ -291,12 +291,12 @@ const SimpleHorizontalNavbar = () => {
               </button>
               
               {adminDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-none shadow-lg py-1 z-50">
+                <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg py-1 z-50 border border-gray-200">
                   <Link 
                     href="/administration/company-policy" 
                     onClick={() => setAdminDropdownOpen(false)}
                     className={cn(
-                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none",
+                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                     isActive("/administration/company-policy") && "text-[#0A2463] bg-gray-100 font-medium"
                   )}>
                     Company Policy
@@ -305,7 +305,7 @@ const SimpleHorizontalNavbar = () => {
                     href="/administration/evaluation-guideline" 
                     onClick={() => setAdminDropdownOpen(false)}
                     className={cn(
-                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none",
+                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                     isActive("/administration/evaluation-guideline") && "text-[#0A2463] bg-gray-100 font-medium"
                   )}>
                     Instructor Evaluation Guideline
@@ -314,7 +314,7 @@ const SimpleHorizontalNavbar = () => {
                     href="/administration/employee-handbook" 
                     onClick={() => setAdminDropdownOpen(false)}
                     className={cn(
-                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none",
+                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                     isActive("/administration/employee-handbook") && "text-[#0A2463] bg-gray-100 font-medium"
                   )}>
                     Employee Handbook
@@ -323,7 +323,7 @@ const SimpleHorizontalNavbar = () => {
                     href="/administration/performance-policy" 
                     onClick={() => setAdminDropdownOpen(false)}
                     className={cn(
-                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none",
+                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                     isActive("/administration/performance-policy") && "text-[#0A2463] bg-gray-100 font-medium"
                   )}>
                     Performance Evaluation Policy
@@ -332,7 +332,7 @@ const SimpleHorizontalNavbar = () => {
                     href="/administration/classroom-evaluation" 
                     onClick={() => setAdminDropdownOpen(false)}
                     className={cn(
-                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none",
+                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                     isActive("/administration/classroom-evaluation") && "text-[#0A2463] bg-gray-100 font-medium"
                   )}>
                     Training Guide Classroom Evaluation
