@@ -45,10 +45,10 @@ import {
   schoolSchedules,
   schoolDocuments
 } from "@shared/schema";
-import { testScores } from "@shared/test-scores-schema";
 import { setupAuth } from "./auth";
 import documentRoutes from "./documents";
 import { generateAIResponse } from "./services/ai";
+import { setupTestScoresAPI } from "./test-scores-api";
 import { processAssistantQuery, chatWithMoonsAssistant, MoonsAssistantRequest } from "./services/aiAssistant";
 import { AIChatRequest } from "../client/src/lib/ai-types";
 import { initDatabase } from "./initDb";
@@ -4631,109 +4631,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // Test Scores API endpoints
-  app.get("/api/test-scores", async (req, res) => {
-    try {
-      const { school, testType } = req.query;
-      
-      // Query real test scores from database
-      const testScoresQuery = await db.select({
-        id: testScores.id,
-        studentName: testScores.studentName,
-        schoolId: testScores.schoolId,
-        testType: testScores.testType,
-        score: testScores.score,
-        maxScore: testScores.maxScore,
-        percentage: testScores.percentage,
-        testDate: testScores.testDate,
-        instructor: testScores.instructor,
-        course: testScores.course,
-        level: testScores.level,
-        uploadDate: testScores.uploadDate
-      }).from(testScores);
+  // Setup authentic test scores API endpoints
+  setupTestScoresAPI(app);
 
-      // Map school IDs to names
-      const schoolMap = {
-        349: 'KFNA',
-        350: 'NFS East', 
-        351: 'NFS West'
-      };
 
-      // Transform data to match frontend format
-      let transformedScores = testScoresQuery.map(score => ({
-        id: score.id,
-        studentName: score.studentName,
-        school: schoolMap[score.schoolId] || 'Unknown',
-        schoolId: score.schoolId,
-        testType: score.testType,
-        score: score.score,
-        maxScore: score.maxScore,
-        percentage: score.percentage,
-        testDate: score.testDate.toISOString().split('T')[0],
-        instructor: score.instructor,
-        course: score.course,
-        level: score.level,
-        uploadDate: score.uploadDate.toISOString().split('T')[0],
-        courseName: score.course,
-        type: score.testType,
-        passingScore: score.testType === 'Book' ? 65 : score.testType === 'ALCPT' ? 75 : score.testType === 'ECL' ? 80 : 70,
-        status: score.percentage >= (score.testType === 'Book' ? 65 : score.testType === 'ALCPT' ? 75 : score.testType === 'ECL' ? 80 : 70) ? 'Pass' : 'Fail'
-      }));
-      
-      // Apply filters
-      if (school && school !== 'all') {
-        transformedScores = transformedScores.filter(score => 
-          score.school.toUpperCase().replace(' ', '_') === school.toUpperCase()
-        );
-      }
-      
-      if (testType && testType !== 'all') {
-        transformedScores = transformedScores.filter(score => score.testType === testType);
-      }
-
-      res.json(transformedScores);
-    } catch (error) {
-      console.error('Test scores error:', error);
-      res.status(500).json({ error: 'Failed to fetch test scores' });
-    }
-  });
-
-  app.get("/api/test-scores/statistics", async (req, res) => {
-    try {
-      const { school, testType } = req.query;
-      
-      // Calculate statistics from mock data - replace with real calculations
-      const statistics = {
-        totalTests: 125,
-        averageScore: 78.5,
-        passRate: 82.4,
-        byTestType: {
-          'ALCPT': { count: 45, average: 76.2, passRate: 80.0 },
-          'Book Test': { count: 38, average: 81.5, passRate: 86.8 },
-          'ECL': { count: 25, average: 75.8, passRate: 76.0 },
-          'OPI': { count: 17, average: 82.1, passRate: 88.2 }
-        },
-        bySchool: {
-          'KFNA': { count: 52, average: 79.1, passRate: 84.6 },
-          'NFS East': { count: 41, average: 77.3, passRate: 78.0 },
-          'NFS West': { count: 32, average: 79.8, passRate: 84.4 }
-        },
-        trends: [
-          { month: 'Aug', averageScore: 75.2, testCount: 18 },
-          { month: 'Sep', averageScore: 76.8, testCount: 22 },
-          { month: 'Oct', averageScore: 78.1, testCount: 25 },
-          { month: 'Nov', averageScore: 77.9, testCount: 21 },
-          { month: 'Dec', averageScore: 79.4, testCount: 24 },
-          { month: 'Jan', averageScore: 78.5, testCount: 15 }
-        ]
-      };
-
-      res.json(statistics);
-    } catch (error) {
-      console.error('Test statistics error:', error);
-      res.status(500).json({ error: 'Failed to fetch test statistics' });
-    }
-  });
 
   app.post("/api/test-scores/upload", upload.single('file'), async (req, res) => {
     try {
