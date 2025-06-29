@@ -206,26 +206,26 @@ const TestTrackerSimple: React.FC = () => {
       </div>
 
       {/* Current Selection Display */}
-      <Card className="bg-blue-50 border-blue-200">
+      <Card className="bg-blue-50 border-blue-200 rounded-none">
         <CardContent className="pt-6">
-          <div className="flex flex-wrap gap-2 items-center">
+          <div className="flex flex-wrap gap-2 items-center justify-center">
             <span className="text-sm font-medium text-gray-600">Current View:</span>
-            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+            <Badge variant="secondary" className="bg-blue-100 text-blue-800 rounded-none">
               {selectedTestType} Tests
             </Badge>
             {selectedTestType !== 'Book' ? (
-              <Badge variant="outline" className="border-blue-300 text-blue-700">
+              <Badge variant="outline" className="border-blue-300 text-blue-700 rounded-none">
                 {selectedMonth} {selectedYear}
               </Badge>
             ) : (
-              <Badge variant="outline" className="border-blue-300 text-blue-700">
+              <Badge variant="outline" className="border-blue-300 text-blue-700 rounded-none">
                 Cycle {selectedCycle} - {selectedYear}
               </Badge>
             )}
-            <Badge variant="outline" className="border-green-300 text-green-700">
+            <Badge variant="outline" className="border-green-300 text-green-700 rounded-none">
               {selectedSchool === 'all' ? 'All Schools' : selectedSchool}
             </Badge>
-            <span className="text-sm text-gray-500 ml-2">
+            <span className="text-sm text-gray-500">
               ({filteredData.length} records found)
             </span>
           </div>
@@ -233,20 +233,20 @@ const TestTrackerSimple: React.FC = () => {
       </Card>
 
       {/* Navigation Controls */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Navigation & Filters</CardTitle>
+      <Card className="rounded-none">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-center">Navigation & Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
             {/* Test Type */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Test Type</label>
+              <label className="text-sm font-medium text-center block">Test Type</label>
               <Select value={selectedTestType} onValueChange={handleTestTypeChange}>
-                <SelectTrigger>
+                <SelectTrigger className="rounded-none h-10 w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-none">
                   <SelectItem value="ALCPT">ALCPT Tests</SelectItem>
                   <SelectItem value="Book">Book Tests</SelectItem>
                   <SelectItem value="ECL">ECL Tests</SelectItem>
@@ -258,12 +258,12 @@ const TestTrackerSimple: React.FC = () => {
             {/* Month or Cycle */}
             {selectedTestType !== 'Book' ? (
               <div className="space-y-2">
-                <label className="text-sm font-medium">Month</label>
+                <label className="text-sm font-medium text-center block">Month</label>
                 <Select value={selectedMonth} onValueChange={handleMonthChange}>
-                  <SelectTrigger>
+                  <SelectTrigger className="rounded-none h-10 w-full">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="rounded-none">
                     {months.map(month => (
                       <SelectItem key={month} value={month}>{month}</SelectItem>
                     ))}
@@ -272,12 +272,12 @@ const TestTrackerSimple: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-2">
-                <label className="text-sm font-medium">Cycle</label>
+                <label className="text-sm font-medium text-center block">Cycle</label>
                 <Select value={selectedCycle.toString()} onValueChange={handleCycleChange}>
-                  <SelectTrigger>
+                  <SelectTrigger className="rounded-none h-10 w-full">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="rounded-none">
                     {cycles.map(cycle => (
                       <SelectItem key={cycle} value={cycle.toString()}>Cycle {cycle}</SelectItem>
                     ))}
@@ -288,12 +288,12 @@ const TestTrackerSimple: React.FC = () => {
 
             {/* Year */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Year</label>
+              <label className="text-sm font-medium text-center block">Year</label>
               <Select value={selectedYear.toString()} onValueChange={handleYearChange}>
-                <SelectTrigger>
+                <SelectTrigger className="rounded-none h-10 w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-none">
                   {years.map(year => (
                     <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                   ))}
@@ -303,12 +303,12 @@ const TestTrackerSimple: React.FC = () => {
 
             {/* School Filter */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">School</label>
+              <label className="text-sm font-medium text-center block">School</label>
               <Select value={selectedSchool} onValueChange={handleSchoolChange}>
-                <SelectTrigger>
+                <SelectTrigger className="rounded-none h-10 w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-none">
                   <SelectItem value="all">All Schools</SelectItem>
                   <SelectItem value="KFNA">KFNA</SelectItem>
                   <SelectItem value="NFS East">NFS East</SelectItem>
@@ -319,9 +319,9 @@ const TestTrackerSimple: React.FC = () => {
 
             {/* Debug Info */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Debug</label>
-              <div className="text-xs bg-gray-100 p-2 rounded">
-                Results: {filteredData.length}
+              <label className="text-sm font-medium text-center block">Results</label>
+              <div className="text-sm bg-gray-100 p-2 rounded-none h-10 flex items-center justify-center border">
+                {filteredData.length} records
               </div>
             </div>
           </div>
@@ -330,14 +330,14 @@ const TestTrackerSimple: React.FC = () => {
 
       {/* Results Chart */}
       {filteredData.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Test Results Overview</CardTitle>
+        <Card className="rounded-none">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-center">Test Results Overview</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="h-64">
+          <CardContent className="p-6">
+            <div className="h-64 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
+                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="school" />
                   <YAxis />
@@ -352,42 +352,44 @@ const TestTrackerSimple: React.FC = () => {
       )}
 
       {/* Results Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Detailed Results</CardTitle>
+      <Card className="rounded-none">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-center">Detailed Results</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           {filteredData.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 border rounded-none p-4">
               No data found for the selected filters
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>School</TableHead>
-                  <TableHead>Test Type</TableHead>
-                  <TableHead>Period</TableHead>
-                  <TableHead>Students</TableHead>
-                  <TableHead>Avg Score</TableHead>
-                  <TableHead>Passing Rate</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredData.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.schoolName}</TableCell>
-                    <TableCell>{item.testType}</TableCell>
-                    <TableCell>
-                      {item.testType === 'Book' ? `Cycle ${item.cycle}` : item.month} {item.year}
-                    </TableCell>
-                    <TableCell>{item.studentCount}</TableCell>
-                    <TableCell>{item.averageScore}%</TableCell>
-                    <TableCell>{item.passingRate}%</TableCell>
+            <div className="border rounded-none overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-b">
+                    <TableHead className="text-center px-4 py-3 border-r">School</TableHead>
+                    <TableHead className="text-center px-4 py-3 border-r">Test Type</TableHead>
+                    <TableHead className="text-center px-4 py-3 border-r">Period</TableHead>
+                    <TableHead className="text-center px-4 py-3 border-r">Students</TableHead>
+                    <TableHead className="text-center px-4 py-3 border-r">Avg Score</TableHead>
+                    <TableHead className="text-center px-4 py-3">Passing Rate</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredData.map((item) => (
+                    <TableRow key={item.id} className="border-b">
+                      <TableCell className="text-center font-medium px-4 py-3 border-r">{item.schoolName}</TableCell>
+                      <TableCell className="text-center px-4 py-3 border-r">{item.testType}</TableCell>
+                      <TableCell className="text-center px-4 py-3 border-r">
+                        {item.testType === 'Book' ? `Cycle ${item.cycle}` : item.month} {item.year}
+                      </TableCell>
+                      <TableCell className="text-center px-4 py-3 border-r">{item.studentCount}</TableCell>
+                      <TableCell className="text-center px-4 py-3 border-r">{item.averageScore}%</TableCell>
+                      <TableCell className="text-center px-4 py-3">{item.passingRate}%</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
