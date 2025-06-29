@@ -98,7 +98,7 @@ const SimpleHorizontalNavbar = () => {
             {/* Dashboard */}
             <li>
               <Link href="/" className={cn(
-                "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                 isActive("/") && "text-[#0A2463] bg-gray-100 font-medium"
               )}>
                 <Home className="h-4 w-4 mr-2" />
@@ -111,7 +111,7 @@ const SimpleHorizontalNavbar = () => {
               <button 
                 onClick={() => setSchoolDropdownOpen(!schoolDropdownOpen)}
                 className={cn(
-                  "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                  "flex items-center px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                   (isActive("/schools") || schoolDropdownOpen) && "text-[#0A2463] bg-gray-100 font-medium"
                 )}
               >
@@ -121,7 +121,7 @@ const SimpleHorizontalNavbar = () => {
               </button>
               
               {schoolDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-64 bg-white rounded-none shadow-lg py-1 z-50 border border-gray-200">
+                <div className="absolute left-0 mt-2 w-64 bg-white shadow-lg py-1 z-50 border border-gray-200">
                   {schools.map(school => (
                     <div key={school.id} className="px-2 py-1">
                       <button
@@ -129,7 +129,7 @@ const SimpleHorizontalNavbar = () => {
                           setSelectedSchool(school.code);
                         }}
                         className={cn(
-                          "w-full flex items-center justify-between px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors text-left",
+                          "w-full flex items-center justify-between px-3 py-2 text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors text-left",
                           selectedSchool === school.code && "text-[#0A2463] bg-gray-100 font-medium"
                         )}
                       >
@@ -148,7 +148,7 @@ const SimpleHorizontalNavbar = () => {
                           <Link href={`/schools/${school.code}/instructor-profiles`} 
                             onClick={() => setSchoolDropdownOpen(false)}
                             className={cn(
-                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                             isActive(`/schools/${school.code}/instructor-profiles`) && "text-[#0A2463] bg-gray-100 font-medium"
                           )}>
                             <UserSquare className="h-3.5 w-3.5 mr-2" />
@@ -158,7 +158,7 @@ const SimpleHorizontalNavbar = () => {
                           <Link href={`/schools/${school.code}/timetable`} 
                             onClick={() => setSchoolDropdownOpen(false)}
                             className={cn(
-                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                             isActive(`/schools/${school.code}/timetable`) && "text-[#0A2463] bg-gray-100 font-medium"
                           )}>
                             <Clock className="h-3.5 w-3.5 mr-2" />
@@ -168,7 +168,7 @@ const SimpleHorizontalNavbar = () => {
                           <Link href={`/schools/${school.code}/student-day-schedule`} 
                             onClick={() => setSchoolDropdownOpen(false)}
                             className={cn(
-                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                             isActive(`/schools/${school.code}/student-day-schedule`) && "text-[#0A2463] bg-gray-100 font-medium"
                           )}>
                             <Calendar className="h-3.5 w-3.5 mr-2" />
@@ -178,7 +178,7 @@ const SimpleHorizontalNavbar = () => {
                           <Link href={`/schools/${school.code}/yearly-schedule`} 
                             onClick={() => setSchoolDropdownOpen(false)}
                             className={cn(
-                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                             isActive(`/schools/${school.code}/yearly-schedule`) && "text-[#0A2463] bg-gray-100 font-medium"
                           )}>
                             <CalendarDays className="h-3.5 w-3.5 mr-2" />
@@ -188,7 +188,7 @@ const SimpleHorizontalNavbar = () => {
                           <Link href={`/schools/${school.code}/sop`} 
                             onClick={() => setSchoolDropdownOpen(false)}
                             className={cn(
-                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                             isActive(`/schools/${school.code}/sop`) && "text-[#0A2463] bg-gray-100 font-medium"
                           )}>
                             <ClipboardList className="h-3.5 w-3.5 mr-2" />
@@ -198,7 +198,7 @@ const SimpleHorizontalNavbar = () => {
                           <Link href={`/schools/${school.code}/staff-evaluations`} 
                             onClick={() => setSchoolDropdownOpen(false)}
                             className={cn(
-                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                             isActive(`/schools/${school.code}/staff-evaluations`) && "text-[#0A2463] bg-gray-100 font-medium"
                           )}>
                             <Clipboard className="h-3.5 w-3.5 mr-2" />
@@ -208,7 +208,7 @@ const SimpleHorizontalNavbar = () => {
                           <Link href={`/schools/${school.code}/staff-attendance`} 
                             onClick={() => setSchoolDropdownOpen(false)}
                             className={cn(
-                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                             isActive(`/schools/${school.code}/staff-attendance`) && "text-[#0A2463] bg-gray-100 font-medium"
                           )}>
                             <CheckSquare className="h-3.5 w-3.5 mr-2" />
@@ -218,7 +218,7 @@ const SimpleHorizontalNavbar = () => {
                           <Link href={`/schools/${school.code}/book-inventory`}
                             onClick={() => setSchoolDropdownOpen(false)}
                             className={cn(
-                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-none transition-colors",
+                            "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
                             isActive(`/schools/${school.code}/book-inventory`) && "text-[#0A2463] bg-gray-100 font-medium"
                           )}>
                             <BookIcon className="h-3.5 w-3.5 mr-2" />
