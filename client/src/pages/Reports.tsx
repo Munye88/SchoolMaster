@@ -87,8 +87,11 @@ const Reports: React.FC = () => {
     queryKey: ['/api/staff-leave'],
   });
 
-  const { data: testScores = [], isLoading: testScoresLoading } = useQuery({
+  const { data: testScores = [], isLoading: testScoresLoading } = useQuery<any[]>({
     queryKey: ['/api/test-scores'],
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   });
   
   const months = [
@@ -173,7 +176,18 @@ const Reports: React.FC = () => {
 
   // Generate performance data based on authentic test scores
   const performanceData = useMemo(() => {
-    if (!testScores.length) return [];
+    // Enhanced logging for production debugging
+    console.log('🔍 Performance Data Calculation - Test Scores:', Array.isArray(testScores) ? testScores.length : 'Not array');
+    console.log('📊 Sample test score structure:', Array.isArray(testScores) && testScores.length > 0 ? testScores[0] : 'No data');
+    
+    if (!testScores || !Array.isArray(testScores) || testScores.length === 0) {
+      console.warn('⚠️ No test scores available for performance calculation');
+      return [
+        { school: 'KFNA', averageScore: 0, passRate: 0, totalTests: 0, passed: 0, failed: 0 },
+        { school: 'NFS East', averageScore: 0, passRate: 0, totalTests: 0, passed: 0, failed: 0 },
+        { school: 'NFS West', averageScore: 0, passRate: 0, totalTests: 0, passed: 0, failed: 0 }
+      ];
+    }
     
     const schoolMap = {
       'KFNA': 'KFNA',
@@ -181,8 +195,14 @@ const Reports: React.FC = () => {
       'NFS West': 'NFS West'
     };
 
-    return Object.values(schoolMap).map(school => {
-      const schoolTests = testScores.filter((test: any) => test.school === school);
+    const results = Object.values(schoolMap).map(school => {
+      const schoolTests = testScores.filter((test: any) => {
+        // Handle both possible field names for school
+        const testSchool = test?.school || test?.schoolName || '';
+        return testSchool === school;
+      });
+      
+      console.log(`🏫 ${school} - Found ${schoolTests.length} tests`);
       
       if (schoolTests.length === 0) {
         return {
@@ -195,12 +215,30 @@ const Reports: React.FC = () => {
         };
       }
       
-      const totalScore = schoolTests.reduce((sum: number, test: any) => sum + test.percentage, 0);
-      const averageScore = Math.round((totalScore / schoolTests.length) * 10) / 10;
-      const passed = schoolTests.filter((test: any) => test.status === 'Pass').length;
+      const validTests = schoolTests.filter((test: any) => 
+        test?.percentage !== undefined && test?.percentage !== null && !isNaN(test.percentage)
+      );
+      
+      if (validTests.length === 0) {
+        console.warn(`⚠️ No valid percentage data for ${school}`);
+        return {
+          school,
+          averageScore: 0,
+          passRate: 0,
+          totalTests: schoolTests.length,
+          passed: 0,
+          failed: schoolTests.length
+        };
+      }
+      
+      const totalScore = validTests.reduce((sum: number, test: any) => sum + (test.percentage || 0), 0);
+      const averageScore = Math.round((totalScore / validTests.length) * 10) / 10;
+      const passed = schoolTests.filter((test: any) => 
+        test?.status === 'Pass' || test?.percentage >= (test?.passingScore || 75)
+      ).length;
       const passRate = Math.round((passed / schoolTests.length) * 100 * 10) / 10;
       
-      return {
+      const result = {
         school,
         averageScore,
         passRate,
@@ -208,7 +246,13 @@ const Reports: React.FC = () => {
         passed,
         failed: schoolTests.length - passed
       };
+      
+      console.log(`📈 ${school} performance:`, result);
+      return result;
     });
+    
+    console.log('🎯 Final performance data:', results);
+    return results;
   }, [testScores]);
 
   // Monthly trends data
