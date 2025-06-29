@@ -1,15 +1,20 @@
 import { db } from './db';
 import { testScores } from '../shared/test-scores-schema';
 
-export async function seedComprehensiveTestScores() {
+export async function seedComprehensiveTestScores(forceReseed = false) {
   try {
     console.log('🎯 Starting comprehensive test scores seeding...');
     
     // Check if test scores already exist
     const existingScores = await db.select().from(testScores).limit(1);
-    if (existingScores.length > 0) {
+    if (existingScores.length > 0 && !forceReseed) {
       console.log('✅ Test scores already exist, skipping seed');
       return;
+    }
+    
+    if (forceReseed && existingScores.length > 0) {
+      console.log('🔄 Force reseeding - clearing existing test scores...');
+      await db.delete(testScores);
     }
 
     const schools = [

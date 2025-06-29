@@ -63,6 +63,23 @@ app.use((req, res, next) => {
     
     // Seed comprehensive test scores for all test categories
     await seedComprehensiveTestScores();
+    
+    // Verify test scores are properly loaded for production
+    try {
+      const { testScores } = await import('../shared/test-scores-schema');
+      const { db } = await import('./db');
+      const testCount = await db.select().from(testScores);
+      log(`📊 Test scores verification: ${testCount.length} records in database`);
+      
+      if (testCount.length === 0) {
+        log('⚠️  No test scores found, forcing comprehensive reseed...');
+        await seedComprehensiveTestScores(true);
+        const recount = await db.select().from(testScores);
+        log(`✅ After reseed: ${recount.length} test records created`);
+      }
+    } catch (verifyError) {
+      log(`Error verifying test scores: ${verifyError}`);
+    }
   } catch (error) {
     log(`Error initializing database: ${error}`);
   }

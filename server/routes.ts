@@ -49,6 +49,7 @@ import { setupAuth } from "./auth";
 import documentRoutes from "./documents";
 import { generateAIResponse } from "./services/ai";
 import { setupTestScoresAPI } from "./test-scores-api";
+import { seedComprehensiveTestScores } from "./comprehensiveTestSeed";
 import { processAssistantQuery, chatWithMoonsAssistant, MoonsAssistantRequest } from "./services/aiAssistant";
 import { AIChatRequest } from "../client/src/lib/ai-types";
 import { initDatabase } from "./initDb";
@@ -4633,6 +4634,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Setup authentic test scores API endpoints
   setupTestScoresAPI(app);
+  
+  // Force reseed test scores endpoint for production debugging
+  app.post("/api/test-scores/force-reseed", async (req, res) => {
+    try {
+      console.log('🔄 Force reseeding test scores...');
+      const { seedComprehensiveTestScores } = await import('./comprehensiveTestSeed');
+      await seedComprehensiveTestScores(true);
+      res.json({ 
+        success: true, 
+        message: 'Test scores reseeded successfully' 
+      });
+    } catch (error) {
+      console.error('Force reseed error:', error);
+      res.status(500).json({ error: 'Failed to reseed test scores' });
+    }
+  });
 
 
 
