@@ -46,7 +46,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { CalendarIcon, PlusCircle } from "lucide-react";
+import { CalendarIcon, PlusCircle, Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import BasicNavbar from "@/components/layout/BasicNavbar";
@@ -507,6 +507,16 @@ export default function StaffAttendance() {
                           onChange={(e) => handleCommentUpdate(record, e.target.value)}
                           onBlur={(e) => handleCommentUpdate(record, e.target.value)}
                         />
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteAttendance(record.id)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash className="h-4 w-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

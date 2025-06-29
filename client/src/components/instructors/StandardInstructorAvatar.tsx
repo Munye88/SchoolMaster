@@ -88,22 +88,19 @@ export function StandardInstructorAvatar({
   return (
     <div className={containerClassName}>
       {imageSource && !imageError ? (
-        <div className="h-full w-full bg-white">
-          <div className="h-full w-full bg-white p-1"> {/* Extra div with white background padding */}
-            <img
-              src={imageSource}
-              alt={name}
-              className="h-full w-full object-cover bg-white rounded-full" 
-              style={{ 
-                objectPosition: "center 15%", // Position higher to show faces properly
-                transform: "scale(1)", // Don't scale down to ensure consistent size
-                width: "100%",
-                height: "100%",
-                backgroundColor: "white" // Force white background
-              }}
-              onError={handleImageError}
-            />
-          </div>
+        <div className="h-full w-full bg-white overflow-hidden rounded-full">
+          <img
+            src={imageSource}
+            alt={name}
+            className="h-full w-full object-cover object-center rounded-full" 
+            style={{ 
+              maxWidth: "100%",
+              maxHeight: "100%",
+              width: "100%",
+              height: "100%"
+            }}
+            onError={handleImageError}
+          />
         </div>
       ) : (
         <div 

@@ -503,6 +503,43 @@ export const ptoBalanceRelations = relations(ptoBalance, ({ one }) => ({
 export type PtoBalance = typeof ptoBalance.$inferSelect;
 export type InsertPtoBalance = z.infer<typeof insertPtoBalanceSchema>;
 
+// School Documents Management
+export const schoolDocuments = pgTable("school_documents", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  fileName: text("file_name").notNull(),
+  fileUrl: text("file_url").notNull(),
+  documentType: text("document_type").notNull(), // 'daily_schedule', 'yearly_schedule', 'handbook', 'policy', 'other'
+  schoolId: integer("school_id").notNull().references(() => schools.id),
+  uploadedBy: integer("uploaded_by").notNull().references(() => users.id),
+  uploadDate: timestamp("upload_date").notNull().defaultNow(),
+  description: text("description"),
+});
+
+export const insertSchoolDocumentSchema = createInsertSchema(schoolDocuments).pick({
+  title: true,
+  fileName: true,
+  fileUrl: true,
+  documentType: true,
+  schoolId: true,
+  uploadedBy: true,
+  description: true,
+});
+
+export const schoolDocumentsRelations = relations(schoolDocuments, ({ one }) => ({
+  school: one(schools, {
+    fields: [schoolDocuments.schoolId],
+    references: [schools.id]
+  }),
+  uploader: one(users, {
+    fields: [schoolDocuments.uploadedBy],
+    references: [users.id]
+  })
+}));
+
+export type SchoolDocument = typeof schoolDocuments.$inferSelect;
+export type InsertSchoolDocument = z.infer<typeof insertSchoolDocumentSchema>;
+
 // Action Log for tracking tasks and tickets
 export const actionLogs = pgTable("action_logs", {
   id: serial("id").primaryKey(),
