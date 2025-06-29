@@ -76,6 +76,11 @@ app.use((req, res, next) => {
         await seedComprehensiveTestScores(true);
         const recount = await db.select().from(testScores);
         log(`✅ After reseed: ${recount.length} test records created`);
+      } else if (testCount.length < 7000) {
+        log(`⚠️  Insufficient test scores (${testCount.length} < 7000), forcing comprehensive reseed...`);
+        await seedComprehensiveTestScores(true);
+        const recount = await db.select().from(testScores);
+        log(`✅ After production reseed: ${recount.length} test records created`);
       }
     } catch (verifyError) {
       log(`Error verifying test scores: ${verifyError}`);

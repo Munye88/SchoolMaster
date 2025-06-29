@@ -4639,15 +4639,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/test-scores/force-reseed", async (req, res) => {
     try {
       console.log('🔄 Force reseeding test scores...');
+      
+      // Import test scores schema and db
+      const { testScores } = await import('../shared/test-scores-schema');
+      const { db } = await import('./db');
+      
+      // Clear existing test scores
+      console.log('🗑️  Clearing existing test scores...');
+      await db.delete(testScores);
+      
+      // Force reseed with comprehensive data
       const { seedComprehensiveTestScores } = await import('./comprehensiveTestSeed');
       await seedComprehensiveTestScores(true);
+      
+      // Verify the reseed worked
+      const finalCount = await db.select().from(testScores);
+      console.log(`✅ Force reseed completed: ${finalCount.length} records created`);
+      
       res.json({ 
         success: true, 
-        message: 'Test scores reseeded successfully' 
+        message: `Test scores reseeded successfully - ${finalCount.length} records created`,
+        recordCount: finalCount.length
       });
     } catch (error) {
       console.error('Force reseed error:', error);
-      res.status(500).json({ error: 'Failed to reseed test scores' });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ 
+        error: 'Failed to reseed test scores',
+        details: errorMessage
+      });
     }
   });
 
