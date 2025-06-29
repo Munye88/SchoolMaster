@@ -189,7 +189,7 @@ const TestTracker: React.FC = () => {
     }
   ];
 
-  // Filter data based on selections with proper month/cycle navigation
+  // Filter data based on selections
   const filteredTestData = useMemo(() => {
     return aggregateTestData.filter(item => {
       const matchesSchool = selectedSchoolFilter === 'all' || 
@@ -204,69 +204,7 @@ const TestTracker: React.FC = () => {
         return matchesSchool && matchesTestType && matchesYear && item.month === selectedMonth;
       }
     });
-  }, [selectedSchoolFilter, selectedTestType, selectedYear, selectedCycle, selectedMonth, schools]);
-
-  // Handle Excel file upload and processing
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
-        
-        // Process uploaded data and add to aggregateTestData
-        const processedData = jsonData.map((row: any, index: number) => {
-          if (selectedTestType === 'Book') {
-            return {
-              id: aggregateTestData.length + index + 1,
-              cycle: selectedCycle,
-              year: selectedYear,
-              testType: importTestType,
-              schoolId: schools.find(s => s.name === importSchool)?.id || 349,
-              schoolName: importSchool,
-              studentCount: row.StudentCount || row['Student Count'] || 0,
-              averageScore: row.AverageScore || row['Average Score'] || 0,
-              passingScore: row.PassingScore || row['Passing Score'] || 70,
-              passingRate: row.PassingRate || row['Passing Rate'] || 0
-            };
-          } else {
-            return {
-              id: aggregateTestData.length + index + 1,
-              month: selectedMonth,
-              year: selectedYear,
-              testType: importTestType,
-              schoolId: schools.find(s => s.name === importSchool)?.id || 349,
-              schoolName: importSchool,
-              studentCount: row.StudentCount || row['Student Count'] || 0,
-              averageScore: row.AverageScore || row['Average Score'] || 0,
-              passingScore: row.PassingScore || row['Passing Score'] || 70,
-              passingRate: row.PassingRate || row['Passing Rate'] || 0
-            };
-          }
-        });
-
-        setImportedTestData(prev => [...prev, ...processedData]);
-        toast({
-          title: "Data Imported Successfully",
-          description: `Imported ${processedData.length} test records for ${importTestType}`,
-        });
-        setShowImportModal(false);
-      } catch (error) {
-        toast({
-          title: "Import Error",
-          description: "Failed to process the uploaded file. Please check the format.",
-          variant: "destructive",
-        });
-      }
-    };
-    reader.readAsArrayBuffer(file);
-  };
+  }, [selectedSchoolFilter, selectedTestType, selectedYear, selectedCycle, selectedMonth]);
 
   // Calculate statistics
   const totalStudents = filteredTestData.reduce((sum, item) => sum + item.studentCount, 0);
