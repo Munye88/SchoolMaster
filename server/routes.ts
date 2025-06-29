@@ -4671,6 +4671,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Production database status endpoint for debugging
+  app.get("/api/test-scores/production-status", async (req, res) => {
+    try {
+      const { testScores } = await import('../shared/test-scores-schema');
+      const { db } = await import('./db');
+      
+      const count = await db.select().from(testScores);
+      const schoolCounts = await db.select().from(testScores);
+      
+      // Group by school for detailed breakdown
+      const breakdown = schoolCounts.reduce((acc, score) => {
+        const schoolId = score.schoolId;
+        acc[schoolId] = (acc[schoolId] || 0) + 1;
+        return acc;
+      }, {} as Record<number, number>);
+      
+      res.json({
+        totalRecords: count.length,
+        expectedRecords: 7186,
+        status: count.length >= 7000 ? 'healthy' : 'missing_data',
+        schoolBreakdown: {
+          349: breakdown[349] || 0, // KFNA
+          350: breakdown[350] || 0, // NFS East
+          351: breakdown[351] || 0  // NFS West
+        },
+        environment: process.env.NODE_ENV || 'development',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Production status error:', error);
+      res.status(500).json({ error: 'Failed to get production status' });
+    }
+  });
+
 
 
   app.post("/api/test-scores/upload", upload.single('file'), async (req, res) => {
