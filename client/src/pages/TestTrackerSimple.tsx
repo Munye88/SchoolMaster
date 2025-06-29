@@ -246,11 +246,11 @@ const TestTrackerSimple: React.FC = () => {
                 <SelectTrigger className="rounded-none h-10 w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-none">
-                  <SelectItem value="ALCPT">ALCPT Tests</SelectItem>
-                  <SelectItem value="Book">Book Tests</SelectItem>
-                  <SelectItem value="ECL">ECL Tests</SelectItem>
-                  <SelectItem value="OPI">OPI Tests</SelectItem>
+                <SelectContent className="rounded-none border-0">
+                  <SelectItem value="ALCPT" className="rounded-none">ALCPT Tests</SelectItem>
+                  <SelectItem value="Book" className="rounded-none">Book Tests</SelectItem>
+                  <SelectItem value="ECL" className="rounded-none">ECL Tests</SelectItem>
+                  <SelectItem value="OPI" className="rounded-none">OPI Tests</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -263,9 +263,9 @@ const TestTrackerSimple: React.FC = () => {
                   <SelectTrigger className="rounded-none h-10 w-full">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-none">
+                  <SelectContent className="rounded-none border-0">
                     {months.map(month => (
-                      <SelectItem key={month} value={month}>{month}</SelectItem>
+                      <SelectItem key={month} value={month} className="rounded-none">{month}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -277,9 +277,9 @@ const TestTrackerSimple: React.FC = () => {
                   <SelectTrigger className="rounded-none h-10 w-full">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-none">
+                  <SelectContent className="rounded-none border-0">
                     {cycles.map(cycle => (
-                      <SelectItem key={cycle} value={cycle.toString()}>Cycle {cycle}</SelectItem>
+                      <SelectItem key={cycle} value={cycle.toString()} className="rounded-none">Cycle {cycle}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -293,9 +293,9 @@ const TestTrackerSimple: React.FC = () => {
                 <SelectTrigger className="rounded-none h-10 w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-none">
+                <SelectContent className="rounded-none border-0">
                   {years.map(year => (
-                    <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                    <SelectItem key={year} value={year.toString()} className="rounded-none">{year}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -308,11 +308,11 @@ const TestTrackerSimple: React.FC = () => {
                 <SelectTrigger className="rounded-none h-10 w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-none">
-                  <SelectItem value="all">All Schools</SelectItem>
-                  <SelectItem value="KFNA">KFNA</SelectItem>
-                  <SelectItem value="NFS East">NFS East</SelectItem>
-                  <SelectItem value="NFS West">NFS West</SelectItem>
+                <SelectContent className="rounded-none border-0">
+                  <SelectItem value="all" className="rounded-none">All Schools</SelectItem>
+                  <SelectItem value="KFNA" className="rounded-none">KFNA</SelectItem>
+                  <SelectItem value="NFS East" className="rounded-none">NFS East</SelectItem>
+                  <SelectItem value="NFS West" className="rounded-none">NFS West</SelectItem>
                 </SelectContent>
               </Select>
             </div>
