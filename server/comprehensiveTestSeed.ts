@@ -1,9 +1,27 @@
 import { db } from './db';
 import { testScores } from '../shared/test-scores-schema';
+import { schools as schoolsTable } from '@shared/schema';
 
 export async function seedComprehensiveTestScores(forceReseed = false) {
   try {
     console.log('🎯 Starting comprehensive test scores seeding...');
+    
+    // CRITICAL: Verify all required schools exist before seeding
+    console.log('🏫 Verifying schools exist before test score seeding...');
+    const existingSchools = await db.select().from(schoolsTable);
+    const existingSchoolIds = existingSchools.map(s => s.id);
+    console.log(`📚 Found schools with IDs: [${existingSchoolIds.join(', ')}]`);
+    
+    const requiredSchoolIds = [349, 350, 351];
+    const missingSchoolIds = requiredSchoolIds.filter(id => !existingSchoolIds.includes(id));
+    
+    if (missingSchoolIds.length > 0) {
+      const errorMsg = `❌ CRITICAL: Cannot seed test scores - missing schools with IDs: [${missingSchoolIds.join(', ')}]`;
+      console.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    console.log('✅ All required schools verified, proceeding with test score seeding');
     
     // Check if test scores already exist
     const existingScores = await db.select().from(testScores).limit(1);

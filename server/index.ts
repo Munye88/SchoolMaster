@@ -6,6 +6,7 @@ import { seedDatabase } from "./seed";
 import { seedSchools } from "./schoolSeed";
 import { seedCompleteInstructors } from "./completeInstructorSeed";
 import { ensureCompleteSchema } from "./migrations/ensure-complete-schema";
+import { ensureSchoolsExist } from "./migrations/ensure-schools-exist";
 import { seedComprehensiveTestScores } from "./comprehensiveTestSeed";
 import { healthCheck } from "./health";
 
@@ -57,6 +58,9 @@ app.use((req, res, next) => {
     
     // Seed schools first (required for instructor foreign keys)
     await seedSchools();
+    
+    // CRITICAL: Ensure all required schools exist before test score seeding
+    await ensureSchoolsExist();
     
     // Seed instructors with complete data from database export
     await seedCompleteInstructors();
