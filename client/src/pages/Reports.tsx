@@ -426,180 +426,308 @@ const Reports: React.FC = () => {
         </TabsList>
         
         <TabsContent value="performance">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card className="shadow-sm">
-              <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-blue-100 rounded-full">
-                      <BarChart className="h-3.5 w-3.5 text-blue-600" />
+          {/* Monthly Navigation for Performance */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3 text-gray-800">Performance Reports by Month</h3>
+            <Tabs defaultValue="January" className="mb-4">
+              <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
+                {['January', 'February', 'March', 'April', 'May', 'June', 
+                  'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                  <TabsTrigger 
+                    key={month} 
+                    value={month}
+                    className="text-xs px-2 py-1"
+                  >
+                    {month.slice(0, 3)}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              
+              {/* Month Content for Performance */}
+              {['January', 'February', 'March', 'April', 'May', 'June', 
+                'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                <TabsContent key={month} value={month}>
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Calendar className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-800">Performance Data - {month} {currentYear}</span>
                     </div>
-                    <div>
-                      <CardTitle className="text-base font-medium text-gray-800">Student Performance by School</CardTitle>
-                      <CardDescription className="text-xs text-gray-600">
-                        Average test scores across different schools
-                      </CardDescription>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="bg-white p-4">
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsBarChart data={schoolPerformanceData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="name" fontSize={12} />
-                      <YAxis fontSize={12} />
-                      <RechartsTooltip />
-                      <Legend />
-                      <Bar dataKey="alcpt" name="ALCPT" fill="#3B82F6" radius={[2, 2, 0, 0]} />
-                      <Bar dataKey="ecl" name="ECL" fill="#6247AA" radius={[2, 2, 0, 0]} />
-                      <Bar dataKey="book" name="Book Test" fill="#0A2463" radius={[2, 2, 0, 0]} />
-                      <Bar dataKey="opi" name="OPI" fill="#FF8811" radius={[2, 2, 0, 0]} />
-                    </RechartsBarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                      <Card className="shadow-sm">
+                        <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <div className="p-1.5 bg-blue-100 rounded-full">
+                                <BarChart className="h-3.5 w-3.5 text-blue-600" />
+                              </div>
+                              <div>
+                                <CardTitle className="text-base font-medium text-gray-800">Student Performance by School</CardTitle>
+                                <CardDescription className="text-xs text-gray-600">
+                                  Average test scores for {month} {currentYear}
+                                </CardDescription>
+                              </div>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="bg-white p-4">
+                          <div className="h-80">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <RechartsBarChart data={schoolPerformanceData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                <XAxis dataKey="name" fontSize={12} />
+                                <YAxis fontSize={12} />
+                                <RechartsTooltip />
+                                <Legend />
+                                <Bar dataKey="alcpt" name="ALCPT" fill="#3B82F6" radius={[2, 2, 0, 0]} />
+                                <Bar dataKey="ecl" name="ECL" fill="#6247AA" radius={[2, 2, 0, 0]} />
+                                <Bar dataKey="book" name="Book Test" fill="#0A2463" radius={[2, 2, 0, 0]} />
+                                <Bar dataKey="opi" name="OPI" fill="#FF8811" radius={[2, 2, 0, 0]} />
+                              </RechartsBarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </CardContent>
+                      </Card>
 
-            <Card className="shadow-sm">
-              <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-purple-100 rounded-full">
-                      <PieChart className="h-3.5 w-3.5 text-purple-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base font-medium text-gray-800">Test Pass Rates</CardTitle>
-                      <CardDescription className="text-xs text-gray-600">
-                        Percentage of students passing each test type
-                      </CardDescription>
+                      <Card className="shadow-sm">
+                        <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <div className="p-1.5 bg-purple-100 rounded-full">
+                                <PieChart className="h-3.5 w-3.5 text-purple-600" />
+                              </div>
+                              <div>
+                                <CardTitle className="text-base font-medium text-gray-800">Test Pass Rates</CardTitle>
+                                <CardDescription className="text-xs text-gray-600">
+                                  Pass rates for {month} {currentYear}
+                                </CardDescription>
+                              </div>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="bg-white p-4">
+                          <div className="h-80">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <RechartsPieChart>
+                                <Pie
+                                  data={passRateData}
+                                  cx="50%"
+                                  cy="50%"
+                                  outerRadius={80}
+                                  fill="#8884d8"
+                                  dataKey="value"
+                                  label={({ name, value }) => `${name}: ${value}%`}
+                                >
+                                  {passRateData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                  ))}
+                                </Pie>
+                                <RechartsTooltip />
+                              </RechartsPieChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </CardContent>
+                      </Card>
                     </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent className="bg-white p-4">
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
-                      <Pie
-                        data={passRateData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, value }) => `${name}: ${value}%`}
-                      >
-                        {passRateData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+                </TabsContent>
+              ))}
+            </Tabs>
           </div>
         </TabsContent>
 
         <TabsContent value="attendance">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card className="shadow-sm">
-              <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
-                <CardTitle className="text-base font-medium text-gray-800">Staff Attendance by School</CardTitle>
-                <CardDescription className="text-xs text-gray-600">
-                  Current month attendance statistics
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="bg-white p-4">
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsBarChart data={attendanceData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis dataKey="name" fontSize={12} />
-                      <YAxis fontSize={12} />
-                      <RechartsTooltip />
-                      <Legend />
-                      <Bar dataKey="present" name="Present" fill="#4CB944" radius={[2, 2, 0, 0]} />
-                      <Bar dataKey="late" name="Late" fill="#FF8811" radius={[2, 2, 0, 0]} />
-                      <Bar dataKey="absent" name="Absent" fill="#E63946" radius={[2, 2, 0, 0]} />
-                    </RechartsBarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Monthly Navigation for Attendance */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3 text-gray-800">Attendance Reports by Month</h3>
+            <Tabs defaultValue="January" className="mb-4">
+              <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
+                {['January', 'February', 'March', 'April', 'May', 'June', 
+                  'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                  <TabsTrigger 
+                    key={month} 
+                    value={month}
+                    className="text-xs px-2 py-1"
+                  >
+                    {month.slice(0, 3)}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              
+              {/* Month Content for Attendance */}
+              {['January', 'February', 'March', 'April', 'May', 'June', 
+                'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                <TabsContent key={month} value={month}>
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Calendar className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-800">Attendance Data - {month} {currentYear}</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                      <Card className="shadow-sm">
+                        <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
+                          <CardTitle className="text-base font-medium text-gray-800">Staff Attendance by School</CardTitle>
+                          <CardDescription className="text-xs text-gray-600">
+                            {month} {currentYear} attendance statistics
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="bg-white p-4">
+                          <div className="h-80">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <RechartsBarChart data={attendanceData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                                <XAxis dataKey="name" fontSize={12} />
+                                <YAxis fontSize={12} />
+                                <RechartsTooltip />
+                                <Legend />
+                                <Bar dataKey="present" name="Present" fill="#4CB944" radius={[2, 2, 0, 0]} />
+                                <Bar dataKey="late" name="Late" fill="#FF8811" radius={[2, 2, 0, 0]} />
+                                <Bar dataKey="absent" name="Absent" fill="#E63946" radius={[2, 2, 0, 0]} />
+                              </RechartsBarChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                </TabsContent>
+              ))}
+            </Tabs>
           </div>
         </TabsContent>
 
         <TabsContent value="evaluations">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card className="shadow-sm">
-              <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
-                <CardTitle className="text-base font-medium text-gray-800">Evaluation Distribution</CardTitle>
-                <CardDescription className="text-xs text-gray-600">
-                  Performance ratings across all evaluations
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="bg-white p-4">
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
-                      <Pie
-                        data={evaluationData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percentage }) => `${name}: ${percentage}%`}
-                      >
-                        {evaluationData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Monthly Navigation for Evaluations */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3 text-gray-800">Evaluation Reports by Month</h3>
+            <Tabs defaultValue="January" className="mb-4">
+              <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
+                {['January', 'February', 'March', 'April', 'May', 'June', 
+                  'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                  <TabsTrigger 
+                    key={month} 
+                    value={month}
+                    className="text-xs px-2 py-1"
+                  >
+                    {month.slice(0, 3)}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              
+              {/* Month Content for Evaluations */}
+              {['January', 'February', 'March', 'April', 'May', 'June', 
+                'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                <TabsContent key={month} value={month}>
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Calendar className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-800">Evaluation Data - {month} {currentYear}</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                      <Card className="shadow-sm">
+                        <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
+                          <CardTitle className="text-base font-medium text-gray-800">Evaluation Distribution</CardTitle>
+                          <CardDescription className="text-xs text-gray-600">
+                            Performance ratings for {month} {currentYear}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="bg-white p-4">
+                          <div className="h-80">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <RechartsPieChart>
+                                <Pie
+                                  data={evaluationData}
+                                  cx="50%"
+                                  cy="50%"
+                                  outerRadius={80}
+                                  fill="#8884d8"
+                                  dataKey="value"
+                                  label={({ name, percentage }) => `${name}: ${percentage}%`}
+                                >
+                                  {evaluationData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                  ))}
+                                </Pie>
+                                <RechartsTooltip />
+                              </RechartsPieChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                </TabsContent>
+              ))}
+            </Tabs>
           </div>
         </TabsContent>
 
         <TabsContent value="staffLeave">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card className="shadow-sm">
-              <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
-                <CardTitle className="text-base font-medium text-gray-800">Leave Type Distribution</CardTitle>
-                <CardDescription className="text-xs text-gray-600">
-                  Breakdown of staff leave requests by type
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="bg-white p-4">
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsPieChart>
-                      <Pie
-                        data={leaveData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percentage }) => `${name}: ${percentage}%`}
-                      >
-                        {leaveData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip />
-                    </RechartsPieChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Monthly Navigation for Staff Leave */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3 text-gray-800">Staff Leave Reports by Month</h3>
+            <Tabs defaultValue="January" className="mb-4">
+              <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
+                {['January', 'February', 'March', 'April', 'May', 'June', 
+                  'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                  <TabsTrigger 
+                    key={month} 
+                    value={month}
+                    className="text-xs px-2 py-1"
+                  >
+                    {month.slice(0, 3)}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              
+              {/* Month Content for Staff Leave */}
+              {['January', 'February', 'March', 'April', 'May', 'June', 
+                'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                <TabsContent key={month} value={month}>
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Calendar className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-800">Staff Leave Data - {month} {currentYear}</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                      <Card className="shadow-sm">
+                        <CardHeader className="bg-[#f6f8fb] border-b border-gray-200 px-4 py-3">
+                          <CardTitle className="text-base font-medium text-gray-800">Leave Type Distribution</CardTitle>
+                          <CardDescription className="text-xs text-gray-600">
+                            Staff leave breakdown for {month} {currentYear}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="bg-white p-4">
+                          <div className="h-80">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <RechartsPieChart>
+                                <Pie
+                                  data={leaveData}
+                                  cx="50%"
+                                  cy="50%"
+                                  outerRadius={80}
+                                  fill="#8884d8"
+                                  dataKey="value"
+                                  label={({ name, percentage }) => `${name}: ${percentage}%`}
+                                >
+                                  {leaveData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                  ))}
+                                </Pie>
+                                <RechartsTooltip />
+                              </RechartsPieChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                </TabsContent>
+              ))}
+            </Tabs>
           </div>
         </TabsContent>
       </Tabs>

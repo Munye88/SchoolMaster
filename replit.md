@@ -181,6 +181,8 @@ The system manages multiple interconnected entities:
 - June 28, 2025: Improved staff nationality section responsive design - consistent display across mobile and desktop devices
 - June 28, 2025: Centered section titles throughout dashboard for better visual hierarchy and professional appearance
 - June 28, 2025: Fixed all dropdown menu alignment issues - all navigation dropdowns (Schools, DLI, Training, Administration/Management) now properly center-aligned with consistent navy blue theme and improved padding
+- June 29, 2025: Enhanced Test Tracker with comprehensive month/cycle navigation - added proper browsing for previous months (ALCPT/ECL/OPI tests) and cycles (Book tests) with detailed statistics, school breakdown tables, and performance charts
+- June 29, 2025: Enhanced Reports section with month-based navigation for all report types (Performance, Attendance, Evaluations, Staff Leave) allowing historical data browsing with comprehensive analytics and visual charts
 
 ## User Preferences
 
