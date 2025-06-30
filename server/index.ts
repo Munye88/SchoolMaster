@@ -50,6 +50,13 @@ app.use((req, res, next) => {
     // Ensure complete database schema for fresh deployments
     await ensureCompleteSchema();
     
+    // CRITICAL PRODUCTION FIX: Repair schema before initialization
+    const { fixProductionSchema } = await import('./productionSchemaFix');
+    const schemaFixed = await fixProductionSchema();
+    if (!schemaFixed) {
+      log('🚨 CRITICAL: Production schema fix failed, attempting to continue...');
+    }
+    
     // Initialize the database with migrations
     await initDatabase();
     
@@ -59,8 +66,9 @@ app.use((req, res, next) => {
     // Seed schools first (required for instructor foreign keys)
     await seedSchools();
     
-    // CRITICAL: Ensure all required schools exist before test score seeding
-    await ensureSchoolsExist();
+    // PRODUCTION FIX: Skip problematic ensureSchoolsExist and use fixed schema
+    // The productionSchemaFix already handles school creation properly
+    log('📚 Skipping ensureSchoolsExist - using production schema fix instead');
     
     // Seed instructors with complete data from database export
     await seedCompleteInstructors();
