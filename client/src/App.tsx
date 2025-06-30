@@ -94,7 +94,7 @@ function Router() {
           <ProtectedRoute path="/dli/alcpt-order" component={AlcptOrder} />
           <ProtectedRoute path="/dli/answer-sheets" component={AnswerSheets} />
           <ProtectedRoute path="/test-tracker" component={TestTrackerWithTabs} />
-          <ProtectedRoute path="/reports" component={ReportsEnhanced} />
+          <ProtectedRoute path="/reports" component={Reports} />
           <ProtectedRoute path="/documents" component={Documents} />
           <ProtectedRoute path="/action-log" component={ActionLogPage} />
           <ProtectedRoute
