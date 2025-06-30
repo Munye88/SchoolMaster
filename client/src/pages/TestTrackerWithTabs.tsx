@@ -265,13 +265,13 @@ export default function TestTrackerWithTabs() {
                       : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                   }`}
                 >
-                  Cycle {cycle}
+                  {cycle === 'all' ? 'All Cycles' : `Cycle ${cycle}`}
                 </button>
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-6 gap-2">
-              {months.map((month) => (
+              {months_with_all.map((month) => (
                 <button
                   key={month}
                   onClick={() => setSelectedMonth(month)}
@@ -281,7 +281,7 @@ export default function TestTrackerWithTabs() {
                       : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                   }`}
                 >
-                  {month.slice(0, 3)}
+                  {month === 'all' ? 'All' : month.slice(0, 3)}
                 </button>
               ))}
             </div>
@@ -383,6 +383,7 @@ export default function TestTrackerWithTabs() {
                 <p>Processed: {processedTestData?.length || 0} records</p>
                 <p>Filtered: {filteredData?.length || 0} records</p>
                 <p>Loading: {testLoading ? 'Yes' : 'No'}</p>
+                <p>Selected: {selectedTestType} | {selectedMonth} | {selectedCycle} | {selectedYear} | {selectedSchool}</p>
                 <p>Selected: {selectedTestType}, {selectedTestType === 'Book' ? `Cycle ${selectedCycle}` : selectedMonth}, {selectedYear}, {selectedSchool}</p>
               </div>
             </div>
