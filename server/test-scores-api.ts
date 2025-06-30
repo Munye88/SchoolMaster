@@ -176,4 +176,139 @@ export function setupTestScoresAPI(app: Express) {
       res.status(500).json({ error: 'Failed to fetch test statistics' });
     }
   });
+
+  // File upload endpoint for Excel files
+  app.post("/api/test-scores/upload", upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      // Parse Excel file
+      const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const data = XLSX.utils.sheet_to_json(worksheet);
+
+      // School name mapping
+      const schoolMapping = {
+        'KFNA': 349,
+        'NFS East': 350,
+        'NFS West': 351
+      };
+
+      let insertedCount = 0;
+      const errors: string[] = [];
+
+      for (const [index, row] of data.entries()) {
+        try {
+          const rowData = row as any;
+          
+          // Map school name to ID
+          const schoolName = rowData['School'] || rowData['school'];
+          const schoolId = schoolMapping[schoolName as keyof typeof schoolMapping];
+          
+          if (!schoolId) {
+            errors.push(`Row ${index + 2}: Invalid school "${schoolName}"`);
+            continue;
+          }
+
+          // Parse test date
+          let testDate = new Date();
+          if (rowData['Test Date'] || rowData['testDate']) {
+            const dateStr = rowData['Test Date'] || rowData['testDate'];
+            testDate = new Date(dateStr);
+            if (isNaN(testDate.getTime())) {
+              testDate = new Date();
+            }
+          }
+
+          // Calculate percentage
+          const score = parseInt(rowData['Score'] || rowData['score']) || 0;
+          const maxScore = parseInt(rowData['Max Score'] || rowData['maxScore']) || 100;
+          const percentage = Math.round((score / maxScore) * 100);
+
+          const testScore = {
+            studentName: rowData['Student Name'] || rowData['studentName'] || 'Unknown',
+            schoolId,
+            testType: rowData['Test Type'] || rowData['testType'] || 'ALCPT',
+            score,
+            maxScore,
+            percentage,
+            testDate,
+            instructor: rowData['Instructor'] || rowData['instructor'] || 'Unknown',
+            course: rowData['Course'] || rowData['course'] || 'Unknown',
+            level: rowData['Level'] || rowData['level'] || 'Beginner',
+            uploadDate: new Date()
+          };
+
+          await db.insert(testScores).values(testScore);
+          insertedCount++;
+        } catch (rowError) {
+          errors.push(`Row ${index + 2}: ${(rowError as Error).message}`);
+        }
+      }
+
+      res.json({
+        success: true,
+        message: `Successfully uploaded ${insertedCount} test scores`,
+        insertedCount,
+        errors: errors.length > 0 ? errors : undefined
+      });
+
+    } catch (error) {
+      console.error('File upload error:', error);
+      res.status(500).json({ error: 'Failed to process uploaded file' });
+    }
+  });
+
+  // Manual entry endpoint
+  app.post("/api/test-scores/manual", async (req, res) => {
+    try {
+      const {
+        studentName,
+        schoolId,
+        testType,
+        score,
+        maxScore,
+        testDate,
+        instructor,
+        course
+      } = req.body;
+
+      // Validate required fields
+      if (!studentName || !schoolId || !score) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      // Calculate percentage
+      const percentage = Math.round((score / maxScore) * 100);
+
+      const testScore = {
+        studentName,
+        schoolId: parseInt(schoolId),
+        testType: testType || 'ALCPT',
+        score: parseInt(score),
+        maxScore: parseInt(maxScore) || 100,
+        percentage,
+        testDate: new Date(testDate || new Date()),
+        instructor: instructor || 'Unknown',
+        course: course || 'Unknown',
+        level: 'Beginner',
+        uploadDate: new Date()
+      };
+
+      await db.insert(testScores).values(testScore);
+
+      res.json({
+        success: true,
+        message: 'Test score added successfully',
+        testScore
+      });
+
+    } catch (error) {
+      console.error('Manual entry error:', error);
+      res.status(500).json({ error: 'Failed to save test score' });
+    }
+  });
 }

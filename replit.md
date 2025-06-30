@@ -223,6 +223,11 @@ The system manages multiple interconnected entities:
 - June 30, 2025: Added database overview panel showing breakdown by test type (ALCPT: 1,710, Book: 2,056, ECL: 1,710, OPI: 1,710) with total record count display
 - June 30, 2025: Enhanced empty state with helpful guidance and total record count to assist users in finding records when filters return no results
 - June 30, 2025: Implemented automatic pagination reset when filters change and comprehensive logging for debugging record accessibility issues
+- June 30, 2025: UPLOAD & MANUAL ENTRY FUNCTIONALITY - Added Excel file upload and manual entry capabilities to test tracker for adding new test scores
+- June 30, 2025: Created file upload modal with Excel parsing supporting columns: Student Name, School, Test Type, Score, Test Date, Instructor, Course
+- June 30, 2025: Built manual entry form with all required fields and validation for individual test score submission
+- June 30, 2025: Added backend API endpoints (/api/test-scores/upload and /api/test-scores/manual) with proper error handling and data validation
+- June 30, 2025: Integrated upload functionality with automatic cache invalidation to refresh test tracker data after new submissions
 
 ## User Preferences
 
