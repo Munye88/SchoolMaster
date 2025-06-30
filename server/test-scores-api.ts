@@ -85,16 +85,18 @@ export function setupTestScoresAPI(app: Express) {
         { id: 351, name: 'NFS West', code: 'NFS_WEST', location: 'Naval Flight School West' }
       ];
       
-      // Clear existing schools that might conflict
-      await db.execute(sql`DELETE FROM schools WHERE id IN (349, 350, 351);`);
-      await db.execute(sql`DELETE FROM schools WHERE code IN ('KFNA', 'NFS_EAST', 'NFS_WEST');`);
+      // Skip school deletion - they already exist with correct IDs
+      console.log('📋 Using existing schools instead of recreating to avoid foreign key violations');
       
       for (const school of requiredSchools) {
         await db.execute(sql`
           INSERT INTO schools (id, name, code, location, created_at)
-          VALUES (${school.id}, ${school.name}, ${school.code}, ${school.location}, NOW());
+          VALUES (${school.id}, ${school.name}, ${school.code}, ${school.location}, NOW())
+          ON CONFLICT (code) DO UPDATE SET
+            name = EXCLUDED.name,
+            location = EXCLUDED.location;
         `);
-        console.log(`✅ Created school: ${school.name} (ID: ${school.id})`);
+        console.log(`✅ Ensured school exists: ${school.name} (ID: ${school.id})`);
       }
       
       // Update sequence to prevent future conflicts
