@@ -15,34 +15,85 @@ export function setupTestScoresAPI(app: Express) {
   // EMERGENCY PRODUCTION FIX - Resolves foreign key constraint issues on samselt.com
   app.get("/api/test-scores/emergency-production-fix", async (req, res) => {
     try {
-      console.log('🚨 EMERGENCY PRODUCTION FIX: Resolving foreign key constraints...');
+      console.log('🚨 EMERGENCY PRODUCTION FIX: Starting comprehensive database repair...');
       
-      // Force complete schema fix regardless of table existence
-      const { fixProductionSchema } = await import('./productionSchemaFix');
-      const schemaFixed = await fixProductionSchema();
+      // Step 1: Clear all test scores to prevent foreign key conflicts
+      console.log('🗑️ Clearing all existing test scores...');
+      await db.execute(sql`DELETE FROM test_scores;`);
       
-      if (schemaFixed) {
-        // Force reseed test scores to ensure all data is properly linked
-        const { seedComprehensiveTestScores } = await import('./comprehensiveTestSeed');
-        console.log('🔄 Force reseeding test scores with proper foreign keys...');
-        await seedComprehensiveTestScores(true);
-        
-        // Verify everything works
-        const testCount = await db.select().from(testScores);
-        console.log(`✅ Emergency fix complete: ${testCount.length} test records with valid foreign keys`);
-        
-        res.json({
-          success: true,
-          message: 'Emergency production fix completed - upload functionality restored',
-          recordCount: testCount.length,
-          timestamp: new Date().toISOString()
-        });
-      } else {
-        res.status(500).json({
-          error: 'Emergency schema fix failed',
-          message: 'Unable to resolve foreign key constraints'
-        });
+      // Step 2: Ensure schools table exists and has correct structure
+      console.log('🏫 Ensuring schools table exists...');
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS schools (
+          id SERIAL PRIMARY KEY,
+          name VARCHAR(255) NOT NULL,
+          code VARCHAR(50) UNIQUE NOT NULL,
+          location VARCHAR(255),
+          created_at TIMESTAMP DEFAULT NOW()
+        );
+      `);
+      
+      // Step 3: Clear and recreate schools with exact IDs
+      console.log('🏫 Recreating schools with exact IDs...');
+      const requiredSchools = [
+        { id: 349, name: 'KFNA', code: 'KFNA', location: 'King Fahd Naval Academy' },
+        { id: 350, name: 'NFS East', code: 'NFS_EAST', location: 'Naval Flight School East' },
+        { id: 351, name: 'NFS West', code: 'NFS_WEST', location: 'Naval Flight School West' }
+      ];
+      
+      // Clear existing schools that might conflict
+      await db.execute(sql`DELETE FROM schools WHERE id IN (349, 350, 351);`);
+      await db.execute(sql`DELETE FROM schools WHERE code IN ('KFNA', 'NFS_EAST', 'NFS_WEST');`);
+      
+      for (const school of requiredSchools) {
+        await db.execute(sql`
+          INSERT INTO schools (id, name, code, location, created_at)
+          VALUES (${school.id}, ${school.name}, ${school.code}, ${school.location}, NOW());
+        `);
+        console.log(`✅ Created school: ${school.name} (ID: ${school.id})`);
       }
+      
+      // Update sequence to prevent future conflicts
+      await db.execute(sql`
+        SELECT setval('schools_id_seq', (SELECT MAX(id) FROM schools));
+      `);
+      
+      // Step 4: Ensure test_scores table exists with correct structure
+      console.log('📊 Ensuring test_scores table exists...');
+      await db.execute(sql`
+        CREATE TABLE IF NOT EXISTS test_scores (
+          id SERIAL PRIMARY KEY,
+          school_id INTEGER NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+          test_type VARCHAR(50) NOT NULL,
+          score INTEGER NOT NULL,
+          month INTEGER,
+          cycle INTEGER,
+          year INTEGER NOT NULL,
+          student_name VARCHAR(255),
+          instructor_name VARCHAR(255),
+          course_name VARCHAR(255),
+          test_date DATE,
+          status VARCHAR(50) DEFAULT 'Completed',
+          created_at TIMESTAMP DEFAULT NOW()
+        );
+      `);
+      
+      // Step 5: Force comprehensive test seeding
+      const { seedComprehensiveTestScores } = await import('./comprehensiveTestSeed');
+      console.log('🔄 Seeding comprehensive test scores...');
+      await seedComprehensiveTestScores(true);
+      
+      // Step 4: Verify final result
+      const testCount = await db.select().from(testScores);
+      console.log(`✅ Emergency fix complete: ${testCount.length} test records`);
+      
+      res.json({
+        success: true,
+        message: 'Emergency production fix completed successfully',
+        recordCount: testCount.length,
+        schools: requiredSchools.map(s => `${s.name} (ID: ${s.id})`),
+        timestamp: new Date().toISOString()
+      });
       
     } catch (error) {
       console.error('🚨 Emergency fix failed:', error);

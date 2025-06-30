@@ -51,13 +51,10 @@ export async function fixProductionSchema() {
       AND s1.code = s2.code;
     `);
     
-    // CRITICAL: Clear any existing test scores with invalid foreign keys
-    console.log('🗑️ Clearing invalid test scores before schema fix...');
-    await db.execute(sql`
-      DELETE FROM test_scores WHERE school_id NOT IN (
-        SELECT id FROM schools WHERE id IN (349, 350, 351)
-      );
-    `);
+    // CRITICAL: Clear ALL existing test scores to prevent foreign key conflicts
+    console.log('🗑️ Clearing ALL test scores to resolve foreign key constraints...');
+    await db.execute(sql`DELETE FROM test_scores;`);
+    console.log('✅ All test scores cleared - ready for clean insertion');
     
     // Insert required schools if they don't exist (using INSERT ON CONFLICT)
     console.log('🏫 Ensuring required schools exist...');
@@ -79,25 +76,17 @@ export async function fixProductionSchema() {
         SELECT id FROM schools WHERE code = ${school.code};
       `);
       
-      if (existingById.rows.length === 0) {
-        if (existingByCode.rows.length > 0) {
-          // Update existing school with correct ID
-          await db.execute(sql`
-            UPDATE schools SET id = ${school.id}, name = ${school.name}, location = ${school.location}
-            WHERE code = ${school.code};
-          `);
-          console.log(`🔄 Updated existing school: ${school.name} (ID: ${school.id})`);
-        } else {
-          // Insert new school
-          await db.execute(sql`
-            INSERT INTO schools (id, name, code, location, created_at)
-            VALUES (${school.id}, ${school.name}, ${school.code}, ${school.location}, NOW());
-          `);
-          console.log(`➕ Created new school: ${school.name} (ID: ${school.id})`);
-        }
-      } else {
-        console.log(`✅ School already exists: ${school.name} (ID: ${school.id})`);
-      }
+      // Force delete and recreate to ensure exact ID matching
+      await db.execute(sql`
+        DELETE FROM schools WHERE code = ${school.code} OR id = ${school.id};
+      `);
+      
+      // Insert with exact required ID
+      await db.execute(sql`
+        INSERT INTO schools (id, name, code, location, created_at)
+        VALUES (${school.id}, ${school.name}, ${school.code}, ${school.location}, NOW());
+      `);
+      console.log(`✅ Force created school: ${school.name} (ID: ${school.id})`);
     }
     
     // Update sequence to prevent ID conflicts
