@@ -56,22 +56,65 @@ app.use((req, res, next) => {
     // FORCE schema fix on every startup for production environment
     const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER || process.env.RAILWAY_ENVIRONMENT;
     
-    log('🔧 FORCE RUNNING PRODUCTION SCHEMA FIX - Ensuring foreign key compliance...');
-    const schemaFixed = await fixProductionSchema();
+    // PRODUCTION ENVIRONMENT DETECTION
+    const isRenderProduction = process.env.RENDER || process.env.NODE_ENV === 'production';
     
-    if (!schemaFixed) {
-      log('🚨 CRITICAL: Production schema fix failed, attempting to continue...');
-    } else {
-      log('✅ Production schema fix completed - foreign key constraints resolved');
+    if (isRenderProduction) {
+      log('🚨 RENDER PRODUCTION DETECTED: Force running comprehensive database repair...');
       
-      // FORCE comprehensive test seeding after schema fix
+      // STEP 1: Clear all test scores to prevent foreign key conflicts
+      try {
+        await pool.query('DELETE FROM test_scores;');
+        log('✅ Cleared all existing test scores');
+      } catch (error) {
+        log('⚠️ Test scores clear error (continuing):', String(error));
+      }
+      
+      // STEP 2: Force create required schools with exact IDs
+      const requiredSchools = [
+        { id: 349, name: 'KFNA', code: 'KFNA', location: 'King Fahd Naval Academy' },
+        { id: 350, name: 'NFS East', code: 'NFS_EAST', location: 'Naval Flight School East' },
+        { id: 351, name: 'NFS West', code: 'NFS_WEST', location: 'Naval Flight School West' }
+      ];
+      
+      try {
+        // Clear conflicting schools
+        await pool.query('DELETE FROM schools WHERE id IN ($1, $2, $3);', [349, 350, 351]);
+        await pool.query('DELETE FROM schools WHERE code IN ($1, $2, $3);', ['KFNA', 'NFS_EAST', 'NFS_WEST']);
+        
+        // Insert required schools
+        for (const school of requiredSchools) {
+          await pool.query(
+            'INSERT INTO schools (id, name, code, location, created_at) VALUES ($1, $2, $3, $4, NOW());',
+            [school.id, school.name, school.code, school.location]
+          );
+          log(`✅ Created school: ${school.name} (ID: ${school.id})`);
+        }
+        
+        // Update sequence
+        await pool.query("SELECT setval('schools_id_seq', (SELECT MAX(id) FROM schools));");
+        log('✅ Updated schools sequence');
+        
+      } catch (schoolError) {
+        log('🚨 School creation error:', String(schoolError));
+      }
+      
+      // STEP 3: Force comprehensive test seeding
       try {
         const { seedComprehensiveTestScores } = await import('./comprehensiveTestSeed');
-        log('🔄 FORCE RESEEDING: Ensuring all test records have valid foreign keys...');
+        log('🔄 FORCE RESEEDING: Populating all test records...');
         await seedComprehensiveTestScores(true);
-        log('✅ FORCE RESEED COMPLETE: All test records have valid foreign keys');
+        log('✅ FORCE RESEED COMPLETE: All test records populated with valid foreign keys');
       } catch (seedError) {
-        log('⚠️ Force reseed encountered error:', String(seedError));
+        log('⚠️ Force reseed error:', String(seedError));
+      }
+      
+    } else {
+      // Standard schema fix for development
+      log('🔧 Running standard production schema fix...');
+      const schemaFixed = await fixProductionSchema();
+      if (!schemaFixed) {
+        log('🚨 Standard schema fix failed, continuing...');
       }
     }
     

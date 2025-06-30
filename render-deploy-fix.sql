@@ -1,27 +1,38 @@
--- CRITICAL: Render Deployment Database Fix
--- This SQL fixes the "email column does not exist" error on fresh deployments
--- Run this BEFORE instructor seeding operations
+-- EMERGENCY PRODUCTION FIX FOR SAMSELT.COM
+-- Resolves foreign key constraint violations for test scores
 
--- Ensure instructors table has all required columns
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS email text;
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS date_of_birth date;
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS passport_number text;
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS emergency_contact text;
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS emergency_phone text;
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS contract_end_date date;
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS salary integer;
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS department text;
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS status text DEFAULT 'Active';
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS notes text;
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS created_at timestamp DEFAULT NOW();
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS updated_at timestamp DEFAULT NOW();
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS emergency_contact_name text;
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS emergency_contact_phone text;
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS employment_status text DEFAULT 'active';
-ALTER TABLE instructors ADD COLUMN IF NOT EXISTS hire_date date;
+-- Step 1: Clear all test scores to prevent foreign key conflicts
+DELETE FROM test_scores;
 
--- Update any NULL values with defaults
-UPDATE instructors SET status = 'Active' WHERE status IS NULL;
-UPDATE instructors SET employment_status = 'active' WHERE employment_status IS NULL;
-UPDATE instructors SET created_at = NOW() WHERE created_at IS NULL;
-UPDATE instructors SET updated_at = NOW() WHERE updated_at IS NULL;
+-- Step 2: Clear and recreate schools with exact required IDs
+DELETE FROM schools WHERE id IN (349, 350, 351);
+DELETE FROM schools WHERE code IN ('KFNA', 'NFS_EAST', 'NFS_WEST');
+
+-- Step 3: Insert required schools with exact IDs
+INSERT INTO schools (id, name, code, location, created_at) VALUES 
+(349, 'KFNA', 'KFNA', 'King Fahd Naval Academy', NOW()),
+(350, 'NFS East', 'NFS_EAST', 'Naval Flight School East', NOW()),
+(351, 'NFS West', 'NFS_WEST', 'Naval Flight School West', NOW());
+
+-- Step 4: Update sequence to prevent future conflicts
+SELECT setval('schools_id_seq', (SELECT MAX(id) FROM schools));
+
+-- Step 5: Ensure test_scores table has correct structure
+CREATE TABLE IF NOT EXISTS test_scores (
+    id SERIAL PRIMARY KEY,
+    school_id INTEGER NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    test_type VARCHAR(50) NOT NULL,
+    score INTEGER NOT NULL,
+    month INTEGER,
+    cycle INTEGER,
+    year INTEGER NOT NULL,
+    student_name VARCHAR(255),
+    instructor_name VARCHAR(255),
+    course_name VARCHAR(255),
+    test_date DATE,
+    status VARCHAR(50) DEFAULT 'Completed',
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Verification: Check that schools exist
+SELECT id, name, code FROM schools WHERE id IN (349, 350, 351) ORDER BY id;

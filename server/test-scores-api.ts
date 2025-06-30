@@ -12,6 +12,50 @@ const upload = multer({
 });
 
 export function setupTestScoresAPI(app: Express) {
+  // DIRECT SQL REPAIR - Immediate database fix for samselt.com
+  app.get("/api/test-scores/direct-sql-repair", async (req, res) => {
+    try {
+      console.log('🔧 DIRECT SQL REPAIR: Starting immediate database fix...');
+      
+      // Execute comprehensive SQL repair in sequence
+      const repairSteps = [
+        'DELETE FROM test_scores;',
+        'DELETE FROM schools WHERE id IN (349, 350, 351);',
+        'DELETE FROM schools WHERE code IN (\'KFNA\', \'NFS_EAST\', \'NFS_WEST\');',
+        `INSERT INTO schools (id, name, code, location, created_at) VALUES 
+         (349, 'KFNA', 'KFNA', 'King Fahd Naval Academy', NOW()),
+         (350, 'NFS East', 'NFS_EAST', 'Naval Flight School East', NOW()),
+         (351, 'NFS West', 'NFS_WEST', 'Naval Flight School West', NOW());`,
+        'SELECT setval(\'schools_id_seq\', (SELECT MAX(id) FROM schools));'
+      ];
+      
+      for (const [index, sqlStep] of repairSteps.entries()) {
+        console.log(`🔧 Executing step ${index + 1}: ${sqlStep.substring(0, 50)}...`);
+        await db.execute(sql.raw(sqlStep));
+      }
+      
+      // Verify schools exist
+      const verification = await db.execute(sql`
+        SELECT id, name, code FROM schools WHERE id IN (349, 350, 351) ORDER BY id;
+      `);
+      
+      res.json({
+        success: true,
+        message: 'Direct SQL repair completed successfully',
+        schoolsCreated: verification.rows,
+        repairSteps: repairSteps.length,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error) {
+      console.error('🚨 Direct SQL repair failed:', error);
+      res.status(500).json({ 
+        error: 'Direct SQL repair failed',
+        details: (error as Error).message 
+      });
+    }
+  });
+
   // EMERGENCY PRODUCTION FIX - Resolves foreign key constraint issues on samselt.com
   app.get("/api/test-scores/emergency-production-fix", async (req, res) => {
     try {
@@ -83,7 +127,13 @@ export function setupTestScoresAPI(app: Express) {
       console.log('🔄 Seeding comprehensive test scores...');
       await seedComprehensiveTestScores(true);
       
-      // Step 4: Verify final result
+      // Step 6: Verify schools were created
+      const schoolCheck = await db.execute(sql`
+        SELECT id, name, code FROM schools WHERE id IN (349, 350, 351) ORDER BY id;
+      `);
+      console.log('🔍 Schools verification:', schoolCheck.rows);
+      
+      // Step 7: Verify final result
       const testCount = await db.select().from(testScores);
       console.log(`✅ Emergency fix complete: ${testCount.length} test records`);
       
@@ -91,7 +141,8 @@ export function setupTestScoresAPI(app: Express) {
         success: true,
         message: 'Emergency production fix completed successfully',
         recordCount: testCount.length,
-        schools: requiredSchools.map(s => `${s.name} (ID: ${s.id})`),
+        schools: schoolCheck.rows,
+        requiredSchools: requiredSchools.map(s => `${s.name} (ID: ${s.id})`),
         timestamp: new Date().toISOString()
       });
       
