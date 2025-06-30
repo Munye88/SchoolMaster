@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -48,6 +48,10 @@ export default function TestTrackerWithTabs() {
   // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1);
   const recordsPerPage = 50;
+  
+  // Search functionality
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [quickStats, setQuickStats] = useState<boolean>(true);
 
   // Fetch data
   const { data: testScores = [], isLoading: testLoading, error: testError } = useQuery<TestResult[]>({
@@ -82,7 +86,7 @@ export default function TestTrackerWithTabs() {
       const monthName = months[testDate.getMonth()];
       const schoolName = schoolMap.get(score.schoolId) || score.school || 'Unknown';
       
-      // Determine test type
+      // Determine test type - ensure consistent naming
       let testType = score.testType || score.type;
       if (!testType && score.courseName) {
         const courseUpper = score.courseName.toUpperCase();
@@ -91,19 +95,25 @@ export default function TestTrackerWithTabs() {
         else if (courseUpper.includes('ECL')) testType = 'ECL';
         else if (courseUpper.includes('OPI')) testType = 'OPI';
       }
+      
+      // Ensure consistent test type naming
+      if (testType === 'Book Test') testType = 'Book';
+      if (!testType) testType = 'Unknown';
 
       const item: ProcessedTestData = {
-        id: index + 1,
-        testType: testType || 'Unknown',
+        id: score.id || (index + 1),
+        testType: testType,
         year: year,
         schoolName,
-        averageScore: score.score || 0,
+        averageScore: score.percentage || score.score || 0,
         passingRate: score.percentage >= (score.passingScore || 75) ? 100 : 0,
         studentCount: 1, // Each record represents one student
       };
 
       if (testType === 'Book') {
-        item.cycle = Math.ceil(testDate.getMonth() / 3) + 1;
+        // Calculate cycle based on month (1-3=Q1, 4-6=Q2, 7-9=Q3, 10-12=Q4)
+        const month = testDate.getMonth() + 1; // getMonth() returns 0-11, we need 1-12
+        item.cycle = Math.ceil(month / 3);
       } else {
         item.month = monthName;
       }
@@ -118,10 +128,19 @@ export default function TestTrackerWithTabs() {
   // Filter data based on selections - Show all records for selected test type
   const filteredData = useMemo(() => {
     if (!processedTestData || processedTestData.length === 0) {
+      console.log('⚠️ No processed data available');
       return [];
     }
 
-    return processedTestData.filter(item => {
+    console.log(`🔍 Filtering ${processedTestData.length} records with:`, {
+      testType: selectedTestType,
+      month: selectedMonth,
+      cycle: selectedCycle,
+      year: selectedYear,
+      school: selectedSchool
+    });
+
+    const filtered = processedTestData.filter(item => {
       // Always filter by test type
       if (item.testType !== selectedTestType) return false;
       
@@ -140,6 +159,9 @@ export default function TestTrackerWithTabs() {
         return selectedMonth === 'all' || item.month === selectedMonth;
       }
     });
+
+    console.log(`✅ Filtered to ${filtered.length} records`);
+    return filtered;
   }, [processedTestData, selectedTestType, selectedMonth, selectedCycle, selectedYear, selectedSchool]);
 
   // Paginated data
@@ -150,6 +172,16 @@ export default function TestTrackerWithTabs() {
   }, [filteredData, currentPage, recordsPerPage]);
 
   const totalPages = Math.ceil(filteredData.length / recordsPerPage);
+
+  // Reset pagination when filters change
+  const resetPagination = () => {
+    setCurrentPage(1);
+  };
+
+  // Effect to reset pagination when filters change
+  React.useEffect(() => {
+    resetPagination();
+  }, [selectedTestType, selectedMonth, selectedCycle, selectedYear, selectedSchool]);
 
   // Chart data
   const chartData = filteredData.map(item => ({
