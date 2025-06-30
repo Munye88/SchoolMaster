@@ -968,19 +968,17 @@ function ManualEntryForm({ schools, onSave, onCancel }: {
 }) {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    studentName: '',
     schoolId: '',
     testType: 'ALCPT',
     score: '',
     maxScore: '100',
     testDate: new Date().toISOString().split('T')[0],
-    instructor: '',
     course: ''
   });
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
-    if (!formData.studentName || !formData.schoolId || !formData.score) {
+    if (!formData.schoolId || !formData.score) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -996,6 +994,8 @@ function ManualEntryForm({ schools, onSave, onCancel }: {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          studentName: 'Anonymous',
+          instructor: 'Unknown',
           score: parseInt(formData.score),
           maxScore: parseInt(formData.maxScore),
           schoolId: parseInt(formData.schoolId)
@@ -1024,29 +1024,18 @@ function ManualEntryForm({ schools, onSave, onCancel }: {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Student Name *</label>
-          <input
-            type="text"
-            value={formData.studentName}
-            onChange={(e) => setFormData({...formData, studentName: e.target.value})}
-            className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">School *</label>
-          <select
-            value={formData.schoolId}
-            onChange={(e) => setFormData({...formData, schoolId: e.target.value})}
-            className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-          >
-            <option value="">Select School</option>
-            {schools.map(school => (
-              <option key={school.id} value={school.id}>{school.name}</option>
-            ))}
-          </select>
-        </div>
+      <div>
+        <label className="block text-sm font-medium mb-1">School *</label>
+        <select
+          value={formData.schoolId}
+          onChange={(e) => setFormData({...formData, schoolId: e.target.value})}
+          className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+        >
+          <option value="">Select School</option>
+          {schools.filter(school => [349, 350, 351].includes(school.id)).map(school => (
+            <option key={school.id} value={school.id}>{school.name}</option>
+          ))}
+        </select>
       </div>
       
       <div className="grid grid-cols-3 gap-4">
@@ -1090,15 +1079,6 @@ function ManualEntryForm({ schools, onSave, onCancel }: {
             type="date"
             value={formData.testDate}
             onChange={(e) => setFormData({...formData, testDate: e.target.value})}
-            className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Instructor</label>
-          <input
-            type="text"
-            value={formData.instructor}
-            onChange={(e) => setFormData({...formData, instructor: e.target.value})}
             className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
           />
         </div>
