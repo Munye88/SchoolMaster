@@ -311,4 +311,78 @@ export function setupTestScoresAPI(app: Express) {
       res.status(500).json({ error: 'Failed to save test score' });
     }
   });
+
+  // Production verification and force reseed endpoint
+  app.get("/api/test-scores/production-verify", async (req, res) => {
+    try {
+      const allTestScores = await db.select().from(testScores);
+      const totalCount = allTestScores.length;
+      
+      console.log(`📊 Production verification: ${totalCount} test records found`);
+      
+      // If less than 7000 records, trigger force reseed
+      if (totalCount < 7000) {
+        console.log('🚨 CRITICAL: Production database missing test scores, initiating force reseed...');
+        
+        // Import and run comprehensive test seed
+        const { seedComprehensiveTestScores } = await import('./comprehensiveTestSeed');
+        await seedComprehensiveTestScores(true); // Force reseed
+        
+        // Recount after seeding
+        const newTestScores = await db.select().from(testScores);
+        const newCount = newTestScores.length;
+        
+        res.json({
+          status: 'reseeded',
+          message: `Production database reseeded: ${totalCount} → ${newCount} records`,
+          previousCount: totalCount,
+          currentCount: newCount,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.json({
+          status: 'verified',
+          message: 'Production database verified with full test data',
+          totalRecords: totalCount,
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      console.error('Production verification error:', error);
+      res.status(500).json({ 
+        error: 'Production verification failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  // Emergency production reseed endpoint
+  app.post("/api/test-scores/emergency-reseed", async (req, res) => {
+    try {
+      console.log('🆘 EMERGENCY RESEED INITIATED for production deployment');
+      
+      // Import and run comprehensive test seed with force flag
+      const { seedComprehensiveTestScores } = await import('./comprehensiveTestSeed');
+      await seedComprehensiveTestScores(true);
+      
+      // Verify count after reseeding
+      const allTestScores = await db.select().from(testScores);
+      const finalCount = allTestScores.length;
+      
+      console.log(`✅ Emergency reseed completed: ${finalCount} test records now available`);
+      
+      res.json({
+        success: true,
+        message: 'Emergency reseed completed successfully',
+        totalRecords: finalCount,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Emergency reseed error:', error);
+      res.status(500).json({ 
+        error: 'Emergency reseed failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
 }

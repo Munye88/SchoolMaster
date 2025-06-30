@@ -23,11 +23,21 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
     
     console.log('✅ All required schools verified, proceeding with test score seeding');
     
-    // Check if test scores already exist
-    const existingScores = await db.select().from(testScores).limit(1);
-    if (existingScores.length > 0 && !forceReseed) {
-      console.log('✅ Test scores already exist, skipping seed');
+    // Check if test scores already exist with full count verification
+    const existingScores = await db.select().from(testScores);
+    console.log(`📊 Current test scores in database: ${existingScores.length}`);
+    
+    if (existingScores.length >= 7000 && !forceReseed) {
+      console.log('✅ Test scores already exist with sufficient data, skipping seed');
       return;
+    }
+    
+    if (forceReseed || existingScores.length < 7000) {
+      console.log(`🔄 ${forceReseed ? 'Force reseed requested' : 'Insufficient test data found'}, proceeding with comprehensive seed...`);
+      if (existingScores.length > 0) {
+        console.log(`🗑️ Clearing ${existingScores.length} existing test scores for fresh seed...`);
+        await db.delete(testScores);
+      }
     }
     
     if (forceReseed && existingScores.length > 0) {

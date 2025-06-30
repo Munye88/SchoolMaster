@@ -68,26 +68,42 @@ app.use((req, res, next) => {
     // Seed comprehensive test scores for all test categories
     await seedComprehensiveTestScores();
     
-    // Verify test scores are properly loaded for production
+    // CRITICAL PRODUCTION VERIFICATION - Force reseed for Render deployment
     try {
       const { testScores } = await import('../shared/test-scores-schema');
       const { db } = await import('./db');
       const testCount = await db.select().from(testScores);
-      log(`📊 Test scores verification: ${testCount.length} records in database`);
+      log(`📊 PRODUCTION VERIFICATION: ${testCount.length} test records found in database`);
       
-      if (testCount.length === 0) {
-        log('⚠️  No test scores found, forcing comprehensive reseed...');
+      // Always force reseed if production has insufficient data
+      if (testCount.length < 7100) {
+        log(`🚨 CRITICAL PRODUCTION ISSUE: Only ${testCount.length} test scores found, expected 7186`);
+        log('🔄 FORCING COMPREHENSIVE PRODUCTION RESEED...');
+        
+        // Clear existing incomplete data first
+        if (testCount.length > 0) {
+          log('🗑️  Clearing incomplete test data before fresh seed...');
+          await db.delete(testScores);
+        }
+        
+        // Force comprehensive reseed with fresh data
         await seedComprehensiveTestScores(true);
+        
+        // Triple verification for production
         const recount = await db.select().from(testScores);
-        log(`✅ After reseed: ${recount.length} test records created`);
-      } else if (testCount.length < 7000) {
-        log(`⚠️  Insufficient test scores (${testCount.length} < 7000), forcing comprehensive reseed...`);
-        await seedComprehensiveTestScores(true);
-        const recount = await db.select().from(testScores);
-        log(`✅ After production reseed: ${recount.length} test records created`);
+        log(`✅ PRODUCTION RESEED COMPLETE: ${recount.length} test records now available`);
+        
+        if (recount.length < 7000) {
+          log('🆘 EMERGENCY: Production reseed failed, attempting secondary seed...');
+          await seedComprehensiveTestScores(true);
+          const finalCount = await db.select().from(testScores);
+          log(`🔧 FINAL PRODUCTION COUNT: ${finalCount.length} test records`);
+        }
+      } else {
+        log(`✅ PRODUCTION VERIFIED: ${testCount.length} test records confirmed`);
       }
     } catch (verifyError) {
-      log(`Error verifying test scores: ${verifyError}`);
+      log(`🚨 CRITICAL ERROR verifying test scores: ${verifyError}`);
     }
   } catch (error) {
     log(`Error initializing database: ${error}`);
