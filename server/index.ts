@@ -53,17 +53,26 @@ app.use((req, res, next) => {
     // CRITICAL PRODUCTION FIX: Repair schema before initialization
     const { fixProductionSchema } = await import('./productionSchemaFix');
     
-    // Force schema fix in production environment
-    const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER;
-    if (isProduction) {
-      log('🔧 PRODUCTION ENVIRONMENT: Force running comprehensive schema fix...');
-    }
+    // FORCE schema fix on every startup for production environment
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER || process.env.RAILWAY_ENVIRONMENT;
     
+    log('🔧 FORCE RUNNING PRODUCTION SCHEMA FIX - Ensuring foreign key compliance...');
     const schemaFixed = await fixProductionSchema();
+    
     if (!schemaFixed) {
       log('🚨 CRITICAL: Production schema fix failed, attempting to continue...');
     } else {
-      log('✅ Production schema fix completed successfully');
+      log('✅ Production schema fix completed - foreign key constraints resolved');
+      
+      // FORCE comprehensive test seeding after schema fix
+      try {
+        const { seedComprehensiveTestScores } = await import('./comprehensiveTestSeed');
+        log('🔄 FORCE RESEEDING: Ensuring all test records have valid foreign keys...');
+        await seedComprehensiveTestScores(true);
+        log('✅ FORCE RESEED COMPLETE: All test records have valid foreign keys');
+      } catch (seedError) {
+        log('⚠️ Force reseed encountered error:', String(seedError));
+      }
     }
     
     // Initialize the database with migrations
