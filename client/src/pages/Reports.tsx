@@ -903,6 +903,150 @@ const Reports: React.FC = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Summary Section */}
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Executive Summary
+            </CardTitle>
+            <CardDescription>Key insights and performance overview for {currentMonth} {currentYear}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-blue-900 mb-2">Overall Performance</h4>
+                <p className="text-sm text-blue-700">
+                  System-wide performance remains strong with 
+                  {performanceData.reduce((sum, school) => sum + school.totalTests, 0)} total assessments completed.
+                  Average performance rate of {Math.round(performanceData.reduce((sum, school) => sum + school.passRate, 0) / performanceData.length)}% across all schools.
+                </p>
+              </div>
+              
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-green-900 mb-2">Attendance Highlights</h4>
+                <p className="text-sm text-green-700">
+                  Excellent attendance rates maintained with {attendanceData.reduce((sum, school) => sum + school.present, 0)} staff members present.
+                  {Math.round((attendanceData.reduce((sum, school) => sum + school.present, 0) / instructors.length) * 100)}% overall attendance rate achieved.
+                </p>
+              </div>
+              
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-purple-900 mb-2">Evaluation Results</h4>
+                <p className="text-sm text-purple-700">
+                  High evaluation standards maintained across all schools.
+                  {evaluationData.reduce((sum, school) => sum + school.excellent + school.good, 0)} instructors rated as excellent or good performance.
+                </p>
+              </div>
+              
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-orange-900 mb-2">Key Metrics</h4>
+                <p className="text-sm text-orange-700">
+                  {instructors.length} total instructors across {attendanceData.length} schools.
+                  Comprehensive tracking of attendance, performance, and professional development metrics.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recommendations Section */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="h-5 w-5" />
+              Strategic Recommendations
+            </CardTitle>
+            <CardDescription>Data-driven insights for continuous improvement</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {/* Performance Recommendations */}
+              <div className="border-l-4 border-blue-500 pl-4">
+                <h4 className="font-semibold text-gray-900 mb-2">Performance Enhancement</h4>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Continue monitoring test score trends and provide additional support for courses with lower performance rates</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Implement peer mentoring programs between high-performing and developing instructors</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Attendance Recommendations */}
+              <div className="border-l-4 border-green-500 pl-4">
+                <h4 className="font-semibold text-gray-900 mb-2">Attendance Optimization</h4>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Maintain current attendance policies as they are producing excellent results across all schools</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Consider flexible arrangements during peak leave periods to maintain coverage</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Evaluation Recommendations */}
+              <div className="border-l-4 border-purple-500 pl-4">
+                <h4 className="font-semibold text-gray-900 mb-2">Professional Development</h4>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Schedule regular professional development sessions for instructors rated as satisfactory</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Recognize and reward excellence to maintain high performance standards</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Strategic Recommendations */}
+              <div className="border-l-4 border-orange-500 pl-4">
+                <h4 className="font-semibold text-gray-900 mb-2">Strategic Initiatives</h4>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Expand data collection to include student feedback on instructor effectiveness</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Implement quarterly review cycles to track improvement in identified areas</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Action Items */}
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-semibold text-gray-900 mb-3">Immediate Action Items</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <span className="text-sm">Schedule performance review meetings</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <span className="text-sm">Update professional development plans</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span className="text-sm">Review attendance policies effectiveness</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span className="text-sm">Implement recognition programs</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
