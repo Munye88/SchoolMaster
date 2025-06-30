@@ -85,19 +85,14 @@ export function setupTestScoresAPI(app: Express) {
         { id: 351, name: 'NFS West', code: 'NFS_WEST', location: 'Naval Flight School West' }
       ];
       
-      // Skip school deletion - they already exist with correct IDs
-      console.log('📋 Using existing schools instead of recreating to avoid foreign key violations');
+      // Skip school modifications - use existing schools to avoid foreign key violations
+      console.log('📋 Using existing schools to prevent foreign key constraint violations');
       
-      for (const school of requiredSchools) {
-        await db.execute(sql`
-          INSERT INTO schools (id, name, code, location, created_at)
-          VALUES (${school.id}, ${school.name}, ${school.code}, ${school.location}, NOW())
-          ON CONFLICT (code) DO UPDATE SET
-            name = EXCLUDED.name,
-            location = EXCLUDED.location;
-        `);
-        console.log(`✅ Ensured school exists: ${school.name} (ID: ${school.id})`);
-      }
+      // Verify schools exist with correct codes
+      const productionSchoolCheck = await db.execute(sql`
+        SELECT id, name, code FROM schools WHERE code IN ('KFNA', 'NFS_EAST', 'NFS_WEST') ORDER BY id;
+      `);
+      console.log('🔍 Production schools verification:', productionSchoolCheck.rows);
       
       // Update sequence to prevent future conflicts
       await db.execute(sql`
@@ -130,10 +125,10 @@ export function setupTestScoresAPI(app: Express) {
       await seedComprehensiveTestScores(true);
       
       // Step 6: Verify schools were created
-      const schoolCheck = await db.execute(sql`
-        SELECT id, name, code FROM schools WHERE id IN (349, 350, 351) ORDER BY id;
+      const finalSchoolCheck = await db.execute(sql`
+        SELECT id, name, code FROM schools WHERE code IN ('KFNA', 'NFS_EAST', 'NFS_WEST') ORDER BY id;
       `);
-      console.log('🔍 Schools verification:', schoolCheck.rows);
+      console.log('🔍 Final schools verification:', finalSchoolCheck.rows);
       
       // Step 7: Verify final result
       const testCount = await db.select().from(testScores);
