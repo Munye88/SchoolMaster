@@ -40,8 +40,8 @@ interface ProcessedTestData {
 export default function TestTrackerWithTabs() {
   // State for navigation
   const [selectedTestType, setSelectedTestType] = useState<string>('ALCPT');
-  const [selectedMonth, setSelectedMonth] = useState<string>('January');
-  const [selectedCycle, setSelectedCycle] = useState<number>(1);
+  const [selectedMonth, setSelectedMonth] = useState<string>('all');
+  const [selectedCycle, setSelectedCycle] = useState<string>('all');
   const [selectedYear, setSelectedYear] = useState<number>(2025);
   const [selectedSchool, setSelectedSchool] = useState<string>('all');
 
@@ -56,7 +56,8 @@ export default function TestTrackerWithTabs() {
 
   // Constants
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const cycles = [1, 2, 3, 4];
+  const cycles = ['all', '1', '2', '3', '4'];
+  const months_with_all = ['all', ...months];
   const years = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
 
   // Process test data
@@ -136,17 +137,29 @@ export default function TestTrackerWithTabs() {
     return aggregatedData;
   }, [testScores, schools, testLoading, schoolsLoading]);
 
-  // Filter data based on selections
+  // Filter data based on selections - Show all records for selected test type
   const filteredData = useMemo(() => {
+    if (!processedTestData || processedTestData.length === 0) {
+      return [];
+    }
+
     return processedTestData.filter(item => {
+      // Always filter by test type
       if (item.testType !== selectedTestType) return false;
+      
+      // Filter by year
       if (item.year !== selectedYear) return false;
+      
+      // Filter by school if not 'all'
       if (selectedSchool !== 'all' && item.schoolName !== selectedSchool) return false;
       
+      // For monthly navigation, show records for selected month/cycle
       if (selectedTestType === 'Book') {
-        return item.cycle === selectedCycle;
+        // Show all cycles if none selected, or specific cycle
+        return selectedCycle === 'all' || (item.cycle && item.cycle.toString() === selectedCycle);
       } else {
-        return item.month === selectedMonth;
+        // Show all months if none selected, or specific month
+        return selectedMonth === 'all' || item.month === selectedMonth;
       }
     });
   }, [processedTestData, selectedTestType, selectedMonth, selectedCycle, selectedYear, selectedSchool]);
@@ -245,9 +258,9 @@ export default function TestTrackerWithTabs() {
               {cycles.map((cycle) => (
                 <button
                   key={cycle}
-                  onClick={() => setSelectedCycle(cycle)}
+                  onClick={() => setSelectedCycle(cycle.toString())}
                   className={`px-4 py-3 border text-sm font-medium transition-colors ${
-                    selectedCycle === cycle
+                    selectedCycle === cycle.toString()
                       ? 'bg-blue-600 text-white border-blue-600'
                       : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                   }`}
