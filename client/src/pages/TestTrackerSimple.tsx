@@ -14,8 +14,16 @@ interface TestResult {
   testDate: string;
   passingScore: number;
   type: string;
+  testType: string;
   status: "Pass" | "Fail";
   schoolId: number;
+  school: string;
+  percentage: number;
+  maxScore: number;
+  instructor: string;
+  course: string;
+  level: string;
+  uploadDate: string;
 }
 
 interface SchoolData {
@@ -122,19 +130,32 @@ const TestTrackerSimple: React.FC = () => {
           });
         }
         
-        // Determine test type from course name or type field
+        // Determine test type from testType field first, then fallback to course name
         let testType: 'ALCPT' | 'Book' | 'ECL' | 'OPI' = 'ALCPT';
+        const apiTestType = ((score as any).testType || '').toUpperCase();
+        const typeField = (score.type || '').toUpperCase();
         const courseUpper = (score.courseName || '').toUpperCase();
-        const typeUpper = (score.type || '').toUpperCase();
         
-        if (courseUpper.includes('BOOK') || typeUpper.includes('BOOK') || courseUpper.includes('QUIZ')) {
+        // Use testType field from API if available
+        if (apiTestType === 'BOOK' || typeField === 'BOOK' || courseUpper.includes('BOOK') || courseUpper.includes('QUIZ')) {
           testType = 'Book';
-        } else if (courseUpper.includes('ECL') || typeUpper.includes('ECL')) {
+        } else if (apiTestType === 'ECL' || typeField === 'ECL' || courseUpper.includes('ECL')) {
           testType = 'ECL';
-        } else if (courseUpper.includes('OPI') || typeUpper.includes('OPI')) {
+        } else if (apiTestType === 'OPI' || typeField === 'OPI' || courseUpper.includes('OPI')) {
           testType = 'OPI';
-        } else if (courseUpper.includes('ALCPT') || typeUpper.includes('ALCPT')) {
+        } else if (apiTestType === 'ALCPT' || typeField === 'ALCPT' || courseUpper.includes('ALCPT')) {
           testType = 'ALCPT';
+        }
+        
+        // Enhanced debugging for test type detection
+        if (index < 5) {
+          console.log('🔍 Test type detection:', { 
+            apiTestType, 
+            typeField, 
+            courseUpper, 
+            finalTestType: testType,
+            score: score.score
+          });
         }
 
         // Determine cycle for Book tests (quarterly)
@@ -154,39 +175,62 @@ const TestTrackerSimple: React.FC = () => {
     });
 
     console.log('Created groups:', groups.size);
+    console.log('Group keys sample:', Array.from(groups.keys()).slice(0, 5));
 
-    // Create aggregated records
+    // Create aggregated records with enhanced validation
     groups.forEach((scores, key) => {
-      const [testType, period, yearStr, schoolIdStr] = key.split('-');
-      const year = parseInt(yearStr);
-      const schoolId = parseInt(schoolIdStr);
-      const schoolName = schoolMap.get(schoolId) || 'Unknown';
+      try {
+        const keyParts = key.split('-');
+        if (keyParts.length < 4) {
+          console.warn('⚠️ Invalid key format:', key);
+          return;
+        }
+        
+        const [testType, period, yearStr, schoolIdStr] = keyParts;
+        const year = parseInt(yearStr);
+        const schoolId = parseInt(schoolIdStr);
+        const schoolName = schoolMap.get(schoolId) || 'Unknown';
 
-      const totalScore = scores.reduce((sum, score) => sum + score.score, 0);
-      const averageScore = Math.round(totalScore / scores.length);
-      const passCount = scores.filter(score => score.status === 'Pass').length;
-      const passingRate = Math.round((passCount / scores.length) * 100);
+        if (isNaN(year) || isNaN(schoolId)) {
+          console.warn('⚠️ Invalid year or schoolId:', { year, schoolId, key });
+          return;
+        }
 
-      const processedItem: ProcessedTestData = {
-        id: aggregatedData.length + 1,
-        testType: testType as 'ALCPT' | 'Book' | 'ECL' | 'OPI',
-        year,
-        schoolName,
-        averageScore,
-        passingRate,
-        studentCount: scores.length
-      };
+        const totalScore = scores.reduce((sum, score) => sum + score.score, 0);
+        const averageScore = Math.round(totalScore / scores.length);
+        const passCount = scores.filter(score => score.status === 'Pass').length;
+        const passingRate = Math.round((passCount / scores.length) * 100);
 
-      if (testType === 'Book') {
-        processedItem.cycle = parseInt(period);
-      } else {
-        processedItem.month = period;
+        const processedItem: ProcessedTestData = {
+          id: aggregatedData.length + 1,
+          testType: testType as 'ALCPT' | 'Book' | 'ECL' | 'OPI',
+          year,
+          schoolName,
+          averageScore,
+          passingRate,
+          studentCount: scores.length
+        };
+
+        if (testType === 'Book') {
+          processedItem.cycle = parseInt(period);
+        } else {
+          processedItem.month = period;
+        }
+
+        aggregatedData.push(processedItem);
+        
+        // Log sample aggregated items for debugging
+        if (aggregatedData.length <= 3) {
+          console.log('✅ Created aggregated item:', processedItem);
+        }
+        
+      } catch (error) {
+        console.error('Error processing group:', error, key);
       }
-
-      aggregatedData.push(processedItem);
     });
 
     console.log('Final aggregated data:', aggregatedData.length);
+    console.log('Sample aggregated data:', aggregatedData.slice(0, 2));
     return aggregatedData;
   }, [testScores, schools, testLoading, schoolsLoading]);
 
