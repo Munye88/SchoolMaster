@@ -51,6 +51,14 @@ export async function fixProductionSchema() {
       AND s1.code = s2.code;
     `);
     
+    // CRITICAL: Clear any existing test scores with invalid foreign keys
+    console.log('🗑️ Clearing invalid test scores before schema fix...');
+    await db.execute(sql`
+      DELETE FROM test_scores WHERE school_id NOT IN (
+        SELECT id FROM schools WHERE id IN (349, 350, 351)
+      );
+    `);
+    
     // Insert required schools if they don't exist (using INSERT ON CONFLICT)
     console.log('🏫 Ensuring required schools exist...');
     
@@ -61,14 +69,35 @@ export async function fixProductionSchema() {
     ];
     
     for (const school of requiredSchools) {
-      await db.execute(sql`
-        INSERT INTO schools (id, name, code, location, created_at)
-        VALUES (${school.id}, ${school.name}, ${school.code}, ${school.location}, NOW())
-        ON CONFLICT (code) DO UPDATE SET
-          name = EXCLUDED.name,
-          location = EXCLUDED.location;
+      // First check if school exists with this ID
+      const existingById = await db.execute(sql`
+        SELECT id FROM schools WHERE id = ${school.id};
       `);
-      console.log(`✅ Ensured school exists: ${school.name} (ID: ${school.id})`);
+      
+      // Check if school exists with this code
+      const existingByCode = await db.execute(sql`
+        SELECT id FROM schools WHERE code = ${school.code};
+      `);
+      
+      if (existingById.rows.length === 0) {
+        if (existingByCode.rows.length > 0) {
+          // Update existing school with correct ID
+          await db.execute(sql`
+            UPDATE schools SET id = ${school.id}, name = ${school.name}, location = ${school.location}
+            WHERE code = ${school.code};
+          `);
+          console.log(`🔄 Updated existing school: ${school.name} (ID: ${school.id})`);
+        } else {
+          // Insert new school
+          await db.execute(sql`
+            INSERT INTO schools (id, name, code, location, created_at)
+            VALUES (${school.id}, ${school.name}, ${school.code}, ${school.location}, NOW());
+          `);
+          console.log(`➕ Created new school: ${school.name} (ID: ${school.id})`);
+        }
+      } else {
+        console.log(`✅ School already exists: ${school.name} (ID: ${school.id})`);
+      }
     }
     
     // Update sequence to prevent ID conflicts

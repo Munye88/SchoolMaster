@@ -52,9 +52,18 @@ app.use((req, res, next) => {
     
     // CRITICAL PRODUCTION FIX: Repair schema before initialization
     const { fixProductionSchema } = await import('./productionSchemaFix');
+    
+    // Force schema fix in production environment
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER;
+    if (isProduction) {
+      log('🔧 PRODUCTION ENVIRONMENT: Force running comprehensive schema fix...');
+    }
+    
     const schemaFixed = await fixProductionSchema();
     if (!schemaFixed) {
       log('🚨 CRITICAL: Production schema fix failed, attempting to continue...');
+    } else {
+      log('✅ Production schema fix completed successfully');
     }
     
     // Initialize the database with migrations

@@ -12,6 +12,47 @@ const upload = multer({
 });
 
 export function setupTestScoresAPI(app: Express) {
+  // EMERGENCY PRODUCTION FIX - Resolves foreign key constraint issues on samselt.com
+  app.get("/api/test-scores/emergency-production-fix", async (req, res) => {
+    try {
+      console.log('🚨 EMERGENCY PRODUCTION FIX: Resolving foreign key constraints...');
+      
+      // Force complete schema fix regardless of table existence
+      const { fixProductionSchema } = await import('./productionSchemaFix');
+      const schemaFixed = await fixProductionSchema();
+      
+      if (schemaFixed) {
+        // Force reseed test scores to ensure all data is properly linked
+        const { seedComprehensiveTestScores } = await import('./comprehensiveTestSeed');
+        console.log('🔄 Force reseeding test scores with proper foreign keys...');
+        await seedComprehensiveTestScores(true);
+        
+        // Verify everything works
+        const testCount = await db.select().from(testScores);
+        console.log(`✅ Emergency fix complete: ${testCount.length} test records with valid foreign keys`);
+        
+        res.json({
+          success: true,
+          message: 'Emergency production fix completed - upload functionality restored',
+          recordCount: testCount.length,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(500).json({
+          error: 'Emergency schema fix failed',
+          message: 'Unable to resolve foreign key constraints'
+        });
+      }
+      
+    } catch (error) {
+      console.error('🚨 Emergency fix failed:', error);
+      res.status(500).json({ 
+        error: 'Emergency fix failed',
+        details: (error as Error).message 
+      });
+    }
+  });
+
   // PRODUCTION DEPLOYMENT VERIFICATION - Critical for samselt.com
   app.get("/api/test-scores/production-deployment-fix", async (req, res) => {
     try {

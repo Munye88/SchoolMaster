@@ -236,6 +236,9 @@ The system manages multiple interconnected entities:
 - June 30, 2025: CRITICAL RENDER SCHEMA FIX - Created productionSchemaFix.ts to resolve duplicate school codes and missing columns blocking production deployment
 - June 30, 2025: Fixed production database errors: duplicate key violations, missing created_at columns, and school ID conflicts preventing test score seeding
 - June 30, 2025: Updated server startup to run schema repair before initialization, ensuring clean production database state for successful deployment
+- June 30, 2025: PRODUCTION SYNC ISSUE - samselt.com has test_scores table but missing school records causing foreign key constraint violations
+- June 30, 2025: Enhanced production schema fix to clear invalid test records and properly manage school ID assignments for foreign key compliance
+- June 30, 2025: Added emergency production endpoints and force deployment detection for immediate samselt.com repair upon next deployment
 
 ## User Preferences
 
