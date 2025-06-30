@@ -59,6 +59,9 @@ export default function TestTrackerWithTabs() {
   const [showManualEntry, setShowManualEntry] = useState<boolean>(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [editingRecord, setEditingRecord] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState<number | null>(null);
 
   // Fetch data
   const { data: testScores = [], isLoading: testLoading, error: testError } = useQuery<TestResult[]>({
@@ -245,6 +248,75 @@ export default function TestTrackerWithTabs() {
       });
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  // Edit handler
+  const handleEdit = (record: any) => {
+    setEditingRecord(record);
+    setShowEditModal(true);
+  };
+
+  // Delete handler
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this test record?')) {
+      return;
+    }
+
+    setIsDeleting(id);
+    try {
+      const response = await fetch(`/api/test-scores/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Test record deleted successfully"
+        });
+        queryClient.invalidateQueries({ queryKey: ['/api/test-scores'] });
+      } else {
+        throw new Error('Delete failed');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete test record",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDeleting(null);
+    }
+  };
+
+  // Save edit handler
+  const handleSaveEdit = async (editedData: any) => {
+    try {
+      const response = await fetch(`/api/test-scores/${editingRecord.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(editedData)
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Test record updated successfully"
+        });
+        queryClient.invalidateQueries({ queryKey: ['/api/test-scores'] });
+        setShowEditModal(false);
+        setEditingRecord(null);
+      } else {
+        throw new Error('Update failed');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update test record",
+        variant: "destructive"
+      });
     }
   };
 
@@ -551,7 +623,8 @@ export default function TestTrackerWithTabs() {
                     <TableHead className="text-center px-4 py-3 border-r">Period</TableHead>
                     <TableHead className="text-center px-4 py-3 border-r">Year</TableHead>
                     <TableHead className="text-center px-4 py-3 border-r">Score</TableHead>
-                    <TableHead className="text-center px-4 py-3">Status</TableHead>
+                    <TableHead className="text-center px-4 py-3 border-r">Status</TableHead>
+                    <TableHead className="text-center px-4 py-3">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

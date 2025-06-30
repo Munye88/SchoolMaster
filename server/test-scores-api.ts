@@ -538,6 +538,86 @@ export function setupTestScoresAPI(app: Express) {
     }
   });
 
+  // Edit test score endpoint
+  app.put('/api/test-scores/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const {
+        studentName,
+        schoolId,
+        testType,
+        score,
+        maxScore,
+        testDate,
+        instructor,
+        course
+      } = req.body;
+      
+      // Validate required fields
+      if (!studentName || !schoolId || !score) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+      
+      // Calculate percentage
+      const percentage = Math.round((score / maxScore) * 100);
+      
+      // Update in database
+      await db.update(testScores)
+        .set({
+          studentName,
+          schoolId: parseInt(schoolId),
+          testType: testType || 'ALCPT',
+          score: parseInt(score),
+          maxScore: parseInt(maxScore) || 100,
+          percentage,
+          testDate: new Date(testDate),
+          instructor: instructor || 'Unknown',
+          course: course || 'Unknown'
+        })
+        .where(eq(testScores.id, parseInt(id)));
+      
+      res.json({ success: true, message: 'Test score updated successfully' });
+    } catch (error) {
+      console.error('Edit test score error:', error);
+      res.status(500).json({ error: 'Failed to update test score' });
+    }
+  });
+
+  // Delete test score endpoint
+  app.delete('/api/test-scores/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Delete from database
+      await db.delete(testScores).where(eq(testScores.id, parseInt(id)));
+      
+      res.json({ success: true, message: 'Test score deleted successfully' });
+    } catch (error) {
+      console.error('Delete test score error:', error);
+      res.status(500).json({ error: 'Failed to delete test score' });
+    }
+  });
+
+  // Get single test score endpoint
+  app.get('/api/test-scores/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      const result = await db.select().from(testScores)
+        .where(eq(testScores.id, parseInt(id)))
+        .limit(1);
+      
+      if (result.length === 0) {
+        return res.status(404).json({ error: 'Test score not found' });
+      }
+      
+      res.json(result[0]);
+    } catch (error) {
+      console.error('Get test score error:', error);
+      res.status(500).json({ error: 'Failed to fetch test score' });
+    }
+  });
+
   // Production verification and force reseed endpoint
   app.get("/api/test-scores/production-verify", async (req, res) => {
     try {
