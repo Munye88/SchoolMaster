@@ -275,6 +275,46 @@ export default function TestTrackerWithTabs() {
         </CardContent>
       </Card>
 
+      {/* Quick Access Panel - Database Overview */}
+      <Card className="bg-gray-50 border-gray-200 rounded-none">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-center text-lg">Database Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-4 gap-4 text-center">
+            <div className="bg-white p-3 border">
+              <div className="text-2xl font-bold text-blue-600">
+                {processedTestData?.filter(r => r.testType === 'ALCPT').length || 0}
+              </div>
+              <div className="text-sm text-gray-600">ALCPT Tests</div>
+            </div>
+            <div className="bg-white p-3 border">
+              <div className="text-2xl font-bold text-green-600">
+                {processedTestData?.filter(r => r.testType === 'Book').length || 0}
+              </div>
+              <div className="text-sm text-gray-600">Book Tests</div>
+            </div>
+            <div className="bg-white p-3 border">
+              <div className="text-2xl font-bold text-purple-600">
+                {processedTestData?.filter(r => r.testType === 'ECL').length || 0}
+              </div>
+              <div className="text-sm text-gray-600">ECL Tests</div>
+            </div>
+            <div className="bg-white p-3 border">
+              <div className="text-2xl font-bold text-red-600">
+                {processedTestData?.filter(r => r.testType === 'OPI').length || 0}
+              </div>
+              <div className="text-sm text-gray-600">OPI Tests</div>
+            </div>
+          </div>
+          <div className="text-center mt-4 p-2 bg-blue-100 border">
+            <span className="text-lg font-semibold text-blue-800">
+              Total Records: {processedTestData?.length || 0}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Test Type Tabs */}
       <Card className="rounded-none">
         <CardHeader className="pb-4">
