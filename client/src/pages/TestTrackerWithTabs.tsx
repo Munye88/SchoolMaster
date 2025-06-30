@@ -44,6 +44,10 @@ export default function TestTrackerWithTabs() {
   const [selectedCycle, setSelectedCycle] = useState<string>('all');
   const [selectedYear, setSelectedYear] = useState<number>(2025);
   const [selectedSchool, setSelectedSchool] = useState<string>('all');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const recordsPerPage = 50;
 
   // Fetch data
   const { data: testScores = [], isLoading: testLoading, error: testError } = useQuery<TestResult[]>({
@@ -60,7 +64,7 @@ export default function TestTrackerWithTabs() {
   const months_with_all = ['all', ...months];
   const years = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
 
-  // Process test data
+  // Process test data - Convert individual records for display
   const processedTestData = useMemo(() => {
     if (testLoading || schoolsLoading || !testScores || !schools) {
       return [];
@@ -69,11 +73,10 @@ export default function TestTrackerWithTabs() {
     console.log('🔍 Processing', testScores.length, 'test scores');
     
     const schoolMap = new Map(schools?.map((school: any) => [school.id, school.name]) || []);
-    const aggregatedData: ProcessedTestData[] = [];
-    const groups = new Map<string, TestResult[]>();
+    const processedData: ProcessedTestData[] = [];
 
-    // Group test scores
-    testScores.forEach((score: any) => {
+    // Convert each test score to display format
+    testScores.forEach((score: any, index: number) => {
       const testDate = new Date(score.testDate);
       const year = testDate.getFullYear();
       const monthName = months[testDate.getMonth()];
@@ -89,52 +92,27 @@ export default function TestTrackerWithTabs() {
         else if (courseUpper.includes('OPI')) testType = 'OPI';
       }
 
-      if (testType === 'Book') {
-        // For Book tests, use cycle instead of month
-        const cycle = Math.ceil(testDate.getMonth() / 3) + 1;
-        const key = `${testType}-${cycle}-${year}-${score.schoolId}`;
-        if (!groups.has(key)) groups.set(key, []);
-        groups.get(key)!.push(score);
-      } else {
-        // For other tests, use month
-        const key = `${testType}-${monthName}-${year}-${score.schoolId}`;
-        if (!groups.has(key)) groups.set(key, []);
-        groups.get(key)!.push(score);
-      }
-    });
-
-    // Create aggregated data
-    let id = 1;
-    groups.forEach((scores, key) => {
-      const [testType, timePeriod, year, schoolId] = key.split('-');
-      const schoolName = schoolMap.get(parseInt(schoolId)) || 'Unknown School';
-      
-      const totalScore = scores.reduce((sum, s) => sum + (s.score || 0), 0);
-      const averageScore = Math.round(totalScore / scores.length);
-      const passingScores = scores.filter(s => (s.percentage || 0) >= (s.passingScore || 75));
-      const passingRate = Math.round((passingScores.length / scores.length) * 100);
-
       const item: ProcessedTestData = {
-        id: id++,
-        testType,
-        year: parseInt(year),
+        id: index + 1,
+        testType: testType || 'Unknown',
+        year: year,
         schoolName,
-        averageScore,
-        passingRate,
-        studentCount: scores.length,
+        averageScore: score.score || 0,
+        passingRate: score.percentage >= (score.passingScore || 75) ? 100 : 0,
+        studentCount: 1, // Each record represents one student
       };
 
       if (testType === 'Book') {
-        item.cycle = parseInt(timePeriod);
+        item.cycle = Math.ceil(testDate.getMonth() / 3) + 1;
       } else {
-        item.month = timePeriod;
+        item.month = monthName;
       }
 
-      aggregatedData.push(item);
+      processedData.push(item);
     });
 
-    console.log('✅ Created', aggregatedData.length, 'aggregated records');
-    return aggregatedData;
+    console.log('✅ Created', processedData.length, 'individual records');
+    return processedData;
   }, [testScores, schools, testLoading, schoolsLoading]);
 
   // Filter data based on selections - Show all records for selected test type
@@ -163,6 +141,15 @@ export default function TestTrackerWithTabs() {
       }
     });
   }, [processedTestData, selectedTestType, selectedMonth, selectedCycle, selectedYear, selectedSchool]);
+
+  // Paginated data
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    const endIndex = startIndex + recordsPerPage;
+    return filteredData.slice(startIndex, endIndex);
+  }, [filteredData, currentPage, recordsPerPage]);
+
+  const totalPages = Math.ceil(filteredData.length / recordsPerPage);
 
   // Chart data
   const chartData = filteredData.map(item => ({
@@ -395,13 +382,13 @@ export default function TestTrackerWithTabs() {
                     <TableHead className="text-center px-4 py-3 border-r">School</TableHead>
                     <TableHead className="text-center px-4 py-3 border-r">Test Type</TableHead>
                     <TableHead className="text-center px-4 py-3 border-r">Period</TableHead>
-                    <TableHead className="text-center px-4 py-3 border-r">Students</TableHead>
-                    <TableHead className="text-center px-4 py-3 border-r">Avg Score</TableHead>
-                    <TableHead className="text-center px-4 py-3">Passing Rate</TableHead>
+                    <TableHead className="text-center px-4 py-3 border-r">Year</TableHead>
+                    <TableHead className="text-center px-4 py-3 border-r">Score</TableHead>
+                    <TableHead className="text-center px-4 py-3">Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredData.map((item) => (
+                  {paginatedData.map((item) => (
                     <TableRow key={item.id} className="border-b">
                       <TableCell className="text-center px-4 py-3 border-r font-medium">
                         {item.schoolName}
@@ -410,19 +397,19 @@ export default function TestTrackerWithTabs() {
                         {item.testType}
                       </TableCell>
                       <TableCell className="text-center px-4 py-3 border-r">
-                        {item.testType === 'Book' ? `Cycle ${item.cycle}` : item.month} {item.year}
+                        {item.testType === 'Book' ? `Cycle ${item.cycle}` : item.month}
                       </TableCell>
                       <TableCell className="text-center px-4 py-3 border-r">
-                        {item.studentCount}
+                        {item.year}
                       </TableCell>
                       <TableCell className="text-center px-4 py-3 border-r">
                         <Badge variant={item.averageScore >= 75 ? "default" : "destructive"} className="rounded-none">
-                          {item.averageScore}%
+                          {item.averageScore}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-center px-4 py-3">
-                        <Badge variant={item.passingRate >= 80 ? "default" : "destructive"} className="rounded-none">
-                          {item.passingRate}%
+                        <Badge variant={item.averageScore >= 75 ? "default" : "destructive"} className="rounded-none">
+                          {item.averageScore >= 75 ? 'Pass' : 'Fail'}
                         </Badge>
                       </TableCell>
                     </TableRow>
