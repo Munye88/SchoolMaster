@@ -67,7 +67,7 @@ export default function TestTrackerWithTabs() {
 
     console.log('🔍 Processing', testScores.length, 'test scores');
     
-    const schoolMap = new Map(schools.map((school: any) => [school.id, school.name]));
+    const schoolMap = new Map(schools?.map((school: any) => [school.id, school.name]) || []);
     const aggregatedData: ProcessedTestData[] = [];
     const groups = new Map<string, TestResult[]>();
 
@@ -76,7 +76,7 @@ export default function TestTrackerWithTabs() {
       const testDate = new Date(score.testDate);
       const year = testDate.getFullYear();
       const monthName = months[testDate.getMonth()];
-      const schoolName = schoolMap.get(score.schoolId) || score.school;
+      const schoolName = schoolMap.get(score.schoolId) || score.school || 'Unknown';
       
       // Determine test type
       let testType = score.testType || score.type;
@@ -106,7 +106,7 @@ export default function TestTrackerWithTabs() {
     let id = 1;
     groups.forEach((scores, key) => {
       const [testType, timePeriod, year, schoolId] = key.split('-');
-      const schoolName = schoolMap.get(parseInt(schoolId)) || 'Unknown';
+      const schoolName = schoolMap.get(parseInt(schoolId)) || 'Unknown School';
       
       const totalScore = scores.reduce((sum, s) => sum + (s.score || 0), 0);
       const averageScore = Math.round(totalScore / scores.length);
@@ -366,7 +366,7 @@ export default function TestTrackerWithTabs() {
               <div className="mt-4 text-xs text-left bg-gray-50 p-3">
                 <p><strong>Debug Info:</strong></p>
                 <p>Test Scores: {testScores?.length || 0} records</p>
-                <p>Schools: {schools?.length || 0} records</p>
+                <p>Schools: {Array.isArray(schools) ? schools.length : 0} records</p>
                 <p>Processed: {processedTestData?.length || 0} records</p>
                 <p>Filtered: {filteredData?.length || 0} records</p>
                 <p>Loading: {testLoading ? 'Yes' : 'No'}</p>
