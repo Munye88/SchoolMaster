@@ -409,7 +409,7 @@ const Reports: React.FC = () => {
             </div>
 
             {/* Attendance Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               {/* Attendance by School Bar Chart */}
               <Card>
                 <CardHeader>
@@ -453,6 +453,76 @@ const Reports: React.FC = () => {
                       <RechartsTooltip />
                       <Line type="monotone" dataKey="attendance" stroke="#0A2463" strokeWidth={3} />
                     </RechartsLineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Additional Attendance Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Attendance Rate by Day of Week */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5" />
+                    Attendance by Day of Week
+                  </CardTitle>
+                  <CardDescription>Weekly attendance patterns</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={[
+                      { day: 'Mon', rate: 94 },
+                      { day: 'Tue', rate: 96 },
+                      { day: 'Wed', rate: 93 },
+                      { day: 'Thu', rate: 95 },
+                      { day: 'Fri', rate: 89 },
+                      { day: 'Sat', rate: 87 },
+                      { day: 'Sun', rate: 91 }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="day" />
+                      <YAxis domain={[80, 100]} />
+                      <RechartsTooltip />
+                      <Area type="monotone" dataKey="rate" stroke="#0A2463" fill="#0A2463" fillOpacity={0.3} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Leave Type Distribution */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <PieChart className="h-5 w-5" />
+                    Leave Type Distribution
+                  </CardTitle>
+                  <CardDescription>Types of approved leave</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <RechartsPieChart>
+                      <Pie
+                        data={[
+                          { name: 'Sick Leave', value: 45 },
+                          { name: 'Annual Leave', value: 30 },
+                          { name: 'Personal Leave', value: 15 },
+                          { name: 'Training', value: 10 }
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label
+                      >
+                        {COLORS.map((color, index) => (
+                          <Cell key={`cell-${index}`} fill={color} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip />
+                      <Legend />
+                    </RechartsPieChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
@@ -513,7 +583,7 @@ const Reports: React.FC = () => {
             </div>
 
             {/* Evaluation Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               {/* Evaluation Distribution Bar Chart */}
               <Card>
                 <CardHeader>
@@ -573,6 +643,59 @@ const Reports: React.FC = () => {
                       <RechartsTooltip />
                       <Legend />
                     </RechartsPieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Additional Evaluation Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Evaluation Trends Over Time */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Evaluation Trends
+                  </CardTitle>
+                  <CardDescription>Performance improvement over months</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <RechartsLineChart data={monthlyTrends}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis domain={[3.5, 5]} />
+                      <RechartsTooltip />
+                      <Line type="monotone" dataKey="evaluation" stroke="#0A2463" strokeWidth={3} name="Average Rating" />
+                    </RechartsLineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Evaluation Criteria Breakdown */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5" />
+                    Evaluation Criteria Scores
+                  </CardTitle>
+                  <CardDescription>Average scores by evaluation criteria</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <RechartsBarChart data={[
+                      { criteria: 'Teaching', score: 4.2 },
+                      { criteria: 'Communication', score: 4.0 },
+                      { criteria: 'Professionalism', score: 4.5 },
+                      { criteria: 'Student Engagement', score: 3.8 },
+                      { criteria: 'Curriculum Knowledge', score: 4.3 }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="criteria" />
+                      <YAxis domain={[0, 5]} />
+                      <RechartsTooltip />
+                      <Bar dataKey="score" fill="#6247AA" />
+                    </RechartsBarChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
@@ -641,7 +764,7 @@ const Reports: React.FC = () => {
             </div>
 
             {/* Performance Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               {/* Performance by School Bar Chart */}
               <Card>
                 <CardHeader>
@@ -680,27 +803,76 @@ const Reports: React.FC = () => {
                     <RechartsPieChart>
                       <Pie
                         data={[
-                          { 
-                            name: 'Passed', 
-                            value: performanceData.reduce((sum, school) => sum + school.passed, 0),
-                            fill: '#22A783'
-                          },
-                          { 
-                            name: 'Failed', 
-                            value: performanceData.reduce((sum, school) => sum + school.failed, 0),
-                            fill: '#E4424D'
-                          }
+                          { name: 'Passed', value: performanceData.reduce((sum, school) => sum + school.passed, 0) },
+                          { name: 'Failed', value: performanceData.reduce((sum, school) => sum + school.failed, 0) }
                         ]}
                         cx="50%"
                         cy="50%"
                         outerRadius={100}
+                        fill="#8884d8"
                         dataKey="value"
                         label
                       >
+                        <Cell fill="#22A783" />
+                        <Cell fill="#E4424D" />
                       </Pie>
                       <RechartsTooltip />
                       <Legend />
                     </RechartsPieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Additional Performance Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Performance Trends Over Time */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Performance Trends
+                  </CardTitle>
+                  <CardDescription>Monthly performance improvement</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <RechartsLineChart data={monthlyTrends}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis domain={[70, 90]} />
+                      <RechartsTooltip />
+                      <Line type="monotone" dataKey="performance" stroke="#0A2463" strokeWidth={3} name="Average Performance %" />
+                    </RechartsLineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Test Type Performance Comparison */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    Performance by Test Type
+                  </CardTitle>
+                  <CardDescription>Average scores across different test types</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <RechartsBarChart data={[
+                      { testType: 'ALCPT', averageScore: 78.5, passRate: 82 },
+                      { testType: 'Book Test', averageScore: 85.2, passRate: 87 },
+                      { testType: 'ECL', averageScore: 73.8, passRate: 79 },
+                      { testType: 'OPI', averageScore: 76.3, passRate: 81 }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="testType" />
+                      <YAxis />
+                      <RechartsTooltip />
+                      <Legend />
+                      <Bar dataKey="averageScore" fill="#0A2463" name="Average Score %" />
+                      <Bar dataKey="passRate" fill="#22A783" name="Pass Rate %" />
+                    </RechartsBarChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
