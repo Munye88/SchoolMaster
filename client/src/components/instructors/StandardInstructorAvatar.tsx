@@ -83,28 +83,29 @@ export function StandardInstructorAvatar({
     return "border-[#00AEEF]"; // Light blue border to match the screenshot
   };
   
-  const containerClassName = `${sizeClasses[size]} rounded-full ${getBorderColor()} border-4 overflow-hidden flex items-center justify-center shadow-md flex-shrink-0 flex-grow-0 bg-white`;
+  const containerClassName = `${sizeClasses[size]} rounded-full ${getBorderColor()} border-4 overflow-hidden flex items-center justify-center shadow-md flex-shrink-0 flex-grow-0 bg-white relative`;
   
   return (
     <div className={containerClassName}>
       {imageSource && !imageError ? (
-        <div className="h-full w-full bg-white overflow-hidden rounded-full">
+        <div className="absolute inset-0 w-full h-full bg-white overflow-hidden rounded-full flex items-center justify-center">
           <img
             src={imageSource}
             alt={name}
-            className="h-full w-full object-cover object-center rounded-full" 
+            className="w-full h-full object-cover object-center rounded-full" 
             style={{ 
-              maxWidth: "100%",
-              maxHeight: "100%",
+              objectFit: "cover",
+              objectPosition: "center center",
               width: "100%",
-              height: "100%"
+              height: "100%",
+              display: "block"
             }}
             onError={handleImageError}
           />
         </div>
       ) : (
         <div 
-          className={`h-full w-full flex items-center justify-center text-white font-bold ${initialsFontSize[size]}`}
+          className={`absolute inset-0 w-full h-full flex items-center justify-center text-white font-bold ${initialsFontSize[size]} rounded-full`}
           style={{ backgroundColor: schoolColor }}
         >
           {getInitials(name)}

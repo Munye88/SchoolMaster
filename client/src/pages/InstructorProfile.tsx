@@ -85,18 +85,26 @@ const InstructorProfile = () => {
             {instructorsData?.map(instructor => (
               <Card key={instructor.id} className="overflow-hidden">
                 <CardHeader className="bg-[#0A2463] p-4">
-                  <div className="flex justify-between items-center">
-                    <StandardInstructorAvatar
-                      imageUrl={instructor.imageUrl}
-                      name={instructor.name}
-                      size="md"
-                      schoolColor={
-                        instructor.schoolId === 349 ? '#0A2463' : // KFNA (blue)
-                        instructor.schoolId === 350 ? '#2A7F46' : // NFS East (green)
-                        '#4A5899' // NFS West (blue-purple)
-                      }
-                    />
-                    <div>
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0">
+                        <StandardInstructorAvatar
+                          imageUrl={instructor.imageUrl}
+                          name={instructor.name}
+                          size="md"
+                          schoolColor={
+                            instructor.schoolId === 349 ? '#0A2463' : // KFNA (blue)
+                            instructor.schoolId === 350 ? '#2A7F46' : // NFS East (green)
+                            '#4A5899' // NFS West (blue-purple)
+                          }
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-white font-semibold text-lg leading-tight">{instructor.name}</h3>
+                        <p className="text-gray-200 text-sm mt-1">{instructor.role || 'Instructor'}</p>
+                      </div>
+                    </div>
+                    <div className="flex-shrink-0">
                       <Link href={`/instructors/${instructor.id}`}>
                         <Button variant="outline" size="sm" className="bg-transparent text-white border-white hover:bg-white hover:text-[#0A2463]">
                           View Profile
@@ -104,8 +112,6 @@ const InstructorProfile = () => {
                       </Link>
                     </div>
                   </div>
-                  <h3 className="text-white font-semibold text-lg mt-3">{instructor.name}</h3>
-                  <p className="text-gray-200 text-sm">{instructor.role || 'Instructor'}</p>
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="space-y-2">
@@ -182,8 +188,8 @@ const InstructorProfile = () => {
                      instructor.schoolId === 350 ? 'bg-[#2A7F46]' : // NFS East (green) 
                      'bg-[#4A5899]' // NFS West (blue-purple)
                      }>
-              <div className="p-6 flex items-center">
-                <div className="mr-4">
+              <div className="p-6 flex items-center justify-start">
+                <div className="mr-6 flex-shrink-0">
                   <StandardInstructorAvatar
                     imageUrl={instructor.imageUrl}
                     name={instructor.name}
@@ -195,9 +201,9 @@ const InstructorProfile = () => {
                     }
                   />
                 </div>
-                <div className="text-white">
-                  <h2 className="text-2xl font-bold">{instructor.name}</h2>
-                  <p className="text-sm mt-1">{instructor.role || 'Instructor'}</p>
+                <div className="text-white flex-1">
+                  <h2 className="text-2xl font-bold leading-tight">{instructor.name}</h2>
+                  <p className="text-sm mt-2 opacity-90">{instructor.role || 'Instructor'}</p>
                 </div>
               </div>
             </div>
