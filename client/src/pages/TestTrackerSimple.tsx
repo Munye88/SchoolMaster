@@ -114,7 +114,7 @@ const TestTrackerSimple: React.FC = () => {
       testScoresCount: testScores.length, 
       schoolsCount: schools.length,
       firstTestScore: testScores[0],
-      testTypes: [...new Set(testScores.map(s => (s as any).testType))]
+      sampleTestTypes: testScores.slice(0, 5).map(s => (s as any).testType)
     });
     
     const schoolMap = new Map(schools.map(school => [school.id, school.name]));
@@ -466,7 +466,16 @@ const TestTrackerSimple: React.FC = () => {
         <CardContent className="p-6">
           {filteredData.length === 0 ? (
             <div className="text-center py-8 text-gray-500 border rounded-none p-4">
-              No data found for the selected filters
+              <p>No data found for the selected filters</p>
+              <div className="mt-4 text-xs text-left bg-gray-50 p-3">
+                <p><strong>Debug Info:</strong></p>
+                <p>Test Scores: {testScores?.length || 0} records</p>
+                <p>Schools: {schools?.length || 0} records</p>
+                <p>Processed: {processedTestData?.length || 0} records</p>
+                <p>Filtered: {filteredData?.length || 0} records</p>
+                <p>Loading: {testLoading ? 'Yes' : 'No'}</p>
+                <p>Selected: {selectedTestType}, {selectedTestType === 'Book' ? `Cycle ${selectedCycle}` : selectedMonth}, {selectedYear}, {selectedSchool}</p>
+              </div>
             </div>
           ) : (
             <div className="border rounded-none overflow-hidden">
