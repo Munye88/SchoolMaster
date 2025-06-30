@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { db } from "./db";
 import { testScores } from "@shared/test-scores-schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import multer from "multer";
 import * as XLSX from "xlsx";
 
@@ -12,6 +12,92 @@ const upload = multer({
 });
 
 export function setupTestScoresAPI(app: Express) {
+  // PRODUCTION DEPLOYMENT VERIFICATION - Critical for samselt.com
+  app.get("/api/test-scores/production-deployment-fix", async (req, res) => {
+    try {
+      console.log('🚀 PRODUCTION DEPLOYMENT FIX: Starting comprehensive verification...');
+      
+      // Check if test_scores table exists
+      const tableCheck = await db.execute(sql`
+        SELECT EXISTS (
+          SELECT FROM information_schema.tables 
+          WHERE table_schema = 'public' 
+          AND table_name = 'test_scores'
+        );
+      `);
+      
+      const tableExists = tableCheck.rows[0].exists;
+      console.log(`📊 Test scores table exists: ${tableExists}`);
+      
+      if (!tableExists) {
+        console.log('🔧 Creating test_scores table for production...');
+        
+        // Import production schema fix
+        const { fixProductionSchema } = await import('./productionSchemaFix');
+        const schemaFixed = await fixProductionSchema();
+        
+        if (!schemaFixed) {
+          return res.status(500).json({ 
+            error: 'Failed to create production schema',
+            tableExists: false,
+            uploadFunctional: false
+          });
+        }
+      }
+      
+      // Test upload functionality by inserting a test record
+      const testRecord = {
+        studentName: 'Production Test Student',
+        schoolId: 349,
+        testType: 'ALCPT',
+        score: 90,
+        maxScore: 100,
+        percentage: 90,
+        testDate: new Date(),
+        instructor: 'Production Test',
+        course: 'Production Verification',
+        level: 'Test',
+        uploadDate: new Date()
+      };
+      
+      try {
+        await db.insert(testScores).values(testRecord);
+        console.log('✅ Test record insertion successful');
+        
+        // Clean up test record
+        await db.delete(testScores).where(eq(testScores.studentName, 'Production Test Student'));
+        
+        const deploymentStatus = {
+          success: true,
+          message: 'Production deployment verified - upload functionality operational',
+          tableExists: true,
+          uploadFunctional: true,
+          timestamp: new Date().toISOString(),
+          environment: process.env.NODE_ENV || 'production'
+        };
+        
+        console.log('🎯 PRODUCTION DEPLOYMENT SUCCESS:', deploymentStatus);
+        res.json(deploymentStatus);
+        
+      } catch (insertError) {
+        console.error('❌ Upload functionality test failed:', insertError);
+        res.status(500).json({
+          error: 'Upload functionality not working',
+          tableExists: true,
+          uploadFunctional: false,
+          details: insertError.message
+        });
+      }
+      
+    } catch (error) {
+      console.error('🚨 Production deployment fix failed:', error);
+      res.status(500).json({ 
+        error: 'Production deployment verification failed',
+        details: error.message 
+      });
+    }
+  });
+
   // Enhanced production debugging endpoint
   app.get("/api/test-scores/debug", async (req, res) => {
     try {

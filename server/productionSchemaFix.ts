@@ -77,16 +77,56 @@ export async function fixProductionSchema() {
       SELECT setval('schools_id_seq', GREATEST(351, (SELECT MAX(id) FROM schools)));
     `);
     
+    // CRITICAL: Create test_scores table if missing (this is why uploads fail on production)  
+    console.log('📊 Ensuring test_scores table exists for upload functionality...');
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS test_scores (
+        id SERIAL PRIMARY KEY,
+        student_name VARCHAR(255) NOT NULL,
+        school_id INTEGER NOT NULL REFERENCES schools(id),
+        test_type VARCHAR(50) NOT NULL,
+        score INTEGER NOT NULL,
+        max_score INTEGER NOT NULL,
+        percentage INTEGER NOT NULL,
+        test_date TIMESTAMP NOT NULL,
+        instructor VARCHAR(255) NOT NULL,
+        course VARCHAR(255) NOT NULL,
+        level VARCHAR(100) NOT NULL,
+        upload_date TIMESTAMP NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+    
+    // Create indexes for better performance
+    await db.execute(sql`
+      CREATE INDEX IF NOT EXISTS idx_test_scores_school_id ON test_scores(school_id);
+      CREATE INDEX IF NOT EXISTS idx_test_scores_test_type ON test_scores(test_type);
+      CREATE INDEX IF NOT EXISTS idx_test_scores_test_date ON test_scores(test_date);
+    `);
+    
+    console.log('✅ Test scores table created/verified for upload functionality');
+    
     // Verify all required schools exist
     const finalSchools = await db.execute(sql`
       SELECT id, name, code FROM schools WHERE id IN (349, 350, 351);
     `);
     
-    if (finalSchools.rows.length === 3) {
-      console.log('✅ PRODUCTION SCHEMA FIX COMPLETE: All required schools verified');
+    // Verify test_scores table exists
+    const testScoresExists = await db.execute(sql`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'test_scores'
+      );
+    `);
+    
+    if (finalSchools.rows.length === 3 && testScoresExists.rows[0].exists) {
+      console.log('✅ PRODUCTION SCHEMA FIX COMPLETE: All required tables and schools verified');
+      console.log('🎯 Upload functionality now available on production');
       return true;
     } else {
-      console.error('❌ PRODUCTION SCHEMA FIX FAILED: Missing required schools');
+      console.error('❌ PRODUCTION SCHEMA FIX FAILED: Missing required components');
       return false;
     }
     
