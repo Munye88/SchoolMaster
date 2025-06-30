@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -137,10 +137,11 @@ export default function TestTrackerWithTabs() {
       month: selectedMonth,
       cycle: selectedCycle,
       year: selectedYear,
-      school: selectedSchool
+      school: selectedSchool,
+      search: searchTerm
     });
 
-    const filtered = processedTestData.filter(item => {
+    let filtered = processedTestData.filter(item => {
       // Always filter by test type
       if (item.testType !== selectedTestType) return false;
       
@@ -153,11 +154,29 @@ export default function TestTrackerWithTabs() {
       // For monthly navigation, show records for selected month/cycle
       if (selectedTestType === 'Book') {
         // Show all cycles if none selected, or specific cycle
-        return selectedCycle === 'all' || (item.cycle && item.cycle.toString() === selectedCycle);
+        if (selectedCycle !== 'all' && (!item.cycle || item.cycle.toString() !== selectedCycle)) {
+          return false;
+        }
       } else {
         // Show all months if none selected, or specific month
-        return selectedMonth === 'all' || item.month === selectedMonth;
+        if (selectedMonth !== 'all' && item.month !== selectedMonth) {
+          return false;
+        }
       }
+
+      // Apply search filter if search term is provided
+      if (searchTerm && searchTerm.trim() !== '') {
+        const search = searchTerm.toLowerCase();
+        return (
+          item.schoolName.toLowerCase().includes(search) ||
+          item.testType.toLowerCase().includes(search) ||
+          item.averageScore.toString().includes(search) ||
+          (item.month && item.month.toLowerCase().includes(search)) ||
+          (item.cycle && item.cycle.toString().includes(search))
+        );
+      }
+
+      return true;
     });
 
     console.log(`✅ Filtered to ${filtered.length} records`);
@@ -179,7 +198,7 @@ export default function TestTrackerWithTabs() {
   };
 
   // Effect to reset pagination when filters change
-  React.useEffect(() => {
+  useEffect(() => {
     resetPagination();
   }, [selectedTestType, selectedMonth, selectedCycle, selectedYear, selectedSchool]);
 
@@ -213,29 +232,45 @@ export default function TestTrackerWithTabs() {
         </div>
       </div>
 
-      {/* Current Selection Display */}
+      {/* Search and Current Selection Display */}
       <Card className="bg-blue-50 border-blue-200 rounded-none">
         <CardContent className="pt-6">
-          <div className="flex flex-wrap gap-2 items-center justify-center">
-            <span className="text-sm font-medium text-gray-600">Current View:</span>
-            <Badge variant="secondary" className="bg-blue-100 text-blue-800 rounded-none">
-              {selectedTestType} Tests
-            </Badge>
-            {selectedTestType !== 'Book' ? (
-              <Badge variant="outline" className="border-blue-300 text-blue-700 rounded-none">
-                {selectedMonth} {selectedYear}
+          <div className="space-y-4">
+            {/* Search Input */}
+            <div className="flex justify-center">
+              <div className="w-full max-w-md">
+                <input
+                  type="text"
+                  placeholder="Search records by school, test type, score..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                />
+              </div>
+            </div>
+            
+            {/* Current View Summary */}
+            <div className="flex flex-wrap gap-2 items-center justify-center">
+              <span className="text-sm font-medium text-gray-600">Current View:</span>
+              <Badge variant="secondary" className="bg-blue-100 text-blue-800 rounded-none">
+                {selectedTestType} Tests
               </Badge>
-            ) : (
-              <Badge variant="outline" className="border-blue-300 text-blue-700 rounded-none">
-                Cycle {selectedCycle} - {selectedYear}
+              {selectedTestType !== 'Book' ? (
+                <Badge variant="outline" className="border-blue-300 text-blue-700 rounded-none">
+                  {selectedMonth} {selectedYear}
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="border-blue-300 text-blue-700 rounded-none">
+                  Cycle {selectedCycle} - {selectedYear}
+                </Badge>
+              )}
+              <Badge variant="outline" className="border-green-300 text-green-700 rounded-none">
+                {selectedSchool === 'all' ? 'All Schools' : selectedSchool}
               </Badge>
-            )}
-            <Badge variant="outline" className="border-green-300 text-green-700 rounded-none">
-              {selectedSchool === 'all' ? 'All Schools' : selectedSchool}
-            </Badge>
-            <span className="text-sm text-gray-500">
-              ({filteredData.length} records found)
-            </span>
+              <span className="text-sm text-gray-500">
+                ({filteredData.length} records found)
+              </span>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -394,16 +429,16 @@ export default function TestTrackerWithTabs() {
         <CardContent className="p-6">
           {filteredData.length === 0 ? (
             <div className="text-center py-8 text-gray-500 border rounded-none p-4">
-              <p>No data found for the selected filters</p>
-              <div className="mt-4 text-xs text-left bg-gray-50 p-3">
-                <p><strong>Debug Info:</strong></p>
-                <p>Test Scores: {testScores?.length || 0} records</p>
-                <p>Schools: {Array.isArray(schools) ? schools.length : 0} records</p>
-                <p>Processed: {processedTestData?.length || 0} records</p>
-                <p>Filtered: {filteredData?.length || 0} records</p>
-                <p>Loading: {testLoading ? 'Yes' : 'No'}</p>
-                <p>Selected: {selectedTestType} | {selectedMonth} | {selectedCycle} | {selectedYear} | {selectedSchool}</p>
-                <p>Selected: {selectedTestType}, {selectedTestType === 'Book' ? `Cycle ${selectedCycle}` : selectedMonth}, {selectedYear}, {selectedSchool}</p>
+              <p>No records found for the selected filters</p>
+              <div className="mt-4 text-sm bg-blue-50 p-4 rounded border">
+                <p className="font-medium text-gray-700">Total Database Records: {processedTestData?.length || 0}</p>
+                <p className="text-gray-600 mt-2">Try adjusting your filters or search terms:</p>
+                <ul className="text-left text-gray-600 mt-2 space-y-1">
+                  <li>• Change test type (ALCPT, Book, ECL, OPI)</li>
+                  <li>• Select different year (2024-2030)</li>
+                  <li>• Choose "All Months" or "All Cycles"</li>
+                  <li>• Clear search term if active</li>
+                </ul>
               </div>
             </div>
           ) : (
