@@ -647,10 +647,29 @@ export default function TestTrackerWithTabs() {
                           {item.averageScore}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-center px-4 py-3">
+                      <TableCell className="text-center px-4 py-3 border-r">
                         <Badge variant={item.averageScore >= 75 ? "default" : "destructive"} className="rounded-none">
                           {item.averageScore >= 75 ? 'Pass' : 'Fail'}
                         </Badge>
+                      </TableCell>
+                      <TableCell className="text-center px-4 py-3">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => handleEdit(item)}
+                            className="px-2 py-1 text-xs bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                            title="Edit record"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            disabled={isDeleting === item.id}
+                            className="px-2 py-1 text-xs bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            title="Delete record"
+                          >
+                            {isDeleting === item.id ? 'Deleting...' : 'Delete'}
+                          </button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -755,6 +774,188 @@ export default function TestTrackerWithTabs() {
           </div>
         </div>
       )}
+
+      {/* Edit Modal */}
+      {showEditModal && editingRecord && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 w-full max-w-lg border">
+            <h3 className="text-lg font-semibold mb-4">Edit Test Score</h3>
+            <EditForm 
+              record={editingRecord}
+              schools={schools}
+              onSave={handleSaveEdit}
+              onCancel={() => {
+                setShowEditModal(false);
+                setEditingRecord(null);
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Edit Form Component
+function EditForm({ record, schools, onSave, onCancel }: {
+  record: any;
+  schools: any[];
+  onSave: (data: any) => void;
+  onCancel: () => void;
+}) {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    studentName: record.studentName || '',
+    schoolId: record.schoolId?.toString() || '',
+    testType: record.testType || 'ALCPT',
+    score: record.score?.toString() || '',
+    maxScore: record.maxScore?.toString() || '100',
+    testDate: record.testDate ? new Date(record.testDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    instructor: record.instructor || '',
+    course: record.course || ''
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!formData.studentName || !formData.schoolId || !formData.score) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await onSave({
+        ...formData,
+        score: parseInt(formData.score),
+        maxScore: parseInt(formData.maxScore),
+        schoolId: parseInt(formData.schoolId)
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update test record",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-1">Student Name *</label>
+        <input
+          type="text"
+          value={formData.studentName}
+          onChange={(e) => setFormData(prev => ({...prev, studentName: e.target.value}))}
+          className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+          required
+        />
+      </div>
+      
+      <div>
+        <label className="block text-sm font-medium mb-1">School *</label>
+        <select
+          value={formData.schoolId}
+          onChange={(e) => setFormData(prev => ({...prev, schoolId: e.target.value}))}
+          className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+          required
+        >
+          <option value="">Select School</option>
+          {schools.filter(school => [349, 350, 351].includes(school.id)).map(school => (
+            <option key={school.id} value={school.id}>{school.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Test Type</label>
+        <select
+          value={formData.testType}
+          onChange={(e) => setFormData(prev => ({...prev, testType: e.target.value}))}
+          className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+        >
+          <option value="ALCPT">ALCPT</option>
+          <option value="Book">Book</option>
+          <option value="ECL">ECL</option>
+          <option value="OPI">OPI</option>
+        </select>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Score *</label>
+          <input
+            type="number"
+            value={formData.score}
+            onChange={(e) => setFormData(prev => ({...prev, score: e.target.value}))}
+            className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            required
+            min="0"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Max Score</label>
+          <input
+            type="number"
+            value={formData.maxScore}
+            onChange={(e) => setFormData(prev => ({...prev, maxScore: e.target.value}))}
+            className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            min="1"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Test Date</label>
+        <input
+          type="date"
+          value={formData.testDate}
+          onChange={(e) => setFormData(prev => ({...prev, testDate: e.target.value}))}
+          className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Instructor</label>
+        <input
+          type="text"
+          value={formData.instructor}
+          onChange={(e) => setFormData(prev => ({...prev, instructor: e.target.value}))}
+          className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Course</label>
+        <input
+          type="text"
+          value={formData.course}
+          onChange={(e) => setFormData(prev => ({...prev, course: e.target.value}))}
+          className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+        />
+      </div>
+
+      <div className="flex gap-3 pt-4">
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="px-4 py-2 bg-blue-600 text-white border hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSaving ? 'Saving...' : 'Save Changes'}
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 bg-gray-500 text-white border hover:bg-gray-600"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }
