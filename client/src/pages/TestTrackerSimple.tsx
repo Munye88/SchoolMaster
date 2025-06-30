@@ -52,7 +52,7 @@ const TestTrackerSimple: React.FC = () => {
   const [selectedSchool, setSelectedSchool] = useState<string>('all');
 
   // Fetch test scores and schools data with production debugging
-  const { data: testScores = [], isLoading: testLoading } = useQuery<TestResult[]>({
+  const { data: testScores = [], isLoading: testLoading, error: testError } = useQuery<TestResult[]>({
     queryKey: ['/api/test-scores'],
     staleTime: 0,
     refetchOnWindowFocus: true,
@@ -74,11 +74,24 @@ const TestTrackerSimple: React.FC = () => {
   // Process real test data into aggregated format
   const processedTestData = useMemo(() => {
     // Enhanced production debugging
-    console.log('🔍 Test Tracker Data Processing - API Response Check');
-    console.log('📊 Test Scores Type:', typeof testScores, 'Is Array:', Array.isArray(testScores));
-    console.log('🏫 Schools Type:', typeof schools, 'Is Array:', Array.isArray(schools));
-    console.log('📈 Raw Test Scores Sample:', testScores?.slice(0, 2));
+    console.log('🔍 TEST TRACKER DEBUG - Data Processing Check');
+    console.log('📊 Test Scores:', { 
+      type: typeof testScores, 
+      isArray: Array.isArray(testScores), 
+      count: testScores?.length,
+      error: testError 
+    });
+    console.log('🏫 Schools:', { 
+      type: typeof schools, 
+      isArray: Array.isArray(schools), 
+      count: schools?.length 
+    });
     console.log('🎯 Loading States:', { testLoading, schoolsLoading });
+    
+    if (testError) {
+      console.error('❌ Test scores API error:', testError);
+      return [];
+    }
     
     if (testLoading || schoolsLoading) {
       console.log('⏳ Still loading data...');
@@ -86,20 +99,26 @@ const TestTrackerSimple: React.FC = () => {
     }
     
     if (!testScores || !Array.isArray(testScores) || testScores.length === 0) {
-      console.warn('⚠️ No test scores available for test tracker');
-      console.log('📊 Test scores data:', testScores);
+      console.warn('⚠️ CRITICAL: No test scores available');
+      console.log('📊 Test scores raw data:', testScores);
       return [];
     }
     
     if (!schools || !Array.isArray(schools) || schools.length === 0) {
-      console.warn('⚠️ No schools data available for test tracker');
-      console.log('🏫 Schools data:', schools);
+      console.warn('⚠️ CRITICAL: No schools data available');
+      console.log('🏫 Schools raw data:', schools);
       return [];
     }
 
-    console.log('✅ Processing test data:', { testScoresCount: testScores.length, schoolsCount: schools.length });
+    console.log('✅ Processing test data:', { 
+      testScoresCount: testScores.length, 
+      schoolsCount: schools.length,
+      firstTestScore: testScores[0],
+      testTypes: [...new Set(testScores.map(s => (s as any).testType))]
+    });
+    
     const schoolMap = new Map(schools.map(school => [school.id, school.name]));
-    console.log('🏫 School mapping created:', Array.from(schoolMap.entries()));
+    console.log('🏫 School mapping:', Array.from(schoolMap.entries()));
     const aggregatedData: ProcessedTestData[] = [];
 
     // Group test scores by test type, time period, and school
