@@ -2,6 +2,14 @@ import type { Express } from "express";
 import { db } from "./db";
 import { testScores } from "@shared/test-scores-schema";
 import { eq, and } from "drizzle-orm";
+import multer from "multer";
+import * as XLSX from "xlsx";
+
+// Configure multer for file uploads
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
 
 export function setupTestScoresAPI(app: Express) {
   // Enhanced production debugging endpoint

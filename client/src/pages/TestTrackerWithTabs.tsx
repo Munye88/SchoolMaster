@@ -1,9 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useToast } from '@/hooks/use-toast';
 
 interface TestResult {
   id: number;
@@ -52,6 +53,12 @@ export default function TestTrackerWithTabs() {
   // Search functionality
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [quickStats, setQuickStats] = useState<boolean>(true);
+  
+  // Modal states
+  const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
+  const [showManualEntry, setShowManualEntry] = useState<boolean>(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   // Fetch data
   const { data: testScores = [], isLoading: testLoading, error: testError } = useQuery<TestResult[]>({
@@ -61,6 +68,9 @@ export default function TestTrackerWithTabs() {
   const { data: schools = [], isLoading: schoolsLoading } = useQuery<any[]>({
     queryKey: ['/api/schools']
   });
+
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Constants
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -202,6 +212,42 @@ export default function TestTrackerWithTabs() {
     resetPagination();
   }, [selectedTestType, selectedMonth, selectedCycle, selectedYear, selectedSchool]);
 
+  // Upload handler
+  const handleFileUpload = async () => {
+    if (!uploadFile) return;
+    
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append('file', uploadFile);
+    
+    try {
+      const response = await fetch('/api/test-scores/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Test scores uploaded successfully"
+        });
+        queryClient.invalidateQueries({ queryKey: ['/api/test-scores'] });
+        setShowUploadModal(false);
+        setUploadFile(null);
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload test scores",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   // Chart data
   const chartData = filteredData.map(item => ({
     school: item.schoolName,
@@ -229,6 +275,20 @@ export default function TestTrackerWithTabs() {
           <p className="text-muted-foreground">
             Track and analyze test performance across all schools - Monthly Results View
           </p>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="px-4 py-2 bg-blue-600 text-white border hover:bg-blue-700 transition-colors"
+          >
+            Upload Test File
+          </button>
+          <button
+            onClick={() => setShowManualEntry(true)}
+            className="px-4 py-2 bg-green-600 text-white border hover:bg-green-700 transition-colors"
+          >
+            Manual Entry
+          </button>
         </div>
       </div>
 
@@ -555,6 +615,246 @@ export default function TestTrackerWithTabs() {
           )}
         </CardContent>
       </Card>
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 w-full max-w-md border">
+            <h3 className="text-lg font-semibold mb-4">Upload Test Scores File</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Select Excel file (.xlsx)
+                </label>
+                <input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                  className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                />
+              </div>
+              <div className="text-sm text-gray-600">
+                <p>File should contain columns:</p>
+                <ul className="list-disc list-inside mt-1">
+                  <li>Student Name</li>
+                  <li>School</li>
+                  <li>Test Type (ALCPT, Book, ECL, OPI)</li>
+                  <li>Score</li>
+                  <li>Test Date</li>
+                </ul>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={handleFileUpload}
+                  disabled={!uploadFile || isUploading}
+                  className="px-4 py-2 bg-blue-600 text-white border hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isUploading ? 'Uploading...' : 'Upload'}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowUploadModal(false);
+                    setUploadFile(null);
+                  }}
+                  className="px-4 py-2 bg-gray-500 text-white border hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Manual Entry Modal */}
+      {showManualEntry && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 w-full max-w-lg border">
+            <h3 className="text-lg font-semibold mb-4">Add Test Score Manually</h3>
+            <ManualEntryForm 
+              schools={schools}
+              onSave={() => {
+                queryClient.invalidateQueries({ queryKey: ['/api/test-scores'] });
+                setShowManualEntry(false);
+              }}
+              onCancel={() => setShowManualEntry(false)}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Manual Entry Form Component
+function ManualEntryForm({ schools, onSave, onCancel }: {
+  schools: any[];
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    studentName: '',
+    schoolId: '',
+    testType: 'ALCPT',
+    score: '',
+    maxScore: '100',
+    testDate: new Date().toISOString().split('T')[0],
+    instructor: '',
+    course: ''
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!formData.studentName || !formData.schoolId || !formData.score) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const response = await fetch('/api/test-scores/manual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          score: parseInt(formData.score),
+          maxScore: parseInt(formData.maxScore),
+          schoolId: parseInt(formData.schoolId)
+        })
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Test score added successfully"
+        });
+        onSave();
+      } else {
+        throw new Error('Save failed');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save test score",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Student Name *</label>
+          <input
+            type="text"
+            value={formData.studentName}
+            onChange={(e) => setFormData({...formData, studentName: e.target.value})}
+            className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">School *</label>
+          <select
+            value={formData.schoolId}
+            onChange={(e) => setFormData({...formData, schoolId: e.target.value})}
+            className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+          >
+            <option value="">Select School</option>
+            {schools.map(school => (
+              <option key={school.id} value={school.id}>{school.name}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-3 gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Test Type *</label>
+          <select
+            value={formData.testType}
+            onChange={(e) => setFormData({...formData, testType: e.target.value})}
+            className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+          >
+            <option value="ALCPT">ALCPT</option>
+            <option value="Book">Book Test</option>
+            <option value="ECL">ECL</option>
+            <option value="OPI">OPI</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Score *</label>
+          <input
+            type="number"
+            value={formData.score}
+            onChange={(e) => setFormData({...formData, score: e.target.value})}
+            className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Max Score</label>
+          <input
+            type="number"
+            value={formData.maxScore}
+            onChange={(e) => setFormData({...formData, maxScore: e.target.value})}
+            className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Test Date</label>
+          <input
+            type="date"
+            value={formData.testDate}
+            onChange={(e) => setFormData({...formData, testDate: e.target.value})}
+            className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Instructor</label>
+          <input
+            type="text"
+            value={formData.instructor}
+            onChange={(e) => setFormData({...formData, instructor: e.target.value})}
+            className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-1">Course</label>
+        <input
+          type="text"
+          value={formData.course}
+          onChange={(e) => setFormData({...formData, course: e.target.value})}
+          className="w-full p-2 border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+        />
+      </div>
+
+      <div className="flex gap-3 pt-4">
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="px-4 py-2 bg-green-600 text-white border hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isSaving ? 'Saving...' : 'Save Test Score'}
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 bg-gray-500 text-white border hover:bg-gray-600"
+        >
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }
