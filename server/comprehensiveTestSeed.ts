@@ -6,22 +6,28 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
   try {
     console.log('🎯 Starting comprehensive test scores seeding...');
     
-    // CRITICAL: Verify all required schools exist before seeding
-    console.log('🏫 Verifying schools exist before test score seeding...');
+    // PRODUCTION COMPATIBILITY: Get actual school IDs by code
+    console.log('🏫 Detecting production school IDs by code...');
     const existingSchools = await db.select().from(schoolsTable);
-    const existingSchoolIds = existingSchools.map(s => s.id);
-    console.log(`📚 Found schools with IDs: [${existingSchoolIds.join(', ')}]`);
+    console.log(`📚 Found schools:`, existingSchools.map(s => `${s.name} (${s.code}: ${s.id})`));
     
-    const requiredSchoolIds = [349, 350, 351];
-    const missingSchoolIds = requiredSchoolIds.filter(id => !existingSchoolIds.includes(id));
+    // Map school codes to their actual IDs in the database
+    const schoolIdMap = new Map();
+    for (const school of existingSchools) {
+      if (school.code === 'KFNA') schoolIdMap.set('KFNA', school.id);
+      else if (school.code === 'NFS_EAST') schoolIdMap.set('NFS_EAST', school.id);
+      else if (school.code === 'NFS_WEST') schoolIdMap.set('NFS_WEST', school.id);
+    }
     
-    if (missingSchoolIds.length > 0) {
-      const errorMsg = `❌ CRITICAL: Cannot seed test scores - missing schools with IDs: [${missingSchoolIds.join(', ')}]`;
+    // Verify all required schools exist
+    if (!schoolIdMap.has('KFNA') || !schoolIdMap.has('NFS_EAST') || !schoolIdMap.has('NFS_WEST')) {
+      const errorMsg = `❌ CRITICAL: Missing required schools. Found: ${Array.from(schoolIdMap.keys()).join(', ')}`;
       console.error(errorMsg);
       throw new Error(errorMsg);
     }
     
     console.log('✅ All required schools verified, proceeding with test score seeding');
+    console.log(`📋 School ID mapping: KFNA=${schoolIdMap.get('KFNA')}, NFS_EAST=${schoolIdMap.get('NFS_EAST')}, NFS_WEST=${schoolIdMap.get('NFS_WEST')}`);
     
     // Check if test scores already exist with full count verification
     const existingScores = await db.select().from(testScores);
@@ -45,10 +51,11 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
       await db.delete(testScores);
     }
 
+    // Use actual production school IDs from database
     const schools = [
-      { id: 349, name: 'KFNA', studentCount: 253 },
-      { id: 350, name: 'NFS East', studentCount: 57 },
-      { id: 351, name: 'NFS West', studentCount: 121 }
+      { id: schoolIdMap.get('KFNA'), name: 'KFNA', studentCount: 253 },
+      { id: schoolIdMap.get('NFS_EAST'), name: 'NFS East', studentCount: 57 },
+      { id: schoolIdMap.get('NFS_WEST'), name: 'NFS West', studentCount: 121 }
     ];
 
     const testTypes = [

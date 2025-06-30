@@ -8,6 +8,7 @@ import { seedCompleteInstructors } from "./completeInstructorSeed";
 import { ensureCompleteSchema } from "./migrations/ensure-complete-schema";
 import { ensureSchoolsExist } from "./migrations/ensure-schools-exist";
 import { seedComprehensiveTestScores } from "./comprehensiveTestSeed";
+import { pool } from "./db";
 import { healthCheck } from "./health";
 
 const app = express();
@@ -62,41 +63,14 @@ app.use((req, res, next) => {
     if (isRenderProduction) {
       log('🚨 RENDER PRODUCTION DETECTED: Force running comprehensive database repair...');
       
-      // STEP 1: Clear all test scores to prevent foreign key conflicts
+      // STEP 1: Use comprehensive production schema fix instead of manual SQL
       try {
-        await pool.query('DELETE FROM test_scores;');
-        log('✅ Cleared all existing test scores');
-      } catch (error) {
-        log('⚠️ Test scores clear error (continuing):', String(error));
-      }
-      
-      // STEP 2: Force create required schools with exact IDs
-      const requiredSchools = [
-        { id: 349, name: 'KFNA', code: 'KFNA', location: 'King Fahd Naval Academy' },
-        { id: 350, name: 'NFS East', code: 'NFS_EAST', location: 'Naval Flight School East' },
-        { id: 351, name: 'NFS West', code: 'NFS_WEST', location: 'Naval Flight School West' }
-      ];
-      
-      try {
-        // Clear conflicting schools
-        await pool.query('DELETE FROM schools WHERE id IN ($1, $2, $3);', [349, 350, 351]);
-        await pool.query('DELETE FROM schools WHERE code IN ($1, $2, $3);', ['KFNA', 'NFS_EAST', 'NFS_WEST']);
-        
-        // Insert required schools
-        for (const school of requiredSchools) {
-          await pool.query(
-            'INSERT INTO schools (id, name, code, location, created_at) VALUES ($1, $2, $3, $4, NOW());',
-            [school.id, school.name, school.code, school.location]
-          );
-          log(`✅ Created school: ${school.name} (ID: ${school.id})`);
-        }
-        
-        // Update sequence
-        await pool.query("SELECT setval('schools_id_seq', (SELECT MAX(id) FROM schools));");
-        log('✅ Updated schools sequence');
-        
-      } catch (schoolError) {
-        log('🚨 School creation error:', String(schoolError));
+        const { fixProductionSchema } = await import('./productionSchemaFix');
+        log('🔧 Running production schema fix for Render environment...');
+        await fixProductionSchema();
+        log('✅ Production schema fix completed for Render');
+      } catch (schemaError) {
+        log('⚠️ Production schema fix error:', String(schemaError));
       }
       
       // STEP 3: Force comprehensive test seeding
