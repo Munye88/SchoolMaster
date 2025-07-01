@@ -834,7 +834,7 @@ export default function ManageInstructors() {
                       type="button"
                       variant="outline"
                       size="lg"
-                      className="hover:bg-gray-100 border-gray-300"
+                      className="hover:bg-gray-100 border-gray-300 rounded-none"
                       onClick={() => setIsCreateDialogOpen(false)}
                     >
                       Cancel
@@ -842,7 +842,7 @@ export default function ManageInstructors() {
                     <Button
                       type="submit"
                       size="lg"
-                      className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md hover:shadow-lg font-semibold"
+                      className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md hover:shadow-lg font-semibold rounded-none"
                       disabled={createInstructorMutation.isPending}
                     >
                       {createInstructorMutation.isPending ? (
@@ -864,7 +864,7 @@ export default function ManageInstructors() {
 
         {/* Nationality Distribution Display */}
         {Object.keys(nationalityDistribution).length > 0 && (
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-white border border-gray-200 rounded-none p-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Staff Nationality Distribution</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
               {Object.entries(nationalityDistribution)
@@ -872,7 +872,7 @@ export default function ManageInstructors() {
                 .map(([nationality, count]) => (
                   <div 
                     key={nationality}
-                    className="flex flex-col items-center p-4 bg-gray-50 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors"
+                    className="flex flex-col items-center p-4 bg-gray-50 rounded-none border border-gray-100 hover:bg-gray-100 transition-colors"
                   >
                     <span className="text-4xl mb-2">{getFlagEmoji(nationality)}</span>
                     <span className="text-sm font-medium text-gray-800 text-center">{nationality}</span>
@@ -1389,7 +1389,7 @@ export default function ManageInstructors() {
                   type="button"
                   variant="outline"
                   size="lg"
-                  className="hover:bg-gray-100 border-gray-300"
+                  className="hover:bg-gray-100 border-gray-300 rounded-none"
                   onClick={() => {
                     setIsEditDialogOpen(false);
                     setSelectedInstructor(null);
@@ -1400,7 +1400,7 @@ export default function ManageInstructors() {
                 <Button
                   type="submit"
                   size="lg"
-                  className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md hover:shadow-lg font-semibold"
+                  className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md hover:shadow-lg font-semibold rounded-none"
                   disabled={updateInstructorMutation.isPending}
                 >
                   {updateInstructorMutation.isPending ? (
