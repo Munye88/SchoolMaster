@@ -398,7 +398,7 @@ export default function Courses() {
 
       <div id="coursesContent" className="container mx-auto py-6 px-4">
         {/* Filters and Controls */}
-        <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+        <div className="bg-white rounded-none shadow-md p-4 mb-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
             <div>
               <div className="flex justify-between items-center mb-2">
@@ -408,7 +408,7 @@ export default function Courses() {
                     variant={isArchiveView ? "outline" : "default"} 
                     size="sm"
                     onClick={() => setIsArchiveView(false)}
-                    className={!isArchiveView ? "bg-blue-600" : ""}
+                    className={`${!isArchiveView ? "bg-blue-600" : ""} rounded-none`}
                   >
                     <BookOpen className="h-4 w-4 mr-1" />
                     Current Courses
@@ -417,7 +417,7 @@ export default function Courses() {
                     variant={isArchiveView ? "default" : "outline"} 
                     size="sm"
                     onClick={() => setIsArchiveView(true)}
-                    className={isArchiveView ? "bg-purple-600" : ""}
+                    className={`${isArchiveView ? "bg-purple-600" : ""} rounded-none`}
                   >
                     <Archive className="h-4 w-4 mr-1" />
                     Archive
@@ -427,19 +427,19 @@ export default function Courses() {
               
               {!isArchiveView && (
                 <Tabs value={activeTab} onValueChange={setActiveTab as (value: string) => void} className="w-full">
-                  <TabsList className="bg-gray-100">
-                    <TabsTrigger value="all" className="data-[state=active]:bg-white">
+                  <TabsList className="bg-gray-100 rounded-none">
+                    <TabsTrigger value="all" className="data-[state=active]:bg-white rounded-none">
                       All Courses
                     </TabsTrigger>
-                    <TabsTrigger value="inProgress" className="data-[state=active]:bg-white">
+                    <TabsTrigger value="inProgress" className="data-[state=active]:bg-white rounded-none">
                       <Timer className="h-4 w-4 mr-1" />
                       In Progress
                     </TabsTrigger>
-                    <TabsTrigger value="upcoming" className="data-[state=active]:bg-white">
+                    <TabsTrigger value="upcoming" className="data-[state=active]:bg-white rounded-none">
                       <Calendar className="h-4 w-4 mr-1" />
                       Upcoming
                     </TabsTrigger>
-                    <TabsTrigger value="completed" className="data-[state=active]:bg-white">
+                    <TabsTrigger value="completed" className="data-[state=active]:bg-white rounded-none">
                       <CheckCircle2 className="h-4 w-4 mr-1" />
                       Completed
                     </TabsTrigger>
@@ -454,22 +454,22 @@ export default function Courses() {
                   placeholder="Search courses..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 h-10 w-full sm:w-64"
+                  className="pl-10 pr-4 h-10 w-full sm:w-64 rounded-none"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               </div>
               
               <div className="flex gap-2">
-                <div className="bg-gray-100 rounded-md flex p-1">
+                <div className="bg-gray-100 rounded-none flex p-1">
                   <button 
-                    className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
+                    className={`p-2 rounded-none ${viewMode === 'grid' ? 'bg-white shadow-sm' : ''}`}
                     onClick={() => setViewMode('grid')}
                     aria-label="Grid View"
                   >
                     <LayoutGrid className="h-4 w-4 text-gray-600" />
                   </button>
                   <button 
-                    className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
+                    className={`p-2 rounded-none ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
                     onClick={() => setViewMode('list')}
                     aria-label="List View"
                   >
@@ -643,7 +643,7 @@ export default function Courses() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className={getStatusBadgeClass(status)}>
+                          <Badge variant="outline" className={`${getStatusBadgeClass(status)} rounded-none`}>
                             {status}
                           </Badge>
                         </TableCell>
@@ -661,9 +661,9 @@ export default function Courses() {
                         <TableCell>
                           <div className="w-24">
                             <div className="text-xs mb-1 text-right">{Math.round(progress)}%</div>
-                            <div className="w-full bg-gray-200 rounded-full h-1.5">
+                            <div className="w-full bg-gray-200 rounded-none h-1.5">
                               <div 
-                                className={`${colorScheme.progressColor} h-1.5 rounded-full`}
+                                className={`${colorScheme.progressColor} h-1.5 rounded-none`}
                                 style={{ width: `${progress}%` }}
                               ></div>
                             </div>
@@ -674,7 +674,7 @@ export default function Courses() {
                         </TableCell>
                         <TableCell>
                           <Link href={`/courses/${course.id}`}>
-                            <Button variant="ghost" size="sm" className={`${colorScheme.iconColor} flex gap-1 items-center`}>
+                            <Button variant="ghost" size="sm" className={`${colorScheme.iconColor} flex gap-1 items-center rounded-none`}>
                               Details
                               <ChevronRight className="h-4 w-4" />
                             </Button>
