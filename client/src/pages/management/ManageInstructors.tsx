@@ -641,12 +641,22 @@ export default function ManageInstructors() {
             <Card key={instructor.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="flex flex-row items-center justify-start gap-4">
                 <div className="flex-shrink-0">
-                  <StandardInstructorAvatar
-                    imageUrl={instructor.imageUrl}
-                    name={instructor.name}
-                    size="md"
-                    schoolColor={getSchoolColor(getSchoolName(instructor.schoolId))}
-                  />
+                  {instructor.imageUrl ? (
+                    <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#00AEEF] shadow-md">
+                      <img 
+                        src={instructor.imageUrl} 
+                        alt={instructor.name} 
+                        className="w-full h-full object-cover object-center"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Invalid+URL";
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-xl font-bold shadow-md border-2 border-[#00AEEF]">
+                      {instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <CardTitle className="truncate">{instructor.name}</CardTitle>

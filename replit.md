@@ -239,6 +239,10 @@ The system manages multiple interconnected entities:
 - June 30, 2025: PRODUCTION SYNC ISSUE - samselt.com has test_scores table but missing school records causing foreign key constraint violations
 - June 30, 2025: Enhanced production schema fix to clear invalid test records and properly manage school ID assignments for foreign key compliance
 - June 30, 2025: Added emergency production endpoints and force deployment detection for immediate samselt.com repair upon next deployment
+- July 1, 2025: INSTRUCTOR PHOTO ALIGNMENT FIXES - Enhanced StandardInstructorAvatar component with absolute positioning for perfect image centering
+- July 1, 2025: Fixed instructor profile card layouts across all components with proper flex alignment, spacing, and flex-shrink-0 classes to prevent distortion
+- July 1, 2025: Improved instructor photo positioning in InstructorProfile.tsx, InstructorProfileCard.tsx, and school InstructorProfiles.tsx with consistent object-cover centering
+- July 1, 2025: Updated spacing and text alignment for better visual hierarchy - instructor photos now properly centered and aligned consistently across all displays
 
 ## User Preferences
 
