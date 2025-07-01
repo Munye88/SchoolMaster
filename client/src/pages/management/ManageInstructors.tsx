@@ -532,7 +532,11 @@ export default function ManageInstructors() {
             <Card key={instructor.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-4">
                 <div className="flex flex-col items-center space-y-2">
-                  <StandardInstructorAvatar instructor={instructor} size="lg" />
+                  <StandardInstructorAvatar 
+                    name={instructor.name}
+                    imageUrl={instructor.imageUrl}
+                    size="lg" 
+                  />
                   <div className="text-center">
                     <CardTitle className="text-lg">{instructor.name}</CardTitle>
                     <CardDescription>{instructor.role}</CardDescription>
