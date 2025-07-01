@@ -361,9 +361,9 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Current Courses */}
+          {/* Active Courses - Redesigned to match Staff Nationality style */}
           <div className="bg-white border border-gray-200 shadow-sm">
-            <div className="p-4 border-b border-gray-100">
+            <div className="p-4 pb-2 border-b border-gray-100">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold text-[#0A2463] text-center flex-1">Active Courses</h3>
                 <Link href="/courses" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
@@ -371,17 +371,17 @@ const Dashboard = () => {
             </div>
             <div className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
-                {/* Overview and Total - Compact design */}
-                <div className="bg-[#399165] shadow-md p-2 text-white h-12 flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
+                {/* Overview and Total - Compact header matching nationality style */}
+                <div className="bg-[#399165] shadow-sm p-2 text-white h-12 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
                     <BookOpen className="w-4 h-4 text-white" />
-                    <span className="text-sm font-medium">Active Courses</span>
+                    <span className="text-sm font-semibold uppercase tracking-wider">ACTIVE COURSES</span>
                   </div>
                   <span className="text-lg font-bold">{statistics.activeCourses}</span>
                 </div>
                 
-                {/* Course Cards - Dynamic from API data with better alignment */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
+                {/* Course Cards - Simple and clean like nationality cards */}
+                <div className="grid grid-cols-1 gap-3">
                   {courses
                     .filter(course => {
                       const status = getCourseStatus(course, true);
@@ -389,82 +389,28 @@ const Dashboard = () => {
                     })
                     .slice(0, 6)
                     .map((course, index) => {
-                      // Color schemes for variety with better contrast
+                      const schoolName = schools.find(s => s.id === course.schoolId)?.name || 'Unknown';
+                      
+                      // Simple color schemes for course cards
                       const colorSchemes = [
-                        {
-                          bg: 'bg-purple-50',
-                          dot: 'bg-purple-500',
-                          text: 'text-gray-900',
-                          icon: 'bg-purple-200',
-                          iconColor: 'text-purple-600',
-                          progress: 'bg-purple-200',
-                          progressBar: 'bg-purple-500'
-                        },
-                        {
-                          bg: 'bg-orange-50',
-                          dot: 'bg-orange-500',
-                          text: 'text-gray-900',
-                          icon: 'bg-orange-200',
-                          iconColor: 'text-orange-600',
-                          progress: 'bg-orange-200',
-                          progressBar: 'bg-orange-500'
-                        },
-                        {
-                          bg: 'bg-green-50',
-                          dot: 'bg-green-500',
-                          text: 'text-gray-900',
-                          icon: 'bg-green-200',
-                          iconColor: 'text-green-600',
-                          progress: 'bg-green-200',
-                          progressBar: 'bg-green-500'
-                        },
-                        {
-                          bg: 'bg-blue-50',
-                          dot: 'bg-blue-500',
-                          text: 'text-gray-900',
-                          icon: 'bg-blue-200',
-                          iconColor: 'text-blue-600',
-                          progress: 'bg-blue-200',
-                          progressBar: 'bg-blue-500'
-                        },
-                        {
-                          bg: 'bg-red-50',
-                          dot: 'bg-red-500',
-                          text: 'text-gray-900',
-                          icon: 'bg-red-200',
-                          iconColor: 'text-red-600',
-                          progress: 'bg-red-200',
-                          progressBar: 'bg-red-500'
-                        },
-                        {
-                          bg: 'bg-yellow-50',
-                          dot: 'bg-yellow-500',
-                          text: 'text-gray-900',
-                          icon: 'bg-yellow-200',
-                          iconColor: 'text-yellow-600',
-                          progress: 'bg-yellow-200',
-                          progressBar: 'bg-yellow-500'
-                        }
+                        { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-900', dot: 'bg-purple-500' },
+                        { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-900', dot: 'bg-orange-500' },
+                        { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-900', dot: 'bg-green-500' }
                       ];
                       
                       const scheme = colorSchemes[index % colorSchemes.length];
-                      const schoolName = schools.find(s => s.id === course.schoolId)?.name || 'Unknown';
-                      const courseProgress = calculateCourseProgress(course);
                       
                       return (
-                        <div key={course.id} className={`shadow-md ${scheme.bg} p-4 h-24 flex items-center border border-gray-200`}>
-                          <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center space-x-3">
+                        <div key={course.id} className={`shadow-sm ${scheme.bg} p-3 border ${scheme.border} h-16 flex items-center justify-center`}>
+                          <div className="flex items-center justify-between w-full max-w-xs mx-auto">
+                            <div className="flex items-center gap-2">
                               <div className={`w-3 h-3 rounded-full ${scheme.dot}`}></div>
-                              <div className="min-w-0 flex-1">
-                                <div className={`text-base font-semibold ${scheme.text} leading-tight`}>{course.name}</div>
-                                <div className={`text-sm ${scheme.text} opacity-75 mt-1`}>{schoolName}</div>
+                              <div>
+                                <span className={`text-sm font-medium ${scheme.text}`}>{course.name}</span>
+                                <div className={`text-xs ${scheme.text} opacity-75`}>{schoolName}</div>
                               </div>
                             </div>
-                            <div className="text-right flex-shrink-0 ml-3">
-                              <div className={`text-xl font-bold ${scheme.text}`}>{course.studentCount || 0}</div>
-                              <div className={`text-sm ${scheme.text} opacity-75`}>Students</div>
-                            </div>
+                            <span className={`text-lg font-bold ${scheme.text}`}>{course.studentCount || 0}</span>
                           </div>
                         </div>
                       );
@@ -475,7 +421,7 @@ const Dashboard = () => {
                     const status = getCourseStatus(course, true);
                     return status === 'In Progress';
                   }).length === 0 && (
-                    <div className="col-span-full text-center py-8 text-gray-500">
+                    <div className="text-center py-8 text-gray-500">
                       <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
                       <p>No active courses at the moment</p>
                     </div>
