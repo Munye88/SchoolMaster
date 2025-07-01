@@ -204,7 +204,7 @@ const SchoolInstructorProfiles = () => {
       
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card>
+        <Card className="rounded-none">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Total Instructors</CardTitle>
           </CardHeader>
@@ -216,7 +216,7 @@ const SchoolInstructorProfiles = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="rounded-none">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Nationality Breakdown</CardTitle>
           </CardHeader>
@@ -244,7 +244,7 @@ const SchoolInstructorProfiles = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="rounded-none">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-500">Accompanied Status</CardTitle>
           </CardHeader>
@@ -270,9 +270,9 @@ const SchoolInstructorProfiles = () => {
       {/* Tabs and Content */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <div className="flex justify-between items-center mb-4">
-          <TabsList>
-            <TabsTrigger value="grid">Grid View</TabsTrigger>
-            <TabsTrigger value="list">List View</TabsTrigger>
+          <TabsList className="rounded-none">
+            <TabsTrigger value="grid" className="rounded-none">Grid View</TabsTrigger>
+            <TabsTrigger value="list" className="rounded-none">List View</TabsTrigger>
           </TabsList>
         </div>
         
@@ -285,7 +285,7 @@ const SchoolInstructorProfiles = () => {
               </div>
             ) : (
               filteredInstructors.map((instructor) => (
-                <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 shadow-md">
+                <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 shadow-md rounded-none">
                   {/* Header with white background and instructor avatar */}
                   <div className="bg-white p-4 flex items-center justify-start">
                     <div className="mr-4 flex-shrink-0">
@@ -304,16 +304,16 @@ const SchoolInstructorProfiles = () => {
                   
                   <CardContent className="pt-4 pb-4">
                     <div className="flex flex-wrap gap-2 mb-3">
-                      <Badge className={
+                      <Badge className={`rounded-none ${
                         instructor.nationality === "American" ? "bg-blue-100 text-blue-800" :
                         instructor.nationality === "British" ? "bg-red-100 text-red-800" :
                         "bg-green-100 text-green-800"
-                      }>
+                      }`}>
                         {instructor.nationality}
                       </Badge>
-                      <Badge variant="outline" className={instructor.accompaniedStatus === "Accompanied" 
+                      <Badge variant="outline" className={`rounded-none ${instructor.accompaniedStatus === "Accompanied" 
                           ? "bg-green-100 text-green-800 border-green-300" 
-                          : "bg-gray-100 text-gray-800 border-gray-300"}>
+                          : "bg-gray-100 text-gray-800 border-gray-300"}`}>
                         {instructor.accompaniedStatus}
                       </Badge>
                     </div>
@@ -348,7 +348,7 @@ const SchoolInstructorProfiles = () => {
                     <div className="mt-4">
                       <Button 
                         size="sm" 
-                        className={`w-full ${getSchoolColorClass(currentSchool?.name || '')} hover:opacity-90`}
+                        className={`w-full ${getSchoolColorClass(currentSchool?.name || '')} hover:opacity-90 rounded-none`}
                         onClick={() => {
                           console.log(`School view: Navigating to instructor profile ${instructor.id}`);
                           setLocation(`/instructor/profile/${instructor.id}`);
@@ -365,7 +365,7 @@ const SchoolInstructorProfiles = () => {
         </TabsContent>
         
         <TabsContent value="list" className="space-y-6">
-          <Card>
+          <Card className="rounded-none">
             <CardContent className="pt-6">
               {filteredInstructors.length === 0 ? (
                 <div className="text-center p-12">
@@ -401,11 +401,11 @@ const SchoolInstructorProfiles = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge className={
+                          <Badge className={`rounded-none ${
                             instructor.nationality === "American" ? "bg-blue-100 text-blue-800" :
                             instructor.nationality === "British" ? "bg-red-100 text-red-800" :
                             "bg-green-100 text-green-800"
-                          }>
+                          }`}>
                             {instructor.nationality}
                           </Badge>
                         </TableCell>
