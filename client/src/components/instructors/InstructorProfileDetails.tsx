@@ -143,7 +143,7 @@ export const InstructorProfileDetails: React.FC<InstructorProfileDetailsProps> =
 
         {/* Emergency Contact */}
         {(instructor.emergencyContactName || instructor.emergencyContact) && (
-          <Card>
+          <Card className="rounded-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5" />
@@ -176,7 +176,7 @@ export const InstructorProfileDetails: React.FC<InstructorProfileDetailsProps> =
         )}
 
         {/* Professional Information */}
-        <Card>
+        <Card className="rounded-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <GraduationCap className="h-5 w-5" />
@@ -210,7 +210,7 @@ export const InstructorProfileDetails: React.FC<InstructorProfileDetailsProps> =
       </div>
 
       {/* Employment Details */}
-      <Card>
+      <Card className="rounded-none">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Building className="h-5 w-5" />
@@ -260,7 +260,7 @@ export const InstructorProfileDetails: React.FC<InstructorProfileDetailsProps> =
 
       {/* Additional Notes */}
       {instructor.notes && (
-        <Card>
+        <Card className="rounded-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
@@ -274,7 +274,7 @@ export const InstructorProfileDetails: React.FC<InstructorProfileDetailsProps> =
       )}
 
       {/* Record Information */}
-      <Card>
+      <Card className="rounded-none">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
