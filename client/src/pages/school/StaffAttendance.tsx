@@ -582,16 +582,26 @@ const StaffAttendance = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Fetch schools data
-  const { data: schoolsData = [] } = useQuery({
+  // Fetch schools data with proper typing
+  const { data: schoolsData = [] } = useQuery<Array<{id: number, name: string, code: string, location: string}>>({
     queryKey: ['/api/schools'],
   });
 
   // Set the selected school based on the URL parameter
   useEffect(() => {
-    if (schoolCode && schoolsData.length > 0) {
-      const school = schoolsData.find(s => s.code === schoolCode);
+    console.log('StaffAttendance: School selection effect triggered', {
+      schoolCode,
+      schoolsDataLength: schoolsData?.length || 0,
+      selectedSchoolId: selectedSchool?.id,
+      schoolsData: schoolsData?.map(s => ({ id: s.id, name: s.name, code: s.code }))
+    });
+    
+    if (schoolCode && Array.isArray(schoolsData) && schoolsData.length > 0) {
+      const school = schoolsData.find((s) => s.code === schoolCode);
+      console.log('StaffAttendance: Found school for code', schoolCode, ':', school);
+      
       if (school && (!selectedSchool || selectedSchool.id !== school.id)) {
+        console.log('StaffAttendance: Setting selected school to', school.name);
         setSelectedSchool(school);
       }
     }
@@ -1727,7 +1737,11 @@ const StaffAttendance = () => {
                                       <EditAttendanceForm 
                                         record={record}
                                         instructorName={instructor ? instructor.name : 'Unknown'}
-                                        onClose={() => document.querySelector('[data-state="open"]')?.querySelector('[aria-label="Close"]')?.click()}
+                                        onClose={() => {
+                                          const dialog = document.querySelector('[data-state="open"]');
+                                          const closeBtn = dialog?.querySelector('[aria-label="Close"]') as HTMLElement;
+                                          closeBtn?.click();
+                                        }}
                                       />
                                     </DialogContent>
                                   </Dialog>
