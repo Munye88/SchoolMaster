@@ -380,37 +380,41 @@ const Dashboard = () => {
                   <span className="text-lg font-bold">{statistics.activeCourses}</span>
                 </div>
                 
-                {/* Course Cards - Simple and clean like nationality cards */}
-                <div className="grid grid-cols-1 gap-3">
+                {/* Course Cards - 2x2 Grid Layout (Two rows, Two columns) */}
+                <div className="grid grid-cols-2 gap-4">
                   {courses
                     .filter(course => {
                       const status = getCourseStatus(course, true);
                       return status === 'In Progress';
                     })
-                    .slice(0, 6)
+                    .slice(0, 4)
                     .map((course, index) => {
                       const schoolName = schools.find(s => s.id === course.schoolId)?.name || 'Unknown';
                       
-                      // Simple color schemes for course cards
+                      // Color schemes for the 2x2 grid
                       const colorSchemes = [
                         { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-900', dot: 'bg-purple-500' },
                         { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-900', dot: 'bg-orange-500' },
-                        { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-900', dot: 'bg-green-500' }
+                        { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-900', dot: 'bg-green-500' },
+                        { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-900', dot: 'bg-blue-500' }
                       ];
                       
                       const scheme = colorSchemes[index % colorSchemes.length];
                       
                       return (
-                        <div key={course.id} className={`shadow-sm ${scheme.bg} p-3 border ${scheme.border} h-16 flex items-center justify-center`}>
-                          <div className="flex items-center justify-between w-full max-w-xs mx-auto">
-                            <div className="flex items-center gap-2">
-                              <div className={`w-3 h-3 rounded-full ${scheme.dot}`}></div>
+                        <div key={course.id} className={`shadow-sm ${scheme.bg} p-4 border ${scheme.border} h-20 flex items-center`}>
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-3 h-3 ${scheme.dot}`}></div>
                               <div>
-                                <span className={`text-sm font-medium ${scheme.text}`}>{course.name}</span>
+                                <div className={`text-sm font-semibold ${scheme.text}`}>{course.name}</div>
                                 <div className={`text-xs ${scheme.text} opacity-75`}>{schoolName}</div>
                               </div>
                             </div>
-                            <span className={`text-lg font-bold ${scheme.text}`}>{course.studentCount || 0}</span>
+                            <div className="text-right">
+                              <div className={`text-lg font-bold ${scheme.text}`}>{course.studentCount || 0}</div>
+                              <div className={`text-xs ${scheme.text} opacity-75`}>Students</div>
+                            </div>
                           </div>
                         </div>
                       );
