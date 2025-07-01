@@ -129,13 +129,13 @@ export default function TopNavigation() {
                     </Button>
                     
                     {activeDropdown === item.label && (
-                      <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 w-56 bg-white shadow-lg border border-gray-200 py-1 z-50">
                         {item.dropdown.map((dropItem) => (
                           <Link
                             key={dropItem.path}
                             href={dropItem.path}
                             className={cn(
-                              "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100",
+                              "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 text-center",
                               isActive(dropItem.path) && "bg-blue-50 text-blue-700"
                             )}
                             onClick={() => setActiveDropdown(null)}
@@ -168,7 +168,7 @@ export default function TopNavigation() {
           <div className="flex items-center space-x-2">
             {/* School Selector */}
             {selectedSchool && (
-              <div className="hidden md:block text-white text-sm px-3 py-1 bg-blue-700 rounded-md">
+              <div className="hidden md:block text-white text-sm px-3 py-1 bg-blue-700">
                 {selectedSchool.name}
               </div>
             )}
@@ -186,13 +186,13 @@ export default function TopNavigation() {
               </Button>
               
               {activeDropdown === 'user' && (
-                <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
-                  <div className="px-4 py-2 text-sm text-gray-700 border-b">
+                <div className="absolute top-full right-0 mt-1 w-48 bg-white shadow-lg border border-gray-200 py-1 z-50">
+                  <div className="px-4 py-3 text-sm text-gray-700 border-b text-center">
                     Signed in as <strong>{user?.username}</strong>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                    className="w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center justify-center space-x-2"
                   >
                     <LogOut className="h-4 w-4" />
                     <span>Sign out</span>
@@ -237,7 +237,7 @@ export default function TopNavigation() {
                               key={dropItem.path}
                               href={dropItem.path}
                               className={cn(
-                                "block px-3 py-2 text-sm text-white hover:bg-blue-700 rounded-md",
+                                "block px-3 py-3 text-sm text-white hover:bg-blue-700 text-center",
                                 isActive(dropItem.path) && "bg-blue-700"
                               )}
                               onClick={() => {
