@@ -158,13 +158,13 @@ export default function ManageInstructors() {
         schoolId: selectedInstructor.schoolId,
         phone: selectedInstructor.phone || "",
         accompaniedStatus: selectedInstructor.accompaniedStatus,
-        role: selectedInstructor.role,
+        role: selectedInstructor.role || "",
         imageUrl: selectedInstructor.imageUrl || "",
         email: selectedInstructor.email || "",
         passportNumber: selectedInstructor.passportNumber || "",
         emergencyContact: selectedInstructor.emergencyContact || "",
         emergencyPhone: selectedInstructor.emergencyPhone || "",
-        salary: selectedInstructor.salary || "",
+        salary: selectedInstructor.salary ? String(selectedInstructor.salary) : "",
         department: selectedInstructor.department || "",
         employmentStatus: selectedInstructor.employmentStatus || "",
       });
@@ -217,9 +217,7 @@ export default function ManageInstructors() {
 
   const deleteInstructorMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/instructors/${id}`, {
-        method: "DELETE",
-      });
+      return apiRequest("DELETE", `/api/instructors/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
