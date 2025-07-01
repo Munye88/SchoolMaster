@@ -311,40 +311,40 @@ export default function ManageCourses() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {courses.map((course: any) => (
-            <Card key={course.id} className="overflow-hidden">
-              <CardHeader>
-                <div className="flex justify-between">
-                  <CardTitle>{course.name}</CardTitle>
-                  <Badge>{course.status}</Badge>
+            <Card key={course.id} className="overflow-hidden border-2 hover:shadow-lg transition-shadow">
+              <CardHeader className="pb-4">
+                <div className="flex justify-between items-start">
+                  <CardTitle className="text-xl font-bold text-gray-900 leading-tight">{course.name}</CardTitle>
+                  <Badge className="flex-shrink-0">{course.status}</Badge>
                 </div>
-                <CardDescription>{getSchoolName(course.schoolId)}</CardDescription>
+                <CardDescription className="text-base text-gray-600 mt-2">{getSchoolName(course.schoolId)}</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
+              <CardContent className="py-4">
+                <div className="space-y-3">
                   <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span>Start Date: {course.startDate}</span>
+                    <Calendar className="h-4 w-4 mr-2 text-gray-500" />
+                    <span className="text-gray-800 font-medium">Start Date: {course.startDate}</span>
                   </div>
                   {course.endDate && (
                     <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                      <span>End Date: {course.endDate}</span>
+                      <Calendar className="h-4 w-4 mr-2 text-gray-500" />
+                      <span className="text-gray-800 font-medium">End Date: {course.endDate}</span>
                     </div>
                   )}
                   {course.benchmark && (
                     <div className="flex items-center">
-                      <Award className="h-4 w-4 mr-2 text-muted-foreground" />
-                      <span>Benchmark: {course.benchmark}</span>
+                      <Award className="h-4 w-4 mr-2 text-gray-500" />
+                      <span className="text-gray-800 font-medium">Benchmark: {course.benchmark}</span>
                     </div>
                   )}
                   <div>
-                    <div className="flex justify-between mb-1">
-                      <span>Progress</span>
-                      <span>{calculateCourseProgress(course)}%</span>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-gray-800 font-medium">Progress</span>
+                      <span className="text-gray-900 font-bold">{calculateCourseProgress(course)}%</span>
                     </div>
-                    <div className="w-full h-2 bg-gray-200 rounded-full">
+                    <div className="w-full h-3 bg-gray-200">
                       <div
-                        className="h-full bg-blue-600 rounded-full"
+                        className="h-full bg-blue-600"
                         style={{ width: `${calculateCourseProgress(course)}%` }}
                       />
                     </div>
