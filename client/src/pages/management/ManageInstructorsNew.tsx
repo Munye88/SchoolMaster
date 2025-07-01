@@ -406,7 +406,7 @@ export default function ManageInstructors() {
 
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
               <DialogTrigger asChild>
-                <Button size="lg" className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md transition-all hover:shadow-lg">
+                <Button size="lg" className="bg-[#0A2463] hover:bg-[#071A4A] shadow-md transition-all hover:shadow-lg rounded-none">
                   <Plus className="mr-2 h-5 w-5" />
                   <span className="font-semibold">Add Instructor</span>
                 </Button>
@@ -892,7 +892,7 @@ export default function ManageInstructors() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredInstructors?.map((instructor) => (
-            <Card key={instructor.id}>
+            <Card key={instructor.id} className="rounded-none">
               <CardHeader className="flex flex-row items-center gap-4">
                 <StandardInstructorAvatar
                   imageUrl={instructor.imageUrl}
@@ -934,7 +934,7 @@ export default function ManageInstructors() {
                 {(instructor as any).status && (
                   <p className="text-sm text-gray-600">
                     <span className="font-medium">Employment Status:</span> 
-                    <span className={`ml-1 px-2 py-1 rounded-full text-xs ${
+                    <span className={`ml-1 px-2 py-1 rounded-none text-xs ${
                       (instructor as any).status === 'Active' ? 'bg-green-100 text-green-800' :
                       (instructor as any).status === 'On Leave' ? 'bg-yellow-100 text-yellow-800' :
                       (instructor as any).status === 'Probation' ? 'bg-orange-100 text-orange-800' :
@@ -950,13 +950,14 @@ export default function ManageInstructors() {
                   variant="outline"
                   size="icon"
                   onClick={() => handleEditInstructor(instructor)}
+                  className="rounded-none"
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50 rounded-none"
                   onClick={() => handleDeleteInstructor(instructor.id)}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -1184,6 +1185,7 @@ export default function ManageInstructors() {
                                 variant="outline" 
                                 size="sm"
                                 onClick={() => field.onChange("")}
+                                className="rounded-none"
                               >
                                 Clear
                               </Button>
