@@ -381,7 +381,7 @@ const Dashboard = () => {
                 </div>
                 
                 {/* Course Cards - Dynamic from API data with better alignment */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 overflow-hidden">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
                   {courses
                     .filter(course => {
                       const status = getCourseStatus(course, true);
@@ -389,61 +389,61 @@ const Dashboard = () => {
                     })
                     .slice(0, 6)
                     .map((course, index) => {
-                      // Color schemes for variety
+                      // Color schemes for variety with better contrast
                       const colorSchemes = [
                         {
-                          bg: 'bg-[#F2EFFA]',
-                          dot: 'bg-[#8E7CB0]',
-                          text: 'text-[#342355]',
+                          bg: 'bg-purple-50',
+                          dot: 'bg-purple-500',
+                          text: 'text-gray-900',
                           icon: 'bg-purple-200',
-                          iconColor: 'text-[#8E7CB0]',
+                          iconColor: 'text-purple-600',
                           progress: 'bg-purple-200',
-                          progressBar: 'bg-[#8E7CB0]'
+                          progressBar: 'bg-purple-500'
                         },
                         {
-                          bg: 'bg-[#FDF4E7]',
-                          dot: 'bg-[#D9843A]',
-                          text: 'text-[#733F10]',
+                          bg: 'bg-orange-50',
+                          dot: 'bg-orange-500',
+                          text: 'text-gray-900',
                           icon: 'bg-orange-200',
-                          iconColor: 'text-[#D9843A]',
+                          iconColor: 'text-orange-600',
                           progress: 'bg-orange-200',
-                          progressBar: 'bg-[#D9843A]'
+                          progressBar: 'bg-orange-500'
                         },
                         {
-                          bg: 'bg-[#F0F9F5]',
-                          dot: 'bg-[#4D9E7A]',
-                          text: 'text-[#194434]',
+                          bg: 'bg-green-50',
+                          dot: 'bg-green-500',
+                          text: 'text-gray-900',
                           icon: 'bg-green-200',
-                          iconColor: 'text-[#4D9E7A]',
+                          iconColor: 'text-green-600',
                           progress: 'bg-green-200',
-                          progressBar: 'bg-[#4D9E7A]'
+                          progressBar: 'bg-green-500'
                         },
                         {
-                          bg: 'bg-[#E7F3FF]',
-                          dot: 'bg-[#3B82F6]',
-                          text: 'text-[#1E3A8A]',
+                          bg: 'bg-blue-50',
+                          dot: 'bg-blue-500',
+                          text: 'text-gray-900',
                           icon: 'bg-blue-200',
-                          iconColor: 'text-[#3B82F6]',
+                          iconColor: 'text-blue-600',
                           progress: 'bg-blue-200',
-                          progressBar: 'bg-[#3B82F6]'
+                          progressBar: 'bg-blue-500'
                         },
                         {
-                          bg: 'bg-[#FEF2F2]',
-                          dot: 'bg-[#EF4444]',
-                          text: 'text-[#7F1D1D]',
+                          bg: 'bg-red-50',
+                          dot: 'bg-red-500',
+                          text: 'text-gray-900',
                           icon: 'bg-red-200',
-                          iconColor: 'text-[#EF4444]',
+                          iconColor: 'text-red-600',
                           progress: 'bg-red-200',
-                          progressBar: 'bg-[#EF4444]'
+                          progressBar: 'bg-red-500'
                         },
                         {
-                          bg: 'bg-[#FFFBEB]',
-                          dot: 'bg-[#F59E0B]',
-                          text: 'text-[#78350F]',
+                          bg: 'bg-yellow-50',
+                          dot: 'bg-yellow-500',
+                          text: 'text-gray-900',
                           icon: 'bg-yellow-200',
-                          iconColor: 'text-[#F59E0B]',
+                          iconColor: 'text-yellow-600',
                           progress: 'bg-yellow-200',
-                          progressBar: 'bg-[#F59E0B]'
+                          progressBar: 'bg-yellow-500'
                         }
                       ];
                       
@@ -452,18 +452,18 @@ const Dashboard = () => {
                       const courseProgress = calculateCourseProgress(course);
                       
                       return (
-                        <div key={course.id} className={`shadow-md ${scheme.bg} p-3 h-16 flex items-center`}>
+                        <div key={course.id} className={`shadow-md ${scheme.bg} p-4 h-24 flex items-center border border-gray-200`}>
                           <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center space-x-2">
-                              <div className={`w-2 h-2 rounded-full ${scheme.dot}`}></div>
-                              <div className="min-w-0">
-                                <div className={`text-sm font-medium ${scheme.text} truncate`}>{course.name}</div>
-                                <div className={`text-xs ${scheme.text} opacity-75 truncate`}>{schoolName}</div>
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-3 h-3 rounded-full ${scheme.dot}`}></div>
+                              <div className="min-w-0 flex-1">
+                                <div className={`text-base font-semibold ${scheme.text} leading-tight`}>{course.name}</div>
+                                <div className={`text-sm ${scheme.text} opacity-75 mt-1`}>{schoolName}</div>
                               </div>
                             </div>
-                            <div className="text-right flex-shrink-0 ml-2">
-                              <div className={`text-lg font-bold ${scheme.text}`}>{course.studentCount || 0}</div>
-                              <div className={`text-xs ${scheme.text} opacity-75`}>Students</div>
+                            <div className="text-right flex-shrink-0 ml-3">
+                              <div className={`text-xl font-bold ${scheme.text}`}>{course.studentCount || 0}</div>
+                              <div className={`text-sm ${scheme.text} opacity-75`}>Students</div>
                             </div>
                           </div>
                         </div>
