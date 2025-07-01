@@ -100,7 +100,7 @@ export default function TopNavigation() {
           {/* Logo */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-400 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-400 flex items-center justify-center">
                 <GraduationCap className="h-5 w-5 text-white" />
               </div>
               <span className="text-white font-bold hidden md:block text-[13px]">
