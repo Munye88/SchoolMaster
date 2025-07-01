@@ -515,12 +515,12 @@ export default function Courses() {
                 return (
                   <Link key={course.id} href={`/courses/${course.id}`}>
                     <Card 
-                      className={`overflow-hidden transition-all duration-200 hover:shadow-lg cursor-pointer ${colorScheme.lightBg} border-0 shadow relative`}
+                      className={`overflow-hidden transition-all duration-200 hover:shadow-lg cursor-pointer ${colorScheme.lightBg} border-0 shadow relative rounded-none`}
                       style={{ borderTop: `3px solid ${colorScheme.borderTop}` }}
                     >
                       {isCoursePastArchiveDate && (
                         <div className="absolute top-2 right-2 z-10">
-                          <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 font-medium flex items-center gap-1">
+                          <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 font-medium flex items-center gap-1 rounded-none">
                             <Archive className="h-3 w-3" />
                             Archived
                           </Badge>
@@ -532,7 +532,7 @@ export default function Courses() {
                           <div>
                             <CardTitle className="flex items-center gap-2 mb-1">
                               {course.name}
-                              <Badge variant="outline" className={getStatusBadgeClass(status)}>
+                              <Badge variant="outline" className={`${getStatusBadgeClass(status)} rounded-none`}>
                                 {status}
                               </Badge>
                             </CardTitle>
@@ -562,9 +562,9 @@ export default function Courses() {
                               <span>Progress</span>
                               <span>{Math.round(progress)}%</span>
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div className="w-full bg-gray-200 rounded-none h-2.5">
                               <div 
-                                className={`${colorScheme.progressColor} h-2.5 rounded-full`}
+                                className={`${colorScheme.progressColor} h-2.5 rounded-none`}
                                 style={{ width: `${progress}%` }}
                               ></div>
                             </div>
@@ -578,7 +578,7 @@ export default function Courses() {
                       </CardContent>
                       
                       <CardFooter className="bg-white p-4 border-t flex justify-end">
-                        <Button variant="ghost" size="sm" className={`${colorScheme.iconColor} flex gap-1 items-center`}>
+                        <Button variant="ghost" size="sm" className={`${colorScheme.iconColor} flex gap-1 items-center rounded-none`}>
                           View Details
                           <ChevronRight className="h-4 w-4" />
                         </Button>
@@ -593,7 +593,7 @@ export default function Courses() {
         
         {/* Course Display - List View */}
         {viewMode === 'list' && (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="bg-white rounded-none shadow overflow-hidden">
             {filteredCourses.length === 0 ? (
               <div className="py-10 text-center">
                 <div className="inline-block p-3 rounded-full bg-gray-100 mb-4">
@@ -629,7 +629,7 @@ export default function Courses() {
                           <div className="font-medium flex items-center gap-2">
                             {course.name}
                             {isCoursePastArchiveDate && (
-                              <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 font-medium flex items-center gap-1 text-xs">
+                              <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 font-medium flex items-center gap-1 text-xs rounded-none">
                                 <Archive className="h-2.5 w-2.5" />
                                 Archived
                               </Badge>
