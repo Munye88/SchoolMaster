@@ -287,8 +287,8 @@ const SchoolInstructorProfiles = () => {
               filteredInstructors.map((instructor) => (
                 <Card key={instructor.id} className="overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 shadow-md">
                   {/* Header with white background and instructor avatar */}
-                  <div className="bg-white p-4 flex items-center">
-                    <div className="mr-4">
+                  <div className="bg-white p-4 flex items-center justify-start">
+                    <div className="mr-4 flex-shrink-0">
                       <StandardInstructorAvatar
                         imageUrl={instructor.imageUrl}
                         name={instructor.name}
@@ -296,9 +296,9 @@ const SchoolInstructorProfiles = () => {
                         schoolColor={getSchoolColor(currentSchool?.name || '')}
                       />
                     </div>
-                    <div className="text-[#0A2463]">
-                      <h3 className="font-bold text-xl">{instructor.name}</h3>
-                      <p className="text-sm">{instructor.role || 'ELT Instructor'}</p>
+                    <div className="text-[#0A2463] flex-1 min-w-0">
+                      <h3 className="font-bold text-xl leading-tight truncate">{instructor.name}</h3>
+                      <p className="text-sm text-gray-600 mt-1">{instructor.role || 'ELT Instructor'}</p>
                     </div>
                   </div>
                   

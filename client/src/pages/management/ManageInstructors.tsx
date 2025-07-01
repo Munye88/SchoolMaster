@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { StandardInstructorAvatar } from "@/components/instructors/StandardInstructorAvatar";
 import {
   Dialog,
   DialogContent,
@@ -242,6 +243,18 @@ export default function ManageInstructors() {
   // Get school name from ID
   const getSchoolName = (schoolId: number) => {
     return schools?.find(school => school.id === schoolId)?.name || "Unknown School";
+  };
+
+  // Get color for school
+  const getSchoolColor = (schoolName: string) => {
+    if (schoolName.includes("KFNA")) {
+      return "#0A2463"; // Blue for KFNA
+    } else if (schoolName.includes("NFS East")) {
+      return "#2A7F46"; // Green for NFS East
+    } else if (schoolName.includes("NFS West")) {
+      return "#4A5899"; // Professional blue-purple for NFS West
+    }
+    return "#0A2463"; // Default blue
   };
 
   // Handle create form submission
@@ -626,26 +639,18 @@ export default function ManageInstructors() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {(filteredInstructors || []).map((instructor) => (
             <Card key={instructor.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader className="flex flex-row items-center gap-4">
-                {instructor.imageUrl ? (
-                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-[#3E92CC] shadow-md">
-                    <img 
-                      src={instructor.imageUrl} 
-                      alt={instructor.name} 
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=Invalid+URL";
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="w-20 h-20 rounded-full bg-[#0A2463] flex items-center justify-center text-white text-xl font-bold shadow-md">
-                    {instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                  </div>
-                )}
-                <div>
-                  <CardTitle>{instructor.name}</CardTitle>
-                  <CardDescription>{instructor.role || "ELT Instructor"}</CardDescription>
+              <CardHeader className="flex flex-row items-center justify-start gap-4">
+                <div className="flex-shrink-0">
+                  <StandardInstructorAvatar
+                    imageUrl={instructor.imageUrl}
+                    name={instructor.name}
+                    size="md"
+                    schoolColor={getSchoolColor(getSchoolName(instructor.schoolId))}
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="truncate">{instructor.name}</CardTitle>
+                  <CardDescription className="text-gray-600">{instructor.role || "ELT Instructor"}</CardDescription>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
