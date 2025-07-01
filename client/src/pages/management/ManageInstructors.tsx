@@ -173,10 +173,7 @@ export default function ManageInstructors() {
 
   const createInstructorMutation = useMutation({
     mutationFn: async (data: InstructorFormData) => {
-      return apiRequest("/api/instructors", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      return apiRequest("POST", "/api/instructors", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
@@ -198,10 +195,7 @@ export default function ManageInstructors() {
 
   const updateInstructorMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: InstructorFormData }) => {
-      return apiRequest(`/api/instructors/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
+      return apiRequest("PUT", `/api/instructors/${id}`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
