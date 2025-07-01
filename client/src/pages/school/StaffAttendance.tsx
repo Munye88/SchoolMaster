@@ -415,6 +415,45 @@ const AttendanceForm: React.FC<{
       });
     },
   });
+
+  // Mutation for deleting attendance record
+  const deleteAttendanceMutation = useMutation({
+    mutationFn: async (attendanceId: number) => {
+      const response = await fetch(`/api/staff-attendance/${attendanceId}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete attendance record');
+      }
+      
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ 
+        queryKey: ['/api/staff-attendance']
+      });
+      
+      toast({
+        title: "Success",
+        description: "Attendance record deleted successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Handle delete record function
+  const handleDeleteRecord = (recordId: number, instructorName: string, recordDate: string) => {
+    if (window.confirm(`Are you sure you want to delete the attendance record for ${instructorName} on ${format(new Date(recordDate), 'MMM dd, yyyy')}?`)) {
+      deleteAttendanceMutation.mutate(recordId);
+    }
+  };
   
   // Handle form submission with automatic late detection
   const handleSubmit = (e: React.FormEvent) => {
@@ -1357,8 +1396,8 @@ const StaffAttendance = () => {
                                 />
                               </TableCell>
                               <TableCell>
-                                <div className="font-medium">{instructor.name}</div>
-                                <div className="text-xs text-gray-500">{instructor.nationality}</div>
+                                <div className="font-bold text-lg text-gray-900">{instructor.name}</div>
+                                <div className="text-sm font-medium text-gray-700">{instructor.nationality}</div>
                               </TableCell>
                               <TableCell>
                                 <Select
@@ -1422,8 +1461,8 @@ const StaffAttendance = () => {
                       {filteredData.map((item) => (
                         <TableRow key={item.id}>
                           <TableCell>
-                            <div className="font-medium">{item.name}</div>
-                            <div className="text-xs text-gray-500">{item.nationality}</div>
+                            <div className="font-bold text-lg text-gray-900">{item.name}</div>
+                            <div className="text-sm font-medium text-gray-700">{item.nationality}</div>
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
