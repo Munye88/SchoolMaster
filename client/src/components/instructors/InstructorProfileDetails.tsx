@@ -30,7 +30,7 @@ export const InstructorProfileDetails: React.FC<InstructorProfileDetailsProps> =
   return (
     <div className="space-y-6">
       {/* Profile Header */}
-      <Card>
+      <Card className="rounded-none">
         <CardHeader>
           <div className="flex items-center gap-4">
             {instructor.imageUrl ? (
@@ -69,7 +69,7 @@ export const InstructorProfileDetails: React.FC<InstructorProfileDetailsProps> =
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Personal Information */}
-        <Card>
+        <Card className="rounded-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <User className="h-5 w-5" />
@@ -105,7 +105,7 @@ export const InstructorProfileDetails: React.FC<InstructorProfileDetailsProps> =
         </Card>
 
         {/* Contact Information */}
-        <Card>
+        <Card className="rounded-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Phone className="h-5 w-5" />

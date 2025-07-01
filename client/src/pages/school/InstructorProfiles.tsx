@@ -179,25 +179,25 @@ const SchoolInstructorProfiles = () => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
           <Input
             placeholder="Search instructors..."
-            className="pl-10"
+            className="pl-10 rounded-none"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         
         <Select value={selectedView} onValueChange={setSelectedView}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] rounded-none">
             <SelectValue placeholder="View" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Nationalities</SelectItem>
-            <SelectItem value="american">American</SelectItem>
-            <SelectItem value="british">British</SelectItem>
-            <SelectItem value="canadian">Canadian</SelectItem>
+          <SelectContent className="rounded-none">
+            <SelectItem value="all" className="rounded-none">All Nationalities</SelectItem>
+            <SelectItem value="american" className="rounded-none">American</SelectItem>
+            <SelectItem value="british" className="rounded-none">British</SelectItem>
+            <SelectItem value="canadian" className="rounded-none">Canadian</SelectItem>
           </SelectContent>
         </Select>
         
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" className="gap-2 rounded-none">
           <Filter size={16} /> More Filters
         </Button>
       </div>
@@ -417,7 +417,7 @@ const SchoolInstructorProfiles = () => {
                           day: 'numeric'
                         })}</TableCell>
                         <TableCell>
-                          <Badge variant={instructor.accompaniedStatus === "Accompanied" ? "default" : "outline"}>
+                          <Badge variant={instructor.accompaniedStatus === "Accompanied" ? "default" : "outline"} className="rounded-none">
                             {instructor.accompaniedStatus}
                           </Badge>
                         </TableCell>
@@ -426,7 +426,7 @@ const SchoolInstructorProfiles = () => {
                           <Button 
                             variant="ghost" 
                             size="sm" 
-                            className={`text-${currentSchool?.name.includes("NFS East") ? "green" : 
+                            className={`rounded-none text-${currentSchool?.name.includes("NFS East") ? "green" : 
                                                 currentSchool?.name.includes("NFS West") ? "purple" : 
                                                 "blue"}-600`}
                             onClick={() => {
