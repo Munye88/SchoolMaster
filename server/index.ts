@@ -108,42 +108,50 @@ app.use((req, res, next) => {
     // Seed instructors with complete data from database export
     await seedCompleteInstructors();
     
-    // Seed comprehensive test scores for all test categories
-    await seedComprehensiveTestScores();
+    // Skip comprehensive test seeding in development for faster startup
+    if (process.env.NODE_ENV === 'production') {
+      console.log('📊 Production mode: Seeding comprehensive test scores...');
+      await seedComprehensiveTestScores();
+    } else {
+      console.log('🚀 Development mode: Skipping test score seeding for faster startup');
+    }
     
-    // CRITICAL PRODUCTION VERIFICATION - Force reseed for Render deployment
+    // DEFERRED PRODUCTION VERIFICATION - Skip extensive seeding on startup to prevent timeout
     try {
       const { testScores } = await import('../shared/test-scores-schema');
       const { db } = await import('./db');
       const testCount = await db.select().from(testScores);
       log(`📊 PRODUCTION VERIFICATION: ${testCount.length} test records found in database`);
       
-      // Always force reseed if production has insufficient data
-      if (testCount.length < 7100) {
-        log(`🚨 CRITICAL PRODUCTION ISSUE: Only ${testCount.length} test scores found, expected 7186`);
-        log('🔄 FORCING COMPREHENSIVE PRODUCTION RESEED...');
+      // Only seed if completely empty (< 100 records) to prevent startup timeout
+      if (testCount.length < 100) {
+        log(`🚨 CRITICAL: Database appears empty, quick seeding minimal records...`);
+        log('🔄 QUICK STARTUP SEED (limited dataset to prevent timeout)...');
         
-        // Clear existing incomplete data first
-        if (testCount.length > 0) {
-          log('🗑️  Clearing incomplete test data before fresh seed...');
-          await db.delete(testScores);
-        }
-        
-        // Force comprehensive reseed with fresh data
-        await seedComprehensiveTestScores(true);
-        
-        // Triple verification for production
-        const recount = await db.select().from(testScores);
-        log(`✅ PRODUCTION RESEED COMPLETE: ${recount.length} test records now available`);
-        
-        if (recount.length < 7000) {
-          log('🆘 EMERGENCY: Production reseed failed, attempting secondary seed...');
-          await seedComprehensiveTestScores(true);
-          const finalCount = await db.select().from(testScores);
-          log(`🔧 FINAL PRODUCTION COUNT: ${finalCount.length} test records`);
+        // Quick seed with limited data for immediate functionality
+        try {
+          await seedComprehensiveTestScores(false); // Don't force full reseed on startup
+          const quickCount = await db.select().from(testScores);
+          log(`✅ QUICK SEED COMPLETE: ${quickCount.length} test records seeded for startup`);
+        } catch (quickSeedError) {
+          log(`⚠️ Quick seed error: ${quickSeedError}`);
         }
       } else {
-        log(`✅ PRODUCTION VERIFIED: ${testCount.length} test records confirmed`);
+        log(`✅ STARTUP VERIFIED: ${testCount.length} test records confirmed - skipping extensive seeding`);
+      }
+      
+      // Schedule comprehensive seeding after server starts (non-blocking)
+      if (testCount.length < 7000) {
+        setTimeout(async () => {
+          try {
+            log('🔄 BACKGROUND: Starting comprehensive test score seeding...');
+            await seedComprehensiveTestScores(true);
+            const backgroundCount = await db.select().from(testScores);
+            log(`✅ BACKGROUND SEED COMPLETE: ${backgroundCount.length} test records now available`);
+          } catch (backgroundError) {
+            log(`⚠️ Background seeding error: ${backgroundError}`);
+          }
+        }, 5000); // Wait 5 seconds after server starts
       }
     } catch (verifyError) {
       log(`🚨 CRITICAL ERROR verifying test scores: ${verifyError}`);

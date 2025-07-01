@@ -76,10 +76,32 @@ export async function fixProductionSchema() {
         SELECT id FROM schools WHERE code = ${school.code};
       `);
       
-      // Force delete and recreate to ensure exact ID matching
-      await db.execute(sql`
-        DELETE FROM schools WHERE code = ${school.code} OR id = ${school.id};
-      `);
+      // Skip deletion if would cause foreign key constraint violation
+      // Only delete if no dependent records exist
+      try {
+        const dependentStudents = await db.execute(sql`
+          SELECT COUNT(*) as count FROM students WHERE school_id = ${school.id};
+        `);
+        
+        const studentCount = dependentStudents.rows[0]?.count || 0;
+        if (studentCount > 0) {
+          console.log(`⚠️ Skipping school deletion for ID ${school.id} - has ${studentCount} dependent students`);
+          // Check if school already exists with correct data
+          if (existingById.rows.length > 0) {
+            console.log(`✅ School ID ${school.id} already exists with dependent data, skipping`);
+            continue;
+          }
+        } else {
+          await db.execute(sql`
+            DELETE FROM schools WHERE code = ${school.code} OR id = ${school.id};
+          `);
+        }
+      } catch (deleteError) {
+        console.log(`⚠️ Skipping school deletion due to constraints: ${deleteError}`);
+        if (existingById.rows.length > 0) {
+          continue; // School already exists, skip creation
+        }
+      }
       
       // Insert with exact required ID
       await db.execute(sql`

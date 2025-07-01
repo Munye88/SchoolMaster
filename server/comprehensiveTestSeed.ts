@@ -67,7 +67,8 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
 
     const instructors = ['Dr. Smith', 'Prof. Johnson', 'Ms. Wilson', 'Mr. Brown', 'Dr. Davis'];
     const months = ['January', 'February', 'March', 'April', 'May'];
-    const years = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
+    // Reduce data generation for faster startup - can be expanded later if needed
+    const years = process.env.NODE_ENV === 'production' ? [2024, 2025] : [2025];
     const cycles = [1, 2, 3, 4];
 
     const allTestScores = [];
@@ -105,9 +106,9 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
               }
             }
           } else {
-            // ALCPT, ECL, OPI tests are monthly
+            // ALCPT, ECL, OPI tests are monthly (reduced for faster startup)
             for (const month of months) {
-              const testsPerMonth = Math.floor(school.studentCount * 0.4);
+              const testsPerMonth = Math.floor(school.studentCount * 0.1);
               
               for (let i = 0; i < testsPerMonth; i++) {
                 const monthIndex = months.indexOf(month);
@@ -142,8 +143,8 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
 
     console.log(`📊 Generated ${allTestScores.length} test score records`);
 
-    // Insert test scores in batches
-    const batchSize = 100;
+    // Insert test scores in larger batches for faster processing
+    const batchSize = 500;
     for (let i = 0; i < allTestScores.length; i += batchSize) {
       const batch = allTestScores.slice(i, i + batchSize);
       await db.insert(testScores).values(batch);
