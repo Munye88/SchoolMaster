@@ -283,7 +283,7 @@ export default function ManageCourses() {
         <h1 className="text-3xl font-bold">Course Management</h1>
         <Button
           onClick={() => setIsCreateDialogOpen(true)}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 rounded-none"
         >
           <PlusCircle className="h-5 w-5" />
           Add Course
@@ -295,14 +295,14 @@ export default function ManageCourses() {
           <p className="text-lg">Loading...</p>
         </div>
       ) : courses.length === 0 ? (
-        <div className="bg-muted rounded-lg p-8 text-center">
+        <div className="bg-muted rounded-none p-8 text-center">
           <h3 className="text-xl font-semibold mb-2">No Courses</h3>
           <p className="text-muted-foreground mb-4">
             There are no courses in the system yet. Add your first course to get started.
           </p>
           <Button
             onClick={() => setIsCreateDialogOpen(true)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 rounded-none"
           >
             <PlusCircle className="h-5 w-5" />
             Add Course
@@ -311,7 +311,7 @@ export default function ManageCourses() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {courses.map((course: any) => (
-            <Card key={course.id} className="overflow-hidden border-2 hover:shadow-lg transition-shadow">
+            <Card key={course.id} className="overflow-hidden border-2 hover:shadow-lg transition-shadow rounded-none">
               <CardHeader className="pb-4">
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-xl font-bold text-gray-900 leading-tight">{course.name}</CardTitle>
@@ -342,9 +342,9 @@ export default function ManageCourses() {
                       <span className="text-gray-800 font-medium">Progress</span>
                       <span className="text-gray-900 font-bold">{calculateCourseProgress(course)}%</span>
                     </div>
-                    <div className="w-full h-3 bg-gray-200">
+                    <div className="w-full h-3 bg-gray-200 rounded-none">
                       <div
-                        className="h-full bg-blue-600"
+                        className="h-full bg-blue-600 rounded-none"
                         style={{ width: `${calculateCourseProgress(course)}%` }}
                       />
                     </div>
@@ -356,6 +356,7 @@ export default function ManageCourses() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleEditCourse(course)}
+                  className="rounded-none"
                 >
                   <Pencil className="h-4 w-4 mr-1" />
                   Edit
@@ -364,7 +365,7 @@ export default function ManageCourses() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleDeleteClick(course)}
-                  className="text-destructive hover:text-destructive"
+                  className="text-destructive hover:text-destructive rounded-none"
                 >
                   <Trash2 className="h-4 w-4 mr-1" />
                   Delete
