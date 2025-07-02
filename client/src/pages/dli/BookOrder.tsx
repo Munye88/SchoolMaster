@@ -659,7 +659,7 @@ const BookOrder = () => {
                   </CardContent>
                 </Card>
                 
-                <Card className="overflow-hidden border-0 shadow-md">
+                <Card className="overflow-hidden border-0 shadow-md rounded-none">
                   <div className={`h-2 w-full ${getSchoolColor(viewingSchoolId)}`} />
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
@@ -711,7 +711,7 @@ const BookOrder = () => {
                 </TabsList>
                 
                 <TabsContent value="inventory">
-                  <Card className="border-0 shadow-md">
+                  <Card className="border-0 shadow-md rounded-none">
                     <CardHeader>
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <CardTitle>Book Inventory</CardTitle>
@@ -854,7 +854,7 @@ const BookOrder = () => {
                 </TabsContent>
                 
                 <TabsContent value="history">
-                  <Card className="border-0 shadow-md">
+                  <Card className="border-0 shadow-md rounded-none">
                     <CardHeader>
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <CardTitle>Inventory Update History</CardTitle>
@@ -925,7 +925,7 @@ const BookOrder = () => {
               {schools.map(school => (
                 <Card 
                   key={school.id} 
-                  className="overflow-hidden border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow"
+                  className="overflow-hidden border-0 shadow-md cursor-pointer hover:shadow-lg transition-shadow rounded-none"
                   onClick={() => viewSchoolInventory(school.id)}
                 >
                   <div className={`h-2 w-full ${getSchoolColor(school.id)}`} />
@@ -975,7 +975,7 @@ const BookOrder = () => {
         // Consolidated view
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="overflow-hidden border-0 shadow-md">
+            <Card className="overflow-hidden border-0 shadow-md rounded-none">
               <div className="h-2 w-full bg-gradient-to-r from-indigo-600 to-purple-600" />
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
@@ -997,7 +997,7 @@ const BookOrder = () => {
               </CardContent>
             </Card>
             
-            <Card className="overflow-hidden border-0 shadow-md">
+            <Card className="overflow-hidden border-0 shadow-md rounded-none">
               <div className="h-2 w-full bg-gradient-to-r from-purple-600 to-fuchsia-600" />
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
