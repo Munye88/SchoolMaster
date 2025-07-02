@@ -1554,7 +1554,7 @@ const BookOrder = () => {
               <h4 className="text-sm font-medium mb-2">Available Books</h4>
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                <Input placeholder="Search books..." className="pl-10" />
+                <Input placeholder="Search books..." className="pl-10 rounded-none" />
               </div>
               <div className="max-h-60 overflow-y-auto rounded-md border">
                 <Table>

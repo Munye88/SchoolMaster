@@ -249,25 +249,25 @@ const SchoolBookInventory = () => {
         
         <div className="flex gap-2">
           <PrintButton contentId="bookInventoryContent" />
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2 rounded-none">
             <Download size={16} /> Export
           </Button>
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2 rounded-none">
             <Share2 size={16} /> Share
           </Button>
-          <Button className="bg-[#0A2463] hover:bg-[#071A4A] gap-2">
+          <Button className="bg-[#0A2463] hover:bg-[#071A4A] gap-2 rounded-none">
             <FilePlus size={16} /> Add Book
           </Button>
         </div>
       </div>
       
-      <Card className="mb-6">
+      <Card className="mb-6 rounded-none">
         <CardHeader>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <CardTitle>Book Inventory</CardTitle>
             <div className="relative w-full md:w-64">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-              <Input placeholder="Search books..." className="pl-8" />
+              <Input placeholder="Search books..." className="pl-8 rounded-none" />
             </div>
           </div>
         </CardHeader>
