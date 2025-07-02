@@ -380,14 +380,14 @@ const Dashboard = () => {
                   <span className="text-lg font-bold">{statistics.activeCourses}</span>
                 </div>
                 
-                {/* Course Cards - 2x2 Grid Layout (Two rows, Two columns) */}
-                <div className="grid grid-cols-2 gap-4">
+                {/* Course Cards - 2x3 Grid Layout to show all 6 courses */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {courses
                     .filter(course => {
                       const status = getCourseStatus(course, true);
                       return status === 'In Progress';
                     })
-                    .slice(0, 4)
+                    .slice(0, 6)
                     .map((course, index) => {
                       const schoolName = schools.find(s => s.id === course.schoolId)?.name || 'Unknown';
                       
@@ -402,7 +402,7 @@ const Dashboard = () => {
                       const scheme = colorSchemes[index % colorSchemes.length];
                       
                       return (
-                        <div key={course.id} className={`shadow-sm ${scheme.bg} p-4 border ${scheme.border} h-20 flex items-center`}>
+                        <div key={course.id} className={`shadow-sm ${scheme.bg} p-3 border ${scheme.border} h-16 flex items-center`}>
                           <div className="flex items-center justify-between w-full">
                             <div className="flex items-center gap-3">
                               <div className={`w-3 h-3 ${scheme.dot}`}></div>

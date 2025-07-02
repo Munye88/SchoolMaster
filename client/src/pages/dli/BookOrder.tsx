@@ -605,7 +605,7 @@ const BookOrder = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <Card className="overflow-hidden border-0 shadow-md">
+                <Card className="overflow-hidden border-0 shadow-md rounded-none">
                   <div className={`h-2 w-full ${getSchoolColor(viewingSchoolId)}`} />
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
@@ -627,7 +627,7 @@ const BookOrder = () => {
                   </CardContent>
                 </Card>
                 
-                <Card className="overflow-hidden border-0 shadow-md">
+                <Card className="overflow-hidden border-0 shadow-md rounded-none">
                   <div className={`h-2 w-full ${getSchoolColor(viewingSchoolId)}`} />
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
