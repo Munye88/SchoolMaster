@@ -365,7 +365,7 @@ const Dashboard = () => {
           <div className="bg-white border border-gray-200 shadow-sm">
             <div className="p-4 pb-2 border-b border-gray-100">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-[#0A2463] text-center flex-1">Active Courses</h3>
+                <h3 className="text-lg font-semibold text-[#0A2463] text-center flex-1">Courses</h3>
                 <Link href="/courses" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
               </div>
             </div>
@@ -383,32 +383,39 @@ const Dashboard = () => {
                 {/* Course Cards - 2x3 Grid Layout to show all 6 courses */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {courses
-                    .filter(course => {
-                      const status = getCourseStatus(course, true);
-                      return status === 'In Progress';
-                    })
                     .slice(0, 6)
                     .map((course, index) => {
                       const schoolName = schools.find(s => s.id === course.schoolId)?.name || 'Unknown';
+                      const courseStatus = getCourseStatus(course, true);
                       
-                      // Color schemes for the 2x2 grid
+                      // Color schemes for the 2x3 grid (6 courses)
                       const colorSchemes = [
                         { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-900', dot: 'bg-purple-500' },
                         { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-900', dot: 'bg-orange-500' },
                         { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-900', dot: 'bg-green-500' },
-                        { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-900', dot: 'bg-blue-500' }
+                        { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-900', dot: 'bg-blue-500' },
+                        { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-900', dot: 'bg-red-500' },
+                        { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-900', dot: 'bg-yellow-500' }
                       ];
                       
                       const scheme = colorSchemes[index % colorSchemes.length];
+                      
+                      // Status indicator colors
+                      const statusColors: { [key: string]: string } = {
+                        'In Progress': 'bg-green-500',
+                        'Completed': 'bg-gray-500',
+                        'Starting Soon': 'bg-yellow-500',
+                        'Active': 'bg-green-500'
+                      };
                       
                       return (
                         <div key={course.id} className={`shadow-sm ${scheme.bg} p-3 border ${scheme.border} h-16 flex items-center`}>
                           <div className="flex items-center justify-between w-full">
                             <div className="flex items-center gap-3">
-                              <div className={`w-3 h-3 ${scheme.dot}`}></div>
+                              <div className={`w-3 h-3 rounded-full ${statusColors[courseStatus] || 'bg-gray-400'}`}></div>
                               <div>
                                 <div className={`text-sm font-semibold ${scheme.text}`}>{course.name}</div>
-                                <div className={`text-xs ${scheme.text} opacity-75`}>{schoolName}</div>
+                                <div className={`text-xs ${scheme.text} opacity-75`}>{schoolName} • {courseStatus}</div>
                               </div>
                             </div>
                             <div className="text-right">
