@@ -47,11 +47,19 @@ const InstructorProfileCard = ({ instructor, isLoading = false }: InstructorProf
       <CardContent className="p-6 md:flex">
         <div className="md:w-1/4 flex flex-col items-center mb-6 md:mb-0">
           {instructor.imageUrl ? (
-            <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#3E92CC] shadow-lg">
+            <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[#3E92CC] shadow-lg relative bg-white">
               <img 
                 src={instructor.imageUrl} 
                 alt={instructor.name} 
-                className="w-full h-full object-cover"
+                className="absolute rounded-full object-cover"
+                style={{
+                  width: "calc(100% - 6px)",
+                  height: "calc(100% - 6px)",
+                  left: "3px",
+                  top: "3px",
+                  objectFit: "cover",
+                  objectPosition: "center center"
+                }}
                 onError={(e) => {
                   // Fallback to initials if image fails to load
                   const target = e.currentTarget;

@@ -91,22 +91,28 @@ export function StandardInstructorAvatar({
         <img
           src={imageSource}
           alt={name}
-          className="absolute inset-0 w-full h-full object-cover rounded-full" 
+          className="absolute rounded-full object-cover" 
           style={{ 
             objectFit: "cover",
             objectPosition: "center center",
-            width: "100%",
-            height: "100%",
-            left: "0",
-            top: "0",
+            width: "calc(100% - 8px)",
+            height: "calc(100% - 8px)",
+            left: "4px",
+            top: "4px",
             position: "absolute"
           }}
           onError={handleImageError}
         />
       ) : (
         <div 
-          className={`absolute inset-0 w-full h-full flex items-center justify-center text-white font-bold ${initialsFontSize[size]} rounded-full`}
-          style={{ backgroundColor: schoolColor }}
+          className={`absolute rounded-full flex items-center justify-center text-white font-bold ${initialsFontSize[size]}`}
+          style={{ 
+            backgroundColor: schoolColor,
+            width: "calc(100% - 8px)",
+            height: "calc(100% - 8px)",
+            left: "4px",
+            top: "4px"
+          }}
         >
           {getInitials(name)}
         </div>

@@ -205,11 +205,28 @@ const InstructorLookup = () => {
                     setSearchQuery("");
                   }}
                 >
-                  <Avatar className="h-10 w-10 border-2 border-blue-300">
+                  <Avatar className="h-10 w-10 border-2 border-blue-300 relative overflow-hidden">
                     {instructor.imageUrl ? (
-                      <AvatarImage src={instructor.imageUrl} alt={instructor.name} />
+                      <AvatarImage 
+                        src={instructor.imageUrl} 
+                        alt={instructor.name}
+                        className="absolute object-cover"
+                        style={{
+                          width: "calc(100% - 2px)",
+                          height: "calc(100% - 2px)",
+                          left: "1px",
+                          top: "1px"
+                        }}
+                      />
                     ) : (
-                      <AvatarFallback>{instructor.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                      <AvatarFallback className="absolute" style={{
+                        width: "calc(100% - 2px)",
+                        height: "calc(100% - 2px)",
+                        left: "1px",
+                        top: "1px"
+                      }}>
+                        {instructor.name.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
                     )}
                   </Avatar>
                   <div className="flex-1">
@@ -237,11 +254,28 @@ const InstructorLookup = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-                <Avatar className="h-24 w-24 border-4 border-blue-300">
+                <Avatar className="h-24 w-24 border-4 border-blue-300 relative overflow-hidden">
                   {selectedInstructor.imageUrl ? (
-                    <AvatarImage src={selectedInstructor.imageUrl} alt={selectedInstructor.name} />
+                    <AvatarImage 
+                      src={selectedInstructor.imageUrl} 
+                      alt={selectedInstructor.name}
+                      className="absolute object-cover"
+                      style={{
+                        width: "calc(100% - 4px)",
+                        height: "calc(100% - 4px)",
+                        left: "2px",
+                        top: "2px"
+                      }}
+                    />
                   ) : (
-                    <AvatarFallback className="text-2xl">{selectedInstructor.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                    <AvatarFallback className="text-2xl absolute" style={{
+                      width: "calc(100% - 4px)",
+                      height: "calc(100% - 4px)",
+                      left: "2px",
+                      top: "2px"
+                    }}>
+                      {selectedInstructor.name.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
                   )}
                 </Avatar>
                 <div className="flex-1">

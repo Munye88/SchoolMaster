@@ -254,6 +254,11 @@ The system manages multiple interconnected entities:
 - July 1, 2025: Fixed instructor photos to sit properly inside circle shapes instead of on circumference using precise positioning and object-cover styling
 - July 1, 2025: ACTIVE COURSES DASHBOARD REDESIGN - Converted Active Courses container from complex multi-color scheme to clean 2x2 grid layout matching Staff Nationality container style
 - July 1, 2025: Redesigned Active Courses with simple rectangular cards, consistent spacing, and professional appearance matching user preferences for clean, well-arranged UI elements
+- July 2, 2025: INSTRUCTOR PHOTO ALIGNMENT FIXES - Enhanced image alignment throughout application to prevent photos from sitting too close to container edges
+- July 2, 2025: Fixed StandardInstructorAvatar component with proper spacing (4px padding) so photos are properly centered within circular containers instead of touching edges
+- July 2, 2025: Updated InstructorProfileCard component with improved image positioning using calc() CSS for consistent spacing
+- July 2, 2025: Fixed InstructorLookup Avatar components with better alignment for both small search results and large detailed view avatars
+- July 2, 2025: All instructor profile photos now display with appropriate spacing from container borders for professional appearance across all three schools
 
 ## User Preferences
 
