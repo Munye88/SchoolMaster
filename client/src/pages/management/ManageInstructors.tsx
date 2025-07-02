@@ -58,13 +58,6 @@ const instructorFormSchema = z.object({
   accompaniedStatus: z.string().min(1, "Accompanied status is required"),
   role: z.string().min(1, "Role is required"),
   imageUrl: z.string().optional(),
-  email: z.string().email().optional().or(z.literal("")),
-  passportNumber: z.string().optional(),
-  emergencyContact: z.string().optional(),
-  emergencyPhone: z.string().optional(),
-  salary: z.string().optional(),
-  department: z.string().optional(),
-  employmentStatus: z.string().optional(),
 });
 
 type InstructorFormData = z.infer<typeof instructorFormSchema>;
@@ -105,13 +98,6 @@ export default function ManageInstructors() {
       accompaniedStatus: "",
       role: "",
       imageUrl: "",
-      email: "",
-      passportNumber: "",
-      emergencyContact: "",
-      emergencyPhone: "",
-      salary: "",
-      department: "",
-      employmentStatus: "",
     },
   });
 
@@ -129,13 +115,6 @@ export default function ManageInstructors() {
       accompaniedStatus: "",
       role: "",
       imageUrl: "",
-      email: "",
-      passportNumber: "",
-      emergencyContact: "",
-      emergencyPhone: "",
-      salary: "",
-      department: "",
-      employmentStatus: "",
     },
   });
 
@@ -160,13 +139,6 @@ export default function ManageInstructors() {
         accompaniedStatus: selectedInstructor.accompaniedStatus,
         role: selectedInstructor.role || "",
         imageUrl: selectedInstructor.imageUrl || "",
-        email: selectedInstructor.email || "",
-        passportNumber: selectedInstructor.passportNumber || "",
-        emergencyContact: selectedInstructor.emergencyContact || "",
-        emergencyPhone: selectedInstructor.emergencyPhone || "",
-        salary: selectedInstructor.salary ? String(selectedInstructor.salary) : "",
-        department: selectedInstructor.department || "",
-        employmentStatus: selectedInstructor.employmentStatus || "",
       });
     }
   }, [selectedInstructor, editForm]);
@@ -316,20 +288,6 @@ export default function ManageInstructors() {
                       )}
                     />
                     
-                    <FormField
-                      control={createForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input type="email" placeholder="Enter email address" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
                     <FormField
                       control={createForm.control}
                       name="nationality"
@@ -611,20 +569,6 @@ export default function ManageInstructors() {
                   )}
                 />
                 
-                <FormField
-                  control={editForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="Enter email address" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <FormField
                   control={editForm.control}
                   name="nationality"
