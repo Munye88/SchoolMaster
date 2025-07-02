@@ -213,7 +213,7 @@ export default function SchoolHome() {
       </div>
 
       {/* Recent Activity */}
-      <Card>
+      <Card className="rounded-none">
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>
           <CardDescription>Latest updates and activities at {school.name}</CardDescription>

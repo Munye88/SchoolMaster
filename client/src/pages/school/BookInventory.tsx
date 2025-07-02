@@ -310,7 +310,7 @@ const SchoolBookInventory = () => {
       </Card>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+        <Card className="rounded-none">
           <CardHeader>
             <CardTitle>Inventory Summary</CardTitle>
           </CardHeader>
@@ -340,7 +340,7 @@ const SchoolBookInventory = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="rounded-none">
           <CardHeader>
             <CardTitle>Book Categories</CardTitle>
           </CardHeader>
@@ -356,7 +356,7 @@ const SchoolBookInventory = () => {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="rounded-none">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>

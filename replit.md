@@ -267,6 +267,8 @@ The system manages multiple interconnected entities:
 - July 2, 2025: Completed systematic UI overhaul - all DLI inventory management components now use perfect square/rectangular design throughout
 - July 2, 2025: INSTRUCTOR FORM SIMPLIFICATION - Restored ManageInstructors.tsx to original simple form fields, removed extended fields (email, passport, emergency contact, salary, department, employment status) for cleaner interface
 - July 2, 2025: COURSE MANAGEMENT UI STANDARDIZATION - Converted all Dialog containers, buttons, SelectTrigger, and Input components in ManageCoursesFixed.tsx to perfect squares using rounded-none class for consistent professional appearance
+- July 2, 2025: SCHOOL DASHBOARD UI STANDARDIZATION - Converted Recent Activity Card containers in SchoolHome.tsx to perfect squares for consistent professional appearance across all three schools
+- July 2, 2025: BOOK INVENTORY UI STANDARDIZATION - Converted Inventory Summary, Book Categories, and Recent Activity Card containers in BookInventory.tsx to perfect squares for consistent design throughout book inventory pages
 
 ## User Preferences
 
