@@ -673,7 +673,7 @@ const AlcptOrder = () => {
                   </CardContent>
                 </Card>
                 
-                <Card className="overflow-hidden border-0 shadow-md">
+                <Card className="overflow-hidden border-0 shadow-md rounded-none">
                   <div className={`h-2 w-full ${getSchoolColor(viewingSchoolId)}`} />
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
