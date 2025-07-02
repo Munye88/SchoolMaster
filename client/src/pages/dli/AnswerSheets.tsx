@@ -921,7 +921,7 @@ const AnswerSheets = () => {
               </CardContent>
             </Card>
             
-            <Card className="overflow-hidden border-0 shadow-md">
+            <Card className="overflow-hidden border-0 shadow-md rounded-none">
               <div className="h-2 w-full bg-gradient-to-r from-indigo-600 to-blue-600" />
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
@@ -953,7 +953,7 @@ const AnswerSheets = () => {
               </CardContent>
             </Card>
             
-            <Card className="overflow-hidden border-0 shadow-md">
+            <Card className="overflow-hidden border-0 shadow-md rounded-none">
               <div className="h-2 w-full bg-gradient-to-r from-blue-600 to-sky-600" />
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
@@ -991,7 +991,7 @@ const AnswerSheets = () => {
             </Card>
           </div>
           
-          <Card className="border-0 shadow-md mb-8">
+          <Card className="border-0 shadow-md mb-8 rounded-none">
             <CardHeader>
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <CardTitle>Answer Sheets Inventory Across All Schools</CardTitle>
