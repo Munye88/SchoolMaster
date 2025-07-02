@@ -13,17 +13,16 @@ const InstructorProfile: React.FC = () => {
   
   // Fetch instructor data with enhanced error handling for transferred website
   const { data: instructor, isLoading: isLoadingInstructor, error } = useQuery<Instructor>({
-    queryKey: ['/api/instructors', id],
+    queryKey: [`/api/instructors/${id}`],
     enabled: !!id,
     retry: 3,
     staleTime: 5 * 60 * 1000, // 5 minutes cache
-    onError: (error) => {
-      console.error(`❌ Failed to fetch instructor ${id}:`, error);
-    },
-    onSuccess: (data) => {
-      console.log(`✅ Successfully loaded instructor profile: ${data.name} (ID: ${id})`);
-    }
   });
+
+  // Log states for debugging
+  console.log(`🔍 InstructorProfile: ID=${id}, Loading=${isLoadingInstructor}, HasData=${!!instructor}, Error=${!!error}`);
+  if (error) console.error('🔍 Error details:', error);
+  if (instructor) console.log('🔍 Instructor data:', instructor);
 
   // Fetch schools for name resolution
   const { data: schools } = useQuery<School[]>({
@@ -48,27 +47,49 @@ const InstructorProfile: React.FC = () => {
 
   if (isLoadingInstructor) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          <span className="ml-2">Loading instructor profile...</span>
+        </div>
       </div>
     );
   }
 
-  if (error || !instructor) {
+  if (error) {
     console.error(`❌ Instructor profile error for ID ${id}:`, error);
     return (
-      <div className="text-center py-12">
-        <div className="text-red-500 text-lg">Error loading instructor profile</div>
-        <p className="text-gray-400 mt-2">
-          The instructor profile (ID: {id}) could not be found or loaded.
-        </p>
-        <p className="text-gray-500 text-sm mt-1">
-          Error: {error?.message || 'Unknown error occurred'}
-        </p>
-        <Button onClick={handleBack} className="mt-4">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Instructors
-        </Button>
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="text-center py-12">
+          <div className="text-red-500 text-lg">Error loading instructor profile</div>
+          <p className="text-gray-400 mt-2">
+            The instructor profile (ID: {id}) could not be found or loaded.
+          </p>
+          <p className="text-gray-500 text-sm mt-1">
+            Error: {error?.message || 'Unknown error occurred'}
+          </p>
+          <Button onClick={handleBack} className="mt-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Instructors
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!instructor) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="text-center py-12">
+          <div className="text-gray-500 text-lg">Instructor not found</div>
+          <p className="text-gray-400 mt-2">
+            No instructor found with ID: {id}
+          </p>
+          <Button onClick={handleBack} className="mt-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Instructors
+          </Button>
+        </div>
       </div>
     );
   }

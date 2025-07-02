@@ -262,7 +262,7 @@ const Dashboard = () => {
             <div className="flex items-center gap-3">
               <Link 
                 to="/instructor-lookup" 
-                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:border-white/40 transition-all duration-200"
+                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-none border border-white/20 hover:border-white/40 transition-all duration-200"
               >
                 <Users className="h-4 w-4 text-white" />
                 <span className="text-sm font-medium whitespace-nowrap">Instructor Lookup</span>
@@ -270,7 +270,7 @@ const Dashboard = () => {
               
               <Link 
                 to="/management/courses" 
-                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:border-white/40 transition-all duration-200"
+                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-none border border-white/20 hover:border-white/40 transition-all duration-200"
               >
                 <BookOpen className="h-4 w-4 text-white" />
                 <span className="text-sm font-medium whitespace-nowrap">Course Management</span>
@@ -278,7 +278,7 @@ const Dashboard = () => {
               
               <Link 
                 to="/management/students" 
-                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:border-white/40 transition-all duration-200"
+                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-none border border-white/20 hover:border-white/40 transition-all duration-200"
               >
                 <GraduationCap className="h-4 w-4 text-white" />
                 <span className="text-sm font-medium whitespace-nowrap">Student Records</span>
@@ -286,7 +286,7 @@ const Dashboard = () => {
               
               <Link 
                 to="/reports" 
-                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 hover:border-white/40 transition-all duration-200"
+                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm px-4 py-2 rounded-none border border-white/20 hover:border-white/40 transition-all duration-200"
               >
                 <BarChart2 className="h-4 w-4 text-white" />
                 <span className="text-sm font-medium whitespace-nowrap">Reports & Analytics</span>
