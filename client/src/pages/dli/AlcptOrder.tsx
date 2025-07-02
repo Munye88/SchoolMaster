@@ -619,7 +619,7 @@ const AlcptOrder = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <Card className="overflow-hidden border-0 shadow-md">
+                <Card className="overflow-hidden border-0 shadow-md rounded-none">
                   <div className={`h-2 w-full ${getSchoolColor(viewingSchoolId)}`} />
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
@@ -641,7 +641,7 @@ const AlcptOrder = () => {
                   </CardContent>
                 </Card>
                 
-                <Card className="overflow-hidden border-0 shadow-md">
+                <Card className="overflow-hidden border-0 shadow-md rounded-none">
                   <div className={`h-2 w-full ${getSchoolColor(viewingSchoolId)}`} />
                   <CardHeader className="pb-2">
                     <div className="flex items-center gap-2">
@@ -725,7 +725,7 @@ const AlcptOrder = () => {
                 </TabsList>
                 
                 <TabsContent value="inventory">
-                  <Card className="border-0 shadow-md">
+                  <Card className="border-0 shadow-md rounded-none">
                     <CardHeader>
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <CardTitle>ALCPT Forms Inventory</CardTitle>
@@ -851,7 +851,7 @@ const AlcptOrder = () => {
                 </TabsContent>
                 
                 <TabsContent value="history">
-                  <Card className="border-0 shadow-md">
+                  <Card className="border-0 shadow-md rounded-none">
                     <CardHeader>
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <CardTitle>Inventory Update History</CardTitle>

@@ -1029,7 +1029,7 @@ const BookOrder = () => {
               </CardContent>
             </Card>
             
-            <Card className="overflow-hidden border-0 shadow-md">
+            <Card className="overflow-hidden border-0 shadow-md rounded-none">
               <div className="h-2 w-full bg-gradient-to-r from-fuchsia-600 to-pink-600" />
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2">
