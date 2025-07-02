@@ -403,7 +403,7 @@ export default function ManageCourses() {
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded-none">
                             <SelectValue placeholder="Select course type" />
                           </SelectTrigger>
                         </FormControl>
@@ -434,7 +434,7 @@ export default function ManageCourses() {
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded-none">
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                         </FormControl>
@@ -466,7 +466,7 @@ export default function ManageCourses() {
                         onValueChange={(value) => field.onChange(parseInt(value))}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded-none">
                             <SelectValue placeholder="Select a school" />
                           </SelectTrigger>
                         </FormControl>
@@ -497,7 +497,7 @@ export default function ManageCourses() {
                     <FormItem>
                       <FormLabel>Start Date</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input className="rounded-none" type="date" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -511,7 +511,7 @@ export default function ManageCourses() {
                     <FormItem>
                       <FormLabel>End Date (Optional)</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} value={field.value || ""} />
+                        <Input className="rounded-none" type="date" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -527,7 +527,7 @@ export default function ManageCourses() {
                     <FormItem>
                       <FormLabel>Student Count</FormLabel>
                       <FormControl>
-                        <Input 
+                        <Input className="rounded-none" 
                           type="number" 
                           min="0"
                           {...field} 
@@ -546,7 +546,7 @@ export default function ManageCourses() {
                     <FormItem>
                       <FormLabel>Benchmark (Optional)</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., 75 ALCPT" {...field} value={field.value || ""} />
+                        <Input className="rounded-none" placeholder="e.g., 75 ALCPT" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -623,7 +623,7 @@ export default function ManageCourses() {
                         value={field.value || ""}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded-none">
                             <SelectValue placeholder="Select course type" />
                           </SelectTrigger>
                         </FormControl>
@@ -654,7 +654,7 @@ export default function ManageCourses() {
                         value={field.value || ""}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded-none">
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                         </FormControl>
@@ -687,7 +687,7 @@ export default function ManageCourses() {
                         value={field.value ? field.value.toString() : ""}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded-none">
                             <SelectValue placeholder="Select a school" />
                           </SelectTrigger>
                         </FormControl>
@@ -718,7 +718,7 @@ export default function ManageCourses() {
                     <FormItem>
                       <FormLabel>Start Date</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} value={field.value || ""} />
+                        <Input className="rounded-none" type="date" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -732,7 +732,7 @@ export default function ManageCourses() {
                     <FormItem>
                       <FormLabel>End Date (Optional)</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} value={field.value || ""} />
+                        <Input className="rounded-none" type="date" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -748,7 +748,7 @@ export default function ManageCourses() {
                     <FormItem>
                       <FormLabel>Student Count</FormLabel>
                       <FormControl>
-                        <Input 
+                        <Input className="rounded-none" 
                           type="number" 
                           min="0"
                           {...field} 
@@ -767,7 +767,7 @@ export default function ManageCourses() {
                     <FormItem>
                       <FormLabel>Benchmark (Optional)</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., 75 ALCPT" {...field} value={field.value || ""} />
+                        <Input className="rounded-none" placeholder="e.g., 75 ALCPT" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
