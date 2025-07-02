@@ -129,7 +129,7 @@ export default function TopNavigation() {
                     </Button>
                     
                     {activeDropdown === item.label && (
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 w-56 bg-white shadow-lg border border-gray-200 py-1 z-50">
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 w-56 bg-white shadow-lg border border-gray-200 py-1 z-50 rounded-none">
                         {item.dropdown.map((dropItem) => (
                           <Link
                             key={dropItem.path}

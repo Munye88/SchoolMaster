@@ -4,6 +4,7 @@ import { Instructor } from '@shared/schema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { StandardInstructorAvatar } from './StandardInstructorAvatar';
 import { 
   User, 
   Mail, 
@@ -33,22 +34,12 @@ export const InstructorProfileDetails: React.FC<InstructorProfileDetailsProps> =
       <Card className="rounded-none">
         <CardHeader>
           <div className="flex items-center gap-4">
-            {instructor.imageUrl ? (
-              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-blue-200">
-                <img 
-                  src={instructor.imageUrl} 
-                  alt={instructor.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "https://via.placeholder.com/150?text=" + instructor.name.charAt(0);
-                  }}
-                />
-              </div>
-            ) : (
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-bold">
-                {instructor.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-              </div>
-            )}
+            <StandardInstructorAvatar
+              imageUrl={instructor.imageUrl}
+              name={instructor.name}
+              size="xl"
+              schoolColor="#0A2463"
+            />
             <div className="flex-1">
               <CardTitle className="text-2xl">{instructor.name}</CardTitle>
               <p className="text-gray-600 text-lg">{instructor.role || 'ELT Instructor'}</p>
@@ -285,11 +276,15 @@ export const InstructorProfileDetails: React.FC<InstructorProfileDetailsProps> =
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <label className="text-sm font-medium text-gray-500">Created</label>
-              <p className="text-sm">{format(new Date(instructor.createdAt), 'MMM d, yyyy HH:mm')}</p>
+              <p className="text-sm">
+                {instructor.createdAt ? format(new Date(instructor.createdAt as string | Date), 'MMM d, yyyy HH:mm') : 'N/A'}
+              </p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Last Updated</label>
-              <p className="text-sm">{format(new Date(instructor.updatedAt), 'MMM d, yyyy HH:mm')}</p>
+              <p className="text-sm">
+                {instructor.updatedAt ? format(new Date(instructor.updatedAt as string | Date), 'MMM d, yyyy HH:mm') : 'N/A'}
+              </p>
             </div>
           </div>
         </CardContent>

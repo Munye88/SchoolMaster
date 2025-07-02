@@ -245,7 +245,7 @@ const Dashboard = () => {
   return (
     <div className="flex-1 overflow-y-auto py-6 px-6 bg-gradient-to-b from-gray-50 to-white">
       {/* Quick Access Tools Header - Restructured Layout */}
-      <div className="bg-gradient-to-r from-[#0A2463] to-[#1A3473] text-white mb-6 shadow-lg overflow-hidden relative rounded-lg">
+      <div className="bg-gradient-to-r from-[#0A2463] to-[#1A3473] text-white mb-6 shadow-lg overflow-hidden relative rounded-none">
         <div className="absolute inset-0 bg-grid-white/5 bg-[length:16px_16px]"></div>
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.1),_transparent)]"></div>
         
