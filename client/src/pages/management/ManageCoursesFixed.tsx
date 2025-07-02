@@ -407,7 +407,7 @@ export default function ManageCourses() {
                             <SelectValue placeholder="Select course type" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="rounded-none">
                           {courseTypes.map((courseType) => (
                             <SelectItem
                               key={courseType}
@@ -438,7 +438,7 @@ export default function ManageCourses() {
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="rounded-none">
                           {statusOptions.map((status) => (
                             <SelectItem
                               key={status}
@@ -470,7 +470,7 @@ export default function ManageCourses() {
                             <SelectValue placeholder="Select a school" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="rounded-none">
                           {schools.map((school: any) => (
                             <SelectItem
                               key={school.id}
@@ -627,7 +627,7 @@ export default function ManageCourses() {
                             <SelectValue placeholder="Select course type" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="rounded-none">
                           {courseTypes.map((courseType) => (
                             <SelectItem
                               key={courseType}
@@ -658,7 +658,7 @@ export default function ManageCourses() {
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="rounded-none">
                           {statusOptions.map((status) => (
                             <SelectItem
                               key={status}
@@ -691,7 +691,7 @@ export default function ManageCourses() {
                             <SelectValue placeholder="Select a school" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className="rounded-none">
                           {schools.map((school: any) => (
                             <SelectItem
                               key={school.id}
