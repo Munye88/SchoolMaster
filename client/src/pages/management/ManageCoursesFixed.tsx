@@ -378,7 +378,7 @@ export default function ManageCourses() {
 
       {/* Create Course Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[600px] rounded-none">
           <DialogHeader>
             <DialogTitle>Add New Course</DialogTitle>
             <DialogDescription>
@@ -579,12 +579,14 @@ export default function ManageCourses() {
                   type="button"
                   variant="outline"
                   onClick={() => setIsCreateDialogOpen(false)}
+                  className="rounded-none"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={createCourseMutation.isPending}
+                  className="rounded-none"
                 >
                   {createCourseMutation.isPending ? "Creating..." : "Create Course"}
                 </Button>
@@ -596,7 +598,7 @@ export default function ManageCourses() {
 
       {/* Edit Course Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[600px] rounded-none">
           <DialogHeader>
             <DialogTitle>Edit Course</DialogTitle>
             <DialogDescription>
@@ -798,12 +800,14 @@ export default function ManageCourses() {
                   type="button"
                   variant="outline"
                   onClick={() => setIsEditDialogOpen(false)}
+                  className="rounded-none"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={updateCourseMutation.isPending}
+                  className="rounded-none"
                 >
                   {updateCourseMutation.isPending ? "Saving..." : "Save Changes"}
                 </Button>
@@ -815,7 +819,7 @@ export default function ManageCourses() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] rounded-none">
           <DialogHeader>
             <DialogTitle>Confirm Delete</DialogTitle>
             <DialogDescription>
@@ -827,6 +831,7 @@ export default function ManageCourses() {
               type="button"
               variant="outline"
               onClick={() => setIsDeleteDialogOpen(false)}
+              className="rounded-none"
             >
               Cancel
             </Button>
@@ -834,6 +839,7 @@ export default function ManageCourses() {
               onClick={handleDeleteCourse}
               variant="destructive"
               disabled={deleteCourseMutation.isPending}
+              className="rounded-none"
             >
               {deleteCourseMutation.isPending ? "Deleting..." : "Delete"}
             </Button>
