@@ -88,21 +88,21 @@ export function StandardInstructorAvatar({
   return (
     <div className={containerClassName}>
       {imageSource && !imageError ? (
-        <div className="absolute inset-0 w-full h-full bg-white overflow-hidden rounded-full flex items-center justify-center">
-          <img
-            src={imageSource}
-            alt={name}
-            className="w-full h-full object-cover object-center rounded-full" 
-            style={{ 
-              objectFit: "cover",
-              objectPosition: "center center",
-              width: "100%",
-              height: "100%",
-              display: "block"
-            }}
-            onError={handleImageError}
-          />
-        </div>
+        <img
+          src={imageSource}
+          alt={name}
+          className="absolute inset-0 w-full h-full object-cover rounded-full" 
+          style={{ 
+            objectFit: "cover",
+            objectPosition: "center center",
+            width: "100%",
+            height: "100%",
+            left: "0",
+            top: "0",
+            position: "absolute"
+          }}
+          onError={handleImageError}
+        />
       ) : (
         <div 
           className={`absolute inset-0 w-full h-full flex items-center justify-center text-white font-bold ${initialsFontSize[size]} rounded-full`}

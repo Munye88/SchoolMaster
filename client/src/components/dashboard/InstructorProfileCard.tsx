@@ -115,7 +115,7 @@ const InstructorProfileCard = ({ instructor, isLoading = false }: InstructorProf
           </div>
           
           <div className="mt-6 flex flex-wrap space-x-4">
-            <Link href={`/instructors/${instructor.id}`}>
+            <Link href={`/instructor/profile/${instructor.id}`}>
               <Button className="bg-[#0A2463] hover:bg-[#071A4A] mb-2">
                 View Full Profile
               </Button>
