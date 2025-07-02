@@ -272,6 +272,8 @@ The system manages multiple interconnected entities:
 - July 2, 2025: COURSE EDIT FORM UI ENHANCEMENT - Added perfect square styling to SelectContent dropdown components in ManageCoursesFixed.tsx to ensure all form field containers display as perfect squares for improved user visibility and form completion experience
 - July 2, 2025: SCHOOL BOOK INVENTORY UI STANDARDIZATION - Enhanced BookInventory.tsx with perfect square styling for main Card container, Button elements, and Input search field for consistent professional appearance across all school book inventory pages
 - July 2, 2025: DLI BOOK INVENTORY FINAL UI FIXES - Added perfect square styling to remaining Input search field in BookOrder.tsx to complete comprehensive book inventory management system standardization
+- July 2, 2025: INSTRUCTOR PHOTO RESTORATION - Fixed instructor profile photos that were being cut off by reducing padding from 8px to 4px total, increased container sizes for better head visibility, and enhanced photo positioning with proper object-center alignment in StandardInstructorAvatar component
+- July 2, 2025: INSTRUCTOR LOOKUP PHOTO IMPROVEMENTS - Updated InstructorLookup.tsx avatar sizes from h-10 to h-12 for search results and h-24 to h-28 for detailed view, added proper object positioning to prevent head cutoff and ensure professional photo display
 
 ## User Preferences
 

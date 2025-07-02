@@ -205,13 +205,14 @@ const InstructorLookup = () => {
                     setSearchQuery("");
                   }}
                 >
-                  <Avatar className="h-10 w-10 border-2 border-blue-300 relative overflow-hidden">
+                  <Avatar className="h-12 w-12 border-2 border-blue-300 relative overflow-hidden">
                     {instructor.imageUrl ? (
                       <AvatarImage 
                         src={instructor.imageUrl} 
                         alt={instructor.name}
                         className="absolute object-cover"
                         style={{
+                          objectPosition: "center center",
                           width: "calc(100% - 2px)",
                           height: "calc(100% - 2px)",
                           left: "1px",
@@ -254,13 +255,14 @@ const InstructorLookup = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-                <Avatar className="h-24 w-24 border-4 border-blue-300 relative overflow-hidden">
+                <Avatar className="h-28 w-28 border-4 border-blue-300 relative overflow-hidden">
                   {selectedInstructor.imageUrl ? (
                     <AvatarImage 
                       src={selectedInstructor.imageUrl} 
                       alt={selectedInstructor.name}
                       className="absolute object-cover"
                       style={{
+                        objectPosition: "center center",
                         width: "calc(100% - 4px)",
                         height: "calc(100% - 4px)",
                         left: "2px",
