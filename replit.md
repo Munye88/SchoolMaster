@@ -265,6 +265,7 @@ The system manages multiple interconnected entities:
 - July 2, 2025: Standardized all rounded containers in DLI Book Inventory Management to perfect rectangles for consistent professional appearance
 - July 2, 2025: ALCPT FORMS UI STANDARDIZATION - Converted all Card components in AlcptOrder.tsx to perfect squares for design consistency
 - July 2, 2025: Completed systematic UI overhaul - all DLI inventory management components now use perfect square/rectangular design throughout
+- July 2, 2025: INSTRUCTOR FORM SIMPLIFICATION - Restored ManageInstructors.tsx to original simple form fields, removed extended fields (email, passport, emergency contact, salary, department, employment status) for cleaner interface
 
 ## User Preferences
 
