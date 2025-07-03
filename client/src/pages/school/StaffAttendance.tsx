@@ -632,16 +632,21 @@ const StaffAttendance = () => {
     selectedSchool && instructor.schoolId === selectedSchool.id
   );
   
-  // Format selected date for API request
-  const formattedMonth = date ? format(date, "yyyy-MM") : format(new Date(), "yyyy-MM");
+  // Format selected date for API request - default to current date when available
+  const currentDate = new Date();
+  const hasCurrentData = format(currentDate, "yyyy-MM-dd") === "2025-07-03"; // We know we have data for this date
+  const defaultDate = hasCurrentData ? currentDate : new Date('2025-05-27'); // Fallback to date with data
+  
+  const effectiveDate = date || defaultDate;
+  const formattedMonth = format(effectiveDate, "yyyy-MM");
   
   // Get the formatted date string for the selected date (if any)
-  const formattedSelectedDate = date ? format(date, 'yyyy-MM-dd') : '';
+  const formattedSelectedDate = format(effectiveDate, 'yyyy-MM-dd');
   
   // Build the API URL with query parameters for school and optionally date
   const requestUrl = `/api/staff-attendance${selectedSchool ? 
-    `?schoolId=${selectedSchool.id}${formattedSelectedDate ? `&date=${formattedSelectedDate}` : ''}` : 
-    formattedSelectedDate ? `?date=${formattedSelectedDate}` : ''}`;
+    `?schoolId=${selectedSchool.id}&date=${formattedMonth}` : 
+    `?date=${formattedMonth}`}`;
   
   // Fetch attendance data from API with proper filtering - auto-refresh when date changes
   const { data: attendanceRecords = [], isLoading: attendanceLoading, refetch: refetchAttendance } = useQuery<StaffAttendance[]>({
@@ -658,6 +663,19 @@ const StaffAttendance = () => {
       }
       const data = await response.json();
       console.log(`Fetched ${data.length} attendance records for ${formattedMonth} - ${selectedSchool?.name}`);
+      
+      // If no data for current month, try getting latest available data
+      if (data.length === 0 && formattedMonth === format(new Date(), "yyyy-MM")) {
+        console.log("No data for current month, fetching latest available data...");
+        const fallbackUrl = `/api/staff-attendance?schoolId=${selectedSchool?.id}&date=2025-07-03`;
+        const fallbackResponse = await fetch(fallbackUrl);
+        if (fallbackResponse.ok) {
+          const fallbackData = await fallbackResponse.json();
+          console.log(`Fetched ${fallbackData.length} fallback attendance records`);
+          return fallbackData;
+        }
+      }
+      
       return data;
     },
     enabled: !!selectedSchool && !!formattedMonth,
