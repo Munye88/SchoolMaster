@@ -465,10 +465,10 @@ export default function StaffLeaveTracker() {
         <h1 className="text-2xl font-bold">{currentSchool?.name} - Staff Leave Tracker</h1>
         <div className="flex items-center space-x-2">
           <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-            <SelectTrigger className="w-36">
+            <SelectTrigger className="w-36 rounded-none">
               <SelectValue placeholder="Select Month" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-none">
               {months.map((month) => (
                 <SelectItem key={month} value={month}>
                   {month}
@@ -489,7 +489,7 @@ export default function StaffLeaveTracker() {
             
             {showCalendar && (
               <div className="absolute right-0 z-10">
-                <Card>
+                <Card className="rounded-none">
                   <CardContent className="p-0">
                     <Calendar
                       mode="single"
@@ -518,7 +518,7 @@ export default function StaffLeaveTracker() {
                 New Leave Request
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-y-auto rounded-none">
               <DialogHeader>
                 <DialogTitle>Add New Leave Request</DialogTitle>
                 <DialogDescription>
@@ -539,11 +539,11 @@ export default function StaffLeaveTracker() {
                           defaultValue={field.value.toString()}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="rounded-none">
                               <SelectValue placeholder="Select instructor" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="rounded-none">
                             {isLoadingInstructors ? (
                               <div className="p-2 flex items-center justify-center">
                                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -572,6 +572,7 @@ export default function StaffLeaveTracker() {
                         <FormControl>
                           <Input
                             placeholder="Enter employee ID"
+                            className="rounded-none"
                             {...field}
                             value={field.value || ''}
                           />
@@ -861,7 +862,7 @@ export default function StaffLeaveTracker() {
       </div>
       
       {/* Main card with table for display on screen */}
-      <Card>
+      <Card className="rounded-none">
         <CardHeader className="pb-3">
           <CardTitle>Staff Leave Management</CardTitle>
           <CardDescription>
@@ -883,7 +884,7 @@ export default function StaffLeaveTracker() {
                   <Input
                     type="search"
                     placeholder="Search by Employee ID..."
-                    className="w-full rounded-md border border-input bg-background pl-8 py-2 text-sm ring-offset-background"
+                    className="w-full rounded-none border border-input bg-background pl-8 py-2 text-sm ring-offset-background"
                     value={employeeIdSearch}
                     onChange={(e) => setEmployeeIdSearch(e.target.value)}
                   />
@@ -923,7 +924,7 @@ export default function StaffLeaveTracker() {
                   ) : (
                     schoolLeaveRecords.map((leave) => (
                   <TableRow key={leave.id} className="hover:bg-slate-50 bg-white mb-2">
-                    <TableCell className="border-t border-b border-l rounded-l-md border-gray-200">
+                    <TableCell className="border-t border-b border-l border-gray-200">
                       <div className="flex flex-col">
                         <span className="font-medium">{leave.instructorName}</span>
                         <span className="text-xs text-gray-500">ID: {leave.employeeId || `INST-${leave.instructorId.toString().padStart(4, '0')}`}</span>
@@ -931,7 +932,7 @@ export default function StaffLeaveTracker() {
                     </TableCell>
                     <TableCell className="border-t border-b border-gray-200">
                       <div className={cn(
-                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+                        "inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-medium",
                         leave.leaveType === "PTO" 
                           ? "bg-blue-100 text-blue-800" 
                           : leave.leaveType === "R&R" 
@@ -989,7 +990,7 @@ export default function StaffLeaveTracker() {
                         {currentSchool?.name ? currentSchool.name.replace('NFS ', '') : "Unknown"}
                       </div>
                     </TableCell>
-                    <TableCell className="border-t border-b border-r rounded-r-md border-gray-200">
+                    <TableCell className="border-t border-b border-r border-gray-200">
                       <div className="flex items-center space-x-2">
                         <Button 
                           variant="ghost" 
@@ -1292,7 +1293,7 @@ export default function StaffLeaveTracker() {
 
       {/* View Leave Dialog */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[600px] rounded-none">
           <DialogHeader className="leave-details-dialog-header">
             <div className="flex items-center justify-between w-full print-header">
               <div>

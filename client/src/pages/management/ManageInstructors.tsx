@@ -167,7 +167,7 @@ export default function ManageInstructors() {
 
   const updateInstructorMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: InstructorFormData }) => {
-      return apiRequest("PUT", `/api/instructors/${id}`, data);
+      return apiRequest("PATCH", `/api/instructors/${id}`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
