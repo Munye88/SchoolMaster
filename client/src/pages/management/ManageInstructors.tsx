@@ -264,7 +264,7 @@ export default function ManageInstructors() {
                 Add Instructor
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-none">
               <DialogHeader>
                 <DialogTitle>Add New Instructor</DialogTitle>
                 <DialogDescription>
@@ -281,7 +281,7 @@ export default function ManageInstructors() {
                         <FormItem>
                           <FormLabel>Full Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter instructor name" {...field} />
+                            <Input placeholder="Enter instructor name" className="rounded-none" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -296,10 +296,10 @@ export default function ManageInstructors() {
                           <FormLabel>Nationality</FormLabel>
                           <FormControl>
                             <Select onValueChange={field.onChange} value={field.value}>
-                              <SelectTrigger>
+                              <SelectTrigger className="rounded-none">
                                 <SelectValue placeholder="Select nationality" />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent className="rounded-none">
                                 <SelectItem value="American">American</SelectItem>
                                 <SelectItem value="British">British</SelectItem>
                                 <SelectItem value="Canadian">Canadian</SelectItem>
@@ -320,7 +320,7 @@ export default function ManageInstructors() {
                         <FormItem>
                           <FormLabel>Credentials</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter credentials" {...field} />
+                            <Input placeholder="Enter credentials" className="rounded-none" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -334,7 +334,7 @@ export default function ManageInstructors() {
                         <FormItem>
                           <FormLabel>Start Date</FormLabel>
                           <FormControl>
-                            <Input type="date" {...field} />
+                            <Input type="date" className="rounded-none" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -348,7 +348,7 @@ export default function ManageInstructors() {
                         <FormItem>
                           <FormLabel>Compound</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter compound" {...field} />
+                            <Input placeholder="Enter compound" className="rounded-none" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -363,10 +363,10 @@ export default function ManageInstructors() {
                           <FormLabel>School</FormLabel>
                           <FormControl>
                             <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value.toString()}>
-                              <SelectTrigger>
+                              <SelectTrigger className="rounded-none">
                                 <SelectValue placeholder="Select school" />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent className="rounded-none">
                                 {schools?.map((school) => (
                                   <SelectItem key={school.id} value={school.id.toString()}>
                                     {school.name}
@@ -387,7 +387,7 @@ export default function ManageInstructors() {
                         <FormItem>
                           <FormLabel>Phone</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter phone number" {...field} />
+                            <Input placeholder="Enter phone number" className="rounded-none" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -402,10 +402,10 @@ export default function ManageInstructors() {
                           <FormLabel>Accompanied Status</FormLabel>
                           <FormControl>
                             <Select onValueChange={field.onChange} value={field.value}>
-                              <SelectTrigger>
+                              <SelectTrigger className="rounded-none">
                                 <SelectValue placeholder="Select status" />
                               </SelectTrigger>
-                              <SelectContent>
+                              <SelectContent className="rounded-none">
                                 <SelectItem value="Accompanied">Accompanied</SelectItem>
                                 <SelectItem value="Unaccompanied">Unaccompanied</SelectItem>
                               </SelectContent>
@@ -423,7 +423,7 @@ export default function ManageInstructors() {
                         <FormItem>
                           <FormLabel>Role</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter role" {...field} />
+                            <Input placeholder="Enter role" className="rounded-none" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -437,7 +437,7 @@ export default function ManageInstructors() {
                         <FormItem>
                           <FormLabel>Profile Image URL</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter image URL" {...field} />
+                            <Input placeholder="Enter image URL" className="rounded-none" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -545,7 +545,7 @@ export default function ManageInstructors() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-none">
           <DialogHeader>
             <DialogTitle>Edit Instructor</DialogTitle>
             <DialogDescription>
@@ -562,7 +562,7 @@ export default function ManageInstructors() {
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter instructor name" {...field} />
+                        <Input placeholder="Enter instructor name" className="rounded-none" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -577,10 +577,10 @@ export default function ManageInstructors() {
                       <FormLabel>Nationality</FormLabel>
                       <FormControl>
                         <Select onValueChange={field.onChange} value={field.value}>
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded-none">
                             <SelectValue placeholder="Select nationality" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="rounded-none">
                             <SelectItem value="American">American</SelectItem>
                             <SelectItem value="British">British</SelectItem>
                             <SelectItem value="Canadian">Canadian</SelectItem>
@@ -601,7 +601,7 @@ export default function ManageInstructors() {
                     <FormItem>
                       <FormLabel>Credentials</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter credentials" {...field} />
+                        <Input placeholder="Enter credentials" className="rounded-none" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -615,7 +615,7 @@ export default function ManageInstructors() {
                     <FormItem>
                       <FormLabel>Start Date</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input type="date" className="rounded-none" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -629,7 +629,7 @@ export default function ManageInstructors() {
                     <FormItem>
                       <FormLabel>Compound</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter compound" {...field} />
+                        <Input placeholder="Enter compound" className="rounded-none" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -644,10 +644,10 @@ export default function ManageInstructors() {
                       <FormLabel>School</FormLabel>
                       <FormControl>
                         <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value.toString()}>
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded-none">
                             <SelectValue placeholder="Select school" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="rounded-none">
                             {schools?.map((school) => (
                               <SelectItem key={school.id} value={school.id.toString()}>
                                 {school.name}
@@ -668,7 +668,7 @@ export default function ManageInstructors() {
                     <FormItem>
                       <FormLabel>Phone</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter phone number" {...field} />
+                        <Input placeholder="Enter phone number" className="rounded-none" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -683,10 +683,10 @@ export default function ManageInstructors() {
                       <FormLabel>Accompanied Status</FormLabel>
                       <FormControl>
                         <Select onValueChange={field.onChange} value={field.value}>
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded-none">
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="rounded-none">
                             <SelectItem value="Accompanied">Accompanied</SelectItem>
                             <SelectItem value="Unaccompanied">Unaccompanied</SelectItem>
                           </SelectContent>
@@ -704,7 +704,7 @@ export default function ManageInstructors() {
                     <FormItem>
                       <FormLabel>Role</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter role" {...field} />
+                        <Input placeholder="Enter role" className="rounded-none" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -718,7 +718,7 @@ export default function ManageInstructors() {
                     <FormItem>
                       <FormLabel>Profile Image URL</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter image URL" {...field} />
+                        <Input placeholder="Enter image URL" className="rounded-none" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
