@@ -213,18 +213,18 @@ const InstructorLookup = () => {
                         className="absolute object-cover"
                         style={{
                           objectPosition: "center center",
-                          width: "calc(100% - 2px)",
-                          height: "calc(100% - 2px)",
-                          left: "1px",
-                          top: "1px"
+                          width: "calc(100% - 4px)",
+                          height: "calc(100% - 4px)",
+                          left: "2px",
+                          top: "2px"
                         }}
                       />
                     ) : (
                       <AvatarFallback className="absolute" style={{
-                        width: "calc(100% - 2px)",
-                        height: "calc(100% - 2px)",
-                        left: "1px",
-                        top: "1px"
+                        width: "calc(100% - 4px)",
+                        height: "calc(100% - 4px)",
+                        left: "2px",
+                        top: "2px"
                       }}>
                         {instructor.name.substring(0, 2).toUpperCase()}
                       </AvatarFallback>
@@ -263,18 +263,18 @@ const InstructorLookup = () => {
                       className="absolute object-cover"
                       style={{
                         objectPosition: "center center",
-                        width: "calc(100% - 4px)",
-                        height: "calc(100% - 4px)",
-                        left: "2px",
-                        top: "2px"
+                        width: "calc(100% - 6px)",
+                        height: "calc(100% - 6px)",
+                        left: "3px",
+                        top: "3px"
                       }}
                     />
                   ) : (
                     <AvatarFallback className="text-2xl absolute" style={{
-                      width: "calc(100% - 4px)",
-                      height: "calc(100% - 4px)",
-                      left: "2px",
-                      top: "2px"
+                      width: "calc(100% - 6px)",
+                      height: "calc(100% - 6px)",
+                      left: "3px",
+                      top: "3px"
                     }}>
                       {selectedInstructor.name.substring(0, 2).toUpperCase()}
                     </AvatarFallback>

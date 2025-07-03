@@ -53,10 +53,10 @@ const InstructorProfileCard = ({ instructor, isLoading = false }: InstructorProf
                 alt={instructor.name} 
                 className="absolute rounded-full object-cover"
                 style={{
-                  width: "calc(100% - 6px)",
-                  height: "calc(100% - 6px)",
-                  left: "3px",
-                  top: "3px",
+                  width: "calc(100% - 8px)",
+                  height: "calc(100% - 8px)",
+                  left: "4px",
+                  top: "4px",
                   objectFit: "cover",
                   objectPosition: "center center"
                 }}

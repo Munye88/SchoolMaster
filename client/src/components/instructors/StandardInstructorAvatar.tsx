@@ -95,10 +95,10 @@ export function StandardInstructorAvatar({
           style={{ 
             objectFit: "cover",
             objectPosition: "center center",
-            width: "calc(100% - 4px)",
-            height: "calc(100% - 4px)",
-            left: "2px",
-            top: "2px",
+            width: "calc(100% - 8px)",
+            height: "calc(100% - 8px)",
+            left: "4px",
+            top: "4px",
             position: "absolute"
           }}
           onError={handleImageError}
@@ -108,10 +108,10 @@ export function StandardInstructorAvatar({
           className={`absolute rounded-full flex items-center justify-center text-white font-bold ${initialsFontSize[size]}`}
           style={{ 
             backgroundColor: schoolColor,
-            width: "calc(100% - 4px)",
-            height: "calc(100% - 4px)",
-            left: "2px",
-            top: "2px"
+            width: "calc(100% - 8px)",
+            height: "calc(100% - 8px)",
+            left: "4px",
+            top: "4px"
           }}
         >
           {getInitials(name)}
