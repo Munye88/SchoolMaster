@@ -57,11 +57,11 @@ export function StandardInstructorAvatar({
   
   // Size classes with consistent proportions - ensuring all have exact same dimensions
   const sizeClasses = {
-    sm: "h-16 w-16 min-h-[4rem] min-w-[4rem] text-base",  // Increased for better head visibility
-    md: "h-24 w-24 min-h-[6rem] min-w-[6rem] text-xl",    // Increased standard size
-    lg: "h-32 w-32 min-h-[8rem] min-w-[8rem] text-2xl",   // Increased for better profile display
-    xl: "h-40 w-40 min-h-[10rem] min-w-[10rem] text-3xl", // Increased for detailed view
-    '2xl': "h-52 w-52 min-h-[13rem] min-w-[13rem] text-4xl", // Larger size for full profile pictures
+    sm: "h-20 w-20 min-h-[5rem] min-w-[5rem] text-base",  // Further increased for complete head visibility
+    md: "h-28 w-28 min-h-[7rem] min-w-[7rem] text-xl",    // Larger standard size for better display
+    lg: "h-36 w-36 min-h-[9rem] min-w-[9rem] text-2xl",   // Much larger for profile display
+    xl: "h-44 w-44 min-h-[11rem] min-w-[11rem] text-3xl", // Larger for detailed view
+    '2xl': "h-56 w-56 min-h-[14rem] min-w-[14rem] text-4xl", // Much larger size for full profile pictures
   };
   
   // Font size for initials
@@ -95,10 +95,10 @@ export function StandardInstructorAvatar({
           style={{ 
             objectFit: "cover",
             objectPosition: "center center",
-            width: "calc(100% - 8px)",
-            height: "calc(100% - 8px)",
-            left: "4px",
-            top: "4px",
+            width: "calc(100% - 6px)",
+            height: "calc(100% - 6px)",
+            left: "3px",
+            top: "3px",
             position: "absolute"
           }}
           onError={handleImageError}
@@ -108,10 +108,10 @@ export function StandardInstructorAvatar({
           className={`absolute rounded-full flex items-center justify-center text-white font-bold ${initialsFontSize[size]}`}
           style={{ 
             backgroundColor: schoolColor,
-            width: "calc(100% - 8px)",
-            height: "calc(100% - 8px)",
-            left: "4px",
-            top: "4px"
+            width: "calc(100% - 6px)",
+            height: "calc(100% - 6px)",
+            left: "3px",
+            top: "3px"
           }}
         >
           {getInitials(name)}
