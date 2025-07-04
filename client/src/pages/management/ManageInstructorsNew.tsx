@@ -195,20 +195,26 @@ export default function ManageInstructors() {
   // Delete instructor mutation
   const deleteInstructorMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest('DELETE', `/api/instructors/${id}`);
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Server error: ${response.status} - ${errorText || response.statusText}`);
+      console.log("🗑️ Deleting instructor with ID:", id);
+      
+      try {
+        const response = await apiRequest('DELETE', `/api/instructors/${id}`);
+        console.log("✅ Delete response status:", response.status);
+        return { success: true, id };
+      } catch (error) {
+        console.error("❌ Delete API request failed:", error);
+        throw error;
       }
-      return id;
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      console.log("✅ Instructor deletion successful:", result);
       // Force invalidate all instructor queries to ensure updates are reflected everywhere
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
       
       // Invalidate all school-specific instructor queries too
       schools?.forEach(school => {
         queryClient.invalidateQueries({ queryKey: ['/api/instructors', school.code] });
+        queryClient.invalidateQueries({ queryKey: ['/api/schools', school.id, 'instructors'] });
       });
       
       toast({
@@ -217,9 +223,10 @@ export default function ManageInstructors() {
       });
     },
     onError: (error) => {
+      console.error("❌ Instructor deletion error:", error);
       toast({
         title: "Error deleting instructor",
-        description: error.message,
+        description: error instanceof Error ? error.message : "An unknown error occurred",
         variant: "destructive"
       });
     }

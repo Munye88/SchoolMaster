@@ -94,7 +94,7 @@ const UpcomingEvents = ({ limit = 3 }: UpcomingEventsProps) => {
                 // Always use 'Student Day' styling for consistency
                 return (
                   <div className="flex p-3" key={event.id}>
-                    <div className="flex-shrink-0 w-16 h-20 rounded-md bg-purple-600 flex flex-col items-center justify-center text-center text-white">
+                    <div className="flex-shrink-0 w-16 h-20 rounded-none bg-purple-600 flex flex-col items-center justify-center text-center text-white">
                       <p className="text-sm font-medium uppercase">{dateInfo.month}</p>
                       <p className="text-3xl font-bold">{dateInfo.day}</p>
                     </div>
