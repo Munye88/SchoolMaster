@@ -19,7 +19,9 @@ import {
   User,
   UserCheck,
   Users,
-  ClipboardList
+  ClipboardList,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -254,11 +256,29 @@ export default function StaffAttendanceFixed() {
   const { selectedSchool, setSelectedSchool } = useSchool();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   
   // State
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Navigation functions
+  const goToPreviousMonth = () => {
+    const previousMonth = new Date(selectedMonth);
+    previousMonth.setMonth(previousMonth.getMonth() - 1);
+    setSelectedMonth(previousMonth);
+  };
+
+  const goToNextMonth = () => {
+    const nextMonth = new Date(selectedMonth);
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    setSelectedMonth(nextMonth);
+  };
+
+  const goToCurrentMonth = () => {
+    setSelectedMonth(new Date());
+  };
 
   // Fetch schools data
   const { data: schoolsData = [] } = useQuery<Array<{id: number, name: string, code: string, location: string}>>({
@@ -454,14 +474,26 @@ export default function StaffAttendanceFixed() {
         </div>
       </div>
 
-      {/* Month Selector */}
+      {/* Month Selector with Navigation */}
       <Card className="rounded-none">
         <CardContent className="p-4">
           <div className="flex items-center gap-4">
             <Label className="font-medium">Month:</Label>
+            
+            {/* Previous Month Button */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={goToPreviousMonth}
+              className="rounded-none"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            {/* Month Display with Calendar Picker */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="rounded-none">
+                <Button variant="outline" className="rounded-none min-w-[140px]">
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {format(selectedMonth, "MMMM yyyy")}
                 </Button>
@@ -475,7 +507,31 @@ export default function StaffAttendanceFixed() {
                 />
               </PopoverContent>
             </Popover>
-            <div className="ml-auto">
+            
+            {/* Next Month Button */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={goToNextMonth}
+              className="rounded-none"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            
+            {/* Current Month Button */}
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={goToCurrentMonth}
+              className="rounded-none"
+            >
+              Today
+            </Button>
+            
+            <div className="ml-auto flex items-center gap-2">
+              <div className="text-sm text-gray-500 mr-2">
+                Navigate through past and future months
+              </div>
               <Input
                 placeholder="Search instructors..."
                 value={searchQuery}
