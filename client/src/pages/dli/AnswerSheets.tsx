@@ -703,17 +703,17 @@ const AnswerSheets = () => {
                           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                           <Input
                             placeholder="Search sheets..."
-                            className="pl-10"
+                            className="pl-10 rounded-none"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                           />
                         </div>
                         
                         <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                          <SelectTrigger className="w-[180px]">
+                          <SelectTrigger className="w-[180px] rounded-none">
                             <SelectValue placeholder="Status" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="rounded-none">
                             <SelectItem value="all">All Status</SelectItem>
                             <SelectItem value="In Stock">In Stock</SelectItem>
                             <SelectItem value="Low Stock">Low Stock</SelectItem>

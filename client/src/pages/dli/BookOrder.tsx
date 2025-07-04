@@ -763,17 +763,17 @@ const BookOrder = () => {
                           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                           <Input
                             placeholder="Search books..."
-                            className="pl-10"
+                            className="pl-10 rounded-none"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                           />
                         </div>
                         
                         <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-                          <SelectTrigger className="w-[180px]">
+                          <SelectTrigger className="w-[180px] rounded-none">
                             <SelectValue placeholder="Level" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="rounded-none">
                             <SelectItem value="all">All Levels</SelectItem>
                             <SelectItem value="Beginner">Beginner</SelectItem>
                             <SelectItem value="Elementary">Elementary</SelectItem>
@@ -786,10 +786,10 @@ const BookOrder = () => {
                         </Select>
                         
                         <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                          <SelectTrigger className="w-[180px]">
+                          <SelectTrigger className="w-[180px] rounded-none">
                             <SelectValue placeholder="Status" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="rounded-none">
                             <SelectItem value="all">All Status</SelectItem>
                             <SelectItem value="In Stock">In Stock</SelectItem>
                             <SelectItem value="Low Stock">Low Stock</SelectItem>
