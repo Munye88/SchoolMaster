@@ -26,6 +26,7 @@ import SchoolYearlySchedule from "./pages/school/YearlySchedule";
 import SchoolSOP from "./pages/school/SOP";
 import StaffEvaluations from "./pages/school/StaffEvaluationsNew";
 import StaffAttendance from "./pages/school/StaffAttendanceFixed";
+import StaffManagement from "./pages/school/StaffManagement";
 import SchoolBookInventory from "./pages/school/BookInventory";
 import StaffLeaveTracker from "./pages/school/StaffLeaveTracker";
 import StaffCounseling from "./pages/school/StaffCounseling";
@@ -240,6 +241,10 @@ function Router() {
           <ProtectedRoute
             path="/schools/:schoolCode/sop"
             component={SchoolSOP}
+          />
+          <ProtectedRoute
+            path="/schools/:schoolCode/staff-management"
+            component={StaffManagement}
           />
           <ProtectedRoute
             path="/schools/:schoolCode/staff-evaluations"

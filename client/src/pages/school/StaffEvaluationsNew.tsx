@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSchool } from '@/hooks/useSchool';
+import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,7 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { CalendarDays, User, Star, FileText, Plus, Edit, Trash2, Eye, Search, Filter } from 'lucide-react';
+import { CalendarDays, User, Star, FileText, Plus, Edit, Trash2, Eye, Search, Filter, Users, ClipboardCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import { type Instructor } from '@shared/schema';
 
@@ -58,6 +59,7 @@ export default function StaffEvaluationsNew() {
   const { selectedSchool } = useSchool();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   
   const [selectedTab, setSelectedTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
@@ -203,24 +205,42 @@ export default function StaffEvaluationsNew() {
             {selectedSchool?.name} - Manage instructor evaluations and assessments
           </p>
         </div>
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <Button className="rounded-none">
-              <Plus className="w-4 h-4 mr-2" />
-              New Evaluation
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="rounded-none max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Create New Evaluation</DialogTitle>
-            </DialogHeader>
-            <EvaluationForm 
-              instructors={instructors}
-              onSubmit={(data) => createEvaluationMutation.mutate(data)}
-              isLoading={createEvaluationMutation.isPending}
-            />
-          </DialogContent>
-        </Dialog>
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => setLocation(`/schools/${selectedSchool?.code}/staff-management`)}
+            variant="outline" 
+            className="rounded-none"
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Staff Hub
+          </Button>
+          <Button 
+            onClick={() => setLocation(`/schools/${selectedSchool?.code}/staff-attendance`)}
+            variant="outline" 
+            className="rounded-none"
+          >
+            <ClipboardCheck className="h-4 w-4 mr-2" />
+            Attendance
+          </Button>
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <Button className="rounded-none">
+                <Plus className="w-4 h-4 mr-2" />
+                New Evaluation
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="rounded-none max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Create New Evaluation</DialogTitle>
+              </DialogHeader>
+              <EvaluationForm 
+                instructors={instructors}
+                onSubmit={(data) => createEvaluationMutation.mutate(data)}
+                isLoading={createEvaluationMutation.isPending}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Statistics Cards */}

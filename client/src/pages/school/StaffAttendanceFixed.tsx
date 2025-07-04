@@ -408,6 +408,22 @@ export default function StaffAttendanceFixed() {
           <p className="text-gray-600">{selectedSchool.name} - {format(selectedMonth, "MMMM yyyy")}</p>
         </div>
         <div className="flex gap-2">
+          <Button 
+            onClick={() => setLocation(`/schools/${selectedSchool.code}/staff-management`)}
+            variant="outline" 
+            className="rounded-none"
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Staff Hub
+          </Button>
+          <Button 
+            onClick={() => setLocation(`/schools/${selectedSchool.code}/staff-evaluations`)}
+            variant="outline" 
+            className="rounded-none"
+          >
+            <ClipboardList className="h-4 w-4 mr-2" />
+            Evaluations
+          </Button>
           <Button onClick={handleRefresh} variant="outline" className="rounded-none">
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
