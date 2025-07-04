@@ -145,9 +145,14 @@ export default function ManageInstructors() {
 
   const createInstructorMutation = useMutation({
     mutationFn: async (data: InstructorFormData) => {
-      return apiRequest("POST", "/api/instructors", data);
+      console.log("🔄 Creating instructor with data:", data);
+      const response = await apiRequest("POST", "/api/instructors", data);
+      const result = await response.json();
+      console.log("✅ Create response:", result);
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (newInstructor) => {
+      console.log("✅ Instructor creation successful:", newInstructor);
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
       setIsCreateDialogOpen(false);
       createForm.reset();
@@ -157,6 +162,7 @@ export default function ManageInstructors() {
       });
     },
     onError: (error: Error) => {
+      console.error("❌ Instructor creation error:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to create instructor",
@@ -167,9 +173,14 @@ export default function ManageInstructors() {
 
   const updateInstructorMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: InstructorFormData }) => {
-      return apiRequest("PATCH", `/api/instructors/${id}`, data);
+      console.log("🔄 Updating instructor with data:", data);
+      const response = await apiRequest("PATCH", `/api/instructors/${id}`, data);
+      const result = await response.json();
+      console.log("✅ Update response:", result);
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (updatedInstructor) => {
+      console.log("✅ Instructor update successful:", updatedInstructor);
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
       setIsEditDialogOpen(false);
       setSelectedInstructor(null);
@@ -179,6 +190,7 @@ export default function ManageInstructors() {
       });
     },
     onError: (error: Error) => {
+      console.error("❌ Instructor update error:", error);
       toast({
         title: "Error", 
         description: error.message || "Failed to update instructor",
@@ -189,9 +201,13 @@ export default function ManageInstructors() {
 
   const deleteInstructorMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest("DELETE", `/api/instructors/${id}`);
+      console.log("🗑️ Deleting instructor with ID:", id);
+      const response = await apiRequest("DELETE", `/api/instructors/${id}`);
+      console.log("✅ Delete response status:", response.status);
+      return { success: true, id };
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      console.log("✅ Instructor deletion successful:", result);
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
       toast({
         title: "Success",
@@ -199,6 +215,7 @@ export default function ManageInstructors() {
       });
     },
     onError: (error: Error) => {
+      console.error("❌ Instructor deletion error:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to delete instructor",
