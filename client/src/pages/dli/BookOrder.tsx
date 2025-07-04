@@ -798,7 +798,7 @@ const BookOrder = () => {
                         </Select>
                       </div>
                       
-                      <div className="rounded-md border overflow-hidden">
+                      <div className="rounded-none border overflow-hidden">
                         <Table>
                           <TableHeader>
                             <TableRow>
@@ -874,7 +874,7 @@ const BookOrder = () => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="rounded-md border overflow-hidden">
+                      <div className="rounded-none border overflow-hidden">
                         <Table>
                           <TableHeader>
                             <TableRow>
