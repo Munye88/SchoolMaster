@@ -71,6 +71,8 @@ export interface IStorage {
   getEvaluation(id: number): Promise<Evaluation | undefined>;
   getEvaluationsByInstructor(instructorId: number): Promise<Evaluation[]>;
   createEvaluation(evaluation: InsertEvaluation): Promise<Evaluation>;
+  updateEvaluation(id: number, evaluation: Partial<InsertEvaluation>): Promise<Evaluation | undefined>;
+  deleteEvaluation(id: number): Promise<boolean>;
   
   // Document methods
   getDocuments(): Promise<Document[]>;
@@ -492,6 +494,19 @@ export class MemStorage implements IStorage {
     const evaluation: Evaluation = { ...insertEvaluation, id };
     this.evaluations.set(id, evaluation);
     return evaluation;
+  }
+
+  async updateEvaluation(id: number, evaluation: Partial<InsertEvaluation>): Promise<Evaluation | undefined> {
+    const existingEvaluation = this.evaluations.get(id);
+    if (!existingEvaluation) return undefined;
+    
+    const updatedEvaluation = { ...existingEvaluation, ...evaluation };
+    this.evaluations.set(id, updatedEvaluation);
+    return updatedEvaluation;
+  }
+
+  async deleteEvaluation(id: number): Promise<boolean> {
+    return this.evaluations.delete(id);
   }
   
   // Document methods
@@ -940,6 +955,20 @@ export class DatabaseStorage implements IStorage {
   async createEvaluation(insertEvaluation: InsertEvaluation): Promise<Evaluation> {
     const [evaluation] = await db.insert(evaluations).values(insertEvaluation).returning();
     return evaluation;
+  }
+
+  async updateEvaluation(id: number, evaluation: Partial<InsertEvaluation>): Promise<Evaluation | undefined> {
+    const [updated] = await db
+      .update(evaluations)
+      .set(evaluation)
+      .where(eq(evaluations.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteEvaluation(id: number): Promise<boolean> {
+    const result = await db.delete(evaluations).where(eq(evaluations.id, id));
+    return result.rowCount > 0;
   }
   
   // Document methods

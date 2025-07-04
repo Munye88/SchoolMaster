@@ -857,6 +857,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to create evaluation" });
     }
   });
+
+  // Enhanced evaluation routes for school-specific data
+  app.get("/api/schools/:schoolId/evaluations", async (req, res) => {
+    try {
+      const schoolId = parseInt(req.params.schoolId);
+      if (isNaN(schoolId)) {
+        return res.status(400).json({ message: "Invalid school ID" });
+      }
+      
+      // Get all instructors from this school
+      const schoolInstructors = await dbStorage.getInstructorsBySchool(schoolId);
+      const instructorIds = schoolInstructors.map(instructor => instructor.id);
+      
+      // Get evaluations for all instructors in this school
+      const allEvaluations = await dbStorage.getEvaluations();
+      const schoolEvaluations = allEvaluations.filter(evaluation => 
+        instructorIds.includes(evaluation.instructorId)
+      );
+      
+      res.json(schoolEvaluations);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch school evaluations" });
+    }
+  });
+
+  app.patch("/api/evaluations/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid evaluation ID" });
+      }
+
+      const updateData = insertEvaluationSchema.partial().parse(req.body);
+      const updatedEvaluation = await dbStorage.updateEvaluation(id, updateData);
+      
+      if (!updatedEvaluation) {
+        return res.status(404).json({ message: "Evaluation not found" });
+      }
+
+      res.json(updatedEvaluation);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid evaluation data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update evaluation" });
+    }
+  });
+
+  app.delete("/api/evaluations/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: "Invalid evaluation ID" });
+      }
+
+      const success = await dbStorage.deleteEvaluation(id);
+      if (!success) {
+        return res.status(404).json({ message: "Evaluation not found" });
+      }
+
+      res.json({ message: "Evaluation deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete evaluation" });
+    }
+  });
+
+  // Seed evaluations endpoint for testing
+  app.post("/api/evaluations/seed", async (req, res) => {
+    try {
+      const { seedEvaluations } = await import("./evaluationSeed");
+      await seedEvaluations();
+      res.json({ message: "Evaluations seeded successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to seed evaluations" });
+    }
+  });
   
   app.patch("/api/evaluations/:id", async (req, res) => {
     const id = parseInt(req.params.id);
