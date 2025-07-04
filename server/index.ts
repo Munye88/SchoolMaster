@@ -95,6 +95,10 @@ app.use((req, res, next) => {
     // Initialize the database with migrations
     await initDatabase();
     
+    // Update evaluation schema with new comprehensive fields
+    const { updateEvaluationSchema } = await import('./migrations/update-evaluation-schema');
+    await updateEvaluationSchema();
+    
     // Seed the database with initial admin user
     await seedDatabase();
     
