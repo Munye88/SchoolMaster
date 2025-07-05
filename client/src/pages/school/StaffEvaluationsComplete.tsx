@@ -387,7 +387,12 @@ export default function StaffEvaluationsComplete() {
   // Fetch school evaluations
   const { data: evaluations = [], isLoading: loadingEvaluations } = useQuery({
     queryKey: ['evaluations', selectedSchool?.id],
-    queryFn: () => apiRequest(`/api/evaluations`),
+    queryFn: async () => {
+      console.log(`StaffEvaluationsComplete: Fetching evaluations data`);
+      const data = await apiRequest(`/api/evaluations`);
+      console.log(`StaffEvaluationsComplete: Fetched ${data.length} evaluations`);
+      return data;
+    },
     enabled: !!selectedSchool?.id,
   });
 

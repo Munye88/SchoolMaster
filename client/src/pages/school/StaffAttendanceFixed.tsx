@@ -317,13 +317,15 @@ export default function StaffAttendanceFixed() {
         url += `&schoolId=${selectedSchool.id}`;
       }
       
+      console.log(`StaffAttendanceFixed: Fetching data from ${url}`);
       const response = await fetch(url);
       if (!response.ok) {
+        console.error(`StaffAttendanceFixed: Failed to fetch attendance records - ${response.status}`);
         throw new Error('Failed to fetch attendance records');
       }
       
       const data = await response.json();
-      console.log(`Fetched ${data.length} attendance records for ${selectedSchool?.name} - ${formattedMonth}`);
+      console.log(`StaffAttendanceFixed: Fetched ${data.length} attendance records for ${selectedSchool?.name} - ${formattedMonth}`);
       return data;
     },
     enabled: !!selectedSchool,
