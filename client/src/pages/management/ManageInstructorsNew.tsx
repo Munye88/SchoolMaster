@@ -97,7 +97,14 @@ export default function ManageInstructors() {
       console.log("📝 Making API request with data:", instructorData);
       
       try {
-        const response = await apiRequest('POST', '/api/instructors', instructorData);
+        const response = await fetch('/api/instructors', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(instructorData),
+        });
+        
         if (!response.ok) {
           const errorText = await response.text();
           console.error("📝 API error response:", errorText);
@@ -144,7 +151,14 @@ export default function ManageInstructors() {
       console.log("📝 Making API update request with data:", data);
       
       try {
-        const response = await apiRequest('PATCH', `/api/instructors/${id}`, data);
+        const response = await fetch(`/api/instructors/${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+        
         if (!response.ok) {
           const errorText = await response.text();
           console.error("📝 API error response:", errorText);
@@ -198,7 +212,16 @@ export default function ManageInstructors() {
       console.log("🗑️ Deleting instructor with ID:", id);
       
       try {
-        const response = await apiRequest('DELETE', `/api/instructors/${id}`);
+        const response = await fetch(`/api/instructors/${id}`, {
+          method: 'DELETE',
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("🗑️ Delete API error response:", errorText);
+          throw new Error(`Server error: ${response.status} - ${errorText || response.statusText}`);
+        }
+        
         console.log("✅ Delete response status:", response.status);
         return { success: true, id };
       } catch (error) {

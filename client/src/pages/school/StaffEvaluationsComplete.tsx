@@ -388,9 +388,13 @@ export default function StaffEvaluationsComplete() {
   const { data: evaluations = [], isLoading: loadingEvaluations } = useQuery({
     queryKey: ['evaluations', selectedSchool?.id],
     queryFn: async () => {
-      console.log(`StaffEvaluationsComplete: Fetching evaluations data`);
-      const data = await apiRequest(`/api/evaluations`);
-      console.log(`StaffEvaluationsComplete: Fetched ${data.length} evaluations`);
+      console.log(`StaffEvaluationsComplete: Fetching evaluations for school ${selectedSchool?.name} (ID: ${selectedSchool?.id})`);
+      const response = await fetch(`/api/schools/${selectedSchool?.id}/evaluations`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch evaluations');
+      }
+      const data = await response.json();
+      console.log(`StaffEvaluationsComplete: Fetched ${data.length} evaluations for ${selectedSchool?.name}`);
       return data;
     },
     enabled: !!selectedSchool?.id,
@@ -399,21 +403,22 @@ export default function StaffEvaluationsComplete() {
   // Fetch instructors for the school
   const { data: allInstructors = [], isLoading: loadingInstructors } = useQuery({
     queryKey: ['instructors', selectedSchool?.id],
-    queryFn: () => apiRequest(`/api/instructors`),
+    queryFn: () => fetch(`/api/instructors`).then(res => res.json()),
   });
 
   // Filter instructors by school
-  const instructors = allInstructors.filter((instructor: Instructor) => 
+  const instructors = allInstructors.filter((instructor: any) => 
     instructor.schoolId === selectedSchool?.id
   );
 
   // Create evaluation mutation
   const createEvaluationMutation = useMutation({
     mutationFn: (evaluationData: EvaluationFormData) => 
-      apiRequest('/api/evaluations', {
+      fetch('/api/evaluations', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(evaluationData),
-      }),
+      }).then(res => res.json()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['evaluations'] });
       setShowCreateDialog(false);
@@ -434,10 +439,11 @@ export default function StaffEvaluationsComplete() {
   // Update evaluation mutation
   const updateEvaluationMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<EvaluationFormData> }) => 
-      apiRequest(`/api/evaluations/${id}`, {
+      fetch(`/api/evaluations/${id}`, {
         method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-      }),
+      }).then(res => res.json()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['evaluations'] });
       setEditingEvaluation(null);
@@ -458,9 +464,9 @@ export default function StaffEvaluationsComplete() {
   // Delete evaluation mutation
   const deleteEvaluationMutation = useMutation({
     mutationFn: (id: number) => 
-      apiRequest(`/api/evaluations/${id}`, {
+      fetch(`/api/evaluations/${id}`, {
         method: 'DELETE',
-      }),
+      }).then(res => res.json()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['evaluations'] });
       toast({
@@ -495,7 +501,7 @@ export default function StaffEvaluationsComplete() {
 
   // Filter evaluations by school instructors
   const schoolEvaluations = evaluations.filter((evaluation: Evaluation) => 
-    instructors.some(instructor => instructor.id === evaluation.instructorId)
+    instructors.some((instructor: any) => instructor.id === evaluation.instructorId)
   );
 
   // Apply filters
