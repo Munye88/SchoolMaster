@@ -721,9 +721,9 @@ export default function StaffEvaluationsComplete() {
 
       {/* Create Evaluation Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto rounded-none">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto rounded-none">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold">Create New Evaluation</DialogTitle>
+            <DialogTitle className="text-center text-lg font-bold">Create New Evaluation</DialogTitle>
           </DialogHeader>
           <EvaluationForm
             instructors={instructors}
@@ -736,9 +736,9 @@ export default function StaffEvaluationsComplete() {
 
       {/* Edit Evaluation Dialog */}
       <Dialog open={!!editingEvaluation} onOpenChange={() => setEditingEvaluation(null)}>
-        <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto rounded-none">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto rounded-none">
           <DialogHeader>
-            <DialogTitle className="text-center text-xl font-bold">Edit Evaluation</DialogTitle>
+            <DialogTitle className="text-center text-lg font-bold">Edit Evaluation</DialogTitle>
           </DialogHeader>
           <EvaluationForm
             evaluation={editingEvaluation}
