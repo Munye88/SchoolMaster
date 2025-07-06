@@ -317,12 +317,12 @@ export default function EventsPage() {
   
   return (
     <div className="container py-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
+      <div className="text-center mb-6">
+        <div className="mb-4">
           <h1 className="text-2xl font-bold text-[#0A2463]">Event Management</h1>
           <p className="text-gray-500">Create and manage school events and activities</p>
         </div>
-        <Button className="bg-[#0A2463]" onClick={handleAddNewEvent}>
+        <Button className="bg-[#0A2463] rounded-none" onClick={handleAddNewEvent}>
           <Plus className="mr-2 h-4 w-4" />
           Add New Event
         </Button>
