@@ -300,6 +300,11 @@ The system manages multiple interconnected entities:
 - July 6, 2025: BULK ATTENDANCE SYSTEM IMPLEMENTATION - Added comprehensive bulk attendance recording functionality with individual and bulk options, edit/delete capabilities for all three schools (KFNA, NFS East, NFS West)
 - July 6, 2025: ENHANCED ATTENDANCE MANAGEMENT - Created StaffAttendanceEnhanced component with bulk selection, status filtering, pagination, and complete CRUD operations for attendance records
 - July 6, 2025: BULK ATTENDANCE API ENDPOINT - Added `/api/staff-attendance/bulk` endpoint for efficient bulk attendance recording with validation and activity logging
+- July 6, 2025: CRITICAL PTO BALANCE FIX - Fixed persistent issue where manually entered PTO allocations were being reset to 0 on every refresh
+- July 6, 2025: PTO MANUAL ENTRY PROTECTION SYSTEM - Added manual_entry flag to protect manually set PTO allocations from being overwritten by sync operations
+- July 6, 2025: DISABLED DESTRUCTIVE MIGRATION - Fixed migration that was clearing all PTO balance records on server startup, preserving manually entered total days permanently
+- July 6, 2025: PTO CALCULATION ACCURACY - Fixed double-counting of R&R days in remaining balance calculation (Total Days - Used Days + Adjustments)
+- July 6, 2025: ONE-TIME PTO SETUP - Manual PTO entry now works as intended - set once per instructor and preserved permanently across all future refreshes and syncs
 
 ## User Preferences
 
