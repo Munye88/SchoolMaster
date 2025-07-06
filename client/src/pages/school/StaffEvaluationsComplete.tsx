@@ -191,23 +191,7 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ({
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="status">Status *</Label>
-          <Select
-            value={formData.status}
-            onValueChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
-          >
-            <SelectTrigger className="rounded-none">
-              <SelectValue placeholder="Select status" />
-            </SelectTrigger>
-            <SelectContent className="rounded-none">
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="in-progress">In Progress</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="reviewed">Reviewed</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+
 
         <div className="space-y-2">
           <Label htmlFor="quarter">Quarter</Label>
@@ -626,7 +610,6 @@ export default function StaffEvaluationsComplete() {
                     <th className="text-left py-3 px-4 font-medium text-gray-900">Type</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">Period</th>
                     <th className="text-center py-3 px-4 font-medium text-gray-900">Score</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">Date</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
                   </tr>
@@ -667,11 +650,6 @@ export default function StaffEvaluationsComplete() {
                               {evaluation.score || 'N/A'}/100
                             </span>
                           </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge className={`${getStatusColor(evaluation.status)} rounded-none`}>
-                            {evaluation.status}
-                          </Badge>
                         </td>
                         <td className="py-3 px-4">
                           <span className="text-sm text-gray-900">
@@ -775,12 +753,7 @@ export default function StaffEvaluationsComplete() {
                   <Label className="text-sm font-medium text-gray-500">Type</Label>
                   <p className="text-sm text-gray-900 capitalize">{viewingEvaluation.evaluationType}</p>
                 </div>
-                <div>
-                  <Label className="text-sm font-medium text-gray-500">Status</Label>
-                  <Badge className={`${getStatusColor(viewingEvaluation.status)} rounded-none`}>
-                    {viewingEvaluation.status}
-                  </Badge>
-                </div>
+
               </div>
 
               <Separator />
