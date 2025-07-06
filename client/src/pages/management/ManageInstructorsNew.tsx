@@ -389,14 +389,9 @@ export default function ManageInstructors() {
     const flagMap: Record<string, string> = {
       'American': '🇺🇸',
       'British': '🇬🇧',
-      'Canadian': '🇨🇦',
-      'Australian': '🇦🇺',
-      'Irish': '🇮🇪',
-      'South African': '🇿🇦',
-      'New Zealander': '🇳🇿',
-      'Other': '🌍'
+      'Canadian': '🇨🇦'
     };
-    return flagMap[nationality] || '🌍';
+    return flagMap[nationality] || '🇺🇸';
   };
 
   return (
@@ -492,11 +487,6 @@ export default function ManageInstructors() {
                                 <SelectItem value="American">American</SelectItem>
                                 <SelectItem value="British">British</SelectItem>
                                 <SelectItem value="Canadian">Canadian</SelectItem>
-                                <SelectItem value="Australian">Australian</SelectItem>
-                                <SelectItem value="Irish">Irish</SelectItem>
-                                <SelectItem value="South African">South African</SelectItem>
-                                <SelectItem value="New Zealander">New Zealander</SelectItem>
-                                <SelectItem value="Other">Other</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormControl>

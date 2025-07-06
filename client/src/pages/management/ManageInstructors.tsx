@@ -320,8 +320,6 @@ export default function ManageInstructors() {
                                 <SelectItem value="American">American</SelectItem>
                                 <SelectItem value="British">British</SelectItem>
                                 <SelectItem value="Canadian">Canadian</SelectItem>
-                                <SelectItem value="Australian">Australian</SelectItem>
-                                <SelectItem value="New Zealand">New Zealand</SelectItem>
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -601,8 +599,6 @@ export default function ManageInstructors() {
                             <SelectItem value="American">American</SelectItem>
                             <SelectItem value="British">British</SelectItem>
                             <SelectItem value="Canadian">Canadian</SelectItem>
-                            <SelectItem value="Australian">Australian</SelectItem>
-                            <SelectItem value="New Zealand">New Zealand</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
