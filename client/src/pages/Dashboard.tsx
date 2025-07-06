@@ -447,7 +447,27 @@ const Dashboard = () => {
                   <div className="shadow-sm bg-[#EEF5FD] p-3 border border-blue-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
-                        <div className="w-5 h-4 bg-gradient-to-r from-red-500 via-white to-blue-500 border border-gray-300 flex-shrink-0" style={{ backgroundImage: 'linear-gradient(to right, #B22234 0%, #B22234 33%, #FFFFFF 33%, #FFFFFF 66%, #3C3B6E 66%)' }}></div>
+                        <div className="w-5 h-4 border border-gray-300 flex-shrink-0 relative overflow-hidden bg-white">
+                          {/* 13 alternating red and white stripes - start with red */}
+                          <div className="absolute top-0 left-0 w-full" style={{ height: '7.7%', backgroundColor: '#B22234' }}></div>
+                          <div className="absolute left-0 w-full" style={{ top: '7.7%', height: '7.7%', backgroundColor: 'white' }}></div>
+                          <div className="absolute left-0 w-full" style={{ top: '15.4%', height: '7.7%', backgroundColor: '#B22234' }}></div>
+                          <div className="absolute left-0 w-full" style={{ top: '23.1%', height: '7.7%', backgroundColor: 'white' }}></div>
+                          <div className="absolute left-0 w-full" style={{ top: '30.8%', height: '7.7%', backgroundColor: '#B22234' }}></div>
+                          <div className="absolute left-0 w-full" style={{ top: '38.5%', height: '7.7%', backgroundColor: 'white' }}></div>
+                          <div className="absolute left-0 w-full" style={{ top: '46.2%', height: '7.7%', backgroundColor: '#B22234' }}></div>
+                          <div className="absolute left-0 w-full" style={{ top: '53.9%', height: '7.7%', backgroundColor: 'white' }}></div>
+                          <div className="absolute left-0 w-full" style={{ top: '61.6%', height: '7.7%', backgroundColor: '#B22234' }}></div>
+                          <div className="absolute left-0 w-full" style={{ top: '69.3%', height: '7.7%', backgroundColor: 'white' }}></div>
+                          <div className="absolute left-0 w-full" style={{ top: '77%', height: '7.7%', backgroundColor: '#B22234' }}></div>
+                          <div className="absolute left-0 w-full" style={{ top: '84.7%', height: '7.7%', backgroundColor: 'white' }}></div>
+                          <div className="absolute left-0 w-full" style={{ top: '92.4%', height: '7.6%', backgroundColor: '#B22234' }}></div>
+                          {/* Blue canton */}
+                          <div className="absolute top-0 left-0 w-2 bg-blue-800" style={{ height: '53.9%' }}></div>
+                          {/* Stars in 9 rows */}
+                          <div className="absolute top-0.5 left-0.5 text-xs text-white leading-none">★</div>
+                          <div className="absolute top-0.5 left-1.5 text-xs text-white leading-none">★</div>
+                        </div>
                         <span className="text-sm font-medium text-blue-900">American</span>
                       </div>
                       <span className="text-lg font-bold text-blue-950">{dashboardStats.nationalityCounts.american}</span>
@@ -459,13 +479,26 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-4 bg-blue-800 border border-gray-300 flex-shrink-0 relative overflow-hidden">
-                          <div className="absolute inset-0 bg-blue-800"></div>
-                          <div className="absolute top-0 left-0 w-full h-0.5 bg-white"></div>
-                          <div className="absolute bottom-0 left-0 w-full h-0.5 bg-white"></div>
-                          <div className="absolute top-0 left-0 h-full w-0.5 bg-white"></div>
-                          <div className="absolute top-0 right-0 h-full w-0.5 bg-white"></div>
-                          <div className="absolute top-1.5 left-0 w-full h-1 bg-red-600"></div>
-                          <div className="absolute top-0 left-1.5 h-full w-1 bg-red-600"></div>
+                          {/* Blue background */}
+                          <div className="absolute inset-0" style={{ backgroundColor: '#012169' }}></div>
+                          {/* White diagonal crosses - Saint Andrew's Cross */}
+                          <div className="absolute top-0 left-0 w-full h-full">
+                            <div className="absolute top-0 left-0 w-full h-px bg-white transform origin-top-left" style={{ transform: 'rotate(26.57deg)', transformOrigin: 'top left' }}></div>
+                            <div className="absolute top-0 right-0 w-full h-px bg-white transform origin-top-right" style={{ transform: 'rotate(-26.57deg)', transformOrigin: 'top right' }}></div>
+                            <div className="absolute bottom-0 left-0 w-full h-px bg-white transform origin-bottom-left" style={{ transform: 'rotate(-26.57deg)', transformOrigin: 'bottom left' }}></div>
+                            <div className="absolute bottom-0 right-0 w-full h-px bg-white transform origin-bottom-right" style={{ transform: 'rotate(26.57deg)', transformOrigin: 'bottom right' }}></div>
+                          </div>
+                          {/* Red diagonal crosses - Saint Patrick's Cross */}
+                          <div className="absolute top-0 left-0 w-full h-full">
+                            <div className="absolute top-0 left-0 w-full h-px bg-red-600 transform origin-top-left" style={{ transform: 'rotate(26.57deg)', transformOrigin: 'top left' }}></div>
+                            <div className="absolute bottom-0 right-0 w-full h-px bg-red-600 transform origin-bottom-right" style={{ transform: 'rotate(26.57deg)', transformOrigin: 'bottom right' }}></div>
+                          </div>
+                          {/* White Saint George's Cross */}
+                          <div className="absolute top-0 left-0 w-full h-px bg-white" style={{ top: '47%', height: '6%' }}></div>
+                          <div className="absolute top-0 left-0 h-full w-px bg-white" style={{ left: '47%', width: '6%' }}></div>
+                          {/* Red Saint George's Cross */}
+                          <div className="absolute top-0 left-0 w-full bg-red-600" style={{ top: '45%', height: '10%' }}></div>
+                          <div className="absolute top-0 left-0 h-full bg-red-600" style={{ left: '45%', width: '10%' }}></div>
                         </div>
                         <span className="text-sm font-medium text-green-800">British</span>
                       </div>
@@ -478,9 +511,17 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-4 bg-white border border-gray-300 flex-shrink-0 relative overflow-hidden">
-                          <div className="absolute left-0 top-0 w-1.5 h-full bg-red-600"></div>
-                          <div className="absolute right-0 top-0 w-1.5 h-full bg-red-600"></div>
-                          <div className="absolute left-1.5 top-1.5 w-2 h-1 bg-red-600 transform rotate-45"></div>
+                          {/* Red bands on left and right - each 1/4 width */}
+                          <div className="absolute left-0 top-0 h-full bg-red-600" style={{ width: '25%' }}></div>
+                          <div className="absolute right-0 top-0 h-full bg-red-600" style={{ width: '25%' }}></div>
+                          {/* White center */}
+                          <div className="absolute top-0 h-full bg-white" style={{ left: '25%', width: '50%' }}></div>
+                          {/* Maple leaf in center - simplified 11-point design */}
+                          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-red-600" style={{ fontSize: '8px', lineHeight: '1' }}>
+                            <svg width="10" height="8" viewBox="0 0 10 8" fill="currentColor">
+                              <path d="M5 1 L4 2.5 L2 2 L3 3.5 L1 4 L3 4.5 L2 6 L4 5.5 L5 7 L6 5.5 L8 6 L7 4.5 L9 4 L7 3.5 L8 2 L6 2.5 Z"/>
+                            </svg>
+                          </div>
                         </div>
                         <span className="text-sm font-medium text-purple-800">Canadian</span>
                       </div>
