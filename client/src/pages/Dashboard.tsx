@@ -333,8 +333,8 @@ const Dashboard = () => {
               <FileText className="h-4 w-4 text-amber-600" />
             </div>
             <div className="text-center flex-1">
-              <div className="text-lg font-bold text-gray-900">{statistics.totalCourses}</div>
-              <div className="text-xs text-gray-500 font-medium">Courses</div>
+              <div className="text-lg font-bold text-gray-900">{statistics.activeCourses}</div>
+              <div className="text-xs text-gray-500 font-medium">Active Courses</div>
             </div>
           </div>
         </div>
