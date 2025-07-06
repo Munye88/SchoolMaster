@@ -8,10 +8,9 @@ export async function fixPtoFunctions() {
   try {
     console.log("Fixing PTO balance calculations...");
     
-    // First, clean up any existing incorrect balances
-    await db.execute(sql`
-      DELETE FROM pto_balance
-    `);
+    // Migration disabled - PTO balance records should be preserved
+    // This migration was clearing all records on every startup
+    // which destroyed manually set PTO allocations
     
     // Success message
     console.log("PTO balance calculations fixed successfully");
