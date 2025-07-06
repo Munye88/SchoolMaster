@@ -359,7 +359,7 @@ const AlcptOrder = () => {
   };
   
   // Filter inventory update history by school
-  const filteredHistory = inventoryUpdateHistory.filter(update => {
+  const filteredHistory = inventoryTransactions.filter(update => {
     return selectedSchool ? update.schoolId === selectedSchool.id : 
           viewingSchoolId ? update.schoolId === viewingSchoolId : true;
   });
@@ -683,7 +683,7 @@ const AlcptOrder = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="text-4xl font-bold text-emerald-600">
-                      {inventoryUpdateHistory.filter(update => update.schoolId === viewingSchoolId).length}
+                      {inventoryTransactions.filter(update => update.schoolId === viewingSchoolId).length}
                     </div>
                     <p className="text-sm text-gray-500 mt-2">
                       Inventory updates in the past 6 months
@@ -884,8 +884,8 @@ const AlcptOrder = () => {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {inventoryUpdateHistory.filter(update => update.schoolId === viewingSchoolId).length > 0 ? (
-                              inventoryUpdateHistory
+                            {inventoryTransactions.filter(update => update.schoolId === viewingSchoolId).length > 0 ? (
+                              inventoryTransactions
                                 .filter(update => update.schoolId === viewingSchoolId)
                                 .map((update) => (
                                 <TableRow key={update.id}>
@@ -1226,8 +1226,8 @@ const AlcptOrder = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {inventoryUpdateHistory.length > 0 ? (
-                      inventoryUpdateHistory.map((update) => (
+                    {inventoryTransactions.length > 0 ? (
+                      inventoryTransactions.map((update) => (
                         <TableRow key={update.id}>
                           <TableCell className="font-medium">#{update.id}</TableCell>
                           <TableCell>{new Date(update.date).toLocaleDateString()}</TableCell>
