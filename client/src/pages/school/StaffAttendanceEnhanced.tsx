@@ -409,21 +409,21 @@ export default function StaffAttendanceEnhanced() {
                   Individual Record
                 </Button>
               </DialogTrigger>
-              <DialogContent className="rounded-none">
+              <DialogContent className="rounded-none max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Record Individual Attendance</DialogTitle>
-                  <DialogDescription>
-                    Record attendance for a single instructor for {format(selectedDate, 'MMMM dd, yyyy')}
+                  <DialogTitle className="text-lg">Record Individual Attendance</DialogTitle>
+                  <DialogDescription className="text-sm">
+                    Record attendance for a single instructor for {format(selectedDate, 'MMM dd, yyyy')}
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Instructor</label>
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Instructor</label>
                     <Select 
                       value={individualForm.instructorId} 
                       onValueChange={(value) => setIndividualForm(prev => ({ ...prev, instructorId: value }))}
                     >
-                      <SelectTrigger className="rounded-none">
+                      <SelectTrigger className="rounded-none h-9">
                         <SelectValue placeholder="Select instructor" />
                       </SelectTrigger>
                       <SelectContent className="rounded-none">
@@ -435,13 +435,13 @@ export default function StaffAttendanceEnhanced() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium">Status</label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Status</label>
                     <Select 
                       value={individualForm.status} 
                       onValueChange={(value) => setIndividualForm(prev => ({ ...prev, status: value }))}
                     >
-                      <SelectTrigger className="rounded-none">
+                      <SelectTrigger className="rounded-none h-9">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-none">
@@ -453,17 +453,17 @@ export default function StaffAttendanceEnhanced() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium">Notes (Optional)</label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Notes (Optional)</label>
                     <Input
-                      className="rounded-none"
+                      className="rounded-none h-9"
                       value={individualForm.notes}
                       onChange={(e) => setIndividualForm(prev => ({ ...prev, notes: e.target.value }))}
                       placeholder="Additional notes..."
                     />
                   </div>
                 </div>
-                <DialogFooter>
+                <DialogFooter className="mt-4">
                   <Button 
                     onClick={handleIndividualSubmit} 
                     disabled={createAttendanceMutation.isPending}
@@ -483,20 +483,20 @@ export default function StaffAttendanceEnhanced() {
                   Bulk Record
                 </Button>
               </DialogTrigger>
-              <DialogContent className="rounded-none max-w-2xl">
+              <DialogContent className="rounded-none max-w-lg">
                 <DialogHeader>
-                  <DialogTitle>Bulk Attendance Recording</DialogTitle>
-                  <DialogDescription>
-                    Record attendance for multiple instructors for {format(selectedDate, 'MMMM dd, yyyy')}
+                  <DialogTitle className="text-lg">Bulk Attendance Recording</DialogTitle>
+                  <DialogDescription className="text-sm">
+                    Record attendance for multiple instructors for {format(selectedDate, 'MMM dd, yyyy')}
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div className="flex space-x-2">
                     <Button 
                       size="sm" 
                       variant="outline" 
                       onClick={selectAllInstructors}
-                      className="rounded-none"
+                      className="rounded-none text-xs px-3 py-1"
                     >
                       Select All
                     </Button>
@@ -504,28 +504,28 @@ export default function StaffAttendanceEnhanced() {
                       size="sm" 
                       variant="outline" 
                       onClick={deselectAllInstructors}
-                      className="rounded-none"
+                      className="rounded-none text-xs px-3 py-1"
                     >
                       Deselect All
                     </Button>
                   </div>
                   
-                  <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-none p-2">
+                  <div className="max-h-40 overflow-y-auto border border-gray-200 rounded-none p-3">
                     {instructors.map(instructor => (
-                      <div key={instructor.id} className="flex items-center space-x-2 py-1">
+                      <div key={instructor.id} className="flex items-center space-x-3 py-1.5">
                         <Checkbox
                           checked={bulkSelectedInstructors.includes(instructor.id)}
                           onCheckedChange={() => toggleInstructorSelection(instructor.id)}
                         />
-                        <span className="text-sm">{instructor.name}</span>
+                        <span className="text-sm text-gray-700">{instructor.name}</span>
                       </div>
                     ))}
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium">Status for All Selected</label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Status for All Selected</label>
                     <Select value={bulkStatus} onValueChange={setBulkStatus}>
-                      <SelectTrigger className="rounded-none">
+                      <SelectTrigger className="rounded-none h-9">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-none">
@@ -538,21 +538,21 @@ export default function StaffAttendanceEnhanced() {
                     </Select>
                   </div>
 
-                  <div>
-                    <label className="text-sm font-medium">Notes (Optional)</label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Notes (Optional)</label>
                     <Input
-                      className="rounded-none"
+                      className="rounded-none h-9"
                       value={bulkNotes}
                       onChange={(e) => setBulkNotes(e.target.value)}
                       placeholder="Notes for all selected instructors..."
                     />
                   </div>
 
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs text-muted-foreground bg-gray-50 p-2 rounded-none">
                     {bulkSelectedInstructors.length} instructor(s) selected
                   </div>
                 </div>
-                <DialogFooter>
+                <DialogFooter className="mt-4">
                   <Button 
                     onClick={handleBulkSubmit} 
                     disabled={createBulkAttendanceMutation.isPending}
@@ -733,21 +733,21 @@ export default function StaffAttendanceEnhanced() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="rounded-none">
+        <DialogContent className="rounded-none max-w-md">
           <DialogHeader>
-            <DialogTitle>Edit Attendance Record</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg">Edit Attendance Record</DialogTitle>
+            <DialogDescription className="text-sm">
               Update the attendance record for {selectedAttendance && instructors.find(i => i.id === selectedAttendance.instructorId)?.name}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Status</label>
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Status</label>
               <Select 
                 value={editForm.status} 
                 onValueChange={(value) => setEditForm(prev => ({ ...prev, status: value }))}
               >
-                <SelectTrigger className="rounded-none">
+                <SelectTrigger className="rounded-none h-9">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="rounded-none">
@@ -759,17 +759,17 @@ export default function StaffAttendanceEnhanced() {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <label className="text-sm font-medium">Notes</label>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Notes</label>
               <Input
-                className="rounded-none"
+                className="rounded-none h-9"
                 value={editForm.notes}
                 onChange={(e) => setEditForm(prev => ({ ...prev, notes: e.target.value }))}
                 placeholder="Additional notes..."
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="mt-4">
             <Button 
               onClick={handleEditSubmit} 
               disabled={updateAttendanceMutation.isPending}
