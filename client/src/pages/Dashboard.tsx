@@ -366,6 +366,10 @@ const Dashboard = () => {
                 {/* Course Cards - 2x3 Grid Layout to show all 6 courses */}
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {courses
+                    .filter(course => {
+                      const status = getCourseStatus(course, true);
+                      return status === 'In Progress';
+                    })
                     .slice(0, 6)
                     .map((course, index) => {
                       const schoolName = schools.find(s => s.id === course.schoolId)?.name || 'Unknown';
