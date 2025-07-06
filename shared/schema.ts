@@ -505,6 +505,7 @@ export const ptoBalance = pgTable("pto_balance", {
   usedDays: integer("used_days").notNull().default(0),
   remainingDays: integer("remaining_days").notNull().default(21), // Initially equal to totalDays
   adjustments: integer("adjustments").default(0), // For manual adjustments as needed
+  manualEntry: boolean("manual_entry").default(false), // Flag to indicate manually set PTO allocations
   lastUpdated: timestamp("last_updated").notNull().defaultNow(),
 });
 

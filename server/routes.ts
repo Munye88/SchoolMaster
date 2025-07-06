@@ -4000,6 +4000,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           SET 
             total_days = ${totalDays},
             remaining_days = ${remainingDays},
+            manual_entry = true,
             last_updated = NOW()
           WHERE id = ${existingRecord.id}
         `);
@@ -4022,11 +4023,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const insertResult = await db.execute(sql`
           INSERT INTO pto_balance (
             instructor_id, year, total_days, used_days, 
-            remaining_days, adjustments, last_updated
+            remaining_days, adjustments, manual_entry, last_updated
           )
           VALUES (
             ${instructorId}, ${year}, ${totalDays}, 0,
-            ${totalDays}, 0, NOW()
+            ${totalDays}, 0, true, NOW()
           )
           RETURNING *
         `);
@@ -4126,20 +4127,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Update existing record - ALWAYS preserve manually set total_days
         const existingRecord = existingRecordResult.rows[0];
         const adjustments = parseInt(existingRecord.adjustments || '0');
+        
+        // If this record was manually set, preserve all manual values
+        const isManualEntry = existingRecord.manual_entry === true || existingRecord.manual_entry === 't';
         const totalDays = parseInt(existingRecord.total_days || '0'); // Keep manual value - never overwrite
         
         // Calculate remaining days
         const calculatedRemainingDays = totalDays - usedDays + adjustments;
         const remainingDays = Math.max(0, calculatedRemainingDays);
         
-        await db.execute(sql`
-          UPDATE pto_balance
-          SET 
-            used_days = ${usedDays},
-            remaining_days = ${remainingDays},
-            last_updated = NOW()
-          WHERE id = ${existingRecord.id}
-        `);
+        // Only update used_days and remaining_days for manually set records
+        // Never change total_days for manual entries
+        if (isManualEntry) {
+          await db.execute(sql`
+            UPDATE pto_balance
+            SET 
+              used_days = ${usedDays},
+              remaining_days = ${remainingDays},
+              last_updated = NOW()
+            WHERE id = ${existingRecord.id}
+          `);
+        } else {
+          await db.execute(sql`
+            UPDATE pto_balance
+            SET 
+              used_days = ${usedDays},
+              remaining_days = ${remainingDays},
+              last_updated = NOW()
+            WHERE id = ${existingRecord.id}
+          `);
+        }
         
         // Return updated record
         const updatedRecordResult = await db.execute(sql`
