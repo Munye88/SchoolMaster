@@ -613,9 +613,6 @@ const Dashboard = () => {
           {/* Upcoming Events */}
           <div className="relative">
             <UpcomingEvents limit={3} />
-            <div className="absolute top-4 right-4">
-              <Link href="/events" className="text-[#0A2463] hover:underline text-xs font-medium">View</Link>
-            </div>
           </div>
 
 
