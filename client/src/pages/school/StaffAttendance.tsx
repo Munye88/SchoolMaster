@@ -1578,7 +1578,14 @@ const StaffAttendance = () => {
                                         </TableHeader>
                                         <TableBody>
                                           {item.records.length > 0 ? (
-                                            item.records.map((record: StaffAttendance) => (
+                                            item.records
+                                              .sort((a: StaffAttendance, b: StaffAttendance) => {
+                                                // Sort by date in ascending order (chronological order)
+                                                const dateA = new Date(a.date);
+                                                const dateB = new Date(b.date);
+                                                return dateA.getTime() - dateB.getTime();
+                                              })
+                                              .map((record: StaffAttendance) => (
                                               <TableRow key={record.id}>
                                                 <TableCell>{format(new Date(record.date), "MMM dd, yyyy")}</TableCell>
                                                 <TableCell>

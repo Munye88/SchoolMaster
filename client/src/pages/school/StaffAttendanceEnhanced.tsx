@@ -305,13 +305,20 @@ export default function StaffAttendanceEnhanced() {
     }
   });
 
-  // Filter logic
-  const filteredRecords = attendanceRecords.filter(record => {
-    const instructor = instructors.find(i => i.id === record.instructorId);
-    const matchesSearch = !searchTerm || (instructor?.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStatus = statusFilter === "all" || record.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  // Filter and sort logic
+  const filteredRecords = attendanceRecords
+    .filter(record => {
+      const instructor = instructors.find(i => i.id === record.instructorId);
+      const matchesSearch = !searchTerm || (instructor?.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesStatus = statusFilter === "all" || record.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      // Sort by date in ascending order (oldest first, chronological order)
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return dateA.getTime() - dateB.getTime();
+    });
 
   // Status colors
   const getStatusColor = (status: string) => {
