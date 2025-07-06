@@ -638,7 +638,7 @@ export default function StaffAttendanceEnhanced() {
                 <Skeleton key={i} className="h-12 w-full" />
               ))}
             </div>
-          ) : paginatedRecords.length === 0 ? (
+          ) : filteredRecords.length === 0 ? (
             <div className="text-center py-8">
               <ClipboardList className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No attendance records found</h3>
