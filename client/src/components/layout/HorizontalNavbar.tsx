@@ -177,16 +177,6 @@ const HorizontalNavbar = () => {
                               <span>SOP</span>
                             </Link>
                             
-                            <Link href={`/schools/${school.code}/staff-evaluations`} 
-                              onClick={() => setSchoolDropdownOpen(false)}
-                              className={cn(
-                              "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
-                              isActive(`/schools/${school.code}/staff-evaluations`) && "text-[#0A2463] bg-gray-100 font-medium"
-                            )}>
-                              <Clipboard className="h-3.5 w-3.5 mr-2" />
-                              <span>Staff Evaluations</span>
-                            </Link>
-                            
                             <Link href={`/schools/${school.code}/staff-attendance`} 
                               onClick={() => setSchoolDropdownOpen(false)}
                               className={cn(
@@ -195,6 +185,16 @@ const HorizontalNavbar = () => {
                             )}>
                               <CheckSquare className="h-3.5 w-3.5 mr-2" />
                               <span>Staff Attendance</span>
+                            </Link>
+                            
+                            <Link href={`/schools/${school.code}/staff-evaluations`} 
+                              onClick={() => setSchoolDropdownOpen(false)}
+                              className={cn(
+                              "flex items-center px-3 py-1.5 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                              isActive(`/schools/${school.code}/staff-evaluations`) && "text-[#0A2463] bg-gray-100 font-medium"
+                            )}>
+                              <Clipboard className="h-3.5 w-3.5 mr-2" />
+                              <span>Staff Evaluations</span>
                             </Link>
                             
                             <Link href={`/schools/${school.code}/book-inventory`}

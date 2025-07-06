@@ -169,13 +169,13 @@ const BasicNavbar = () => {
                         className="flex items-center justify-center px-6 py-4 text-sm hover:bg-[#1A3473] text-white transition-colors text-center">
                         SOP
                       </Link>
-                      <Link href={`/schools/${showSchoolLinks}/staff-evaluations`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center justify-center px-6 py-4 text-sm hover:bg-[#1A3473] text-white transition-colors text-center">
-                        Staff Evaluations
-                      </Link>
                       <Link href={`/schools/${showSchoolLinks}/staff-attendance`} onClick={() => setShowSchoolLinks(null)}
                         className="flex items-center justify-center px-6 py-4 text-sm hover:bg-[#1A3473] text-white transition-colors text-center">
                         Staff Attendance
+                      </Link>
+                      <Link href={`/schools/${showSchoolLinks}/staff-evaluations`} onClick={() => setShowSchoolLinks(null)}
+                        className="flex items-center justify-center px-6 py-4 text-sm hover:bg-[#1A3473] text-white transition-colors text-center">
+                        Staff Evaluations
                       </Link>
                       <Link href={`/schools/${showSchoolLinks}/book-inventory`} onClick={() => setShowSchoolLinks(null)}
                         className="flex items-center justify-center px-6 py-4 text-sm hover:bg-[#1A3473] text-white transition-colors text-center">

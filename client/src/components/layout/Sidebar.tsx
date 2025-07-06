@@ -264,17 +264,17 @@ const Sidebar = () => {
                     </li>
                     {/* SOP removed as requested */}
                     <li>
-                      <Link href={`/schools/${showSchoolLinks}/staff-evaluations`} onClick={() => setShowSchoolLinks(null)}
-                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
-                        <ClipboardCheck className="h-4 w-4 mr-2 text-green-600 group-hover:text-green-700" />
-                        Staff Evaluations
-                      </Link>
-                    </li>
-                    <li>
                       <Link href={`/schools/${showSchoolLinks}/staff-attendance`} onClick={() => setShowSchoolLinks(null)}
                         className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
                         <UserCheck className="h-4 w-4 mr-2 text-green-600 group-hover:text-green-700" />
                         Staff Attendance
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href={`/schools/${showSchoolLinks}/staff-evaluations`} onClick={() => setShowSchoolLinks(null)}
+                        className="flex items-center px-3 py-1.5 text-sm rounded-md hover:bg-blue-200/80 text-blue-800 hover:text-blue-900 transition-all group">
+                        <ClipboardCheck className="h-4 w-4 mr-2 text-green-600 group-hover:text-green-700" />
+                        Staff Evaluations
                       </Link>
                     </li>
                     {/* Book Inventory removed as requested */}

@@ -296,6 +296,7 @@ The system manages multiple interconnected entities:
 - July 5, 2025: INSTRUCTOR MANAGEMENT API MUTATIONS FIX - Fixed all create, update, and delete mutations in ManageInstructorsNew component by replacing incorrect `apiRequest` calls with proper `fetch` API calls with correct headers and methods
 - July 5, 2025: COMPREHENSIVE FRONTEND-BACKEND INTEGRATION - Resolved all TypeScript errors and API connectivity issues in both staff evaluation and instructor management systems, ensuring full CRUD functionality across all three schools
 - July 5, 2025: STAFF EVALUATION SYSTEM FULLY OPERATIONAL - Staff evaluation page now correctly displays school-specific evaluations (8 evaluations for KFNA) with working create, update, and delete functionality
+- July 6, 2025: NAVIGATION ORDER RESTORATION - Reversed attendance and evaluation sections back to original order (Staff Attendance first, then Staff Evaluations) across all navigation components for all three schools (KFNA, NFS East, NFS West)
 
 ## User Preferences
 
