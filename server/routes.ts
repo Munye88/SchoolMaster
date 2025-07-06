@@ -4123,10 +4123,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const hasExistingRecord = existingRecordResult.rows && existingRecordResult.rows.length > 0;
       
       if (hasExistingRecord) {
-        // Update existing record - keep the manually set total_days
+        // Update existing record - ALWAYS preserve manually set total_days
         const existingRecord = existingRecordResult.rows[0];
         const adjustments = parseInt(existingRecord.adjustments || '0');
-        const totalDays = parseInt(existingRecord.total_days || '0'); // Keep manual value
+        const totalDays = parseInt(existingRecord.total_days || '0'); // Keep manual value - never overwrite
         
         // Calculate remaining days
         const calculatedRemainingDays = totalDays - usedDays + adjustments;
@@ -4148,8 +4148,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         return updatedRecordResult.rows[0];
       } else {
-        // For new records, start with 0 total days (manual entry required)
-        const totalDays = 0; // Manual entry required
+        // For new records, check if instructor has any historical PTO balance records
+        const hasAnyPtoRecord = await db.execute(sql`
+          SELECT COUNT(*) as count FROM pto_balance
+          WHERE instructor_id = ${instructor.id}
+        `);
+        
+        const hasHistoricalRecord = hasAnyPtoRecord.rows[0].count > 0;
+        
+        // If instructor has historical records, preserve their last known total days
+        // Otherwise, start with 0 for truly new instructors
+        let totalDays = 0;
+        if (hasHistoricalRecord) {
+          const lastRecordResult = await db.execute(sql`
+            SELECT total_days FROM pto_balance
+            WHERE instructor_id = ${instructor.id} AND total_days > 0
+            ORDER BY year DESC, last_updated DESC
+            LIMIT 1
+          `);
+          totalDays = lastRecordResult.rows[0]?.total_days || 0;
+          
+          // If no positive total days found, check for any non-zero records
+          if (totalDays === 0) {
+            const anyNonZeroResult = await db.execute(sql`
+              SELECT total_days FROM pto_balance
+              WHERE instructor_id = ${instructor.id}
+              ORDER BY year DESC, last_updated DESC
+              LIMIT 1
+            `);
+            totalDays = anyNonZeroResult.rows[0]?.total_days || 0;
+          }
+        }
+        
         const remainingDays = Math.max(0, totalDays - usedDays);
         
         const insertResult = await db.execute(sql`
