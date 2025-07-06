@@ -18,7 +18,7 @@ import StaticNotifications from "@/components/dashboard/StaticNotifications";
 import UpcomingEvents from "@/components/dashboard/UpcomingEvents";
 
 import { useQuery } from "@tanstack/react-query";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend, Tooltip, Cell } from 'recharts';
+
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
@@ -169,24 +169,7 @@ const Dashboard = () => {
     dashboardStatsRaw: dashboardStats.studentCounts
   });
 
-  // Create nationality data for charts from our hook data
-  const nationalityData = [
-    { 
-      name: 'American', 
-      value: dashboardStats.nationalityCounts.american, 
-      color: '#4299E1' 
-    },
-    { 
-      name: 'British', 
-      value: dashboardStats.nationalityCounts.british, 
-      color: '#48BB78' 
-    },
-    { 
-      name: 'Canadian', 
-      value: dashboardStats.nationalityCounts.canadian, 
-      color: '#F6AD55' 
-    }
-  ];
+
   
   // Log when component mounts/unmounts for debugging
   useEffect(() => {
