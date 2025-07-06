@@ -440,7 +440,7 @@ export default function ManageInstructors() {
               </DialogTrigger>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
               <DialogHeader className="sticky top-0 bg-white z-10 pb-2">
-                <DialogTitle className="text-xl">Add New Instructor</DialogTitle>
+                <DialogTitle className="text-xl text-center">Add New Instructor</DialogTitle>
                 <DialogDescription>
                   Create a new instructor in the system.
                 </DialogDescription>
@@ -505,172 +505,9 @@ export default function ManageInstructors() {
                       )}
                     />
 
-                    <FormField
-                      control={createForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email Address</FormLabel>
-                          <FormControl>
-                            <Input type="email" placeholder="instructor@example.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
-                    <FormField
-                      control={createForm.control}
-                      name="dateOfBirth"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Date of Birth</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
-                    <FormField
-                      control={createForm.control}
-                      name="passportNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Passport Number</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter passport number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
-                    <FormField
-                      control={createForm.control}
-                      name="department"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Department</FormLabel>
-                          <FormControl>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select department" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="English Language Training">English Language Training</SelectItem>
-                                <SelectItem value="Aviation English">Aviation English</SelectItem>
-                                <SelectItem value="Academic Affairs">Academic Affairs</SelectItem>
-                                <SelectItem value="Administration">Administration</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={createForm.control}
-                      name="salary"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Monthly Salary (SAR)</FormLabel>
-                          <FormControl>
-                            <Input type="number" placeholder="e.g., 8000" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={createForm.control}
-                      name="contractEndDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Contract End Date</FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={createForm.control}
-                      name="instructorStatus"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Employment Status</FormLabel>
-                          <FormControl>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select status" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Active">Active</SelectItem>
-                                <SelectItem value="On Leave">On Leave</SelectItem>
-                                <SelectItem value="Probation">Probation</SelectItem>
-                                <SelectItem value="Inactive">Inactive</SelectItem>
-                                <SelectItem value="Terminated">Terminated</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={createForm.control}
-                      name="emergencyContact"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Emergency Contact Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter emergency contact name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={createForm.control}
-                      name="emergencyPhone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Emergency Contact Phone</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter emergency contact phone" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    <FormField
-                      control={createForm.control}
-                      name="notes"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Additional Notes</FormLabel>
-                          <FormControl>
-                            <textarea 
-                              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                              placeholder="Enter any additional notes or comments about the instructor..."
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
                     <FormField
                       control={createForm.control}
@@ -699,6 +536,9 @@ export default function ManageInstructors() {
                         </FormItem>
                       )}
                     />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
 
                     <FormField
                       control={createForm.control}
