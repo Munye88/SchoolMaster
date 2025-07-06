@@ -389,52 +389,52 @@ const InstructorLookup = () => {
                 <CardHeader>
                   <CardTitle className="text-center">Instructor Profile</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-3 min-w-0">
-                      <div className="min-w-0">
+                <CardContent className="overflow-hidden">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-hidden">
+                    <div className="space-y-3 min-w-0 overflow-hidden">
+                      <div className="min-w-0 overflow-hidden">
                         <label className="text-sm font-medium text-gray-500">Full Name</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.name}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.name}</p>
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 overflow-hidden">
                         <label className="text-sm font-medium text-gray-500">Nationality</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.nationality}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.nationality}</p>
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 overflow-hidden">
                         <label className="text-sm font-medium text-gray-500">Phone Number</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.phone || 'Not provided'}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.phone || 'Not provided'}</p>
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 overflow-hidden">
                         <label className="text-sm font-medium text-gray-500">Accompanied Status</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.accompaniedStatus}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.accompaniedStatus}</p>
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 overflow-hidden">
                         <label className="text-sm font-medium text-gray-500">Compound</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.compound}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.compound}</p>
                       </div>
                     </div>
-                    <div className="space-y-3 min-w-0">
-                      <div className="min-w-0">
+                    <div className="space-y-3 min-w-0 overflow-hidden">
+                      <div className="min-w-0 overflow-hidden">
                         <label className="text-sm font-medium text-gray-500">School</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{getSchoolName(selectedInstructor.schoolId)}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{getSchoolName(selectedInstructor.schoolId)}</p>
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 overflow-hidden">
                         <label className="text-sm font-medium text-gray-500">Role</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.role}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.role}</p>
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 overflow-hidden">
                         <label className="text-sm font-medium text-gray-500">Credentials</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.credentials}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.credentials}</p>
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 overflow-hidden">
                         <label className="text-sm font-medium text-gray-500">Start Date</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">
                           {selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy') : 'Not provided'}
                         </p>
                       </div>
-                      <div className="min-w-0">
+                      <div className="min-w-0 overflow-hidden">
                         <label className="text-sm font-medium text-gray-500">Instructor ID</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.id}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.id}</p>
                       </div>
                     </div>
                   </div>
