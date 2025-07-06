@@ -430,6 +430,32 @@ const InstructorLookup = () => {
                           </div>
                         </div>
                         <div>
+                          <label className="text-sm font-medium text-gray-500 block">Tenure</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">
+                            {selectedInstructor.startDate ? (() => {
+                              const startDate = new Date(selectedInstructor.startDate);
+                              const currentDate = new Date();
+                              const diffTime = Math.abs(currentDate - startDate);
+                              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                              
+                              if (diffDays < 30) {
+                                return `${diffDays} days`;
+                              } else if (diffDays < 365) {
+                                const months = Math.floor(diffDays / 30);
+                                return `${months} ${months === 1 ? 'month' : 'months'}`;
+                              } else {
+                                const years = Math.floor(diffDays / 365);
+                                const remainingMonths = Math.floor((diffDays % 365) / 30);
+                                if (remainingMonths === 0) {
+                                  return `${years} ${years === 1 ? 'year' : 'years'}`;
+                                } else {
+                                  return `${years} ${years === 1 ? 'year' : 'years'}, ${remainingMonths} ${remainingMonths === 1 ? 'month' : 'months'}`;
+                                }
+                              }
+                            })() : 'Not available'}
+                          </div>
+                        </div>
+                        <div>
                           <label className="text-sm font-medium text-gray-500 block">Instructor ID</label>
                           <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.id}</div>
                         </div>
