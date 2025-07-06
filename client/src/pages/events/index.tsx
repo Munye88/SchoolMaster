@@ -328,10 +328,10 @@ export default function EventsPage() {
         </Button>
       </div>
       
-      <Card className="mb-6">
+      <Card className="mb-6 rounded-none">
         <CardHeader className="pb-3">
-          <CardTitle>Filter Events</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-center">Filter Events</CardTitle>
+          <CardDescription className="text-center">
             Narrow down events by date range, school, or keywords
           </CardDescription>
         </CardHeader>
@@ -345,7 +345,7 @@ export default function EventsPage() {
                     <Button
                       variant="outline"
                       className={cn(
-                        "justify-start text-left font-normal w-full",
+                        "justify-start text-left font-normal w-full rounded-none",
                         !date && "text-muted-foreground"
                       )}
                     >
@@ -393,10 +393,10 @@ export default function EventsPage() {
                 value={schoolFilter.toString()}
                 onValueChange={(value) => setSchoolFilter(value === 'all' ? 'all' : parseInt(value))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="rounded-none">
                   <SelectValue placeholder="All Schools" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-none">
                   <SelectItem value="all">All Schools</SelectItem>
                   <SelectItem value="0">No Specific School</SelectItem>
                   {schools.map((school) => (
@@ -414,7 +414,7 @@ export default function EventsPage() {
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Search by title or description"
-                  className="pl-8"
+                  className="pl-8 rounded-none"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -433,7 +433,7 @@ export default function EventsPage() {
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-center space-x-2">
               {(date?.from || searchTerm || schoolFilter !== 'all') && (
-                <Button variant="outline" size="sm" onClick={handleClearFilters}>
+                <Button variant="outline" size="sm" onClick={handleClearFilters} className="rounded-none">
                   <Filter className="mr-2 h-3 w-3" />
                   Clear Filters
                 </Button>
@@ -449,7 +449,7 @@ export default function EventsPage() {
                 variant={viewMode === 'list' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('list')}
-                className={viewMode === 'list' ? 'bg-[#0A2463]' : ''}
+                className={`rounded-none ${viewMode === 'list' ? 'bg-[#0A2463]' : ''}`}
               >
                 List
               </Button>
@@ -457,7 +457,7 @@ export default function EventsPage() {
                 variant={viewMode === 'calendar' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setViewMode('calendar')}
-                className={viewMode === 'calendar' ? 'bg-[#0A2463]' : ''}
+                className={`rounded-none ${viewMode === 'calendar' ? 'bg-[#0A2463]' : ''}`}
               >
                 Calendar
               </Button>
@@ -466,7 +466,7 @@ export default function EventsPage() {
         </CardContent>
       </Card>
       
-      <Card>
+      <Card className="rounded-none">
         {isLoadingEvents ? (
           <div className="flex justify-center items-center h-64">
             <Loader2 className="h-8 w-8 animate-spin text-[#0A2463]" />
@@ -482,13 +482,13 @@ export default function EventsPage() {
           </div>
         ) : viewMode === 'list' ? (
           <CardContent className="p-0">
-            <Table>
+            <Table className="rounded-none">
               <TableHeader>
-                <TableRow>
-                  <TableHead>EVENT</TableHead>
-                  <TableHead>SCHOOL</TableHead>
-                  <TableHead>DATE</TableHead>
-                  <TableHead className="text-right">ACTIONS</TableHead>
+                <TableRow className="rounded-none">
+                  <TableHead className="text-center font-bold">EVENT</TableHead>
+                  <TableHead className="text-center font-bold">SCHOOL</TableHead>
+                  <TableHead className="text-center font-bold">DATE</TableHead>
+                  <TableHead className="text-center font-bold">ACTIONS</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -504,30 +504,30 @@ export default function EventsPage() {
                     : 'Invalid date';
                   
                   return (
-                    <TableRow key={event.id}>
-                      <TableCell>
+                    <TableRow key={event.id} className="rounded-none">
+                      <TableCell className="text-center">
                         <div>
                           <p className="font-medium">{event.title}</p>
                           {event.description && (
-                            <p className="text-xs text-gray-500 truncate max-w-[300px]">
+                            <p className="text-xs text-gray-500 truncate max-w-[300px] mx-auto">
                               {event.description}
                             </p>
                           )}
                         </div>
                       </TableCell>
-                      <TableCell>{renderEventBadge(event.schoolId)}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
+                      <TableCell className="text-center">{renderEventBadge(event.schoolId)}</TableCell>
+                      <TableCell className="text-center">
+                        <div className="flex items-center justify-center">
                           <CalendarDays className="h-4 w-4 mr-1 text-gray-400" />
                           <span>{formattedDate}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end space-x-2">
+                      <TableCell className="text-center">
+                        <div className="flex justify-center space-x-2">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-8 px-2"
+                            className="h-8 px-2 rounded-none"
                             onClick={() => handleEditEvent(event)}
                           >
                             <Edit className="h-4 w-4" />
@@ -537,7 +537,7 @@ export default function EventsPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-8 px-2 text-red-500 border-red-200 hover:bg-red-50"
+                                className="h-8 px-2 text-red-500 border-red-200 hover:bg-red-50 rounded-none"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
