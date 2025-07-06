@@ -102,34 +102,47 @@ export default function StaffAttendanceEnhanced() {
 
 
 
-  // Get school from URL parameter
+  // Get school from URL parameter or context
   const currentSchool = selectedSchool || (schoolCode ? { code: schoolCode } : null);
+
+  // Fetch schools data to get the proper school ID
+  const { data: schools = [] } = useQuery({
+    queryKey: ['/api/schools'],
+    queryFn: async () => {
+      const response = await fetch('/api/schools');
+      if (!response.ok) throw new Error('Failed to fetch schools');
+      return response.json();
+    },
+  });
+
+  // Get the complete school object with ID
+  const completeSchool = schools.find((school: any) => school.code === currentSchool?.code);
 
   // Fetch instructors for the current school
   const { data: instructors = [] } = useQuery<Instructor[]>({
-    queryKey: ['/api/instructors', currentSchool?.code],
+    queryKey: ['/api/instructors', completeSchool?.id],
     queryFn: async () => {
       const response = await fetch('/api/instructors');
       if (!response.ok) throw new Error('Failed to fetch instructors');
       const allInstructors = await response.json();
-      return currentSchool ? allInstructors.filter((instructor: Instructor) => 
-        instructor.schoolId === currentSchool.id
+      return completeSchool ? allInstructors.filter((instructor: Instructor) => 
+        instructor.schoolId === completeSchool.id
       ) : [];
     },
-    enabled: !!currentSchool,
+    enabled: !!completeSchool,
   });
 
   // Fetch attendance records
   const { data: attendanceRecords = [], isLoading } = useQuery<StaffAttendance[]>({
-    queryKey: ['/api/staff-attendance', currentSchool?.id, format(selectedDate, 'yyyy-MM')],
+    queryKey: ['/api/staff-attendance', completeSchool?.id, format(selectedDate, 'yyyy-MM')],
     queryFn: async () => {
-      if (!currentSchool) return [];
+      if (!completeSchool) return [];
       const dateStr = format(selectedDate, 'yyyy-MM');
-      const response = await fetch(`/api/staff-attendance?schoolId=${currentSchool.id}&date=${dateStr}`);
+      const response = await fetch(`/api/staff-attendance?schoolId=${completeSchool.id}&date=${dateStr}`);
       if (!response.ok) return [];
       return await response.json();
     },
-    enabled: !!currentSchool,
+    enabled: !!completeSchool,
   });
 
   // Create individual attendance mutation
@@ -389,7 +402,7 @@ export default function StaffAttendanceEnhanced() {
     setBulkSelectedInstructors([]);
   };
 
-  if (!currentSchool) {
+  if (!completeSchool) {
     return (
       <div className="p-6">
         <Card className="rounded-none">
@@ -407,7 +420,7 @@ export default function StaffAttendanceEnhanced() {
       <div className="flex flex-col space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-center">Staff Attendance - {currentSchool.code}</h1>
+            <h1 className="text-2xl font-bold text-center">Staff Attendance - {completeSchool.code}</h1>
             <p className="text-muted-foreground text-center">Track and manage staff attendance records</p>
           </div>
           <div className="flex space-x-2">
