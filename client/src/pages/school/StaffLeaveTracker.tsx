@@ -1379,17 +1379,9 @@ export default function StaffLeaveTracker() {
                         </TableCell>
                         <TableCell>
                           {(() => {
-                            // Calculate total used days (PTO + R&R)
-                            const instructorRRLeaves = schoolLeaveRecords.filter(
-                              leave => leave.instructorId === balance.instructorId && 
-                                      leave.leaveType === 'R&R' &&
-                                      leave.status === 'Approved'
-                            );
-                            const rrDaysUsed = instructorRRLeaves.reduce((total, leave) => total + leave.rrdays, 0);
-                            
-                            // The actual remaining days should account for R&R days too
-                            const totalUsed = balance.usedDays + rrDaysUsed;
-                            const actualRemaining = balance.totalDays - totalUsed + (balance.adjustments || 0);
+                            // Calculate remaining days - usedDays already includes both PTO and R&R
+                            // No need to add R&R days again as they're already counted in usedDays
+                            const actualRemaining = balance.totalDays - balance.usedDays + (balance.adjustments || 0);
                             
                             return (
                               <Badge variant={actualRemaining < 5 ? "destructive" : actualRemaining < 10 ? "outline" : "default"}>
