@@ -255,11 +255,28 @@ export default function StaffAttendanceEnhanced() {
       });
       
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to delete attendance record');
+        let errorMessage = 'Failed to delete attendance record';
+        try {
+          const error = await response.json();
+          errorMessage = error.message || errorMessage;
+        } catch {
+          // If JSON parsing fails, use default message
+        }
+        throw new Error(errorMessage);
       }
       
-      return response.json();
+      // For DELETE operations, don't try to parse JSON if status is 204 (No Content)
+      if (response.status === 204) {
+        return null;
+      }
+      
+      // Only parse JSON if there's content
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return response.json();
+      }
+      
+      return null;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/staff-attendance'] });
