@@ -365,7 +365,7 @@ const Dashboard = () => {
           <div className="bg-white border border-gray-200 shadow-sm">
             <div className="p-4 pb-2 border-b border-gray-100">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-[#0A2463] text-center flex-1">Courses</h3>
+                <h3 className="text-lg font-semibold text-[#0A2463]">Courses</h3>
                 <Link href="/courses" className="text-blue-600 hover:underline text-sm font-medium">View All</Link>
               </div>
             </div>
@@ -445,7 +445,7 @@ const Dashboard = () => {
           {/* Staff Nationality */}
           <div className="bg-white border border-gray-200 shadow-sm">
             <div className="p-4 pb-2 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-[#0A2463] text-center">Staff Nationality</h3>
+              <h3 className="text-lg font-semibold text-[#0A2463]">Staff Nationality</h3>
             </div>
             <div className="p-4 pb-5">
               <div className="grid grid-cols-1 gap-4">
