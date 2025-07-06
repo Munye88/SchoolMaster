@@ -205,14 +205,13 @@ const InstructorLookup = () => {
                     setSearchQuery("");
                   }}
                 >
-                  <Avatar className="h-12 w-12 border-2 border-blue-300 relative overflow-hidden">
+                  <Avatar className="h-16 w-16 border-2 border-blue-300 relative overflow-hidden flex-shrink-0">
                     {instructor.imageUrl ? (
                       <AvatarImage 
                         src={instructor.imageUrl} 
                         alt={instructor.name}
-                        className="absolute object-cover"
+                        className="absolute object-cover object-center"
                         style={{
-                          objectPosition: "center center",
                           width: "calc(100% - 4px)",
                           height: "calc(100% - 4px)",
                           left: "2px",
@@ -220,7 +219,7 @@ const InstructorLookup = () => {
                         }}
                       />
                     ) : (
-                      <AvatarFallback className="absolute" style={{
+                      <AvatarFallback className="absolute flex items-center justify-center" style={{
                         width: "calc(100% - 4px)",
                         height: "calc(100% - 4px)",
                         left: "2px",
