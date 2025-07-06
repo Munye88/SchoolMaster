@@ -385,61 +385,63 @@ const InstructorLookup = () => {
 
             {/* Profile Tab */}
             <TabsContent value="profile">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-center">Instructor Profile</CardTitle>
-                </CardHeader>
-                <CardContent className="overflow-hidden">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-hidden">
-                    <div className="space-y-3 min-w-0 overflow-hidden">
-                      <div className="min-w-0 overflow-hidden">
-                        <label className="text-sm font-medium text-gray-500">Full Name</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.name}</p>
+              <div className="w-full max-w-4xl mx-auto">
+                <Card className="w-full overflow-hidden">
+                  <CardHeader>
+                    <CardTitle className="text-center">Instructor Profile</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-sm font-medium text-gray-500 block">Full Name</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.name}</div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500 block">Nationality</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.nationality}</div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500 block">Phone Number</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.phone || 'Not provided'}</div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500 block">Accompanied Status</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.accompaniedStatus}</div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500 block">Compound</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.compound}</div>
+                        </div>
                       </div>
-                      <div className="min-w-0 overflow-hidden">
-                        <label className="text-sm font-medium text-gray-500">Nationality</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.nationality}</p>
-                      </div>
-                      <div className="min-w-0 overflow-hidden">
-                        <label className="text-sm font-medium text-gray-500">Phone Number</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.phone || 'Not provided'}</p>
-                      </div>
-                      <div className="min-w-0 overflow-hidden">
-                        <label className="text-sm font-medium text-gray-500">Accompanied Status</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.accompaniedStatus}</p>
-                      </div>
-                      <div className="min-w-0 overflow-hidden">
-                        <label className="text-sm font-medium text-gray-500">Compound</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.compound}</p>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-sm font-medium text-gray-500 block">School</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{getSchoolName(selectedInstructor.schoolId)}</div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500 block">Role</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.role}</div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500 block">Credentials</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.credentials}</div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500 block">Start Date</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">
+                            {selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy') : 'Not provided'}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-500 block">Instructor ID</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.id}</div>
+                        </div>
                       </div>
                     </div>
-                    <div className="space-y-3 min-w-0 overflow-hidden">
-                      <div className="min-w-0 overflow-hidden">
-                        <label className="text-sm font-medium text-gray-500">School</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{getSchoolName(selectedInstructor.schoolId)}</p>
-                      </div>
-                      <div className="min-w-0 overflow-hidden">
-                        <label className="text-sm font-medium text-gray-500">Role</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.role}</p>
-                      </div>
-                      <div className="min-w-0 overflow-hidden">
-                        <label className="text-sm font-medium text-gray-500">Credentials</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.credentials}</p>
-                      </div>
-                      <div className="min-w-0 overflow-hidden">
-                        <label className="text-sm font-medium text-gray-500">Start Date</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">
-                          {selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy') : 'Not provided'}
-                        </p>
-                      </div>
-                      <div className="min-w-0 overflow-hidden">
-                        <label className="text-sm font-medium text-gray-500">Instructor ID</label>
-                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere overflow-hidden">{selectedInstructor.id}</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             {/* Evaluations Tab */}
