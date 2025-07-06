@@ -3964,7 +3964,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Manual PTO balance entry endpoint
+  app.post("/api/pto-balance/manual", async (req, res) => {
+    try {
+      const { instructorId, year, totalDays } = req.body;
+      
+      // Validate input
+      if (!instructorId || !year || totalDays === undefined) {
+        return res.status(400).json({ message: "Missing required fields: instructorId, year, totalDays" });
+      }
+
+      // Get instructor details
+      const instructor = await dbStorage.getInstructor(instructorId);
+      if (!instructor) {
+        return res.status(404).json({ message: "Instructor not found" });
+      }
+
+      // Check if PTO balance record exists for this instructor and year
+      const existingRecordResult = await db.execute(sql`
+        SELECT * FROM pto_balance
+        WHERE instructor_id = ${instructorId} AND year = ${year}
+      `);
+
+      const hasExistingRecord = existingRecordResult.rows && existingRecordResult.rows.length > 0;
+
+      if (hasExistingRecord) {
+        // Update existing record with new total days
+        const existingRecord = existingRecordResult.rows[0];
+        const usedDays = parseInt(existingRecord.used_days || '0');
+        const adjustments = parseInt(existingRecord.adjustments || '0');
+        const remainingDays = Math.max(0, totalDays - usedDays + adjustments);
+
+        await db.execute(sql`
+          UPDATE pto_balance
+          SET 
+            total_days = ${totalDays},
+            remaining_days = ${remainingDays},
+            last_updated = NOW()
+          WHERE id = ${existingRecord.id}
+        `);
+
+        const updatedRecordResult = await db.execute(sql`
+          SELECT * FROM pto_balance WHERE id = ${existingRecord.id}
+        `);
+
+        // Log activity
+        await dbStorage.createActivity({
+          type: "pto_balance_manual_entry",
+          description: `Manual PTO balance set for ${instructor.name}: ${totalDays} days for year ${year}`,
+          timestamp: new Date(),
+          userId: req.isAuthenticated() ? req.user.id : 1
+        });
+
+        res.json(updatedRecordResult.rows[0]);
+      } else {
+        // Create new record with manual total days
+        const insertResult = await db.execute(sql`
+          INSERT INTO pto_balance (
+            instructor_id, year, total_days, used_days, 
+            remaining_days, adjustments, last_updated
+          )
+          VALUES (
+            ${instructorId}, ${year}, ${totalDays}, 0,
+            ${totalDays}, 0, NOW()
+          )
+          RETURNING *
+        `);
+
+        // Log activity
+        await dbStorage.createActivity({
+          type: "pto_balance_manual_entry",
+          description: `Manual PTO balance created for ${instructor.name}: ${totalDays} days for year ${year}`,
+          timestamp: new Date(),
+          userId: req.isAuthenticated() ? req.user.id : 1
+        });
+
+        res.status(201).json(insertResult.rows[0]);
+      }
+    } catch (error) {
+      console.error("Error setting manual PTO balance:", error);
+      res.status(500).json({ message: "Failed to set PTO balance" });
+    }
+  });
+
   // Helper function to sync PTO balance for a specific instructor
+  // Helper function to calculate business days between dates (excluding weekends and holidays)
+  function calculateBusinessDays(startDate: Date, endDate: Date): number {
+    const holidays = [
+      // Federal holidays for 2025 (add more years as needed)
+      '2025-01-01', // New Year's Day
+      '2025-01-20', // Martin Luther King Jr. Day
+      '2025-02-17', // Presidents' Day
+      '2025-05-26', // Memorial Day
+      '2025-07-04', // Independence Day
+      '2025-09-01', // Labor Day
+      '2025-10-13', // Columbus Day
+      '2025-11-11', // Veterans Day
+      '2025-11-27', // Thanksgiving
+      '2025-12-25', // Christmas
+    ];
+
+    let count = 0;
+    const current = new Date(startDate);
+    
+    while (current <= endDate) {
+      const dayOfWeek = current.getDay();
+      const dateString = current.toISOString().split('T')[0];
+      
+      // Skip weekends (0 = Sunday, 6 = Saturday) and holidays
+      if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidays.includes(dateString)) {
+        count++;
+      }
+      
+      current.setDate(current.getDate() + 1);
+    }
+    
+    return count;
+  }
+
   async function syncPtoBalanceForInstructor(instructorId: number, year: number) {
     try {
       // Get instructor details
@@ -3978,9 +4095,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const yearEnd = `${year}-12-31`;
       
       const leaveRecordsResult = await db.execute(sql`
-        SELECT 
-          COALESCE(SUM(CASE WHEN LOWER(leave_type) = 'pto' THEN ptodays ELSE 0 END), 0) AS total_pto_days,
-          COALESCE(SUM(CASE WHEN LOWER(leave_type) = 'r&r' THEN rrdays ELSE 0 END), 0) AS total_rr_days 
+        SELECT start_date, end_date, ptodays, rrdays, leave_type
         FROM staff_leave 
         WHERE 
           instructor_id = ${instructor.id} AND
@@ -3989,22 +4104,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           LOWER(status) = 'approved'
       `);
       
-      // Calculate total used days (PTO + R&R)
+      // Calculate total used business days (excluding weekends and holidays)
       let usedDays = 0;
       if (leaveRecordsResult.rows && leaveRecordsResult.rows.length > 0) {
-        const totalPtoDaysStr = leaveRecordsResult.rows[0].total_pto_days;
-        const totalRrDaysStr = leaveRecordsResult.rows[0].total_rr_days;
-        const ptoDays = totalPtoDaysStr !== null ? parseInt(totalPtoDaysStr) : 0;
-        const rrDays = totalRrDaysStr !== null ? parseInt(totalRrDaysStr) : 0;
-        usedDays = ptoDays + rrDays; // Combined total of both PTO and R&R days
+        for (const row of leaveRecordsResult.rows) {
+          const startDate = new Date(row.start_date);
+          const endDate = new Date(row.end_date);
+          const businessDays = calculateBusinessDays(startDate, endDate);
+          
+          // Only count PTO and R&R leave types
+          if (row.leave_type && (row.leave_type.toLowerCase() === 'pto' || row.leave_type.toLowerCase() === 'r&r')) {
+            usedDays += businessDays;
+          }
+        }
       }
-      
-      // We'll create/update records for all instructors, even those with zero days used
-      // This ensures all instructors show up in the PTO balance report
-      
-      // Ensure we don't exceed the maximum allowance
-      const maxAllowance = 21;
-      usedDays = Math.min(usedDays, maxAllowance);
       
       // Check if PTO balance record exists for this instructor and year
       const existingRecordResult = await db.execute(sql`
@@ -4015,12 +4128,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const hasExistingRecord = existingRecordResult.rows && existingRecordResult.rows.length > 0;
       
       if (hasExistingRecord) {
-        // Update existing record
+        // Update existing record - keep the manually set total_days
         const existingRecord = existingRecordResult.rows[0];
         const adjustments = parseInt(existingRecord.adjustments || '0');
-        const totalDays = parseInt(existingRecord.total_days || '21');
+        const totalDays = parseInt(existingRecord.total_days || '0'); // Keep manual value
         
-        // Ensure remaining days can't go below zero
+        // Calculate remaining days
         const calculatedRemainingDays = totalDays - usedDays + adjustments;
         const remainingDays = Math.max(0, calculatedRemainingDays);
         
@@ -4040,8 +4153,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         return updatedRecordResult.rows[0];
       } else {
-        // Create new record for all instructors (regardless of used days)
-        const totalDays = 21; // Default annual allowance
+        // For new records, start with 0 total days (manual entry required)
+        const totalDays = 0; // Manual entry required
         const remainingDays = Math.max(0, totalDays - usedDays);
         
         const insertResult = await db.execute(sql`

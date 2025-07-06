@@ -138,6 +138,24 @@ const leaveFormSchema = z.object({
 
 type LeaveFormValues = z.infer<typeof leaveFormSchema>;
 
+// Manual PTO form schema
+const ptoFormSchema = z.object({
+  instructorId: z.number({
+    required_error: "Instructor is required",
+    invalid_type_error: "Instructor is required",
+  }),
+  year: z.number({
+    required_error: "Year is required",
+    invalid_type_error: "Year is required",
+  }),
+  totalDays: z.number({
+    required_error: "Total days is required",
+    invalid_type_error: "Total days must be a number",
+  }).min(0, "Total days cannot be negative").max(365, "Total days cannot exceed 365"),
+});
+
+type PtoFormValues = z.infer<typeof ptoFormSchema>;
+
 export default function StaffLeaveTracker() {
   const params = useParams();
   const { schoolCode } = params;
@@ -321,6 +339,43 @@ export default function StaffLeaveTracker() {
       queryClient.invalidateQueries({ queryKey: ['/api/staff-leave'] });
     }
   });
+  
+  // Manual PTO form
+  const ptoForm = useForm<PtoFormValues>({
+    resolver: zodResolver(ptoFormSchema),
+    defaultValues: {
+      year: currentYear,
+    },
+  });
+  
+  // Manual PTO mutation
+  const manualPtoMutation = useMutation({
+    mutationFn: async (data: PtoFormValues) => {
+      const res = await apiRequest('POST', '/api/pto-balance/manual', data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/pto-balance'] });
+      toast({
+        title: "Success",
+        description: "PTO balance set successfully",
+        variant: "default",
+      });
+      ptoForm.reset({ year: currentYear });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to set PTO balance",
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // PTO form submission handler
+  const onPtoSubmit = async (values: PtoFormValues) => {
+    await manualPtoMutation.mutateAsync(values);
+  };
   
   // Form submission handler
   // References to store the selected files for create and edit forms
@@ -1123,17 +1178,125 @@ export default function StaffLeaveTracker() {
                   )}
                 </div>
                 
-                <div className="text-sm text-muted-foreground">
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center">
-                      <InfoIcon className="h-4 w-4 mr-1" />
-                      <span>Default annual allowance: 21 days</span>
-                    </div>
-                    <div className="flex items-center text-xs">
-                      <span className="ml-5">Both PTO and R&R days count toward the 21-day allowance</span>
-                    </div>
-                    <div className="flex items-center text-xs">
-                      <span className="ml-5">Even if PTO days are 0, R&R days will reduce remaining days</span>
+                <div className="flex items-center space-x-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-none">
+                        <PlusCircle className="h-4 w-4 mr-1" />
+                        Manual PTO Entry
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="rounded-none">
+                      <DialogHeader>
+                        <DialogTitle>Set Manual PTO Balance</DialogTitle>
+                        <DialogDescription>
+                          Enter the PTO balance for an instructor manually. Leave records will automatically deduct from this balance.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Form {...ptoForm}>
+                        <form onSubmit={ptoForm.handleSubmit(onPtoSubmit)} className="space-y-4">
+                          <FormField
+                            control={ptoForm.control}
+                            name="instructorId"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Instructor</FormLabel>
+                                <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={field.value?.toString()}>
+                                  <FormControl>
+                                    <SelectTrigger className="rounded-none">
+                                      <SelectValue placeholder="Select instructor" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent className="rounded-none">
+                                    {instructors.map((instructor) => (
+                                      <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                                        {instructor.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={ptoForm.control}
+                            name="year"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Year</FormLabel>
+                                <Select onValueChange={(value) => field.onChange(parseInt(value))} defaultValue={field.value?.toString()}>
+                                  <FormControl>
+                                    <SelectTrigger className="rounded-none">
+                                      <SelectValue placeholder="Select year" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent className="rounded-none">
+                                    <SelectItem value={(currentYear - 1).toString()}>{currentYear - 1}</SelectItem>
+                                    <SelectItem value={currentYear.toString()}>{currentYear}</SelectItem>
+                                    <SelectItem value={(currentYear + 1).toString()}>{currentYear + 1}</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={ptoForm.control}
+                            name="totalDays"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Total PTO Days</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="number" 
+                                    min="0" 
+                                    max="365"
+                                    placeholder="Enter total PTO days"
+                                    {...field}
+                                    onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                    className="rounded-none"
+                                  />
+                                </FormControl>
+                                <FormDescription>
+                                  Enter the total PTO days this instructor should have for the year
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <DialogFooter>
+                            <Button type="submit" className="bg-blue-600 hover:bg-blue-700 rounded-none" disabled={manualPtoMutation.isPending}>
+                              {manualPtoMutation.isPending ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Setting...
+                                </>
+                              ) : (
+                                <>
+                                  <Save className="mr-2 h-4 w-4" />
+                                  Set PTO Balance
+                                </>
+                              )}
+                            </Button>
+                          </DialogFooter>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+                  
+                  <div className="text-sm text-muted-foreground">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center">
+                        <InfoIcon className="h-4 w-4 mr-1" />
+                        <span>Manual PTO entry required - no automatic allowances</span>
+                      </div>
+                      <div className="flex items-center text-xs">
+                        <span className="ml-5">Leave records automatically deduct business days (excluding weekends/holidays)</span>
+                      </div>
                     </div>
                   </div>
                 </div>
