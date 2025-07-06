@@ -410,7 +410,7 @@ const InstructorLookup = () => {
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-500">Compound</label>
-                        <p className="text-base font-medium text-gray-900">{selectedInstructor.compound}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.compound}</p>
                       </div>
                     </div>
                     <div className="space-y-3">
