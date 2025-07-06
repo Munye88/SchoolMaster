@@ -171,12 +171,12 @@ const InstructorLookup = () => {
 
       {/* Search Section */}
       <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Search Instructors</CardTitle>
-          <CardDescription>Enter an instructor's name or nationality to begin</CardDescription>
+        <CardHeader className="text-center">
+          <CardTitle className="text-center">Search Instructors</CardTitle>
+          <CardDescription className="text-center">Enter an instructor's name or nationality to begin</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center max-w-2xl mx-auto">
             <Search className="h-5 w-5 text-gray-400" />
             <Input
               placeholder="Search by name or nationality..."
@@ -195,7 +195,7 @@ const InstructorLookup = () => {
 
           {/* Search Results */}
           {searchQuery && filteredInstructors.length > 0 && (
-            <div className="mt-4 border rounded-md divide-y max-h-60 overflow-y-auto">
+            <div className="mt-4 border rounded-md divide-y max-h-60 overflow-y-auto max-w-2xl mx-auto">
               {filteredInstructors.map(instructor => (
                 <div 
                   key={instructor.id}
@@ -241,7 +241,7 @@ const InstructorLookup = () => {
           )}
 
           {searchQuery && filteredInstructors.length === 0 && (
-            <div className="mt-4 p-4 text-center border rounded-md bg-gray-50">
+            <div className="mt-4 p-4 text-center border rounded-md bg-gray-50 max-w-2xl mx-auto">
               <p className="text-gray-500">No instructors found matching "{searchQuery}"</p>
             </div>
           )}
