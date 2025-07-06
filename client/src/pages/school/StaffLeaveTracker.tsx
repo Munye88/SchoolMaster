@@ -281,12 +281,17 @@ export default function StaffLeaveTracker() {
     ? instructors.filter((instructor) => instructor.schoolId === currentSchool.id)
     : [];
   
-  // Filter leave records by selected school and employee ID (if provided)
+  // Filter leave records by selected school, employee ID, and month
   const schoolLeaveRecords = currentSchool 
     ? leaveRecords
         .filter(record => record.schoolId === currentSchool.id)
         .filter(record => employeeIdSearch === '' || 
                 (record.employeeId && record.employeeId.toLowerCase().includes(employeeIdSearch.toLowerCase())))
+        .filter(record => {
+          // Filter by selected month
+          const recordMonth = format(new Date(record.startDate), 'MMMM');
+          return recordMonth === selectedMonth;
+        })
     : [];
     
   // Initialize the form
