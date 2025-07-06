@@ -447,21 +447,37 @@ const Dashboard = () => {
                   <div className="shadow-sm bg-white p-3 border border-gray-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
-                        <div className="w-5 h-4 border border-gray-300 flex-shrink-0 relative overflow-hidden" style={{ backgroundColor: '#B22234' }}>
-                          {/* 13 alternating red and white stripes */}
-                          <div className="absolute top-0 left-0 w-full h-full" style={{ backgroundColor: '#B22234' }}></div>
-                          <div className="absolute left-0 w-full bg-white" style={{ top: '7.7%', height: '7.7%' }}></div>
-                          <div className="absolute left-0 w-full bg-white" style={{ top: '23.1%', height: '7.7%' }}></div>
-                          <div className="absolute left-0 w-full bg-white" style={{ top: '38.5%', height: '7.7%' }}></div>
-                          <div className="absolute left-0 w-full bg-white" style={{ top: '53.9%', height: '7.7%' }}></div>
-                          <div className="absolute left-0 w-full bg-white" style={{ top: '69.3%', height: '7.7%' }}></div>
-                          <div className="absolute left-0 w-full bg-white" style={{ top: '84.7%', height: '15.3%' }}></div>
-                          {/* Blue canton */}
-                          <div className="absolute top-0 left-0 w-2 h-2" style={{ backgroundColor: '#3C3B6E' }}></div>
-                          {/* Stars using better positioning */}
-                          <div className="absolute top-0.5 left-0.5 text-white text-xs leading-none">★</div>
-                          <div className="absolute top-0.5 left-1.5 text-white text-xs leading-none">★</div>
-                          <div className="absolute top-1.5 left-1 text-white text-xs leading-none">★</div>
+                        <div className="w-6 h-4 border border-gray-400 flex-shrink-0 relative overflow-hidden">
+                          <svg width="24" height="16" viewBox="0 0 24 16" className="w-full h-full">
+                            {/* Red stripes */}
+                            <rect x="0" y="0" width="24" height="16" fill="#B22234"/>
+                            {/* White stripes */}
+                            <rect x="0" y="1.2" width="24" height="1.2" fill="white"/>
+                            <rect x="0" y="3.6" width="24" height="1.2" fill="white"/>
+                            <rect x="0" y="6" width="24" height="1.2" fill="white"/>
+                            <rect x="0" y="8.4" width="24" height="1.2" fill="white"/>
+                            <rect x="0" y="10.8" width="24" height="1.2" fill="white"/>
+                            <rect x="0" y="13.2" width="24" height="2.8" fill="white"/>
+                            {/* Blue canton */}
+                            <rect x="0" y="0" width="9.6" height="8.4" fill="#3C3B6E"/>
+                            {/* Stars */}
+                            <g fill="white" fontSize="1.5">
+                              <text x="1.2" y="2" textAnchor="middle">★</text>
+                              <text x="3.6" y="2" textAnchor="middle">★</text>
+                              <text x="6" y="2" textAnchor="middle">★</text>
+                              <text x="8.4" y="2" textAnchor="middle">★</text>
+                              <text x="2.4" y="3.5" textAnchor="middle">★</text>
+                              <text x="4.8" y="3.5" textAnchor="middle">★</text>
+                              <text x="7.2" y="3.5" textAnchor="middle">★</text>
+                              <text x="1.2" y="5" textAnchor="middle">★</text>
+                              <text x="3.6" y="5" textAnchor="middle">★</text>
+                              <text x="6" y="5" textAnchor="middle">★</text>
+                              <text x="8.4" y="5" textAnchor="middle">★</text>
+                              <text x="2.4" y="6.5" textAnchor="middle">★</text>
+                              <text x="4.8" y="6.5" textAnchor="middle">★</text>
+                              <text x="7.2" y="6.5" textAnchor="middle">★</text>
+                            </g>
+                          </svg>
                         </div>
                         <span className="text-sm font-medium text-gray-700">American</span>
                       </div>
@@ -473,23 +489,21 @@ const Dashboard = () => {
                   <div className="shadow-sm bg-white p-3 border border-gray-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
-                        <div className="w-5 h-4 border border-gray-300 flex-shrink-0 relative overflow-hidden" style={{ backgroundColor: '#012169' }}>
-                          {/* Blue background */}
-                          <div className="absolute inset-0" style={{ backgroundColor: '#012169' }}></div>
-                          {/* White diagonal crosses - simpler design */}
-                          <div className="absolute top-0 left-0 w-full h-0.5 bg-white transform origin-top-left rotate-[21deg]"></div>
-                          <div className="absolute top-0 right-0 w-full h-0.5 bg-white transform origin-top-right -rotate-[21deg]"></div>
-                          <div className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform origin-bottom-left -rotate-[21deg]"></div>
-                          <div className="absolute bottom-0 right-0 w-full h-0.5 bg-white transform origin-bottom-right rotate-[21deg]"></div>
-                          {/* Red diagonal accents */}
-                          <div className="absolute top-0 left-0 w-1/2 h-0.5 bg-red-600 transform origin-top-left rotate-[21deg]"></div>
-                          <div className="absolute bottom-0 right-0 w-1/2 h-0.5 bg-red-600 transform origin-bottom-right rotate-[21deg]"></div>
-                          {/* White cross */}
-                          <div className="absolute top-0 left-0 w-full h-1 bg-white" style={{ top: '40%' }}></div>
-                          <div className="absolute top-0 left-0 h-full w-1 bg-white" style={{ left: '40%' }}></div>
-                          {/* Red cross */}
-                          <div className="absolute top-0 left-0 w-full h-0.5 bg-red-600" style={{ top: '43%' }}></div>
-                          <div className="absolute top-0 left-0 h-full w-0.5 bg-red-600" style={{ left: '43%' }}></div>
+                        <div className="w-6 h-4 border border-gray-400 flex-shrink-0 relative overflow-hidden">
+                          <svg width="24" height="16" viewBox="0 0 24 16" className="w-full h-full">
+                            {/* Blue background */}
+                            <rect x="0" y="0" width="24" height="16" fill="#012169"/>
+                            {/* White diagonal crosses (Saint Andrew's Cross) */}
+                            <path d="M0,0 L24,16 M24,0 L0,16" stroke="white" strokeWidth="2"/>
+                            {/* Red diagonal crosses (Saint Patrick's Cross) */}
+                            <path d="M0,0 L12,8 M12,8 L24,16 M24,0 L12,8 M12,8 L0,16" stroke="#C8102E" strokeWidth="1"/>
+                            {/* White central cross (Saint George's Cross) */}
+                            <rect x="10" y="0" width="4" height="16" fill="white"/>
+                            <rect x="0" y="6" width="24" height="4" fill="white"/>
+                            {/* Red central cross (Saint George's Cross) */}
+                            <rect x="10.5" y="0" width="3" height="16" fill="#C8102E"/>
+                            <rect x="0" y="6.5" width="24" height="3" fill="#C8102E"/>
+                          </svg>
                         </div>
                         <span className="text-sm font-medium text-gray-700">British</span>
                       </div>
@@ -501,18 +515,20 @@ const Dashboard = () => {
                   <div className="shadow-sm bg-white p-3 border border-gray-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
-                        <div className="w-5 h-4 bg-white border border-gray-300 flex-shrink-0 relative overflow-hidden">
-                          {/* Red bands on left and right - each 1/4 width */}
-                          <div className="absolute left-0 top-0 h-full bg-red-600" style={{ width: '25%' }}></div>
-                          <div className="absolute right-0 top-0 h-full bg-red-600" style={{ width: '25%' }}></div>
-                          {/* White center */}
-                          <div className="absolute top-0 h-full bg-white" style={{ left: '25%', width: '50%' }}></div>
-                          {/* Maple leaf in center - simplified 11-point design */}
-                          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-red-600" style={{ fontSize: '8px', lineHeight: '1' }}>
-                            <svg width="10" height="8" viewBox="0 0 10 8" fill="currentColor">
-                              <path d="M5 1 L4 2.5 L2 2 L3 3.5 L1 4 L3 4.5 L2 6 L4 5.5 L5 7 L6 5.5 L8 6 L7 4.5 L9 4 L7 3.5 L8 2 L6 2.5 Z"/>
-                            </svg>
-                          </div>
+                        <div className="w-6 h-4 border border-gray-400 flex-shrink-0 relative overflow-hidden">
+                          <svg width="24" height="16" viewBox="0 0 24 16" className="w-full h-full">
+                            {/* Red bands on left and right */}
+                            <rect x="0" y="0" width="6" height="16" fill="#FF0000"/>
+                            <rect x="18" y="0" width="6" height="16" fill="#FF0000"/>
+                            {/* White center */}
+                            <rect x="6" y="0" width="12" height="16" fill="white"/>
+                            {/* Maple leaf */}
+                            <g transform="translate(12,8)">
+                              <path d="M0,-4 L-1.5,-2 L-3,-2.5 L-2,-1 L-4,0 L-2,0.5 L-3,2 L-1.5,1.5 L0,3.5 L1.5,1.5 L3,2 L2,0.5 L4,0 L2,-1 L3,-2.5 L1.5,-2 Z" 
+                                    fill="#FF0000" 
+                                    transform="scale(0.8)"/>
+                            </g>
+                          </svg>
                         </div>
                         <span className="text-sm font-medium text-gray-700">Canadian</span>
                       </div>
