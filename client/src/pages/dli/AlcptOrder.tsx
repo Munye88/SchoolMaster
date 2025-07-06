@@ -938,9 +938,9 @@ const AlcptOrder = () => {
                   onClick={() => viewSchoolInventory(school.id)}
                 >
                   <div className={`h-2 w-full ${getSchoolColor(school.id)}`} />
-                  <CardHeader className="pb-2">
-                    <CardTitle>{school.name}</CardTitle>
-                    <CardDescription>ALCPT Forms Inventory</CardDescription>
+                  <CardHeader className="pb-2 text-center">
+                    <CardTitle className="text-center">{school.name}</CardTitle>
+                    <CardDescription className="text-center">ALCPT Forms Inventory</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="mb-4">
