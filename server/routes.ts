@@ -2644,6 +2644,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to create attendance record" });
     }
   });
+
+  // Bulk attendance recording
+  app.post("/api/staff-attendance/bulk", async (req, res) => {
+    try {
+      const { attendanceRecords } = req.body;
+      
+      if (!Array.isArray(attendanceRecords) || attendanceRecords.length === 0) {
+        return res.status(400).json({ message: "attendanceRecords must be a non-empty array" });
+      }
+
+      // Validate all records first
+      const validatedRecords = attendanceRecords.map(record => 
+        insertStaffAttendanceSchema.parse(record)
+      );
+
+      // Create all attendance records
+      const createdRecords = [];
+      for (const attendanceData of validatedRecords) {
+        const attendance = await dbStorage.createStaffAttendance(attendanceData);
+        createdRecords.push(attendance);
+      }
+
+      // Log bulk activity
+      await dbStorage.createActivity({
+        type: "bulk_attendance_recorded",
+        description: `Bulk attendance recorded for ${createdRecords.length} instructors`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+
+      res.status(201).json({ 
+        success: true, 
+        count: createdRecords.length, 
+        records: createdRecords 
+      });
+    } catch (error) {
+      console.error("Error creating bulk attendance records:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid attendance data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create bulk attendance records" });
+    }
+  });
   
   app.put("/api/staff-attendance/:id", async (req, res) => {
     const id = parseInt(req.params.id);
