@@ -307,6 +307,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: instructorStatus, // Map from 'instructorStatus' to 'status'
         salary: salary ? parseInt(salary) : undefined, // Convert salary to number
       };
+
+      // Convert empty date strings to null to prevent PostgreSQL errors
+      if (processedData.dateOfBirth === '') {
+        processedData.dateOfBirth = null;
+      }
+      if (processedData.contractEndDate === '') {
+        processedData.contractEndDate = null;
+      }
+      if (processedData.startDate === '') {
+        processedData.startDate = null;
+      }
+      if (processedData.hireDate === '') {
+        processedData.hireDate = null;
+      }
+      
+      // Convert empty strings to null for optional text fields to prevent issues
+      if (processedData.emergencyContact === '') {
+        processedData.emergencyContact = null;
+      }
+      if (processedData.emergencyPhone === '') {
+        processedData.emergencyPhone = null;
+      }
+      if (processedData.department === '') {
+        processedData.department = null;
+      }
+      if (processedData.notes === '') {
+        processedData.notes = null;
+      }
       
       console.log("🚀 Processed data before schema validation:", processedData);
       
@@ -356,6 +384,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...(instructorStatus && { status: instructorStatus }), // Map from 'instructorStatus' to 'status'
         ...(salary && { salary: parseInt(salary) }), // Convert salary to number
       };
+
+      // Convert empty date strings to null to prevent PostgreSQL errors
+      if (processedData.dateOfBirth === '') {
+        processedData.dateOfBirth = null;
+      }
+      if (processedData.contractEndDate === '') {
+        processedData.contractEndDate = null;
+      }
+      if (processedData.startDate === '') {
+        processedData.startDate = null;
+      }
+      if (processedData.hireDate === '') {
+        processedData.hireDate = null;
+      }
+      
+      // Convert empty strings to null for optional text fields to prevent issues
+      if (processedData.emergencyContact === '') {
+        processedData.emergencyContact = null;
+      }
+      if (processedData.emergencyPhone === '') {
+        processedData.emergencyPhone = null;
+      }
+      if (processedData.department === '') {
+        processedData.department = null;
+      }
+      if (processedData.notes === '') {
+        processedData.notes = null;
+      }
       
       // Handle image URL specifically - log details
       if (processedData.imageUrl) {
