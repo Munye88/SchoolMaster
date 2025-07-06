@@ -606,9 +606,9 @@ export default function StaffLeaveTracker() {
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-y-auto rounded-none">
-              <DialogHeader>
-                <DialogTitle>Add New Leave Request</DialogTitle>
-                <DialogDescription>
+              <DialogHeader className="text-center">
+                <DialogTitle className="text-center">Add New Leave Request</DialogTitle>
+                <DialogDescription className="text-center">
                   Create a new leave request for an instructor
                 </DialogDescription>
               </DialogHeader>
@@ -650,28 +650,6 @@ export default function StaffLeaveTracker() {
                     )}
                   />
                   
-                  <FormField
-                    control={form.control}
-                    name="employeeId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Employee ID</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter employee ID"
-                            className="rounded-none"
-                            {...field}
-                            value={field.value || ''}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Enter the instructor's employee ID
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
                   <FormField
                     control={form.control}
                     name="attachmentUrl"
