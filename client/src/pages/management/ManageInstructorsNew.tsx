@@ -59,13 +59,6 @@ const instructorFormSchema = z.object({
   phone: z.string().min(6, "Phone must be at least 6 characters"),
   status: z.string().min(2, "Status must be at least 2 characters"), // Front-end name for 'accompaniedStatus'
   imageUrl: z.string().optional(),
-  dateOfBirth: z.string().optional().or(z.literal("")),
-  emergencyContact: z.string().optional().or(z.literal("")),
-  emergencyPhone: z.string().optional().or(z.literal("")),
-  contractEndDate: z.string().optional().or(z.literal("")),
-  department: z.string().optional().or(z.literal("")),
-  instructorStatus: z.string().optional().or(z.literal("")), // Front-end name for 'status'
-  notes: z.string().optional().or(z.literal("")),
 });
 
 // Define our form values type based on the form schema
@@ -300,16 +293,6 @@ export default function ManageInstructors() {
         phone: selectedInstructor.phone,
         status: selectedInstructor.accompaniedStatus,
         imageUrl: selectedInstructor.imageUrl || "",
-        email: (selectedInstructor as any).email || "",
-        dateOfBirth: (selectedInstructor as any).dateOfBirth ? format(new Date((selectedInstructor as any).dateOfBirth), 'yyyy-MM-dd') : "",
-        passportNumber: (selectedInstructor as any).passportNumber || "",
-        emergencyContact: (selectedInstructor as any).emergencyContact || "",
-        emergencyPhone: (selectedInstructor as any).emergencyPhone || "",
-        contractEndDate: (selectedInstructor as any).contractEndDate ? format(new Date((selectedInstructor as any).contractEndDate), 'yyyy-MM-dd') : "",
-        salary: (selectedInstructor as any).salary ? String((selectedInstructor as any).salary) : "",
-        department: (selectedInstructor as any).department || "",
-        instructorStatus: (selectedInstructor as any).status || "Active",
-        notes: (selectedInstructor as any).notes || "",
       });
     }
   }, [selectedInstructor, editForm]);
@@ -778,29 +761,7 @@ export default function ManageInstructors() {
                 <p className="text-sm text-gray-600">
                   <span className="font-medium">Status:</span> {instructor.accompaniedStatus}
                 </p>
-                {(instructor as any).email && (
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Email:</span> {(instructor as any).email}
-                  </p>
-                )}
-                {(instructor as any).department && (
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Department:</span> {(instructor as any).department}
-                  </p>
-                )}
-                {(instructor as any).status && (
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Employment Status:</span> 
-                    <span className={`ml-1 px-2 py-1 rounded-none text-xs ${
-                      (instructor as any).status === 'Active' ? 'bg-green-100 text-green-800' :
-                      (instructor as any).status === 'On Leave' ? 'bg-yellow-100 text-yellow-800' :
-                      (instructor as any).status === 'Probation' ? 'bg-orange-100 text-orange-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {(instructor as any).status}
-                    </span>
-                  </p>
-                )}
+
               </CardContent>
               <CardFooter className="flex justify-end space-x-2">
                 <Button
@@ -1092,173 +1053,10 @@ export default function ManageInstructors() {
                   )}
                 />
 
-                {/* Additional fields for edit form */}
-                <FormField
-                  control={editForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="instructor@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
-                <FormField
-                  control={editForm.control}
-                  name="dateOfBirth"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Date of Birth</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
-                <FormField
-                  control={editForm.control}
-                  name="passportNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Passport Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter passport number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
-                <FormField
-                  control={editForm.control}
-                  name="department"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Department</FormLabel>
-                      <FormControl>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select department" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="English Language Training">English Language Training</SelectItem>
-                            <SelectItem value="Aviation English">Aviation English</SelectItem>
-                            <SelectItem value="Academic Affairs">Academic Affairs</SelectItem>
-                            <SelectItem value="Administration">Administration</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
-                <FormField
-                  control={editForm.control}
-                  name="salary"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Monthly Salary (SAR)</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="e.g., 8000" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={editForm.control}
-                  name="contractEndDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contract End Date</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={editForm.control}
-                  name="instructorStatus"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Employment Status</FormLabel>
-                      <FormControl>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Active">Active</SelectItem>
-                            <SelectItem value="On Leave">On Leave</SelectItem>
-                            <SelectItem value="Probation">Probation</SelectItem>
-                            <SelectItem value="Inactive">Inactive</SelectItem>
-                            <SelectItem value="Terminated">Terminated</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={editForm.control}
-                  name="emergencyContact"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Emergency Contact Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter emergency contact name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={editForm.control}
-                  name="emergencyPhone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Emergency Contact Phone</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter emergency contact phone" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 gap-4">
-                <FormField
-                  control={editForm.control}
-                  name="notes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Additional Notes</FormLabel>
-                      <FormControl>
-                        <textarea 
-                          className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          placeholder="Enter any additional notes or comments about the instructor..."
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
 
               <DialogFooter>
