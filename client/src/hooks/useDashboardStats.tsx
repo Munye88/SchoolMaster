@@ -184,15 +184,17 @@ export function useDashboardStats(): DashboardStats {
   useEffect(() => {
     if (courses.length > 0) {
       // Update cached course statistics counting by DATABASE STATUS
-      // Count all courses that are not explicitly marked as "Completed" in database as active
+      // Count courses with "In Progress" status and completed courses separately
       cachedCourseStats = {
         totalCourses: courses.length,
-        // Count courses that are NOT marked as "Completed" in the database as active
+        // Count courses with "In Progress" status in the database
         activeCourses: courses.filter(course => {
-          return course.status !== 'Completed';
+          const status = getCourseStatus(course, true);
+          return status === 'In Progress';
         }).length,
         completedCourses: courses.filter(course => {
-          return course.status === 'Completed';
+          const status = getCourseStatus(course, true);
+          return status === 'Completed';
         }).length
       };
       
