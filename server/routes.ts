@@ -4148,8 +4148,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         return updatedRecordResult.rows[0];
       } else {
-        // For new records, start with standard 21 total days (can be adjusted manually later)
-        const totalDays = 21; // Standard Saudi Arabia annual leave allowance
+        // For new records, start with 0 total days (manual entry required)
+        const totalDays = 0; // Manual entry required
         const remainingDays = Math.max(0, totalDays - usedDays);
         
         const insertResult = await db.execute(sql`
