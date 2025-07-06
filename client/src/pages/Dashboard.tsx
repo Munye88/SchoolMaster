@@ -447,7 +447,7 @@ const Dashboard = () => {
                   <div className="shadow-sm bg-[#EEF5FD] p-3 border border-blue-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">🇺🇸</span>
+                        <span className="text-lg font-emoji">{'\u{1F1FA}\u{1F1F8}'}</span>
                         <span className="text-sm font-medium text-blue-900">American</span>
                       </div>
                       <span className="text-lg font-bold text-blue-950">{dashboardStats.nationalityCounts.american}</span>
@@ -458,7 +458,7 @@ const Dashboard = () => {
                   <div className="shadow-sm bg-[#F0F9F5] p-3 border border-green-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">🇬🇧</span>
+                        <span className="text-lg font-emoji">{'\u{1F1EC}\u{1F1E7}'}</span>
                         <span className="text-sm font-medium text-green-800">British</span>
                       </div>
                       <span className="text-lg font-bold text-green-900">{dashboardStats.nationalityCounts.british}</span>
@@ -469,7 +469,7 @@ const Dashboard = () => {
                   <div className="shadow-sm bg-[#F5F2FA] p-3 border border-purple-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">🇨🇦</span>
+                        <span className="text-lg font-emoji">{'\u{1F1E8}\u{1F1E6}'}</span>
                         <span className="text-sm font-medium text-purple-800">Canadian</span>
                       </div>
                       <span className="text-lg font-bold text-purple-900">{dashboardStats.nationalityCounts.canadian}</span>
