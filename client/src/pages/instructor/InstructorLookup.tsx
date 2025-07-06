@@ -451,7 +451,7 @@ const InstructorLookup = () => {
             <TabsContent value="evaluations">
               <Card>
                 <CardHeader>
-                  <CardTitle>Staff Evaluations</CardTitle>
+                  <CardTitle className="text-center text-xl font-bold">Staff Evaluations</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {instructorEvaluations.length > 0 ? (
@@ -464,16 +464,16 @@ const InstructorLookup = () => {
                             <Card key={quarter}>
                               <CardContent className="pt-6">
                                 <div className="text-center">
-                                  <div className="text-lg font-semibold mb-2">{quarter}</div>
-                                  <div className={`inline-flex items-center justify-center h-16 w-16 rounded-full text-xl font-bold ${
+                                  <div className="text-xl font-bold mb-3 text-gray-900">{quarter}</div>
+                                  <div className={`inline-flex items-center justify-center h-20 w-20 rounded-none text-2xl font-bold ${
                                     score >= 85 ? 'bg-green-100 text-green-800' : 
-                                    score > 0 ? 'bg-amber-100 text-amber-800' : 
+                                    score > 0 ? 'bg-red-100 text-red-800' : 
                                     'bg-gray-100 text-gray-500'
                                   }`}>
                                     {score > 0 ? `${score}%` : 'N/A'}
                                   </div>
                                   {quarterEval && (
-                                    <div className="mt-2 text-sm text-gray-500">
+                                    <div className="mt-3 text-sm text-gray-600 font-medium">
                                       {quarterEval.evaluationDate ? format(new Date(quarterEval.evaluationDate), 'MMM dd, yyyy') : 'Unknown date'}
                                     </div>
                                   )}
@@ -484,37 +484,37 @@ const InstructorLookup = () => {
                         })}
                       </div>
 
-                      <div className="border rounded-lg overflow-hidden">
+                      <div className="border rounded-none overflow-hidden">
                         <table className="min-w-full divide-y divide-gray-200">
                           <thead className="bg-gray-50">
                             <tr>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quarter</th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Feedback</th>
+                              <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Quarter</th>
+                              <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Date</th>
+                              <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Score</th>
+                              <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Type</th>
+                              <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Feedback</th>
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
                             {instructorEvaluations.map(evaluation => (
                               <tr key={evaluation.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{evaluation.quarter}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-bold text-gray-900">{evaluation.quarter}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
                                   {evaluation.evaluationDate ? format(new Date(evaluation.evaluationDate), 'MMM dd, yyyy') : 'Unknown date'}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                    evaluation.score >= 85 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
+                                <td className="px-6 py-4 whitespace-nowrap text-center">
+                                  <span className={`px-3 py-1 inline-flex text-sm leading-5 font-bold rounded-none ${
+                                    evaluation.score >= 85 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                                   }`}>
                                     {evaluation.score}%
                                   </span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700">
                                   {evaluation.evaluationType ? 
                                     (evaluation.evaluationType.charAt(0).toUpperCase() + evaluation.evaluationType.slice(1)) 
                                     : 'Unknown'}
                                 </td>
-                                <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                                <td className="px-6 py-4 text-center text-sm text-gray-700 max-w-xs truncate">
                                   {evaluation.feedback || 'No feedback provided'}
                                 </td>
                               </tr>
