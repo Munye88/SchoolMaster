@@ -18,8 +18,6 @@ import {
   Loader2,
   Users,
   ClipboardList,
-  ChevronLeft,
-  ChevronRight,
   CheckSquare,
   UserCheck
 } from "lucide-react";
@@ -80,7 +78,7 @@ export default function StaffAttendanceEnhanced() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
+
   const [isIndividualDialogOpen, setIsIndividualDialogOpen] = useState(false);
   const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -102,7 +100,7 @@ export default function StaffAttendanceEnhanced() {
     notes: ""
   });
 
-  const recordsPerPage = 10;
+
 
   // Get school from URL parameter
   const currentSchool = selectedSchool || (schoolCode ? { code: schoolCode } : null);
@@ -294,19 +292,13 @@ export default function StaffAttendanceEnhanced() {
     }
   });
 
-  // Filter and pagination logic
+  // Filter logic
   const filteredRecords = attendanceRecords.filter(record => {
     const instructor = instructors.find(i => i.id === record.instructorId);
     const matchesSearch = !searchTerm || (instructor?.name.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = statusFilter === "all" || record.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
-
-  const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
-  const paginatedRecords = filteredRecords.slice(
-    (currentPage - 1) * recordsPerPage,
-    currentPage * recordsPerPage
-  );
 
   // Status colors
   const getStatusColor = (status: string) => {
@@ -665,7 +657,7 @@ export default function StaffAttendanceEnhanced() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedRecords.map((record) => {
+                  {filteredRecords.map((record) => {
                     const instructor = instructors.find(i => i.id === record.instructorId);
                     return (
                       <TableRow key={record.id}>
@@ -712,37 +704,10 @@ export default function StaffAttendanceEnhanced() {
                 </TableBody>
               </Table>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <div className="text-sm text-gray-500">
-                    Showing {((currentPage - 1) * recordsPerPage) + 1} to {Math.min(currentPage * recordsPerPage, filteredRecords.length)} of {filteredRecords.length} records
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                      disabled={currentPage === 1}
-                      className="rounded-none"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <span className="px-3 py-1 text-sm">
-                      Page {currentPage} of {totalPages}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                      disabled={currentPage === totalPages}
-                      className="rounded-none"
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
+              {/* Summary */}
+              <div className="mt-4 text-sm text-gray-500 text-center">
+                Showing {filteredRecords.length} attendance records
+              </div>
             </>
           )}
         </CardContent>
