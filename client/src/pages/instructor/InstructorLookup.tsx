@@ -385,61 +385,59 @@ const InstructorLookup = () => {
 
             {/* Profile Tab */}
             <TabsContent value="profile">
-              <Card className="max-w-4xl mx-auto">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-center text-lg font-semibold">Instructor Profile</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <div className="px-2">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Full Name</label>
-                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.name}</p>
+              <div className="flex justify-center">
+                <Card className="w-full max-w-2xl">
+                  <CardHeader className="text-center pb-3">
+                    <CardTitle className="text-base font-semibold">Instructor Profile</CardTitle>
+                  </CardHeader>
+                  <CardContent className="px-6 py-4">
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                      <div className="overflow-hidden">
+                        <div className="text-xs font-medium text-gray-500 mb-1">Full Name</div>
+                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.name}</div>
                       </div>
-                      <div className="px-2">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Nationality</label>
-                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.nationality}</p>
+                      <div className="overflow-hidden">
+                        <div className="text-xs font-medium text-gray-500 mb-1">School</div>
+                        <div className="font-medium text-gray-900 truncate">{getSchoolName(selectedInstructor.schoolId)}</div>
                       </div>
-                      <div className="px-2">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Phone Number</label>
-                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.phone || 'Not provided'}</p>
+                      <div className="overflow-hidden">
+                        <div className="text-xs font-medium text-gray-500 mb-1">Nationality</div>
+                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.nationality}</div>
                       </div>
-                      <div className="px-2">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Accompanied Status</label>
-                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.accompaniedStatus}</p>
+                      <div className="overflow-hidden">
+                        <div className="text-xs font-medium text-gray-500 mb-1">Role</div>
+                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.role}</div>
                       </div>
-                      <div className="px-2">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Compound</label>
-                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.compound}</p>
+                      <div className="overflow-hidden">
+                        <div className="text-xs font-medium text-gray-500 mb-1">Phone</div>
+                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.phone || 'Not provided'}</div>
                       </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="px-2">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">School</label>
-                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{getSchoolName(selectedInstructor.schoolId)}</p>
+                      <div className="overflow-hidden">
+                        <div className="text-xs font-medium text-gray-500 mb-1">Credentials</div>
+                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.credentials}</div>
                       </div>
-                      <div className="px-2">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Role</label>
-                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.role}</p>
+                      <div className="overflow-hidden">
+                        <div className="text-xs font-medium text-gray-500 mb-1">Status</div>
+                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.accompaniedStatus}</div>
                       </div>
-                      <div className="px-2">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Credentials</label>
-                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.credentials}</p>
+                      <div className="overflow-hidden">
+                        <div className="text-xs font-medium text-gray-500 mb-1">Start Date</div>
+                        <div className="font-medium text-gray-900 truncate">
+                          {selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMM dd, yyyy') : 'Not provided'}
+                        </div>
                       </div>
-                      <div className="px-2">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Start Date</label>
-                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">
-                          {selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy') : 'Not provided'}
-                        </p>
+                      <div className="overflow-hidden">
+                        <div className="text-xs font-medium text-gray-500 mb-1">Compound</div>
+                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.compound}</div>
                       </div>
-                      <div className="px-2">
-                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Instructor ID</label>
-                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.id}</p>
+                      <div className="overflow-hidden">
+                        <div className="text-xs font-medium text-gray-500 mb-1">Instructor ID</div>
+                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.id}</div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             {/* Evaluations Tab */}
