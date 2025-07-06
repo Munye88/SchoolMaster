@@ -411,8 +411,8 @@ export default function StaffAttendanceEnhanced() {
               </DialogTrigger>
               <DialogContent className="rounded-none max-w-md">
                 <DialogHeader>
-                  <DialogTitle className="text-lg">Record Individual Attendance</DialogTitle>
-                  <DialogDescription className="text-sm">
+                  <DialogTitle className="text-lg text-center">Record Individual Attendance</DialogTitle>
+                  <DialogDescription className="text-sm text-center">
                     Record attendance for a single instructor for {format(selectedDate, 'MMM dd, yyyy')}
                   </DialogDescription>
                 </DialogHeader>
@@ -485,8 +485,8 @@ export default function StaffAttendanceEnhanced() {
               </DialogTrigger>
               <DialogContent className="rounded-none max-w-lg">
                 <DialogHeader>
-                  <DialogTitle className="text-lg">Bulk Attendance Recording</DialogTitle>
-                  <DialogDescription className="text-sm">
+                  <DialogTitle className="text-lg text-center">Bulk Attendance Recording</DialogTitle>
+                  <DialogDescription className="text-sm text-center">
                     Record attendance for multiple instructors for {format(selectedDate, 'MMM dd, yyyy')}
                   </DialogDescription>
                 </DialogHeader>
@@ -735,8 +735,8 @@ export default function StaffAttendanceEnhanced() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="rounded-none max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-lg">Edit Attendance Record</DialogTitle>
-            <DialogDescription className="text-sm">
+            <DialogTitle className="text-lg text-center">Edit Attendance Record</DialogTitle>
+            <DialogDescription className="text-sm text-center">
               Update the attendance record for {selectedAttendance && instructors.find(i => i.id === selectedAttendance.instructorId)?.name}
             </DialogDescription>
           </DialogHeader>
