@@ -111,15 +111,11 @@ export default function ManageInstructors() {
     },
     onSuccess: (data) => {
       console.log("📝 Mutation successful, created instructor:", data);
-      // Force invalidate all instructor queries to ensure updates are reflected everywhere
+      // Targeted cache invalidation - only refresh instructor data
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
       
-      // Invalidate all school-specific instructor queries too
-      schools?.forEach(school => {
-        queryClient.invalidateQueries({ queryKey: ['/api/instructors', school.code] });
-      });
-      
       setIsCreateDialogOpen(false);
+      createForm.reset(); // Reset the form for next use
       toast({
         title: "Instructor created",
         description: "The instructor has been created successfully."
@@ -165,19 +161,8 @@ export default function ManageInstructors() {
     },
     onSuccess: (data) => {
       console.log("📝 Update mutation successful:", data);
-      // Force invalidate all instructor queries to ensure updates are reflected everywhere
+      // Targeted cache invalidation - only refresh instructor data
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
-      
-      // Invalidate all school-specific instructor queries too
-      schools?.forEach(school => {
-        queryClient.invalidateQueries({ queryKey: ['/api/instructors', school.code] });
-        queryClient.invalidateQueries({ queryKey: ['/api/schools', school.id, 'instructors'] });
-      });
-      
-      // Force a refetch of the current data
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
       
       setIsEditDialogOpen(false);
       setSelectedInstructor(null);
@@ -221,14 +206,8 @@ export default function ManageInstructors() {
     },
     onSuccess: (result) => {
       console.log("✅ Instructor deletion successful:", result);
-      // Force invalidate all instructor queries to ensure updates are reflected everywhere
+      // Targeted cache invalidation - only refresh instructor data
       queryClient.invalidateQueries({ queryKey: ['/api/instructors'] });
-      
-      // Invalidate all school-specific instructor queries too
-      schools?.forEach(school => {
-        queryClient.invalidateQueries({ queryKey: ['/api/instructors', school.code] });
-        queryClient.invalidateQueries({ queryKey: ['/api/schools', school.id, 'instructors'] });
-      });
       
       toast({
         title: "Instructor deleted",
