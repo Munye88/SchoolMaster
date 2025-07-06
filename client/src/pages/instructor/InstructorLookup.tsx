@@ -386,53 +386,35 @@ const InstructorLookup = () => {
             {/* Profile Tab */}
             <TabsContent value="profile">
               <div className="flex justify-center">
-                <Card className="w-full max-w-2xl">
-                  <CardHeader className="text-center pb-3">
-                    <CardTitle className="text-base font-semibold">Instructor Profile</CardTitle>
+                <Card className="w-full max-w-lg">
+                  <CardHeader className="text-center py-2">
+                    <CardTitle className="text-sm font-semibold">Instructor Profile</CardTitle>
                   </CardHeader>
-                  <CardContent className="px-6 py-4">
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                      <div className="overflow-hidden">
-                        <div className="text-xs font-medium text-gray-500 mb-1">Full Name</div>
-                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.name}</div>
+                  <CardContent className="p-4">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                      <div className="min-w-0">
+                        <div className="text-xs text-gray-500 mb-1">Name</div>
+                        <div className="text-xs font-medium text-gray-900 truncate">{selectedInstructor.name}</div>
                       </div>
-                      <div className="overflow-hidden">
-                        <div className="text-xs font-medium text-gray-500 mb-1">School</div>
-                        <div className="font-medium text-gray-900 truncate">{getSchoolName(selectedInstructor.schoolId)}</div>
+                      <div className="min-w-0">
+                        <div className="text-xs text-gray-500 mb-1">School</div>
+                        <div className="text-xs font-medium text-gray-900 truncate">{getSchoolName(selectedInstructor.schoolId)}</div>
                       </div>
-                      <div className="overflow-hidden">
-                        <div className="text-xs font-medium text-gray-500 mb-1">Nationality</div>
-                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.nationality}</div>
+                      <div className="min-w-0">
+                        <div className="text-xs text-gray-500 mb-1">Nationality</div>
+                        <div className="text-xs font-medium text-gray-900 truncate">{selectedInstructor.nationality}</div>
                       </div>
-                      <div className="overflow-hidden">
-                        <div className="text-xs font-medium text-gray-500 mb-1">Role</div>
-                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.role}</div>
+                      <div className="min-w-0">
+                        <div className="text-xs text-gray-500 mb-1">Role</div>
+                        <div className="text-xs font-medium text-gray-900 truncate">{selectedInstructor.role}</div>
                       </div>
-                      <div className="overflow-hidden">
-                        <div className="text-xs font-medium text-gray-500 mb-1">Phone</div>
-                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.phone || 'Not provided'}</div>
+                      <div className="min-w-0">
+                        <div className="text-xs text-gray-500 mb-1">Phone</div>
+                        <div className="text-xs font-medium text-gray-900 truncate">{selectedInstructor.phone || 'N/A'}</div>
                       </div>
-                      <div className="overflow-hidden">
-                        <div className="text-xs font-medium text-gray-500 mb-1">Credentials</div>
-                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.credentials}</div>
-                      </div>
-                      <div className="overflow-hidden">
-                        <div className="text-xs font-medium text-gray-500 mb-1">Status</div>
-                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.accompaniedStatus}</div>
-                      </div>
-                      <div className="overflow-hidden">
-                        <div className="text-xs font-medium text-gray-500 mb-1">Start Date</div>
-                        <div className="font-medium text-gray-900 truncate">
-                          {selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMM dd, yyyy') : 'Not provided'}
-                        </div>
-                      </div>
-                      <div className="overflow-hidden">
-                        <div className="text-xs font-medium text-gray-500 mb-1">Compound</div>
-                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.compound}</div>
-                      </div>
-                      <div className="overflow-hidden">
-                        <div className="text-xs font-medium text-gray-500 mb-1">Instructor ID</div>
-                        <div className="font-medium text-gray-900 truncate">{selectedInstructor.id}</div>
+                      <div className="min-w-0">
+                        <div className="text-xs text-gray-500 mb-1">Compound</div>
+                        <div className="text-xs font-medium text-gray-900 truncate">{selectedInstructor.compound}</div>
                       </div>
                     </div>
                   </CardContent>
