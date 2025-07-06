@@ -829,8 +829,8 @@ export default function ManageInstructors() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader className="sticky top-0 bg-white z-10 pb-2">
-            <DialogTitle className="text-xl">Edit Instructor</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-xl text-center font-semibold text-gray-900">Edit Instructor</DialogTitle>
+            <DialogDescription className="text-center text-gray-600">
               Update instructor information.
             </DialogDescription>
           </DialogHeader>
@@ -843,9 +843,13 @@ export default function ManageInstructors() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-gray-800">Full Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter instructor name" {...field} />
+                        <Input 
+                          placeholder="Enter instructor name" 
+                          className="text-gray-900 font-medium border-gray-300 focus:border-blue-500 focus:ring-blue-500" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -857,9 +861,13 @@ export default function ManageInstructors() {
                   name="position"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Position</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-gray-800">Position</FormLabel>
                       <FormControl>
-                        <Input placeholder="E.g., ELT Instructor" {...field} />
+                        <Input 
+                          placeholder="E.g., ELT Instructor" 
+                          className="text-gray-900 font-medium border-gray-300 focus:border-blue-500 focus:ring-blue-500" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -871,10 +879,10 @@ export default function ManageInstructors() {
                   name="nationality"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nationality</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-gray-800">Nationality</FormLabel>
                       <FormControl>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger>
+                          <SelectTrigger className="text-gray-900 font-medium border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Select nationality" />
                           </SelectTrigger>
                           <SelectContent>
@@ -894,9 +902,13 @@ export default function ManageInstructors() {
                   name="startDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Start Date</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-gray-800">Start Date</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input 
+                          type="date" 
+                          className="text-gray-900 font-medium border-gray-300 focus:border-blue-500 focus:ring-blue-500" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -908,9 +920,13 @@ export default function ManageInstructors() {
                   name="credentials"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Credentials</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-gray-800">Credentials</FormLabel>
                       <FormControl>
-                        <Input placeholder="E.g., CELTA, DELTA, M.Ed." {...field} />
+                        <Input 
+                          placeholder="E.g., CELTA, DELTA, M.Ed." 
+                          className="text-gray-900 font-medium border-gray-300 focus:border-blue-500 focus:ring-blue-500" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -922,13 +938,13 @@ export default function ManageInstructors() {
                   name="schoolId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>School</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-gray-800">School</FormLabel>
                       <FormControl>
                         <Select 
                           onValueChange={(value) => field.onChange(parseInt(value))} 
                           defaultValue={field.value.toString()}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="text-gray-900 font-medium border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Select school" />
                           </SelectTrigger>
                           <SelectContent>
@@ -950,10 +966,10 @@ export default function ManageInstructors() {
                   name="compound"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Compound</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-gray-800">Compound</FormLabel>
                       <FormControl>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger>
+                          <SelectTrigger className="text-gray-900 font-medium border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Select compound" />
                           </SelectTrigger>
                           <SelectContent>
@@ -973,9 +989,13 @@ export default function ManageInstructors() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-gray-800">Phone</FormLabel>
                       <FormControl>
-                        <Input placeholder="Contact number" {...field} />
+                        <Input 
+                          placeholder="Contact number" 
+                          className="text-gray-900 font-medium border-gray-300 focus:border-blue-500 focus:ring-blue-500" 
+                          {...field} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -987,10 +1007,10 @@ export default function ManageInstructors() {
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Status</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-gray-800">Status</FormLabel>
                       <FormControl>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <SelectTrigger>
+                          <SelectTrigger className="text-gray-900 font-medium border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                           <SelectContent>
@@ -1009,7 +1029,7 @@ export default function ManageInstructors() {
                   name="imageUrl"
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>Profile Image</FormLabel>
+                      <FormLabel className="text-sm font-semibold text-gray-800">Profile Image</FormLabel>
                       <div className="space-y-4">
                         <div className="flex flex-col space-y-2">
                           <div className="flex items-center gap-2">
