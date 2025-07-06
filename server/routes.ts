@@ -4048,20 +4048,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Helper function to sync PTO balance for a specific instructor
-  // Helper function to calculate business days between dates (excluding weekends and holidays)
+  // Helper function to calculate business days between dates (excluding Saudi weekends Friday/Saturday and holidays)
   function calculateBusinessDays(startDate: Date, endDate: Date): number {
     const holidays = [
-      // Federal holidays for 2025 (add more years as needed)
+      // Saudi holidays for 2025
       '2025-01-01', // New Year's Day
-      '2025-01-20', // Martin Luther King Jr. Day
-      '2025-02-17', // Presidents' Day
-      '2025-05-26', // Memorial Day
-      '2025-07-04', // Independence Day
-      '2025-09-01', // Labor Day
-      '2025-10-13', // Columbus Day
-      '2025-11-11', // Veterans Day
-      '2025-11-27', // Thanksgiving
-      '2025-12-25', // Christmas
+      '2025-09-23', // Saudi National Day
+      '2025-12-25', // Christmas (if observed)
+      // Add Islamic holidays as needed (dates vary by lunar calendar)
     ];
 
     let count = 0;
@@ -4071,8 +4065,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const dayOfWeek = current.getDay();
       const dateString = current.toISOString().split('T')[0];
       
-      // Skip weekends (0 = Sunday, 6 = Saturday) and holidays
-      if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidays.includes(dateString)) {
+      // Skip Saudi weekends (5 = Friday, 6 = Saturday) and holidays
+      // Work days are Sunday (0), Monday (1), Tuesday (2), Wednesday (3), Thursday (4)
+      if (dayOfWeek !== 5 && dayOfWeek !== 6 && !holidays.includes(dateString)) {
         count++;
       }
       
