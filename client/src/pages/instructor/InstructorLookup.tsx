@@ -391,50 +391,50 @@ const InstructorLookup = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <div>
+                    <div className="space-y-3 min-w-0">
+                      <div className="min-w-0">
                         <label className="text-sm font-medium text-gray-500">Full Name</label>
-                        <p className="text-base font-medium text-gray-900">{selectedInstructor.name}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.name}</p>
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <label className="text-sm font-medium text-gray-500">Nationality</label>
-                        <p className="text-base font-medium text-gray-900">{selectedInstructor.nationality}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.nationality}</p>
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <label className="text-sm font-medium text-gray-500">Phone Number</label>
-                        <p className="text-base font-medium text-gray-900">{selectedInstructor.phone || 'Not provided'}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.phone || 'Not provided'}</p>
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <label className="text-sm font-medium text-gray-500">Accompanied Status</label>
-                        <p className="text-base font-medium text-gray-900">{selectedInstructor.accompaniedStatus}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.accompaniedStatus}</p>
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <label className="text-sm font-medium text-gray-500">Compound</label>
                         <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.compound}</p>
                       </div>
                     </div>
-                    <div className="space-y-3">
-                      <div>
+                    <div className="space-y-3 min-w-0">
+                      <div className="min-w-0">
                         <label className="text-sm font-medium text-gray-500">School</label>
-                        <p className="text-base font-medium text-gray-900">{getSchoolName(selectedInstructor.schoolId)}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{getSchoolName(selectedInstructor.schoolId)}</p>
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <label className="text-sm font-medium text-gray-500">Role</label>
-                        <p className="text-base font-medium text-gray-900">{selectedInstructor.role}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.role}</p>
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <label className="text-sm font-medium text-gray-500">Credentials</label>
-                        <p className="text-base font-medium text-gray-900">{selectedInstructor.credentials}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.credentials}</p>
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <label className="text-sm font-medium text-gray-500">Start Date</label>
-                        <p className="text-base font-medium text-gray-900">
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">
                           {selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy') : 'Not provided'}
                         </p>
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <label className="text-sm font-medium text-gray-500">Instructor ID</label>
-                        <p className="text-base font-medium text-gray-900">{selectedInstructor.id}</p>
+                        <p className="text-base font-medium text-gray-900 break-words overflow-wrap-anywhere">{selectedInstructor.id}</p>
                       </div>
                     </div>
                   </div>
