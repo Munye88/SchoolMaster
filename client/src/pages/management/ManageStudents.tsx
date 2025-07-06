@@ -296,23 +296,23 @@ export default function ManageStudents() {
       </div>
       
       {/* Filter Section */}
-      <Card className="mb-6">
-        <CardHeader className="pb-3">
-          <CardTitle>Filters</CardTitle>
+      <Card className="mb-6 rounded-none">
+        <CardHeader className="pb-3 text-center">
+          <CardTitle className="text-center">Filters</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* School Filter */}
             <div>
-              <FormLabel className="mb-2 block">School</FormLabel>
+              <FormLabel className="mb-2 block text-center font-semibold">School</FormLabel>
               <Select
                 value={selectedSchoolFilter || "all"}
                 onValueChange={(value) => setSelectedSchoolFilter(value === "all" ? null : value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="rounded-none">
                   <SelectValue placeholder="All Schools" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-none">
                   <SelectItem value="all">All Schools</SelectItem>
                   {schools.map((school: School) => (
                     <SelectItem key={school.id} value={school.id.toString()}>
@@ -325,15 +325,15 @@ export default function ManageStudents() {
             
             {/* Course Type Filter */}
             <div>
-              <FormLabel className="mb-2 block">Course Type</FormLabel>
+              <FormLabel className="mb-2 block text-center font-semibold">Course Type</FormLabel>
               <Select
                 value={selectedCourseType || "all"}
                 onValueChange={(value) => setSelectedCourseType(value === "all" ? null : value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="rounded-none">
                   <SelectValue placeholder="All Course Types" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-none">
                   <SelectItem value="all">All Course Types</SelectItem>
                   {COURSE_TYPES.map((courseType) => (
                     <SelectItem key={courseType.id} value={courseType.id}>
@@ -345,10 +345,10 @@ export default function ManageStudents() {
             </div>
             
             {/* Clear Filters */}
-            <div className="flex items-end">
+            <div className="flex items-end justify-center">
               <Button 
                 variant="outline" 
-                className="mb-0.5"
+                className="mb-0.5 rounded-none"
                 onClick={clearFilters}
                 disabled={!selectedSchoolFilter && !selectedCourseType}
               >
@@ -393,36 +393,37 @@ export default function ManageStudents() {
           </Button>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="bg-white rounded-none shadow overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>School</TableHead>
-                <TableHead>Course Type</TableHead>
-                <TableHead>Number of Students</TableHead>
-                <TableHead>Start Date</TableHead>
-                <TableHead>End Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-center font-semibold">School</TableHead>
+                <TableHead className="text-center font-semibold">Course Type</TableHead>
+                <TableHead className="text-center font-semibold">Number of Students</TableHead>
+                <TableHead className="text-center font-semibold">Start Date</TableHead>
+                <TableHead className="text-center font-semibold">End Date</TableHead>
+                <TableHead className="text-center font-semibold">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredStudents.map((student: Student) => (
                 <TableRow key={student.id}>
-                  <TableCell>{getSchoolName(student.schoolId)}</TableCell>
-                  <TableCell>
-                    <Badge className={`font-normal ${getCourseTypeColor(student.courseType)}`}>
+                  <TableCell className="text-center">{getSchoolName(student.schoolId)}</TableCell>
+                  <TableCell className="text-center">
+                    <Badge className={`font-normal ${getCourseTypeColor(student.courseType)} rounded-none`}>
                       {getCourseTypeName(student.courseType)}
                     </Badge>
                   </TableCell>
-                  <TableCell>{student.numberOfStudents}</TableCell>
-                  <TableCell>{student.startDate}</TableCell>
-                  <TableCell>{student.endDate}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
+                  <TableCell className="text-center">{student.numberOfStudents}</TableCell>
+                  <TableCell className="text-center">{student.startDate}</TableCell>
+                  <TableCell className="text-center">{student.endDate}</TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex justify-center gap-2">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEditStudent(student)}
+                        className="rounded-none"
                       >
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
@@ -431,6 +432,7 @@ export default function ManageStudents() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDeleteClick(student)}
+                        className="rounded-none"
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
                         <span className="sr-only">Delete</span>
