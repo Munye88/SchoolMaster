@@ -387,59 +387,54 @@ const InstructorLookup = () => {
             <TabsContent value="profile">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-center text-xl font-bold">Instructor Profile</CardTitle>
+                  <CardTitle>Instructor Profile</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                      <h3 className="text-center text-lg font-bold text-gray-900 mb-4">Personal Information</h3>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between border-b pb-2">
-                          <span className="text-sm font-medium text-gray-600">Full Name</span>
-                          <span className="text-sm font-bold text-gray-900">{selectedInstructor.name}</span>
-                        </div>
-                        <div className="flex items-center justify-between border-b pb-2">
-                          <span className="text-sm font-medium text-gray-600">Nationality</span>
-                          <span className="text-sm font-bold text-gray-900">{selectedInstructor.nationality}</span>
-                        </div>
-                        <div className="flex items-center justify-between border-b pb-2">
-                          <span className="text-sm font-medium text-gray-600">Status</span>
-                          <span className="text-sm font-bold text-gray-900">{selectedInstructor.accompaniedStatus}</span>
-                        </div>
-                        <div className="flex items-center justify-between border-b pb-2">
-                          <span className="text-sm font-medium text-gray-600">Phone</span>
-                          <span className="text-sm font-bold text-gray-900">{selectedInstructor.phone}</span>
-                        </div>
-                        <div className="flex items-center justify-between border-b pb-2">
-                          <span className="text-sm font-medium text-gray-600">Compound</span>
-                          <span className="text-sm font-bold text-gray-900">{selectedInstructor.compound}</span>
-                        </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Full Name</label>
+                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.name}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Nationality</label>
+                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.nationality}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Phone Number</label>
+                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.phone || 'Not provided'}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Accompanied Status</label>
+                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.accompaniedStatus}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Compound</label>
+                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.compound}</p>
                       </div>
                     </div>
-
-                    <div>
-                      <h3 className="text-center text-lg font-bold text-gray-900 mb-4">Employment Information</h3>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between border-b pb-2">
-                          <span className="text-sm font-medium text-gray-600">School</span>
-                          <span className="text-sm font-bold text-gray-900">{getSchoolName(selectedInstructor.schoolId)}</span>
-                        </div>
-                        <div className="flex items-center justify-between border-b pb-2">
-                          <span className="text-sm font-medium text-gray-600">Credentials</span>
-                          <span className="text-sm font-bold text-gray-900">{selectedInstructor.credentials}</span>
-                        </div>
-                        <div className="flex items-center justify-between border-b pb-2">
-                          <span className="text-sm font-medium text-gray-600">Start Date</span>
-                          <span className="text-sm font-bold text-gray-900">{selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy') : 'Unknown'}</span>
-                        </div>
-                        <div className="flex items-center justify-between border-b pb-2">
-                          <span className="text-sm font-medium text-gray-600">Tenure</span>
-                          <span className="text-sm font-bold text-gray-900">
-                            {selectedInstructor.startDate ? 
-                              `${Math.round((new Date().getTime() - new Date(selectedInstructor.startDate).getTime()) / (1000 * 60 * 60 * 24 * 30))} months` : 
-                              'Unknown'}
-                          </span>
-                        </div>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">School</label>
+                        <p className="text-base font-medium text-gray-900 break-words">{getSchoolName(selectedInstructor.schoolId)}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Role</label>
+                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.role}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Credentials</label>
+                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.credentials}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Start Date</label>
+                        <p className="text-base font-medium text-gray-900 break-words">
+                          {selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy') : 'Not provided'}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Instructor ID</label>
+                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.id}</p>
                       </div>
                     </div>
                   </div>
