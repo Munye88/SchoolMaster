@@ -493,6 +493,32 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </div>
+                
+                {/* Nationality Chart with Flags */}
+                <div className="mt-4 bg-gray-50 p-4 border border-gray-100">
+                  <div className="grid grid-cols-3 gap-4">
+                    {/* American */}
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">🇺🇸</div>
+                      <div className="text-sm font-medium text-gray-600">American</div>
+                      <div className="text-lg font-bold text-blue-600">{dashboardStats.nationalityCounts.american}</div>
+                    </div>
+                    
+                    {/* British */}
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">🇬🇧</div>
+                      <div className="text-sm font-medium text-gray-600">British</div>
+                      <div className="text-lg font-bold text-green-600">{dashboardStats.nationalityCounts.british}</div>
+                    </div>
+                    
+                    {/* Canadian */}
+                    <div className="text-center">
+                      <div className="text-2xl mb-1">🇨🇦</div>
+                      <div className="text-sm font-medium text-gray-600">Canadian</div>
+                      <div className="text-lg font-bold text-purple-600">{dashboardStats.nationalityCounts.canadian}</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
