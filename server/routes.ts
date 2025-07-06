@@ -55,25 +55,33 @@ import { AIChatRequest } from "../client/src/lib/ai-types";
 import { initDatabase } from "./initDb";
 
 // Helper function to get a default instructor ID for a school
-async function getDefaultInstructorId(schoolId: number): Promise<number> {
+async function getDefaultInstructorId(schoolId: number, excludeInstructorId?: number): Promise<number> {
   try {
-    // Get instructors from the specified school
+    // Get instructors from the specified school, excluding the one being deleted
     const instructors = await dbStorage.getInstructorsBySchool(schoolId);
-    if (instructors && instructors.length > 0) {
-      return instructors[0].id;
+    const availableInstructors = instructors.filter(instructor => 
+      instructor.id !== excludeInstructorId
+    );
+    
+    if (availableInstructors && availableInstructors.length > 0) {
+      return availableInstructors[0].id;
     }
     
-    // Fallback: Get any instructor
+    // Fallback: Get any instructor from any school, excluding the one being deleted
     const allInstructors = await dbStorage.getInstructors();
-    if (allInstructors && allInstructors.length > 0) {
-      return allInstructors[0].id;
+    const otherInstructors = allInstructors.filter(instructor => 
+      instructor.id !== excludeInstructorId
+    );
+    
+    if (otherInstructors && otherInstructors.length > 0) {
+      return otherInstructors[0].id;
     }
     
-    // Last resort: Return a fixed ID
-    return 6876; // Default instructor ID
+    // This should not happen if there are other instructors in the system
+    throw new Error("Cannot delete the last instructor in the system");
   } catch (error) {
     console.error("Error getting default instructor:", error);
-    return 6876; // Fallback ID
+    throw error; // Re-throw to handle properly
   }
 }
 
@@ -423,15 +431,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await db.delete(evaluations).where(eq(evaluations.id, evaluation.id));
       }
       
-      // 3. Update courses to remove instructor reference
+      // 3. Update courses to assign to another instructor from the same school
       const instructorCourses = await dbStorage.getCoursesByInstructor(id);
-      for (const course of instructorCourses) {
-        const courseToUpdate = await dbStorage.getCourse(course.id);
-        if (courseToUpdate) {
-          await dbStorage.updateCourse(course.id, { 
-            ...courseToUpdate,
-            instructorId: 0 // Use 0 as a placeholder value since null is causing issues
-          });
+      if (instructorCourses.length > 0) {
+        // Find a replacement instructor from the same school, excluding the one being deleted
+        const defaultInstructorId = await getDefaultInstructorId(instructor.schoolId, id);
+        
+        for (const course of instructorCourses) {
+          const courseToUpdate = await dbStorage.getCourse(course.id);
+          if (courseToUpdate) {
+            await dbStorage.updateCourse(course.id, { 
+              ...courseToUpdate,
+              instructorId: defaultInstructorId
+            });
+          }
         }
       }
       
@@ -449,8 +462,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(204).send();
     } catch (error) {
       console.error("Error deleting instructor:", error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json({ message: "Failed to delete instructor", error: errorMessage });
+      
+      // Provide more specific error messages
+      if (error instanceof Error) {
+        if (error.message.includes("Cannot delete the last instructor")) {
+          res.status(400).json({ message: "Cannot delete the last instructor in the system" });
+        } else if (error.message.includes("foreign key constraint") || 
+                   error.message.includes("violates foreign key")) {
+          res.status(400).json({ message: "Cannot delete instructor: still assigned to courses or evaluations" });
+        } else {
+          res.status(500).json({ message: "Failed to delete instructor", error: error.message });
+        }
+      } else {
+        res.status(500).json({ message: "Failed to delete instructor", error: String(error) });
+      }
     }
   });
   
