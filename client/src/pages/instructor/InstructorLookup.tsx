@@ -387,7 +387,7 @@ const InstructorLookup = () => {
             <TabsContent value="profile">
               <Card>
                 <CardHeader>
-                  <CardTitle>Instructor Profile</CardTitle>
+                  <CardTitle className="text-center">Instructor Profile</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
