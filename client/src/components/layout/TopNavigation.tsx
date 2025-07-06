@@ -46,7 +46,7 @@ export default function TopNavigation() {
       ]
     },
     {
-      label: "DLI Materials",
+      label: "DLI Inventory",
       icon: BookOpen,
       dropdown: [
         { label: "Book Order", path: "/dli/book-order" },
