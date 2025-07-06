@@ -218,10 +218,10 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ({
                 <SelectValue placeholder="Select quarter" />
               </SelectTrigger>
               <SelectContent className="rounded-none">
-                <SelectItem value="Q1">Q1 (Jan-Mar)</SelectItem>
-                <SelectItem value="Q2">Q2 (Apr-Jun)</SelectItem>
-                <SelectItem value="Q3">Q3 (Jul-Sep)</SelectItem>
-                <SelectItem value="Q4">Q4 (Oct-Dec)</SelectItem>
+                <SelectItem value="Q1">Quarter 1</SelectItem>
+                <SelectItem value="Q2">Quarter 2</SelectItem>
+                <SelectItem value="Q3">Quarter 3</SelectItem>
+                <SelectItem value="Q4">Quarter 4</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -240,56 +240,41 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ({
               <SelectItem value="2024">2024</SelectItem>
               <SelectItem value="2025">2025</SelectItem>
               <SelectItem value="2026">2026</SelectItem>
+              <SelectItem value="2027">2027</SelectItem>
+              <SelectItem value="2028">2028</SelectItem>
+              <SelectItem value="2029">2029</SelectItem>
+              <SelectItem value="2030">2030</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Rating Sections */}
-      <div className="space-y-6">
-        <h3 className="text-lg font-semibold text-gray-900">Performance Ratings (1-5 Scale)</h3>
+      {/* Score Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-gray-900 text-center">Evaluation Score</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[
-            { field: 'overallRating', label: 'Overall Rating', description: 'General performance assessment' },
-            { field: 'teachingEffectiveness', label: 'Teaching Effectiveness', description: 'Quality of instruction delivery' },
-            { field: 'classroomManagement', label: 'Classroom Management', description: 'Ability to manage learning environment' },
-            { field: 'professionalDevelopment', label: 'Professional Development', description: 'Growth and skill enhancement' },
-            { field: 'communication', label: 'Communication', description: 'Interaction with students and colleagues' },
-          ].map(({ field, label, description }) => (
-            <div key={field} className="space-y-3">
-              <div>
-                <Label className="text-sm font-medium">{label}</Label>
-                <p className="text-xs text-gray-500">{description}</p>
-              </div>
-              <div className="flex items-center space-x-2">
-                {[1, 2, 3, 4, 5].map((rating) => (
-                  <button
-                    key={rating}
-                    type="button"
-                    onClick={() => handleRatingChange(field, rating)}
-                    className={`w-8 h-8 rounded-none border ${
-                      formData[field as keyof EvaluationFormData] === rating
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                    }`}
-                  >
-                    {rating}
-                  </button>
-                ))}
-                <span className="ml-2 text-sm text-gray-600">
-                  Current: {formData[field as keyof EvaluationFormData]}/5
-                </span>
-              </div>
-            </div>
-          ))}
+          <div className="space-y-2">
+            <Label htmlFor="score" className="text-sm font-medium">Score (0-100)</Label>
+            <Input
+              id="score"
+              type="number"
+              min="0"
+              max="100"
+              value={formData.score || ''}
+              onChange={(e) => setFormData(prev => ({ ...prev, score: e.target.value ? parseInt(e.target.value) : undefined }))}
+              placeholder="Enter score (0-100)"
+              className="rounded-none"
+            />
+            <p className="text-xs text-gray-500">Enter a score between 0 and 100</p>
+          </div>
         </div>
       </div>
 
       {/* Text Fields */}
       <div className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="strengths">Strengths</Label>
+          <Label htmlFor="strengths" className="text-center block">Strengths</Label>
           <Textarea
             id="strengths"
             value={formData.strengths}
@@ -300,7 +285,7 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="areasForImprovement">Areas for Improvement</Label>
+          <Label htmlFor="areasForImprovement" className="text-center block">Areas for Improvement</Label>
           <Textarea
             id="areasForImprovement"
             value={formData.areasForImprovement}
@@ -311,7 +296,7 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="comments">Additional Comments</Label>
+          <Label htmlFor="comments" className="text-center block">Additional Comments</Label>
           <Textarea
             id="comments"
             value={formData.comments}
@@ -521,8 +506,8 @@ export default function StaffEvaluationsComplete() {
   const totalEvaluations = schoolEvaluations.length;
   const completedEvaluations = schoolEvaluations.filter((e: Evaluation) => e.status === 'completed').length;
   const draftEvaluations = schoolEvaluations.filter((e: Evaluation) => e.status === 'draft').length;
-  const averageRating = schoolEvaluations.length > 0 
-    ? schoolEvaluations.reduce((sum: number, e: Evaluation) => sum + e.overallRating, 0) / schoolEvaluations.length 
+  const averageScore = schoolEvaluations.length > 0 
+    ? schoolEvaluations.reduce((sum: number, e: Evaluation) => sum + (e.score || 0), 0) / schoolEvaluations.length 
     : 0;
 
   const getStatusColor = (status: string) => {
@@ -608,9 +593,9 @@ export default function StaffEvaluationsComplete() {
             <div className="flex items-center">
               <TrendingUp className="h-8 w-8 text-purple-600" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Avg. Rating</p>
-                <p className={`text-2xl font-bold ${getRatingColor(averageRating)}`}>
-                  {averageRating.toFixed(1)}/5
+                <p className="text-sm font-medium text-gray-600">Avg. Score</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {averageScore.toFixed(1)}/100
                 </p>
               </div>
             </div>
@@ -696,7 +681,7 @@ export default function StaffEvaluationsComplete() {
                     <th className="text-left py-3 px-4 font-medium text-gray-900">Instructor</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">Type</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">Period</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Rating</th>
+                    <th className="text-center py-3 px-4 font-medium text-gray-900">Score</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">Date</th>
                     <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
@@ -727,10 +712,9 @@ export default function StaffEvaluationsComplete() {
                           </span>
                         </td>
                         <td className="py-3 px-4">
-                          <div className="flex items-center">
-                            <Star className={`w-4 h-4 mr-1 ${getRatingColor(evaluation.overallRating)}`} />
-                            <span className={`font-medium ${getRatingColor(evaluation.overallRating)}`}>
-                              {evaluation.overallRating}/5
+                          <div className="flex items-center justify-center">
+                            <span className="font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-none border">
+                              {evaluation.score || 'N/A'}/100
                             </span>
                           </div>
                         </td>
@@ -787,9 +771,9 @@ export default function StaffEvaluationsComplete() {
 
       {/* Create Evaluation Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-none">
+        <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto rounded-none">
           <DialogHeader>
-            <DialogTitle>Create New Evaluation</DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold">Create New Evaluation</DialogTitle>
           </DialogHeader>
           <EvaluationForm
             instructors={instructors}
@@ -802,9 +786,9 @@ export default function StaffEvaluationsComplete() {
 
       {/* Edit Evaluation Dialog */}
       <Dialog open={!!editingEvaluation} onOpenChange={() => setEditingEvaluation(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto rounded-none">
+        <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto rounded-none">
           <DialogHeader>
-            <DialogTitle>Edit Evaluation</DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold">Edit Evaluation</DialogTitle>
           </DialogHeader>
           <EvaluationForm
             evaluation={editingEvaluation}
@@ -852,30 +836,14 @@ export default function StaffEvaluationsComplete() {
               <Separator />
 
               <div className="space-y-4">
-                <h4 className="font-medium text-gray-900">Performance Ratings</h4>
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { label: 'Overall Rating', value: viewingEvaluation.overallRating },
-                    { label: 'Teaching Effectiveness', value: viewingEvaluation.teachingEffectiveness },
-                    { label: 'Classroom Management', value: viewingEvaluation.classroomManagement },
-                    { label: 'Professional Development', value: viewingEvaluation.professionalDevelopment },
-                    { label: 'Communication', value: viewingEvaluation.communication },
-                  ].map(({ label, value }) => (
-                    <div key={label}>
-                      <Label className="text-sm font-medium text-gray-500">{label}</Label>
-                      <div className="flex items-center">
-                        <span className={`font-medium ${getRatingColor(value)}`}>{value}/5</span>
-                        <div className="ml-2 flex">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star 
-                              key={star} 
-                              className={`w-4 h-4 ${star <= value ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                <h4 className="font-medium text-gray-900 text-center">Evaluation Score</h4>
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-24 h-24 rounded-none bg-blue-50 border-2 border-blue-200">
+                    <span className="text-3xl font-bold text-blue-600">
+                      {viewingEvaluation.score || 'N/A'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-2">Score out of 100</p>
                 </div>
               </div>
 
