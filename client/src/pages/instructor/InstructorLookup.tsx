@@ -30,9 +30,15 @@ const InstructorLookup = () => {
     enabled: !!selectedInstructor,
   });
 
-  // Fetch attendance
+  // Fetch attendance for selected instructor only
   const { data: attendance = [], isLoading: loadingAttendance } = useQuery<any[]>({
-    queryKey: ['/api/staff-attendance', selectedInstructor?.schoolId],
+    queryKey: ['/api/staff-attendance', selectedInstructor?.id],
+    queryFn: async () => {
+      if (!selectedInstructor) return [];
+      const response = await fetch(`/api/staff-attendance?instructorId=${selectedInstructor.id}`);
+      if (!response.ok) return [];
+      return await response.json();
+    },
     refetchOnWindowFocus: false,
     enabled: !!selectedInstructor,
   });
@@ -121,10 +127,8 @@ const InstructorLookup = () => {
     e => selectedInstructor && e.instructorId === selectedInstructor.id
   );
   
-  // Filter attendance data for selected instructor only
-  const instructorAttendance = attendance.filter(
-    a => selectedInstructor && a.instructorId === selectedInstructor.id
-  );
+  // Use attendance data directly since it's already filtered by instructor
+  const instructorAttendance = attendance;
   
   // Filter instructor recognitions
   const instructorRecognitions = recognitions.filter(
@@ -595,6 +599,7 @@ const InstructorLookup = () => {
                         <table className="min-w-full divide-y divide-gray-200">
                           <thead className="bg-gray-50">
                             <tr>
+                              <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Date</th>
                               <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Status</th>
                               <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Time In</th>
                               <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Time Out</th>
@@ -602,13 +607,30 @@ const InstructorLookup = () => {
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
-                            {instructorAttendance.slice(0, 10).map(record => (
+                            {instructorAttendance
+                              .sort((a, b) => {
+                                // Sort by date in descending order (most recent first)
+                                const dateA = new Date(a.date);
+                                const dateB = new Date(b.date);
+                                return dateB.getTime() - dateA.getTime();
+                              })
+                              .slice(0, 10).map(record => (
                               <tr key={record.id}>
+                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-bold text-gray-900">
+                                  {format(new Date(record.date), 'MMM dd, yyyy')}
+                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-center">
                                   <span className={`px-3 py-1 inline-flex text-sm leading-5 font-bold rounded-none ${
                                     record.status.toLowerCase() === 'present' ? 'bg-green-100 text-green-800' : 
                                     record.status.toLowerCase() === 'absent' ? 'bg-red-100 text-red-800' : 
-                                    'bg-amber-100 text-amber-800'
+                                    record.status.toLowerCase() === 'late' ? 'bg-amber-100 text-amber-800' :
+                                    record.status.toLowerCase() === 'sick' ? 'bg-blue-100 text-blue-800' :
+                                    record.status.toLowerCase() === 'pto' ? 'bg-purple-100 text-purple-800' :
+                                    record.status.toLowerCase() === 'paternity' ? 'bg-indigo-100 text-indigo-800' :
+                                    record.status.toLowerCase() === 'bereavement' ? 'bg-gray-100 text-gray-800' :
+                                    record.status.toLowerCase() === 'marriage' ? 'bg-pink-100 text-pink-800' :
+                                    record.status.toLowerCase() === 'holiday' ? 'bg-orange-100 text-orange-800' :
+                                    'bg-gray-100 text-gray-800'
                                   }`}>
                                     {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                                   </span>
