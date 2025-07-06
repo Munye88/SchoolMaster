@@ -447,7 +447,7 @@ const Dashboard = () => {
                   <div className="shadow-sm bg-[#EEF5FD] p-3 border border-blue-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-emoji">{'\u{1F1FA}\u{1F1F8}'}</span>
+                        <div className="w-5 h-4 bg-gradient-to-r from-red-500 via-white to-blue-500 border border-gray-300 flex-shrink-0" style={{ backgroundImage: 'linear-gradient(to right, #B22234 0%, #B22234 33%, #FFFFFF 33%, #FFFFFF 66%, #3C3B6E 66%)' }}></div>
                         <span className="text-sm font-medium text-blue-900">American</span>
                       </div>
                       <span className="text-lg font-bold text-blue-950">{dashboardStats.nationalityCounts.american}</span>
@@ -458,7 +458,15 @@ const Dashboard = () => {
                   <div className="shadow-sm bg-[#F0F9F5] p-3 border border-green-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-emoji">{'\u{1F1EC}\u{1F1E7}'}</span>
+                        <div className="w-5 h-4 bg-blue-800 border border-gray-300 flex-shrink-0 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-blue-800"></div>
+                          <div className="absolute top-0 left-0 w-full h-0.5 bg-white"></div>
+                          <div className="absolute bottom-0 left-0 w-full h-0.5 bg-white"></div>
+                          <div className="absolute top-0 left-0 h-full w-0.5 bg-white"></div>
+                          <div className="absolute top-0 right-0 h-full w-0.5 bg-white"></div>
+                          <div className="absolute top-1.5 left-0 w-full h-1 bg-red-600"></div>
+                          <div className="absolute top-0 left-1.5 h-full w-1 bg-red-600"></div>
+                        </div>
                         <span className="text-sm font-medium text-green-800">British</span>
                       </div>
                       <span className="text-lg font-bold text-green-900">{dashboardStats.nationalityCounts.british}</span>
@@ -469,7 +477,11 @@ const Dashboard = () => {
                   <div className="shadow-sm bg-[#F5F2FA] p-3 border border-purple-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-emoji">{'\u{1F1E8}\u{1F1E6}'}</span>
+                        <div className="w-5 h-4 bg-white border border-gray-300 flex-shrink-0 relative overflow-hidden">
+                          <div className="absolute left-0 top-0 w-1.5 h-full bg-red-600"></div>
+                          <div className="absolute right-0 top-0 w-1.5 h-full bg-red-600"></div>
+                          <div className="absolute left-1.5 top-1.5 w-2 h-1 bg-red-600 transform rotate-45"></div>
+                        </div>
                         <span className="text-sm font-medium text-purple-800">Canadian</span>
                       </div>
                       <span className="text-lg font-bold text-purple-900">{dashboardStats.nationalityCounts.canadian}</span>
