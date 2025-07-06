@@ -992,7 +992,6 @@ export default function StaffLeaveTracker() {
                     <TableCell className="border-t border-b border-l border-gray-200">
                       <div className="flex flex-col">
                         <span className="font-medium">{leave.instructorName}</span>
-                        <span className="text-xs text-gray-500">ID: {leave.employeeId || `INST-${leave.instructorId.toString().padStart(4, '0')}`}</span>
                       </div>
                     </TableCell>
                     <TableCell className="border-t border-b border-gray-200">
