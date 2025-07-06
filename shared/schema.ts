@@ -356,7 +356,7 @@ export const staffAttendance = pgTable("staff_attendance", {
   date: date("date").notNull(),
   instructorId: integer("instructor_id").notNull().references(() => instructors.id),
   status: text("status", { 
-    enum: ["present", "absent", "late", "sick", "paternity", "pto", "bereavement"] 
+    enum: ["present", "absent", "late", "sick", "paternity", "pto", "bereavement", "marriage", "holiday"] 
   }).notNull(),
   timeIn: text("time_in"),
   timeOut: text("time_out"),

@@ -64,7 +64,7 @@ interface StaffAttendance {
   id: number;
   date: string;
   instructorId: number;
-  status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement";
+  status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement" | "marriage" | "holiday";
   timeIn: string | null;
   timeOut: string | null;
   comments: string | null;
@@ -154,7 +154,7 @@ function processAttendanceData(
 interface AttendanceFormData {
   instructorId: number;
   date: string;
-  status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement";
+  status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement" | "marriage" | "holiday";
   timeIn: string;
   timeOut: string;
   comments: string;
@@ -170,12 +170,12 @@ const EditAttendanceForm: React.FC<{
   const queryClient = useQueryClient();
   // Explicitly type the form data to match StaffAttendance status type
   const [formData, setFormData] = useState<{
-    status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement";
+    status: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement" | "marriage" | "holiday";
     timeIn: string;
     timeOut: string;
     comments: string;
   }>({
-    status: record.status as "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement",
+    status: record.status as "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement" | "marriage" | "holiday",
     timeIn: record.timeIn || "07:00",
     timeOut: record.timeOut || "17:00",
     comments: record.comments || ""
@@ -265,7 +265,7 @@ const EditAttendanceForm: React.FC<{
           <Label htmlFor="status">Status</Label>
           <Select
             value={formData.status}
-            onValueChange={(value: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement") => 
+            onValueChange={(value: "present" | "absent" | "late" | "sick" | "paternity" | "pto" | "bereavement" | "marriage" | "holiday") => 
               setFormData({ ...formData, status: value })
             }
           >

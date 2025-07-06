@@ -321,6 +321,10 @@ export default function StaffAttendanceEnhanced() {
       case 'absent': return 'text-red-600 bg-red-50';
       case 'sick': return 'text-blue-600 bg-blue-50';
       case 'pto': return 'text-purple-600 bg-purple-50';
+      case 'paternity': return 'text-indigo-600 bg-indigo-50';
+      case 'bereavement': return 'text-gray-800 bg-gray-100';
+      case 'marriage': return 'text-pink-600 bg-pink-50';
+      case 'holiday': return 'text-orange-600 bg-orange-50';
       default: return 'text-gray-600 bg-gray-50';
     }
   };
@@ -472,6 +476,10 @@ export default function StaffAttendanceEnhanced() {
                         <SelectItem value="absent">Absent</SelectItem>
                         <SelectItem value="sick">Sick</SelectItem>
                         <SelectItem value="pto">PTO</SelectItem>
+                        <SelectItem value="paternity">Paternity Leave</SelectItem>
+                        <SelectItem value="bereavement">Bereavement</SelectItem>
+                        <SelectItem value="marriage">Marriage</SelectItem>
+                        <SelectItem value="holiday">Holiday</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -556,6 +564,10 @@ export default function StaffAttendanceEnhanced() {
                         <SelectItem value="absent">Absent</SelectItem>
                         <SelectItem value="sick">Sick</SelectItem>
                         <SelectItem value="pto">PTO</SelectItem>
+                        <SelectItem value="paternity">Paternity Leave</SelectItem>
+                        <SelectItem value="bereavement">Bereavement</SelectItem>
+                        <SelectItem value="marriage">Marriage</SelectItem>
+                        <SelectItem value="holiday">Holiday</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -633,6 +645,10 @@ export default function StaffAttendanceEnhanced() {
                 <SelectItem value="absent">Absent</SelectItem>
                 <SelectItem value="sick">Sick</SelectItem>
                 <SelectItem value="pto">PTO</SelectItem>
+                <SelectItem value="paternity">Paternity Leave</SelectItem>
+                <SelectItem value="bereavement">Bereavement</SelectItem>
+                <SelectItem value="marriage">Marriage</SelectItem>
+                <SelectItem value="holiday">Holiday</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -751,6 +767,10 @@ export default function StaffAttendanceEnhanced() {
                   <SelectItem value="absent">Absent</SelectItem>
                   <SelectItem value="sick">Sick</SelectItem>
                   <SelectItem value="pto">PTO</SelectItem>
+                  <SelectItem value="paternity">Paternity Leave</SelectItem>
+                  <SelectItem value="bereavement">Bereavement</SelectItem>
+                  <SelectItem value="marriage">Marriage</SelectItem>
+                  <SelectItem value="holiday">Holiday</SelectItem>
                 </SelectContent>
               </Select>
             </div>
