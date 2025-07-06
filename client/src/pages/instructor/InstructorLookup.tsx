@@ -385,41 +385,61 @@ const InstructorLookup = () => {
 
             {/* Profile Tab */}
             <TabsContent value="profile">
-              <div className="flex justify-center">
-                <Card className="w-full max-w-lg">
-                  <CardHeader className="text-center py-2">
-                    <CardTitle className="text-sm font-semibold">Instructor Profile</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4">
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
-                      <div className="min-w-0">
-                        <div className="text-xs text-gray-500 mb-1">Name</div>
-                        <div className="text-xs font-medium text-gray-900 truncate">{selectedInstructor.name}</div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Instructor Profile</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Full Name</label>
+                        <p className="text-base font-medium text-gray-900">{selectedInstructor.name}</p>
                       </div>
-                      <div className="min-w-0">
-                        <div className="text-xs text-gray-500 mb-1">School</div>
-                        <div className="text-xs font-medium text-gray-900 truncate">{getSchoolName(selectedInstructor.schoolId)}</div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Nationality</label>
+                        <p className="text-base font-medium text-gray-900">{selectedInstructor.nationality}</p>
                       </div>
-                      <div className="min-w-0">
-                        <div className="text-xs text-gray-500 mb-1">Nationality</div>
-                        <div className="text-xs font-medium text-gray-900 truncate">{selectedInstructor.nationality}</div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Phone Number</label>
+                        <p className="text-base font-medium text-gray-900">{selectedInstructor.phone || 'Not provided'}</p>
                       </div>
-                      <div className="min-w-0">
-                        <div className="text-xs text-gray-500 mb-1">Role</div>
-                        <div className="text-xs font-medium text-gray-900 truncate">{selectedInstructor.role}</div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Accompanied Status</label>
+                        <p className="text-base font-medium text-gray-900">{selectedInstructor.accompaniedStatus}</p>
                       </div>
-                      <div className="min-w-0">
-                        <div className="text-xs text-gray-500 mb-1">Phone</div>
-                        <div className="text-xs font-medium text-gray-900 truncate">{selectedInstructor.phone || 'N/A'}</div>
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-xs text-gray-500 mb-1">Compound</div>
-                        <div className="text-xs font-medium text-gray-900 truncate">{selectedInstructor.compound}</div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Compound</label>
+                        <p className="text-base font-medium text-gray-900">{selectedInstructor.compound}</p>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">School</label>
+                        <p className="text-base font-medium text-gray-900">{getSchoolName(selectedInstructor.schoolId)}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Role</label>
+                        <p className="text-base font-medium text-gray-900">{selectedInstructor.role}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Credentials</label>
+                        <p className="text-base font-medium text-gray-900">{selectedInstructor.credentials}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Start Date</label>
+                        <p className="text-base font-medium text-gray-900">
+                          {selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy') : 'Not provided'}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Instructor ID</label>
+                        <p className="text-base font-medium text-gray-900">{selectedInstructor.id}</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             {/* Evaluations Tab */}
