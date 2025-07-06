@@ -149,9 +149,9 @@ const InstructorLookup = () => {
   // Get instructor school name
   const getSchoolName = (schoolId: number) => {
     const schoolMap: Record<number, string> = {
-      350: "NFS East",
-      351: "KFNA",
-      352: "NFS West"
+      349: "KFNA",
+      350: "NFS East", 
+      351: "NFS West"
     };
     return schoolMap[schoolId] || "Unknown School";
   };
@@ -454,10 +454,7 @@ const InstructorLookup = () => {
                             })() : 'Not available'}
                           </div>
                         </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-500 block">Instructor ID</label>
-                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.id}</div>
-                        </div>
+
                       </div>
                     </div>
                   </CardContent>
