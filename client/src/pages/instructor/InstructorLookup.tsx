@@ -385,56 +385,56 @@ const InstructorLookup = () => {
 
             {/* Profile Tab */}
             <TabsContent value="profile">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Instructor Profile</CardTitle>
+              <Card className="max-w-4xl mx-auto">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-center text-lg font-semibold">Instructor Profile</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-3">
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Full Name</label>
-                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.name}</p>
+                <CardContent className="pt-0">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <div className="px-2">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Full Name</label>
+                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.name}</p>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Nationality</label>
-                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.nationality}</p>
+                      <div className="px-2">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Nationality</label>
+                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.nationality}</p>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Phone Number</label>
-                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.phone || 'Not provided'}</p>
+                      <div className="px-2">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Phone Number</label>
+                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.phone || 'Not provided'}</p>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Accompanied Status</label>
-                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.accompaniedStatus}</p>
+                      <div className="px-2">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Accompanied Status</label>
+                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.accompaniedStatus}</p>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Compound</label>
-                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.compound}</p>
+                      <div className="px-2">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Compound</label>
+                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.compound}</p>
                       </div>
                     </div>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">School</label>
-                        <p className="text-base font-medium text-gray-900 break-words">{getSchoolName(selectedInstructor.schoolId)}</p>
+                    <div className="space-y-2">
+                      <div className="px-2">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">School</label>
+                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{getSchoolName(selectedInstructor.schoolId)}</p>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Role</label>
-                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.role}</p>
+                      <div className="px-2">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Role</label>
+                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.role}</p>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Credentials</label>
-                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.credentials}</p>
+                      <div className="px-2">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Credentials</label>
+                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.credentials}</p>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Start Date</label>
-                        <p className="text-base font-medium text-gray-900 break-words">
+                      <div className="px-2">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Start Date</label>
+                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">
                           {selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy') : 'Not provided'}
                         </p>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium text-gray-500">Instructor ID</label>
-                        <p className="text-base font-medium text-gray-900 break-words">{selectedInstructor.id}</p>
+                      <div className="px-2">
+                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">Instructor ID</label>
+                        <p className="text-sm font-medium text-gray-900 mt-1 truncate">{selectedInstructor.id}</p>
                       </div>
                     </div>
                   </div>
