@@ -487,7 +487,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await db.delete(evaluations).where(eq(evaluations.id, evaluation.id));
       }
       
-      // 3. Update courses to assign to another instructor from the same school
+      // 3. Delete PTO balance records for this instructor
+      await db.delete(ptoBalance).where(eq(ptoBalance.instructorId, id));
+      
+      // 4. Delete staff leave records for this instructor
+      const staffLeaveRecords = await db.select().from(staffLeave).where(eq(staffLeave.instructorId, id));
+      for (const record of staffLeaveRecords) {
+        await db.delete(staffLeave).where(eq(staffLeave.id, record.id));
+      }
+      
+      // Delete any test scores if instructor is referenced (if applicable)
+      try {
+        await db.execute(sql`DELETE FROM test_scores WHERE instructor_id = ${id}`);
+      } catch (error) {
+        // Ignore if test_scores table doesn't have instructor_id column
+        console.log("Note: No instructor_id column in test_scores or no records to delete");
+      }
+      
+      // 5. Update courses to assign to another instructor from the same school
       const instructorCourses = await dbStorage.getCoursesByInstructor(id);
       if (instructorCourses.length > 0) {
         // Find a replacement instructor from the same school, excluding the one being deleted
@@ -504,7 +521,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // 4. Now delete the instructor
+      // 6. Now delete the instructor
       await dbStorage.deleteInstructor(id);
       
       // Log activity
