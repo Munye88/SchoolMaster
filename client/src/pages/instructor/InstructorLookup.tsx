@@ -409,10 +409,6 @@ const InstructorLookup = () => {
                           <label className="text-sm font-medium text-gray-500 block">Accompanied Status</label>
                           <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.accompaniedStatus}</div>
                         </div>
-                        <div>
-                          <label className="text-sm font-medium text-gray-500 block">Compound</label>
-                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.compound}</div>
-                        </div>
                       </div>
                       <div className="space-y-3">
                         <div>
