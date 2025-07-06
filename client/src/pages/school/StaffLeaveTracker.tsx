@@ -503,15 +503,15 @@ export default function StaffLeaveTracker() {
     const leaveType = form.watch('leaveType');
     
     if (startDate && endDate) {
-      const businessDays = calculateBusinessDays(startDate, endDate);
+      const totalDays = calculateDays(startDate, endDate);
       
       if (leaveType === 'R&R') {
-        // For R&R leave type, the R&R days should be the business days between start and end
-        form.setValue('rrdays', businessDays);
+        // For R&R leave type, the R&R days should be the total days between start and end
+        form.setValue('rrdays', totalDays);
         form.setValue('ptodays', 0); // Reset PTO days to 0
       } else {
-        // For other leave types, update PTO days based on business days
-        form.setValue('ptodays', businessDays);
+        // For other leave types, update PTO days based on total days
+        form.setValue('ptodays', totalDays);
         form.setValue('rrdays', 0); // Reset R&R days to 0
       }
     }
@@ -524,15 +524,15 @@ export default function StaffLeaveTracker() {
     const leaveType = editForm.watch('leaveType');
     
     if (startDate && endDate) {
-      const businessDays = calculateBusinessDays(startDate, endDate);
+      const totalDays = calculateDays(startDate, endDate);
       
       if (leaveType === 'R&R') {
-        // For R&R leave type, the R&R days should be the business days between start and end
-        editForm.setValue('rrdays', businessDays);
+        // For R&R leave type, the R&R days should be the total days between start and end
+        editForm.setValue('rrdays', totalDays);
         editForm.setValue('ptodays', 0); // Reset PTO days to 0
       } else {
-        // For other leave types, update PTO days based on business days
-        editForm.setValue('ptodays', businessDays);
+        // For other leave types, update PTO days based on total days
+        editForm.setValue('ptodays', totalDays);
         editForm.setValue('rrdays', 0); // Reset R&R days to 0
       }
     }
@@ -1048,7 +1048,13 @@ export default function StaffLeaveTracker() {
                     </TableCell>
                     <TableCell className="border-t border-b border-gray-200">
                       <div className="text-sm">
-                        {calculateBusinessDays(leave.startDate, leave.endDate)} days
+                        {leave.leaveType === 'PTO' ? (
+                          <>{leave.ptodays} days</>
+                        ) : leave.leaveType === 'R&R' ? (
+                          <>{leave.rrdays} days</>
+                        ) : (
+                          <>{leave.ptodays} days</>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell className="border-t border-b border-gray-200">
