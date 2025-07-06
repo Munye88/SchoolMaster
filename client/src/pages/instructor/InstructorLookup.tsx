@@ -394,48 +394,48 @@ const InstructorLookup = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-3">
                         <div>
-                          <label className="text-xs font-medium text-gray-500 block">Full Name</label>
-                          <div className="text-sm font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.name}</div>
+                          <label className="text-sm font-medium text-gray-500 block">Full Name</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.name}</div>
                         </div>
                         <div>
-                          <label className="text-xs font-medium text-gray-500 block">Nationality</label>
-                          <div className="text-sm font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.nationality}</div>
+                          <label className="text-sm font-medium text-gray-500 block">Nationality</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.nationality}</div>
                         </div>
                         <div>
-                          <label className="text-xs font-medium text-gray-500 block">Phone Number</label>
-                          <div className="text-sm font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.phone || 'Not provided'}</div>
+                          <label className="text-sm font-medium text-gray-500 block">Phone Number</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.phone || 'Not provided'}</div>
                         </div>
                         <div>
-                          <label className="text-xs font-medium text-gray-500 block">Accompanied Status</label>
-                          <div className="text-sm font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.accompaniedStatus}</div>
+                          <label className="text-sm font-medium text-gray-500 block">Accompanied Status</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.accompaniedStatus}</div>
                         </div>
                         <div>
-                          <label className="text-xs font-medium text-gray-500 block">Compound</label>
-                          <div className="text-sm font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.compound}</div>
+                          <label className="text-sm font-medium text-gray-500 block">Compound</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.compound}</div>
                         </div>
                       </div>
                       <div className="space-y-3">
                         <div>
-                          <label className="text-xs font-medium text-gray-500 block">School</label>
-                          <div className="text-sm font-medium text-gray-900 break-words hyphens-auto">{getSchoolName(selectedInstructor.schoolId)}</div>
+                          <label className="text-sm font-medium text-gray-500 block">School</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{getSchoolName(selectedInstructor.schoolId)}</div>
                         </div>
                         <div>
-                          <label className="text-xs font-medium text-gray-500 block">Role</label>
-                          <div className="text-sm font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.role}</div>
+                          <label className="text-sm font-medium text-gray-500 block">Role</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.role}</div>
                         </div>
                         <div>
-                          <label className="text-xs font-medium text-gray-500 block">Credentials</label>
-                          <div className="text-sm font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.credentials}</div>
+                          <label className="text-sm font-medium text-gray-500 block">Credentials</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.credentials}</div>
                         </div>
                         <div>
-                          <label className="text-xs font-medium text-gray-500 block">Start Date</label>
-                          <div className="text-sm font-medium text-gray-900 break-words hyphens-auto">
+                          <label className="text-sm font-medium text-gray-500 block">Start Date</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">
                             {selectedInstructor.startDate ? format(new Date(selectedInstructor.startDate), 'MMMM dd, yyyy') : 'Not provided'}
                           </div>
                         </div>
                         <div>
-                          <label className="text-xs font-medium text-gray-500 block">Instructor ID</label>
-                          <div className="text-sm font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.id}</div>
+                          <label className="text-sm font-medium text-gray-500 block">Instructor ID</label>
+                          <div className="text-base font-medium text-gray-900 break-words hyphens-auto">{selectedInstructor.id}</div>
                         </div>
                       </div>
                     </div>
