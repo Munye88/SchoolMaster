@@ -57,23 +57,15 @@ export const insertInstructorSchema = createInsertSchema(instructors).pick({
   accompaniedStatus: true,
   imageUrl: true,
   role: true,
-  email: true,
   dateOfBirth: true,
-  passportNumber: true,
   emergencyContact: true,
   emergencyPhone: true,
   contractEndDate: true,
-  salary: true,
   department: true,
   status: true,
   notes: true,
-  emergencyContactName: true,
-  emergencyContactPhone: true,
   employmentStatus: true,
   hireDate: true,
-}).extend({
-  email: z.string().email("Invalid email format").optional(),
-  salary: z.number().positive("Salary must be positive").optional(),
 });
 
 export const courses = pgTable("courses", {
