@@ -60,6 +60,12 @@ export default function SchoolHome() {
   const schoolAttendance = attendance.filter(a => 
     schoolInstructors.some(instructor => instructor.id === a.instructorId)
   );
+  
+  // Filter attendance for current month only
+  const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
+  const currentMonthAttendance = schoolAttendance.filter(a => 
+    a.date && a.date.startsWith(currentMonth)
+  );
 
   const getSchoolColor = () => {
     if (school.name.includes("KFNA")) return "from-[#0A2463] to-[#1E40AF]";
@@ -179,9 +185,9 @@ export default function SchoolHome() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold" style={{ color: getSchoolAccent() }}>
-              {schoolAttendance.filter(a => a.status === "present").length}
+              {currentMonthAttendance.filter(a => a.status === "present").length}
             </div>
-            <p className="text-xs text-muted-foreground">Present today</p>
+            <p className="text-xs text-muted-foreground">Present this month</p>
           </CardContent>
         </Card>
       </div>
@@ -222,7 +228,7 @@ export default function SchoolHome() {
           <div className="text-sm text-gray-600">
             <p className="mb-2">• {schoolInstructors.length} instructors currently assigned</p>
             <p className="mb-2">• {schoolCourses.length} total courses scheduled</p>
-            <p className="mb-2">• {schoolAttendance.length} attendance records this month</p>
+            <p className="mb-2">• {currentMonthAttendance.length} attendance records this month</p>
             <p>• Last updated: {new Date().toLocaleDateString()}</p>
           </div>
         </CardContent>
