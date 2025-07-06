@@ -59,13 +59,10 @@ const instructorFormSchema = z.object({
   phone: z.string().min(6, "Phone must be at least 6 characters"),
   status: z.string().min(2, "Status must be at least 2 characters"), // Front-end name for 'accompaniedStatus'
   imageUrl: z.string().optional(),
-  email: z.string().email("Invalid email format").optional().or(z.literal("")),
   dateOfBirth: z.string().optional().or(z.literal("")),
-  passportNumber: z.string().optional().or(z.literal("")),
   emergencyContact: z.string().optional().or(z.literal("")),
   emergencyPhone: z.string().optional().or(z.literal("")),
   contractEndDate: z.string().optional().or(z.literal("")),
-  salary: z.string().optional().or(z.literal("")),
   department: z.string().optional().or(z.literal("")),
   instructorStatus: z.string().optional().or(z.literal("")), // Front-end name for 'status'
   notes: z.string().optional().or(z.literal("")),
