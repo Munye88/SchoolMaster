@@ -444,7 +444,7 @@ const Dashboard = () => {
                 {/* Nationality Cards - Responsive grid with consistent display */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {/* American */}
-                  <div className="shadow-sm bg-[#EEF5FD] p-3 border border-blue-200 h-16 flex items-center justify-center">
+                  <div className="shadow-sm bg-white p-3 border border-gray-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-4 border border-gray-300 flex-shrink-0 relative overflow-hidden" style={{ backgroundColor: '#B22234' }}>
@@ -463,14 +463,14 @@ const Dashboard = () => {
                           <div className="absolute top-0.5 left-1.5 text-white text-xs leading-none">★</div>
                           <div className="absolute top-1.5 left-1 text-white text-xs leading-none">★</div>
                         </div>
-                        <span className="text-sm font-medium text-blue-900">American</span>
+                        <span className="text-sm font-medium text-gray-700">American</span>
                       </div>
-                      <span className="text-lg font-bold text-blue-950">{dashboardStats.nationalityCounts.american}</span>
+                      <span className="text-lg font-bold text-gray-900">{dashboardStats.nationalityCounts.american}</span>
                     </div>
                   </div>
                   
                   {/* British */}
-                  <div className="shadow-sm bg-[#F0F9F5] p-3 border border-green-200 h-16 flex items-center justify-center">
+                  <div className="shadow-sm bg-white p-3 border border-gray-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-4 border border-gray-300 flex-shrink-0 relative overflow-hidden" style={{ backgroundColor: '#012169' }}>
@@ -491,14 +491,14 @@ const Dashboard = () => {
                           <div className="absolute top-0 left-0 w-full h-0.5 bg-red-600" style={{ top: '43%' }}></div>
                           <div className="absolute top-0 left-0 h-full w-0.5 bg-red-600" style={{ left: '43%' }}></div>
                         </div>
-                        <span className="text-sm font-medium text-green-800">British</span>
+                        <span className="text-sm font-medium text-gray-700">British</span>
                       </div>
-                      <span className="text-lg font-bold text-green-900">{dashboardStats.nationalityCounts.british}</span>
+                      <span className="text-lg font-bold text-gray-900">{dashboardStats.nationalityCounts.british}</span>
                     </div>
                   </div>
                   
                   {/* Canadian */}
-                  <div className="shadow-sm bg-[#F5F2FA] p-3 border border-purple-200 h-16 flex items-center justify-center">
+                  <div className="shadow-sm bg-white p-3 border border-gray-200 h-16 flex items-center justify-center">
                     <div className="flex items-center justify-between w-full max-w-xs mx-auto">
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-4 bg-white border border-gray-300 flex-shrink-0 relative overflow-hidden">
@@ -514,9 +514,9 @@ const Dashboard = () => {
                             </svg>
                           </div>
                         </div>
-                        <span className="text-sm font-medium text-purple-800">Canadian</span>
+                        <span className="text-sm font-medium text-gray-700">Canadian</span>
                       </div>
-                      <span className="text-lg font-bold text-purple-900">{dashboardStats.nationalityCounts.canadian}</span>
+                      <span className="text-lg font-bold text-gray-900">{dashboardStats.nationalityCounts.canadian}</span>
                     </div>
                   </div>
                 </div>
