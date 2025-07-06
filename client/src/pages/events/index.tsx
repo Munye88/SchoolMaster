@@ -673,7 +673,7 @@ export default function EventsPage() {
       {/* Add Event Dialog */}
       <Dialog open={isAddEventOpen} onOpenChange={setIsAddEventOpen}>
         <DialogContent className="sm:max-w-[550px]">
-          <DialogHeader>
+          <DialogHeader className="text-center">
             <DialogTitle>Add New Event</DialogTitle>
             <DialogDescription>
               Create a new event for your school calendar.
