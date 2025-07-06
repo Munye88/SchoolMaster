@@ -280,28 +280,29 @@ export default function ManageSchools() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {schools?.map((school) => (
-            <Card key={school.id}>
-              <CardHeader>
-                <CardTitle>{school.name}</CardTitle>
-                <CardDescription>Code: {school.code}</CardDescription>
+            <Card key={school.id} className="rounded-none">
+              <CardHeader className="text-center">
+                <CardTitle className="text-center">{school.name}</CardTitle>
+                <CardDescription className="text-center">Code: {school.code}</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="text-center">
                 <p className="text-sm text-gray-600">
                   <span className="font-medium">Location:</span> {school.location}
                 </p>
               </CardContent>
-              <CardFooter className="flex justify-end space-x-2">
+              <CardFooter className="flex justify-center space-x-2">
                 <Button 
                   variant="outline" 
                   size="icon"
                   onClick={() => handleEditSchool(school)}
+                  className="rounded-none"
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
                 <Button 
                   variant="outline" 
                   size="icon"
-                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50 rounded-none"
                   onClick={() => handleDeleteSchool(school.id)}
                 >
                   <Trash2 className="h-4 w-4" />
