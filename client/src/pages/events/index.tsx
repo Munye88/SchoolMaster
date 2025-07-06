@@ -852,8 +852,8 @@ export default function EventsPage() {
                 )}
               />
               
-              <DialogFooter>
-                <Button type="submit" disabled={createEventMutation.isPending}>
+              <DialogFooter className="flex justify-center">
+                <Button type="submit" disabled={createEventMutation.isPending} className="rounded-none">
                   {createEventMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Create Event
                 </Button>
