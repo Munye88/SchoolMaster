@@ -101,6 +101,9 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ({
   onCancel,
   isLoading
 }) => {
+  const defaultQuarter = evaluation?.quarter || 'Q1';
+  const defaultEvaluationType = evaluation?.evaluationType || (defaultQuarter === 'Q4' ? 'summative' : 'formative');
+  
   const [formData, setFormData] = useState<EvaluationFormData>({
     instructorId: evaluation?.instructorId || 0,
     evaluatorId: evaluation?.evaluatorId || undefined,
@@ -116,8 +119,8 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ({
     status: evaluation?.status || 'draft',
     followUpDate: evaluation?.followUpDate || '',
     completionDate: evaluation?.completionDate || '',
-    evaluationType: evaluation?.evaluationType || 'quarterly',
-    quarter: evaluation?.quarter || 'Q1',
+    evaluationType: defaultEvaluationType,
+    quarter: defaultQuarter,
     year: evaluation?.year || new Date().getFullYear().toString(),
     score: evaluation?.score || undefined,
     feedback: evaluation?.feedback || '',
@@ -181,10 +184,9 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ({
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
             <SelectContent className="rounded-none">
-              <SelectItem value="quarterly">Quarterly</SelectItem>
-              <SelectItem value="annual">Annual</SelectItem>
+              <SelectItem value="formative">Formative</SelectItem>
+              <SelectItem value="summative">Summative</SelectItem>
               <SelectItem value="probationary">Probationary</SelectItem>
-              <SelectItem value="special">Special Review</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -207,25 +209,26 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ({
           </Select>
         </div>
 
-        {formData.evaluationType === 'quarterly' && (
-          <div className="space-y-2">
-            <Label htmlFor="quarter">Quarter</Label>
-            <Select
-              value={formData.quarter}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, quarter: value }))}
-            >
-              <SelectTrigger className="rounded-none">
-                <SelectValue placeholder="Select quarter" />
-              </SelectTrigger>
-              <SelectContent className="rounded-none">
-                <SelectItem value="Q1">Quarter 1</SelectItem>
-                <SelectItem value="Q2">Quarter 2</SelectItem>
-                <SelectItem value="Q3">Quarter 3</SelectItem>
-                <SelectItem value="Q4">Quarter 4</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+        <div className="space-y-2">
+          <Label htmlFor="quarter">Quarter</Label>
+          <Select
+            value={formData.quarter}
+            onValueChange={(value) => {
+              const evaluationType = value === 'Q4' ? 'summative' : 'formative';
+              setFormData(prev => ({ ...prev, quarter: value, evaluationType }));
+            }}
+          >
+            <SelectTrigger className="rounded-none">
+              <SelectValue placeholder="Select quarter" />
+            </SelectTrigger>
+            <SelectContent className="rounded-none">
+              <SelectItem value="Q1">Quarter 1 (Formative)</SelectItem>
+              <SelectItem value="Q2">Quarter 2 (Formative)</SelectItem>
+              <SelectItem value="Q3">Quarter 3 (Formative)</SelectItem>
+              <SelectItem value="Q4">Quarter 4 (Summative)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
         <div className="space-y-2">
           <Label htmlFor="year">Year *</Label>
@@ -271,66 +274,7 @@ const EvaluationForm: React.FC<EvaluationFormProps> = ({
         </div>
       </div>
 
-      {/* Text Fields */}
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="strengths" className="text-center block">Strengths</Label>
-          <Textarea
-            id="strengths"
-            value={formData.strengths}
-            onChange={(e) => setFormData(prev => ({ ...prev, strengths: e.target.value }))}
-            placeholder="Describe the instructor's key strengths and achievements..."
-            className="min-h-[100px] rounded-none"
-          />
-        </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="areasForImprovement" className="text-center block">Areas for Improvement</Label>
-          <Textarea
-            id="areasForImprovement"
-            value={formData.areasForImprovement}
-            onChange={(e) => setFormData(prev => ({ ...prev, areasForImprovement: e.target.value }))}
-            placeholder="Identify areas where the instructor can improve..."
-            className="min-h-[100px] rounded-none"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="comments" className="text-center block">Additional Comments</Label>
-          <Textarea
-            id="comments"
-            value={formData.comments}
-            onChange={(e) => setFormData(prev => ({ ...prev, comments: e.target.value }))}
-            placeholder="Any additional observations or recommendations..."
-            className="min-h-[100px] rounded-none"
-          />
-        </div>
-      </div>
-
-      {/* Follow-up and Completion Dates */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="followUpDate">Follow-up Date</Label>
-          <Input
-            id="followUpDate"
-            type="date"
-            value={formData.followUpDate}
-            onChange={(e) => setFormData(prev => ({ ...prev, followUpDate: e.target.value }))}
-            className="rounded-none"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="completionDate">Completion Date</Label>
-          <Input
-            id="completionDate"
-            type="date"
-            value={formData.completionDate}
-            onChange={(e) => setFormData(prev => ({ ...prev, completionDate: e.target.value }))}
-            className="rounded-none"
-          />
-        </div>
-      </div>
 
       {/* Form Actions */}
       <div className="flex justify-end space-x-3 pt-6 border-t">
@@ -713,7 +657,13 @@ export default function StaffEvaluationsComplete() {
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex items-center justify-center">
-                            <span className="font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-none border">
+                            <span className={`font-medium px-3 py-1 rounded-none border ${
+                              evaluation.score && evaluation.score >= 85 
+                                ? 'text-green-600 bg-green-50 border-green-200' 
+                                : evaluation.score 
+                                  ? 'text-red-600 bg-red-50 border-red-200'
+                                  : 'text-gray-600 bg-gray-50 border-gray-200'
+                            }`}>
                               {evaluation.score || 'N/A'}/100
                             </span>
                           </div>
@@ -838,35 +788,30 @@ export default function StaffEvaluationsComplete() {
               <div className="space-y-4">
                 <h4 className="font-medium text-gray-900 text-center">Evaluation Score</h4>
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-24 h-24 rounded-none bg-blue-50 border-2 border-blue-200">
-                    <span className="text-3xl font-bold text-blue-600">
+                  <div className={`inline-flex items-center justify-center w-24 h-24 rounded-none border-2 ${
+                    viewingEvaluation.score && viewingEvaluation.score >= 85 
+                      ? 'bg-green-50 border-green-200' 
+                      : viewingEvaluation.score 
+                        ? 'bg-red-50 border-red-200'
+                        : 'bg-gray-50 border-gray-200'
+                  }`}>
+                    <span className={`text-3xl font-bold ${
+                      viewingEvaluation.score && viewingEvaluation.score >= 85 
+                        ? 'text-green-600' 
+                        : viewingEvaluation.score 
+                          ? 'text-red-600'
+                          : 'text-gray-600'
+                    }`}>
                       {viewingEvaluation.score || 'N/A'}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-500 mt-2">Score out of 100</p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Score out of 100 {viewingEvaluation.score && viewingEvaluation.score < 85 && '(Below Passing)'}
+                  </p>
                 </div>
               </div>
 
-              {viewingEvaluation.strengths && (
-                <div>
-                  <Label className="text-sm font-medium text-gray-500">Strengths</Label>
-                  <p className="text-sm text-gray-900 mt-1">{viewingEvaluation.strengths}</p>
-                </div>
-              )}
 
-              {viewingEvaluation.areasForImprovement && (
-                <div>
-                  <Label className="text-sm font-medium text-gray-500">Areas for Improvement</Label>
-                  <p className="text-sm text-gray-900 mt-1">{viewingEvaluation.areasForImprovement}</p>
-                </div>
-              )}
-
-              {viewingEvaluation.comments && (
-                <div>
-                  <Label className="text-sm font-medium text-gray-500">Additional Comments</Label>
-                  <p className="text-sm text-gray-900 mt-1">{viewingEvaluation.comments}</p>
-                </div>
-              )}
             </div>
           )}
         </DialogContent>
