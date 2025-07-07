@@ -318,6 +318,7 @@ The system manages multiple interconnected entities:
 - July 7, 2025: DOCUMENT MANAGER COMPLETE RESTORATION - Fixed document upload functionality by converting from in-memory storage to database persistence with centered text styling ("Upload New Document" and "Existing Documents" headers) and perfect square UI elements throughout
 - July 7, 2025: EMPLOYEE HANDBOOK ADMINISTRATION PAGE FIXED - Fixed document lookup to use 'category' field instead of 'type', updated PDF display to use iframe instead of object tag, and corrected API endpoints to use `/api/documents/{id}/download` for proper document viewing in Administration → Employee Handbook section
 - July 7, 2025: TEXT ALIGNMENT IMPROVEMENTS - Centered titles and descriptions for both "Instructor Performance & Evaluation Policy" and "Classroom Evaluation Training Guide" sections, added padding to description text to prevent edge cutoff and improve readability
+- July 7, 2025: COURSE STATISTICS CARDS ALIGNMENT FIX - Fixed number alignment in all Course Programs statistics cards by adding flex-1 and text-center classes to prevent numbers from appearing at container edges, ensuring all statistics (Total Courses, Active Courses, Total Students, Completed Courses, Archived Courses) display centered text and numbers
 
 ## User Preferences
 

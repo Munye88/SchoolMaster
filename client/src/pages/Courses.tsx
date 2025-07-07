@@ -326,9 +326,9 @@ export default function Courses() {
             <Card className="bg-blue-50 border-none shadow-md">
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm font-medium text-blue-700">Total Courses</p>
-                    <p className="text-3xl font-bold text-blue-800">{stats.total}</p>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-blue-700 text-center">Total Courses</p>
+                    <p className="text-3xl font-bold text-blue-800 text-center">{stats.total}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
                     <BookOpen className="h-6 w-6 text-blue-600" />
@@ -340,9 +340,9 @@ export default function Courses() {
             <Card className="bg-green-50 border-none shadow-md">
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm font-medium text-green-700">Active Courses</p>
-                    <p className="text-3xl font-bold text-green-800">{stats.inProgress}</p>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-green-700 text-center">Active Courses</p>
+                    <p className="text-3xl font-bold text-green-800 text-center">{stats.inProgress}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
                     <Timer className="h-6 w-6 text-green-600" />
@@ -354,9 +354,9 @@ export default function Courses() {
             <Card className="bg-amber-50 border-none shadow-md">
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm font-medium text-amber-700">Total Students</p>
-                    <p className="text-3xl font-bold text-amber-800">{stats.totalStudents}</p>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-amber-700 text-center">Total Students</p>
+                    <p className="text-3xl font-bold text-amber-800 text-center">{stats.totalStudents}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
                     <Users className="h-6 w-6 text-amber-600" />
