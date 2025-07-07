@@ -69,11 +69,19 @@ const Administration = () => {
       setActiveDocument(document || null);
       
       // Debug logging after data is loaded
-      console.log("Administration debug - URL location:", location);
-      console.log("Administration debug - Document type:", documentType);
-      console.log("Administration debug - Mapped category:", mappedCategory);
-      console.log("Administration debug - Documents:", documents);
-      console.log("Administration debug - Active document:", document);
+      console.log("🔍 Administration Debug:");
+      console.log("URL location:", location);
+      console.log("Document type:", documentType);
+      console.log("Mapped category:", mappedCategory);
+      console.log("Documents found:", documents?.length || 0);
+      console.log("Documents:", documents);
+      console.log("Active document found:", !!document);
+      console.log("Active document:", document);
+      
+      if (!document && documents?.length > 0) {
+        console.log("❌ Document not found - checking categories:");
+        documents.forEach(doc => console.log(`- ${doc.title}: category="${doc.category}"`));
+      }
     }
   }, [documents, documentType, location]);
 
