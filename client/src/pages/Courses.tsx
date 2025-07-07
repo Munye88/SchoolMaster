@@ -368,9 +368,9 @@ export default function Courses() {
             <Card className="bg-indigo-50 border-none shadow-md">
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm font-medium text-indigo-700">Completed Courses</p>
-                    <p className="text-3xl font-bold text-indigo-800">{stats.completed}</p>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-indigo-700 text-center">Completed Courses</p>
+                    <p className="text-3xl font-bold text-indigo-800 text-center">{stats.completed}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center">
                     <CheckCircle2 className="h-6 w-6 text-indigo-600" />
@@ -382,9 +382,9 @@ export default function Courses() {
             <Card className="bg-purple-50 border-none shadow-md">
               <CardContent className="p-4">
                 <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm font-medium text-purple-700">Archived Courses</p>
-                    <p className="text-3xl font-bold text-purple-800">{stats.archived}</p>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-purple-700 text-center">Archived Courses</p>
+                    <p className="text-3xl font-bold text-purple-800 text-center">{stats.archived}</p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
                     <Archive className="h-6 w-6 text-purple-600" />
