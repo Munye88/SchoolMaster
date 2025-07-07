@@ -769,13 +769,13 @@ const InstructorLookup = () => {
                         <h3 className="text-lg font-medium mb-4">Leave History</h3>
                         <div className="border rounded-lg overflow-hidden">
                           <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
+                            <thead className="bg-slate-800">
                               <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">Leave Type</th>
-                                <th scope="col" className="px-6 py-3 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">Period</th>
-                                <th scope="col" className="px-6 py-3 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">Days</th>
-                                <th scope="col" className="px-6 py-3 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">Destination</th>
-                                <th scope="col" className="px-6 py-3 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">Status</th>
+                                <th scope="col" className="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider border-b-2 border-slate-600">Leave Type</th>
+                                <th scope="col" className="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider border-b-2 border-slate-600">Period</th>
+                                <th scope="col" className="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider border-b-2 border-slate-600">Days</th>
+                                <th scope="col" className="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider border-b-2 border-slate-600">Destination</th>
+                                <th scope="col" className="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider border-b-2 border-slate-600">Status</th>
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
