@@ -769,13 +769,13 @@ const InstructorLookup = () => {
                         <h3 className="text-lg font-medium mb-4">Leave History</h3>
                         <div className="border rounded-lg overflow-hidden">
                           <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-slate-800">
+                            <thead className="bg-gray-100">
                               <tr>
-                                <th scope="col" className="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider border-b-2 border-slate-600">Leave Type</th>
-                                <th scope="col" className="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider border-b-2 border-slate-600">Period</th>
-                                <th scope="col" className="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider border-b-2 border-slate-600">Days</th>
-                                <th scope="col" className="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider border-b-2 border-slate-600">Destination</th>
-                                <th scope="col" className="px-6 py-4 text-left text-sm font-bold text-white uppercase tracking-wider border-b-2 border-slate-600">Status</th>
+                                <th scope="col" className="px-6 py-4 text-left text-lg font-black text-black uppercase tracking-wide border-2 border-gray-300">Leave Type</th>
+                                <th scope="col" className="px-6 py-4 text-left text-lg font-black text-black uppercase tracking-wide border-2 border-gray-300">Period</th>
+                                <th scope="col" className="px-6 py-4 text-left text-lg font-black text-black uppercase tracking-wide border-2 border-gray-300">Days</th>
+                                <th scope="col" className="px-6 py-4 text-left text-lg font-black text-black uppercase tracking-wide border-2 border-gray-300">Destination</th>
+                                <th scope="col" className="px-6 py-4 text-left text-lg font-black text-black uppercase tracking-wide border-2 border-gray-300">Status</th>
                               </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
