@@ -75,6 +75,11 @@ export default function TopNavigation() {
       path: "/reports", 
       icon: BarChart2 
     },
+    { 
+      label: "Documents", 
+      path: "/documents", 
+      icon: FileText 
+    },
     {
       label: "Activity",
       icon: Activity,

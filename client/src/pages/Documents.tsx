@@ -247,45 +247,47 @@ const Documents = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {filteredDocuments.length === 0 ? (
                 <div className="col-span-full">
-                  <Card>
+                  <Card className="border-2 border-dashed border-gray-300">
                     <CardContent className="flex flex-col items-center justify-center py-12">
                       <FileText className="h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="text-lg font-medium">No documents found</h3>
+                      <h3 className="text-lg font-medium text-center">No documents found</h3>
                       <p className="text-sm text-gray-500 mt-1 text-center max-w-md">
-                        {searchQuery || typeFilter !== "all" || categoryFilter !== "all"
+                        {searchQuery || categoryFilter !== "all"
                           ? "No documents match your search criteria. Try different filters." 
-                          : "There are no documents available at the moment."}
+                          : "Loading documents..."}
                       </p>
                     </CardContent>
                   </Card>
                 </div>
               ) : (
                 filteredDocuments.map(doc => (
-                  <Card key={doc.id}>
+                  <Card key={doc.id} className="border-2 border-blue-200 bg-blue-50 hover:bg-blue-100 transition-colors">
                     <CardContent className="p-4">
                       <div className="flex flex-col items-center mb-4">
-                        <FileText className="h-10 w-10 text-red-500" />
-                        <Badge className="mt-2" variant="outline">{doc.category}</Badge>
+                        <FileText className="h-12 w-12 text-blue-600" />
+                        <Badge className="mt-2 bg-blue-100 text-blue-800 border-blue-300" variant="outline">{doc.category}</Badge>
                       </div>
-                      <h3 className="font-medium text-center truncate" title={doc.title}>{doc.title}</h3>
-                      <div className="flex justify-center items-center text-xs text-gray-500 mt-2">
+                      <h3 className="font-bold text-center text-lg text-blue-900 mb-2" title={doc.title}>{doc.title}</h3>
+                      <div className="flex justify-center items-center text-xs text-gray-600 mt-2">
                         <Calendar className="h-3 w-3 mr-1" /> {formatDate(doc.uploadDate)}
                       </div>
                       {doc.description && (
-                        <p className="text-xs text-gray-600 mt-2 text-center truncate">{doc.description}</p>
+                        <p className="text-xs text-gray-700 mt-2 text-center">{doc.description}</p>
                       )}
                     </CardContent>
-                    <CardFooter className="flex justify-between p-4 pt-0 border-t border-gray-100">
+                    <CardFooter className="flex justify-between p-4 pt-0 border-t border-blue-200">
                       <Button 
-                        variant="ghost" 
+                        variant="outline" 
                         size="sm"
+                        className="bg-blue-600 text-white hover:bg-blue-700 border-blue-600"
                         onClick={() => window.open(`/api/documents/${doc.id}/download`, '_blank')}
                       >
                         <Eye className="h-4 w-4 mr-1" /> View
                       </Button>
                       <Button 
-                        variant="ghost" 
+                        variant="outline" 
                         size="sm"
+                        className="bg-green-600 text-white hover:bg-green-700 border-green-600"
                         onClick={() => window.open(`/api/documents/${doc.id}/download`, '_blank')}
                       >
                         <Download className="h-4 w-4 mr-1" /> Download
