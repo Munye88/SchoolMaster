@@ -1723,27 +1723,6 @@ export default function StaffLeaveTracker() {
               
               <FormField
                 control={editForm.control}
-                name="employeeId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Employee ID</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter employee ID"
-                        {...field}
-                        value={field.value || ''}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Enter the instructor's employee ID
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={editForm.control}
                 name="attachmentUrl"
                 render={({ field }) => {
                   const fileInputRef = useRef<HTMLInputElement>(null);
