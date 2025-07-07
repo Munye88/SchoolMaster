@@ -267,6 +267,10 @@ function Router() {
             path="/schools/:schoolCode/staff-counseling"
             component={StaffCounseling}
           />
+          <ProtectedRoute
+            path="/schools/:schoolCode/documents"
+            component={DocumentManagement}
+          />
 
           {/* School home pages - must come after all specific routes */}
           <ProtectedRoute
