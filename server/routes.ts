@@ -1348,11 +1348,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const instructors = await dbStorage.getInstructorsBySchool(school.id);
             const courses = await dbStorage.getCoursesBySchool(school.id);
             
-            console.log(`🏫 ${school.name} - Instructors: ${instructors.length}, Courses: ${courses.length}`);
-            console.log(`📈 ${school.name} - Course student counts:`, courses.map(c => `${c.name}: ${c.studentCount}`));
+            // Calculate total students across ACTIVE courses only for this school
+            const activeCourses = courses.filter(course => {
+              // Use same logic as frontend - check if course is actually active based on dates
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              
+              // Skip courses without proper date data
+              if (!course.startDate || !course.endDate) {
+                return false;
+              }
+              
+              try {
+                const startDate = new Date(course.startDate);
+                const endDate = new Date(course.endDate);
+                
+                // Validate dates
+                if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                  return false;
+                }
+                
+                startDate.setHours(0, 0, 0, 0);
+                endDate.setHours(0, 0, 0, 0);
+                
+                const todayTime = today.getTime();
+                const startTime = startDate.getTime();
+                const endTime = endDate.getTime();
+                
+                // Course is active if today is between start and end dates
+                const isActive = todayTime >= startTime && todayTime <= endTime;
+                
+                return isActive;
+              } catch (error) {
+                console.error(`Error checking course dates for ${course.name}:`, error);
+                return false;
+              }
+            });
+            const totalStudents = activeCourses.reduce((acc, course) => acc + (course.studentCount || 0), 0);
             
-            // Calculate total students across all courses for this school
-            const totalStudents = courses.reduce((acc, course) => acc + (course.studentCount || 0), 0);
+            console.log(`🏫 ${school.name} - Instructors: ${instructors.length}, Total Courses: ${courses.length}`);
+            console.log(`📈 ${school.name} - All courses:`, courses.map(c => `${c.name} (${c.status}): ${c.studentCount} [${c.startDate} - ${c.endDate}]`));
+            console.log(`✅ ${school.name} - Active courses only:`, activeCourses.map(c => `${c.name}: ${c.studentCount}`));
+            console.log(`🔍 ${school.name} - Active vs Total: ${activeCourses.length}/${courses.length} courses, ${totalStudents} active students`);
             
             console.log(`👥 ${school.name} - Total students: ${totalStudents}`);
             
