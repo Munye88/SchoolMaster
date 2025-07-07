@@ -94,6 +94,9 @@ const Administration = () => {
   
   const isClassroomEvaluation = documentType === "classroom-evaluation";
   const classroomEvaluationPdfUrl = "/documents/classroom-evaluation-guide.pdf";
+  
+  const isEmployeeHandbook = documentType === "employee-handbook";
+  const employeeHandbookPdfUrl = "/api/documents/570/download";
 
   if (isLoading) {
     return (
@@ -454,6 +457,52 @@ const Administration = () => {
 
   // Render Instructor Evaluation Guideline page
   // Special case for Instructor Performance & Evaluation Policy
+  if (isEmployeeHandbook) {
+    return (
+      <div className="flex-1 overflow-auto p-6 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-[#0A2463] text-center">
+                SAMS Employee Handbook
+              </h1>
+              <p className="text-gray-600 mt-1 text-center">
+                Comprehensive handbook containing policies, procedures, and expectations for all Aviation English Language Training (ELT) employees
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <a
+                href={employeeHandbookPdfUrl}
+                download="SAMS-Employee-Handbook.pdf"
+                className="inline-flex items-center px-4 py-2 bg-[#0A2463] text-white rounded-none hover:bg-blue-800 transition-colors"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download Handbook
+              </a>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-none shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-6 border-b border-gray-200">
+              <p className="text-gray-700 text-center">
+                This handbook contains important information about policies, procedures, and expectations for all 
+                Aviation English Language Training (ELT) employees. All staff members should thoroughly review this 
+                document. For any questions, please contact the administration.
+              </p>
+            </div>
+            <div className="aspect-auto h-[800px]">
+              <iframe 
+                src={employeeHandbookPdfUrl} 
+                className="w-full h-full border-0" 
+                title="SAMS Employee Handbook"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (isInstructorPerformancePolicy) {
     return (
       <div className="flex-1 overflow-auto p-6 bg-gray-50">
