@@ -54,7 +54,7 @@ const Administration = () => {
   // Find active document based on document type
   useEffect(() => {
     if (documents && documentType) {
-      // Map document type from URL to document type in database
+      // Map document type from URL to document category in database
       const documentTypeMap: Record<string, string> = {
         "company-policy": "policy",
         "evaluation-guideline": "evaluation",
@@ -64,8 +64,8 @@ const Administration = () => {
         "instructor-performance-policy": "instructor-policy"
       };
       
-      const mappedType = documentTypeMap[documentType];
-      const document = documents?.find(doc => doc.type === mappedType);
+      const mappedCategory = documentTypeMap[documentType];
+      const document = documents?.find(doc => doc.category === mappedCategory);
       setActiveDocument(document || null);
     }
   }, [documents, documentType]);
@@ -596,7 +596,7 @@ const Administration = () => {
                 <div className="space-y-4">
                   <div className="aspect-video rounded-md overflow-hidden bg-gray-100 border border-gray-200">
                     <object
-                      data={activeDocument.fileUrl}
+                      data={`/api/documents/${activeDocument.id}/download`}
                       type="application/pdf"
                       className="w-full h-full"
                     >
@@ -604,7 +604,7 @@ const Administration = () => {
                         <div>
                           <p className="mb-4 text-gray-600">Unable to display PDF document.</p>
                           <a 
-                            href={activeDocument.fileUrl}
+                            href={`/api/documents/${activeDocument.id}/download`}
                             className="text-blue-600 hover:underline"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -618,8 +618,8 @@ const Administration = () => {
                   
                   <div className="flex justify-end">
                     <a 
-                      href={activeDocument.fileUrl}
-                      download="SAMS_Employee_Handbook.pdf"
+                      href={`/api/documents/${activeDocument.id}/download`}
+                      download={activeDocument.originalName || activeDocument.title}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center rounded-md bg-[#0A2463] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
