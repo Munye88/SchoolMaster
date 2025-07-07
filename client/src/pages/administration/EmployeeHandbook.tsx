@@ -62,19 +62,33 @@ const EmployeeHandbook = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // Fetch documents
-  const { data: documents = [], isLoading } = useQuery<HandbookDocument[]>({
-    queryKey: ['/api/administration/documents'],
-    queryFn: async () => {
-      const response = await fetch('/api/administration/documents');
-      if (!response.ok) throw new Error('Failed to fetch documents');
-      return response.json();
+  const { data: documents = [], isLoading } = useQuery({
+    queryKey: ['/api/documents'],
+    select: (data: any[]) => {
+      // Filter for handbook category documents and map to HandbookDocument interface
+      return data
+        .filter(doc => doc.category === 'handbook')
+        .map(doc => ({
+          id: doc.id,
+          title: doc.title,
+          description: doc.description,
+          fileName: doc.filename,
+          fileUrl: `/api/documents/${doc.id}/download`,
+          fileSize: 0, // Not provided by API
+          version: "1.0", // Default version
+          category: doc.category as 'handbook' | 'policy' | 'procedure' | 'guideline',
+          status: 'active' as 'active' | 'draft' | 'archived',
+          uploadedBy: "Administrator",
+          uploadedAt: doc.uploadDate,
+          lastModified: doc.uploadDate
+        }));
     }
   });
 
   // Upload mutation
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      const response = await fetch('/api/administration/documents/upload', {
+      const response = await fetch('/api/documents/upload', {
         method: 'POST',
         body: formData,
       });
@@ -86,7 +100,7 @@ const EmployeeHandbook = () => {
         title: "Document uploaded successfully",
         description: "The document has been added to the employee handbook.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/administration/documents'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
       setUploadDialogOpen(false);
       resetForm();
     },
@@ -115,7 +129,7 @@ const EmployeeHandbook = () => {
         title: "Document updated successfully",
         description: "The document information has been updated.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/administration/documents'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
       setEditDialogOpen(false);
       setSelectedDocument(null);
     },
@@ -142,7 +156,7 @@ const EmployeeHandbook = () => {
         title: "Document deleted successfully",
         description: "The document has been removed from the system.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/administration/documents'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/documents'] });
     },
     onError: (error: Error) => {
       toast({

@@ -29,6 +29,12 @@ const Administration = () => {
     "instructor-performance-policy": "Instructor Performance & Evaluation Policy"
   };
 
+  // Debug logging
+  console.log("Administration debug - URL location:", location);
+  console.log("Administration debug - Document type:", documentType);
+  console.log("Administration debug - Documents:", documents);
+  console.log("Administration debug - Active document:", activeDocument);
+
   // Get documents
   const { data: documents, isLoading } = useQuery({
     queryKey: ['/api/documents'],
