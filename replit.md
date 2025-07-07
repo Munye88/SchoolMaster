@@ -311,6 +311,7 @@ The system manages multiple interconnected entities:
 - July 7, 2025: STUDENT COUNT ACCURACY FIX - Fixed dashboard to show correct 127 total students from active courses only instead of 431 from all courses by implementing date-based filtering in /api/statistics/schools endpoint
 - July 7, 2025: UI ALIGNMENT FIX - Centered "Edit Course" dialog title and description text for better visual presentation and consistency with application design standards
 - July 7, 2025: TEXT VISIBILITY FIX - Enhanced Leave History table headers in instructor lookup to use darker text (text-gray-900), larger font size (text-sm), and bold weight for improved readability and visibility
+- July 7, 2025: TEXT CENTERING FIXES - Fixed Leave History table headers to use text-center alignment instead of text-left, reduced font size to text-xs for better fit, and centered "Edit Leave Request" dialog title and description
 
 ## User Preferences
 

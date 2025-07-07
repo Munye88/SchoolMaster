@@ -1609,9 +1609,9 @@ export default function StaffLeaveTracker() {
       {/* Edit Leave Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Leave Request</DialogTitle>
-            <DialogDescription>
+          <DialogHeader className="text-center">
+            <DialogTitle className="text-center">Edit Leave Request</DialogTitle>
+            <DialogDescription className="text-center">
               {selectedLeave ? `Update leave request for ${selectedLeave.instructorName}` : 'Update leave request'}
             </DialogDescription>
           </DialogHeader>
