@@ -33,6 +33,8 @@ const Administration = () => {
   const { data: documents, isLoading } = useQuery({
     queryKey: ['/api/documents'],
     select: (data: Document[]) => {
+      console.log("📄 Raw documents from API:", data);
+      
       if (selectedSchool === 'all') {
         return data;
       }
@@ -65,7 +67,13 @@ const Administration = () => {
       };
       
       const mappedCategory = documentTypeMap[documentType];
-      const document = documents?.find(doc => doc.category === mappedCategory);
+      let document = documents?.find(doc => doc.category === mappedCategory);
+      
+      // If no document found and we're looking for handbook, get the first handbook document
+      if (!document && mappedCategory === "handbook") {
+        document = documents?.find(doc => doc.category === "handbook");
+      }
+      
       setActiveDocument(document || null);
       
       // Debug logging after data is loaded
