@@ -1432,7 +1432,6 @@ export default function StaffLeaveTracker() {
           <thead>
             <tr>
               <th className="py-4 text-left font-bold border-b-2 border-gray-400">Instructor</th>
-              <th className="py-4 text-left font-bold border-b-2 border-gray-400">Employee ID</th>
               <th className="py-4 text-left font-bold border-b-2 border-gray-400">Leave Type</th>
               <th className="py-4 text-center font-bold border-b-2 border-gray-400">PTO</th>
               <th className="py-4 text-center font-bold border-b-2 border-gray-400">R&R</th>
@@ -1446,7 +1445,6 @@ export default function StaffLeaveTracker() {
             {schoolLeaveRecords.map((leave, index) => (
               <tr key={leave.id} className={index % 2 === 0 ? 'bg-gray-50' : ''}>
                 <td className="py-4 px-2 border-b border-gray-200">{leave.instructorName}</td>
-                <td className="py-4 px-2 border-b border-gray-200">{leave.employeeId || `INST-${leave.instructorId.toString().padStart(4, '0')}`}</td>
                 <td className="py-4 px-2 border-b border-gray-200">{leave.leaveType || 'PTO'}</td>
                 <td className="py-4 px-2 border-b border-gray-200 text-center">{leave.ptodays}</td>
                 <td className="py-4 px-2 border-b border-gray-200 text-center">{leave.rrdays}</td>
@@ -1476,15 +1474,11 @@ export default function StaffLeaveTracker() {
           
           {selectedLeave && (
             <div className="py-4 leave-details" id="leave-details-print">
-              {/* Instructor and ID Card */}
+              {/* Instructor Card */}
               <div className="bg-gray-50 border border-gray-200 rounded-md p-6 mb-6 instructor-card">
-                <div className="mb-3">
+                <div>
                   <h4 className="text-base font-medium mb-1">Instructor</h4>
                   <p className="text-lg font-bold instructor-name">{selectedLeave.instructorName}</p>
-                </div>
-                <div>
-                  <h4 className="text-base font-medium mb-1">Employee ID</h4>
-                  <p className="text-base">{selectedLeave.employeeId || `INST-${selectedLeave.instructorId.toString().padStart(4, '0')}`}</p>
                 </div>
               </div>
               
