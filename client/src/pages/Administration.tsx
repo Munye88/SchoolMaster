@@ -587,33 +587,32 @@ const Administration = () => {
                 {activeDocument.title}
               </CardTitle>
               <CardDescription>
-                {`Document type: ${activeDocument.type}`}<br />
+                {`Document type: ${activeDocument.category || 'handbook'}`}<br />
                 {`Upload date: ${new Date(activeDocument.uploadDate).toLocaleDateString()}`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               {documentType === "employee-handbook" ? (
                 <div className="space-y-4">
-                  <div className="aspect-video rounded-md overflow-hidden bg-gray-100 border border-gray-200">
-                    <object
-                      data={`/api/documents/${activeDocument.id}/download`}
-                      type="application/pdf"
-                      className="w-full h-full"
+                  <div className="aspect-auto h-[600px] rounded-md overflow-hidden bg-gray-100 border border-gray-200">
+                    <iframe
+                      src={`/api/documents/${activeDocument.id}/download`}
+                      className="w-full h-full border-0"
+                      title="SAMS Employee Handbook"
+                    />
+                  </div>
+                  <div className="flex items-center justify-center p-4 bg-blue-50 rounded-md border border-blue-200">
+                    <p className="text-sm text-gray-600 mr-4">
+                      If the PDF doesn't display above, you can:
+                    </p>
+                    <a 
+                      href={`/api/documents/${activeDocument.id}/download`}
+                      className="text-blue-600 hover:underline font-medium"
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
-                      <div className="flex items-center justify-center h-full p-6 text-center">
-                        <div>
-                          <p className="mb-4 text-gray-600">Unable to display PDF document.</p>
-                          <a 
-                            href={`/api/documents/${activeDocument.id}/download`}
-                            className="text-blue-600 hover:underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            Click here to open the PDF
-                          </a>
-                        </div>
-                      </div>
-                    </object>
+                      Open PDF in new tab
+                    </a>
                   </div>
                   
                   <div className="flex justify-end">

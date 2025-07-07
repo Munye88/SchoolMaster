@@ -316,6 +316,7 @@ The system manages multiple interconnected entities:
 - July 7, 2025: DIALOG CENTERING - Centered "Edit Student Group" dialog title and description in ManageStudents component for consistent professional appearance
 - July 7, 2025: COURSE STATUS CORRECTION - Fixed courses showing incorrect "In Progress" status when past end date - updated KFNA Cadets (end 2025-06-15) and NFS East Refresher (end 2025-05-22) to "Completed" status across all schools
 - July 7, 2025: DOCUMENT MANAGER COMPLETE RESTORATION - Fixed document upload functionality by converting from in-memory storage to database persistence with centered text styling ("Upload New Document" and "Existing Documents" headers) and perfect square UI elements throughout
+- July 7, 2025: EMPLOYEE HANDBOOK ADMINISTRATION PAGE FIXED - Fixed document lookup to use 'category' field instead of 'type', updated PDF display to use iframe instead of object tag, and corrected API endpoints to use `/api/documents/{id}/download` for proper document viewing in Administration → Employee Handbook section
 
 ## User Preferences
 
