@@ -314,6 +314,7 @@ The system manages multiple interconnected entities:
 - July 7, 2025: TEXT CENTERING FIXES - Fixed Leave History table headers to use text-center alignment instead of text-left, reduced font size to text-xs for better fit, and centered "Edit Leave Request" dialog title and description
 - July 7, 2025: EMPLOYEE ID REMOVAL - Completely removed Employee ID field from both Edit Leave Request and View Leave Request dialogs across all three schools (KFNA, NFS East, NFS West), including print versions
 - July 7, 2025: DIALOG CENTERING - Centered "Edit Student Group" dialog title and description in ManageStudents component for consistent professional appearance
+- July 7, 2025: COURSE STATUS CORRECTION - Fixed courses showing incorrect "In Progress" status when past end date - updated KFNA Cadets (end 2025-06-15) and NFS East Refresher (end 2025-05-22) to "Completed" status across all schools
 
 ## User Preferences
 
