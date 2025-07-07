@@ -509,10 +509,10 @@ const Administration = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent text-center">
                 Classroom Evaluation Training Guide
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 mt-1 text-center">
                 Comprehensive training guide for classroom evaluation procedures and standards
               </p>
             </div>
@@ -530,7 +530,7 @@ const Administration = () => {
           
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="p-6 border-b border-gray-200">
-              <p className="text-gray-700">
+              <p className="text-gray-700 text-center px-4">
                 This document provides detailed guidance for evaluating classroom instruction, outlining standards, 
                 procedures, and best practices for conducting effective classroom observations and evaluations.
                 Please review this document to understand the evaluation criteria and process.
