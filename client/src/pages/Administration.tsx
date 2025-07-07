@@ -117,7 +117,7 @@ const Administration = () => {
         <div className="space-y-6">
           <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
             <h3 className="text-xl font-semibold text-blue-800 mb-3">Purpose of Instructor Evaluation</h3>
-            <p className="text-gray-700 mb-4">
+            <p className="text-gray-700 mb-4 px-2">
               Evaluating ELT instructors is an ongoing process designed to enhance the quality of instruction. 
               As an instructor, it is important to view each evaluation as an opportunity for growth, 
               receiving constructive feedback that highlights strengths and areas of improvement.
@@ -442,7 +442,7 @@ const Administration = () => {
               <Info className="h-4 w-4 mr-2 text-blue-600" />
               About the Instructor Evaluation Guideline
             </h3>
-            <p className="text-gray-700 text-sm">
+            <p className="text-gray-700 text-sm px-2">
               This guideline provides a comprehensive framework for evaluating ELT instructors, with an emphasis on 
               continuous improvement and professional development. The document covers four key evaluation areas: 
               Introduction, Presentation, Instructor-Student Interaction, and Summary. It offers practical examples 
@@ -555,10 +555,10 @@ const Administration = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent text-center">
                 Instructor Evaluation Guideline
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 mt-1 text-center">
                 A comprehensive guide for evaluating ELT instructors and enhancing teaching quality
               </p>
             </div>
