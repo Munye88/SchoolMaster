@@ -30,6 +30,7 @@ import StaffManagement from "./pages/school/StaffManagement";
 import SchoolBookInventory from "./pages/school/BookInventory";
 import StaffLeaveTracker from "./pages/school/StaffLeaveTracker";
 import StaffCounseling from "./pages/school/StaffCounseling";
+import DocumentManagement from "./pages/school/DocumentManagement";
 import BookOrder from "./pages/dli/BookOrder";
 import AlcptOrder from "./pages/dli/AlcptOrder";
 import AnswerSheets from "./pages/dli/AnswerSheets";
