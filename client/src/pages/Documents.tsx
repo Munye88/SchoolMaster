@@ -17,20 +17,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import { useQuery } from "@tanstack/react-query";
 
-// Mock document data
+// Real document data interface
 interface Document {
   id: number;
   title: string;
-  type: string;
-  schoolId: number | null;
-  uploadDate: Date;
-  fileUrl: string;
-  fileSize: string;
-  author: string;
-  category: string;
-  views: number;
-  status: "approved" | "pending" | "archived";
+  category: 'policy' | 'handbook' | 'guideline' | 'evaluation';
+  filename: string;
+  originalName: string;
+  uploadDate: string;
+  description?: string;
 }
 
 const Documents = () => {
@@ -40,129 +37,28 @@ const Documents = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   
-  // Mock documents data
-  const mockDocuments: Document[] = [
-    {
-      id: 1,
-      title: "Course Syllabus - Aviation",
-      type: "PDF",
-      schoolId: 1,
-      uploadDate: new Date("2024-03-01"),
-      fileUrl: "#",
-      fileSize: "1.2 MB",
-      author: "Admin",
-      category: "Syllabus",
-      views: 45,
-      status: "approved"
-    },
-    {
-      id: 2,
-      title: "Student Handbook 2024",
-      type: "PDF",
-      schoolId: null, // Applies to all schools
-      uploadDate: new Date("2024-01-15"),
-      fileUrl: "#",
-      fileSize: "3.5 MB",
-      author: "Admin",
-      category: "Handbook",
-      views: 124,
-      status: "approved"
-    },
-    {
-      id: 3,
-      title: "Instructor Evaluation Form",
-      type: "DOCX",
-      schoolId: null,
-      uploadDate: new Date("2023-12-10"),
-      fileUrl: "#",
-      fileSize: "580 KB",
-      author: "HR Department",
-      category: "Form",
-      views: 67,
-      status: "approved"
-    },
-    {
-      id: 4,
-      title: "Technical Training Material",
-      type: "ZIP",
-      schoolId: 3,
-      uploadDate: new Date("2024-02-25"),
-      fileUrl: "#",
-      fileSize: "15.2 MB",
-      author: "Technical Dept",
-      category: "Training",
-      views: 38,
-      status: "approved"
-    },
-    {
-      id: 5,
-      title: "Language Assessment Guide",
-      type: "PDF",
-      schoolId: 2,
-      uploadDate: new Date("2024-02-14"),
-      fileUrl: "#",
-      fileSize: "2.1 MB",
-      author: "Language Dept",
-      category: "Assessment",
-      views: 93,
-      status: "approved"
-    },
-    {
-      id: 6,
-      title: "School Calendar 2024",
-      type: "PDF",
-      schoolId: null,
-      uploadDate: new Date("2024-01-05"),
-      fileUrl: "#",
-      fileSize: "1.8 MB",
-      author: "Admin",
-      category: "Calendar",
-      views: 215,
-      status: "approved"
-    },
-    {
-      id: 7,
-      title: "Equipment Maintenance Manual",
-      type: "PDF",
-      schoolId: 1,
-      uploadDate: new Date("2023-11-20"),
-      fileUrl: "#",
-      fileSize: "4.7 MB",
-      author: "Maintenance",
-      category: "Manual",
-      views: 41,
-      status: "approved"
-    },
-    {
-      id: 8,
-      title: "Graduation Ceremony Guidelines",
-      type: "DOCX",
-      schoolId: null,
-      uploadDate: new Date("2024-03-10"),
-      fileUrl: "#",
-      fileSize: "720 KB",
-      author: "Events Committee",
-      category: "Event",
-      views: 27,
-      status: "pending"
+  // Fetch real documents from API
+  const { data: documents = [], isLoading } = useQuery<Document[]>({
+    queryKey: ['/api/documents'],
+    queryFn: async () => {
+      const response = await fetch('/api/documents');
+      if (!response.ok) throw new Error('Failed to fetch documents');
+      return response.json();
     }
-  ];
+  });
   
   // Filter documents
-  const filteredDocuments = mockDocuments.filter(doc => 
-    (selectedSchool ? (doc.schoolId === currentSchool?.id || doc.schoolId === null) : true) &&
+  const filteredDocuments = documents.filter(doc => 
     doc.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    (typeFilter === "all" || doc.type === typeFilter) &&
     (categoryFilter === "all" || doc.category === categoryFilter)
   );
   
-  // Get unique document types and categories for filters
-  const uniqueTypes = Array.from(new Set(mockDocuments.map(doc => doc.type)));
-  const uniqueCategories = Array.from(new Set(mockDocuments.map(doc => doc.category)));
+  // Get unique categories for filters
+  const uniqueCategories = Array.from(new Set(documents.map(doc => doc.category)));
   
   // Format date helper
-  const formatDate = (date: Date) => {
-    return format(new Date(date), "MMM dd, yyyy");
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), "MMM dd, yyyy");
   };
   
   // Get icon based on document type
@@ -186,6 +82,19 @@ const Documents = () => {
     // This would be implemented with document upload functionality
     alert("Document upload functionality would be implemented here.");
   };
+
+  if (isLoading) {
+    return (
+      <main className="flex-1 overflow-y-auto py-6 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p>Loading documents...</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex-1 overflow-y-auto py-6 px-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -355,25 +264,30 @@ const Documents = () => {
                   <Card key={doc.id}>
                     <CardContent className="p-4">
                       <div className="flex flex-col items-center mb-4">
-                        {getDocumentIcon(doc.type)}
-                        <Badge className="mt-2" variant="outline">{doc.type}</Badge>
+                        <FileText className="h-10 w-10 text-red-500" />
+                        <Badge className="mt-2" variant="outline">{doc.category}</Badge>
                       </div>
                       <h3 className="font-medium text-center truncate" title={doc.title}>{doc.title}</h3>
                       <div className="flex justify-center items-center text-xs text-gray-500 mt-2">
                         <Calendar className="h-3 w-3 mr-1" /> {formatDate(doc.uploadDate)}
                       </div>
-                      <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
-                        <span>{doc.fileSize}</span>
-                        <span className="flex items-center">
-                          <Eye className="h-3 w-3 mr-1" /> {doc.views}
-                        </span>
-                      </div>
+                      {doc.description && (
+                        <p className="text-xs text-gray-600 mt-2 text-center truncate">{doc.description}</p>
+                      )}
                     </CardContent>
                     <CardFooter className="flex justify-between p-4 pt-0 border-t border-gray-100">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => window.open(`/api/documents/${doc.id}/download`, '_blank')}
+                      >
                         <Eye className="h-4 w-4 mr-1" /> View
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => window.open(`/api/documents/${doc.id}/download`, '_blank')}
+                      >
                         <Download className="h-4 w-4 mr-1" /> Download
                       </Button>
                     </CardFooter>
@@ -390,7 +304,7 @@ const Documents = () => {
                       <TableHead className="w-[40px]">Type</TableHead>
                       <TableHead>Title</TableHead>
                       <TableHead>Category</TableHead>
-                      <TableHead>Size</TableHead>
+                      <TableHead>Filename</TableHead>
                       <TableHead>Uploaded</TableHead>
                       <TableHead>Author</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
@@ -411,42 +325,32 @@ const Documents = () => {
                       filteredDocuments.map(doc => (
                         <TableRow key={doc.id}>
                           <TableCell>
-                            {doc.type === "PDF" && <FilePen className="h-5 w-5 text-red-500" />}
-                            {doc.type === "DOCX" && <FileText className="h-5 w-5 text-blue-500" />}
-                            {doc.type === "ZIP" && <FileArchive className="h-5 w-5 text-yellow-500" />}
+                            <FileText className="h-5 w-5 text-red-500" />
                           </TableCell>
                           <TableCell className="font-medium">{doc.title}</TableCell>
-                          <TableCell>{doc.category}</TableCell>
-                          <TableCell>{doc.fileSize}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{doc.category}</Badge>
+                          </TableCell>
+                          <TableCell>{doc.filename}</TableCell>
                           <TableCell>{formatDate(doc.uploadDate)}</TableCell>
-                          <TableCell>{doc.author}</TableCell>
+                          <TableCell>Admin</TableCell>
                           <TableCell className="text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <svg width="15" height="3" viewBox="0 0 15 3" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M1.5 1.5C1.5 2.05228 1.94772 2.5 2.5 2.5C3.05228 2.5 3.5 2.05228 3.5 1.5C3.5 0.947715 3.05228 0.5 2.5 0.5C1.94772 0.5 1.5 0.947715 1.5 1.5Z" fill="currentColor"/>
-                                    <path d="M6.5 1.5C6.5 2.05228 6.94772 2.5 7.5 2.5C8.05228 2.5 8.5 2.05228 8.5 1.5C8.5 0.947715 8.05228 0.5 7.5 0.5C6.94772 0.5 6.5 0.947715 6.5 1.5Z" fill="currentColor"/>
-                                    <path d="M11.5 1.5C11.5 2.05228 11.9477 2.5 12.5 2.5C13.0523 2.5 13.5 2.05228 13.5 1.5C13.5 0.947715 13.0523 0.5 12.5 0.5C11.9477 0.5 11.5 0.947715 11.5 1.5Z" fill="currentColor"/>
-                                  </svg>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-40">
-                                <DropdownMenuItem>
-                                  <Eye className="mr-2 h-4 w-4" /> View
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <Download className="mr-2 h-4 w-4" /> Download
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                  <MessageSquare className="mr-2 h-4 w-4" /> Comment
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <ThumbsUp className="mr-2 h-4 w-4" /> Approve
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                            <div className="flex gap-2 justify-end">
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => window.open(`/api/documents/${doc.id}/download`, '_blank')}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => window.open(`/api/documents/${doc.id}/download`, '_blank')}
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))
