@@ -308,6 +308,8 @@ The system manages multiple interconnected entities:
 - July 6, 2025: FLAG DISPLAY SOLUTION - Replaced emoji flags (🇺🇸🇬🇧🇨🇦) with CSS-based flag representations to eliminate "US", "GB", "CA" text display issues
 - July 6, 2025: COMPREHENSIVE FLAG DESIGNS - Created accurate CSS representations: American flag with stars and stripes, British Union Jack with crosses, Canadian flag with maple leaf design
 - July 6, 2025: CROSS-BROWSER COMPATIBILITY - All nationality flags now use pure CSS styling instead of emoji fonts for consistent display across all browsers and systems
+- July 7, 2025: STUDENT COUNT ACCURACY FIX - Fixed dashboard to show correct 127 total students from active courses only instead of 431 from all courses by implementing date-based filtering in /api/statistics/schools endpoint
+- July 7, 2025: UI ALIGNMENT FIX - Centered "Edit Course" dialog title and description text for better visual presentation and consistency with application design standards
 
 ## User Preferences
 

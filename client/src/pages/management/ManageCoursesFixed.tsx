@@ -600,8 +600,8 @@ export default function ManageCourses() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[600px] rounded-none">
           <DialogHeader>
-            <DialogTitle>Edit Course</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-center">Edit Course</DialogTitle>
+            <DialogDescription className="text-center">
               Update the course details below
             </DialogDescription>
           </DialogHeader>
