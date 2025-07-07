@@ -116,8 +116,8 @@ const Administration = () => {
       content: (
         <div className="space-y-6">
           <div className="bg-blue-50 p-6 rounded-lg border border-blue-100">
-            <h3 className="text-xl font-semibold text-blue-800 mb-3">Purpose of Instructor Evaluation</h3>
-            <p className="text-gray-700 mb-4 px-2">
+            <h3 className="text-xl font-semibold text-blue-800 mb-3 text-center">Purpose of Instructor Evaluation</h3>
+            <p className="text-gray-700 mb-4 px-4 text-center">
               Evaluating ELT instructors is an ongoing process designed to enhance the quality of instruction. 
               As an instructor, it is important to view each evaluation as an opportunity for growth, 
               receiving constructive feedback that highlights strengths and areas of improvement.
@@ -142,7 +142,7 @@ const Administration = () => {
             </div>
           </div>
           
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Evaluation Categories</h3>
+          <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">Evaluation Categories</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Card className="border-blue-200 overflow-hidden">
               <div className="h-2 bg-blue-500 w-full"></div>
@@ -438,11 +438,11 @@ const Administration = () => {
           </div>
           
           <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
-            <h3 className="text-blue-800 font-medium mb-2 flex items-center">
+            <h3 className="text-blue-800 font-medium mb-2 flex items-center justify-center">
               <Info className="h-4 w-4 mr-2 text-blue-600" />
               About the Instructor Evaluation Guideline
             </h3>
-            <p className="text-gray-700 text-sm px-2">
+            <p className="text-gray-700 text-sm px-4 text-center">
               This guideline provides a comprehensive framework for evaluating ELT instructors, with an emphasis on 
               continuous improvement and professional development. The document covers four key evaluation areas: 
               Introduction, Presentation, Instructor-Student Interaction, and Summary. It offers practical examples 
