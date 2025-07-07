@@ -599,9 +599,9 @@ export default function ManageStudents() {
       {/* Edit Student Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Edit Student Group</DialogTitle>
-            <DialogDescription>
+          <DialogHeader className="text-center">
+            <DialogTitle className="text-center">Edit Student Group</DialogTitle>
+            <DialogDescription className="text-center">
               Update the student group information below
             </DialogDescription>
           </DialogHeader>

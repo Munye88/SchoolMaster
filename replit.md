@@ -313,6 +313,7 @@ The system manages multiple interconnected entities:
 - July 7, 2025: TEXT VISIBILITY FIX - Enhanced Leave History table headers in instructor lookup to use darker text (text-gray-900), larger font size (text-sm), and bold weight for improved readability and visibility
 - July 7, 2025: TEXT CENTERING FIXES - Fixed Leave History table headers to use text-center alignment instead of text-left, reduced font size to text-xs for better fit, and centered "Edit Leave Request" dialog title and description
 - July 7, 2025: EMPLOYEE ID REMOVAL - Completely removed Employee ID field from both Edit Leave Request and View Leave Request dialogs across all three schools (KFNA, NFS East, NFS West), including print versions
+- July 7, 2025: DIALOG CENTERING - Centered "Edit Student Group" dialog title and description in ManageStudents component for consistent professional appearance
 
 ## User Preferences
 
