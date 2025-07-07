@@ -2,6 +2,9 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { Router } from 'express';
+import { db } from './db';
+import { documents } from '@shared/schema';
+import { eq } from 'drizzle-orm';
 
 const router = Router();
 
@@ -34,80 +37,125 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
 });
 
-// In-memory storage for documents (you can replace with database)
-let documents: Array<{
-  id: number;
-  title: string;
-  category: 'policy' | 'handbook' | 'guideline' | 'evaluation';
-  filename: string;
-  originalName: string;
-  uploadDate: string;
-  description?: string;
-}> = [];
-
-let nextId = 1;
-
 // Get all documents
-router.get('/api/documents', (req, res) => {
-  res.json(documents);
+router.get('/api/documents', async (req, res) => {
+  try {
+    const allDocuments = await db.select().from(documents);
+    
+    // Transform database documents to match frontend interface
+    const transformedDocs = allDocuments.map(doc => ({
+      id: doc.id,
+      title: doc.title,
+      category: doc.type as 'policy' | 'handbook' | 'guideline' | 'evaluation',
+      filename: path.basename(doc.fileUrl),
+      originalName: doc.title,
+      uploadDate: doc.uploadDate.toISOString(),
+      description: `${doc.type} document`
+    }));
+    
+    res.json(transformedDocs);
+  } catch (error) {
+    console.error('Error fetching documents:', error);
+    res.status(500).json({ error: 'Failed to fetch documents' });
+  }
 });
 
 // Upload document
-router.post('/api/documents/upload', upload.single('file'), (req, res) => {
+router.post('/api/documents/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
 
   const { title, category, description } = req.body;
 
-  const document = {
-    id: nextId++,
-    title,
-    category,
-    filename: req.file.filename,
-    originalName: req.file.originalname,
-    uploadDate: new Date().toISOString(),
-    description
-  };
+  try {
+    // Create the file URL path
+    const fileUrl = `/uploads/documents/${req.file.filename}`;
+    
+    // Insert into database
+    const [newDocument] = await db.insert(documents).values({
+      title,
+      type: category,
+      schoolId: null, // General document not tied to specific school
+      uploadDate: new Date(),
+      fileUrl
+    }).returning();
 
-  documents.push(document);
-  res.json(document);
+    // Return document in expected format
+    const responseDoc = {
+      id: newDocument.id,
+      title: newDocument.title,
+      category: newDocument.type as 'policy' | 'handbook' | 'guideline' | 'evaluation',
+      filename: req.file.filename,
+      originalName: req.file.originalname,
+      uploadDate: newDocument.uploadDate.toISOString(),
+      description
+    };
+
+    res.json(responseDoc);
+  } catch (error) {
+    console.error('Error saving document to database:', error);
+    
+    // Clean up uploaded file if database save fails
+    const filePath = path.join('uploads/documents', req.file.filename);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    
+    res.status(500).json({ error: 'Failed to save document' });
+  }
 });
 
 // Download document
-router.get('/api/documents/:id/download', (req, res) => {
-  const doc = documents.find(d => d.id === parseInt(req.params.id));
-  if (!doc) {
-    return res.status(404).json({ error: 'Document not found' });
-  }
+router.get('/api/documents/:id/download', async (req, res) => {
+  try {
+    const docId = parseInt(req.params.id);
+    const [doc] = await db.select().from(documents).where(eq(documents.id, docId));
+    
+    if (!doc) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
 
-  const filePath = path.join('uploads/documents', doc.filename);
-  if (fs.existsSync(filePath)) {
-    res.download(filePath, doc.originalName);
-  } else {
-    res.status(404).json({ error: 'File not found' });
+    const filename = path.basename(doc.fileUrl);
+    const filePath = path.join('uploads/documents', filename);
+    
+    if (fs.existsSync(filePath)) {
+      res.download(filePath, doc.title);
+    } else {
+      res.status(404).json({ error: 'File not found' });
+    }
+  } catch (error) {
+    console.error('Error downloading document:', error);
+    res.status(500).json({ error: 'Failed to download document' });
   }
 });
 
 // Delete document
-router.delete('/api/documents/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const docIndex = documents.findIndex(d => d.id === id);
-  
-  if (docIndex === -1) {
-    return res.status(404).json({ error: 'Document not found' });
-  }
+router.delete('/api/documents/:id', async (req, res) => {
+  try {
+    const docId = parseInt(req.params.id);
+    const [doc] = await db.select().from(documents).where(eq(documents.id, docId));
+    
+    if (!doc) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
 
-  const doc = documents[docIndex];
-  const filePath = path.join('uploads/documents', doc.filename);
-  
-  // Delete file from filesystem
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
+    const filename = path.basename(doc.fileUrl);
+    const filePath = path.join('uploads/documents', filename);
+    
+    // Delete file from filesystem
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    
+    // Delete from database
+    await db.delete(documents).where(eq(documents.id, docId));
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting document:', error);
+    res.status(500).json({ error: 'Failed to delete document' });
   }
-  
-  documents.splice(docIndex, 1);
-  res.json({ success: true });
 });
 
 export default router;

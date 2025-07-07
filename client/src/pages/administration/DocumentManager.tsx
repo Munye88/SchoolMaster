@@ -126,9 +126,9 @@ export default function DocumentManager() {
       </div>
 
       {/* Upload Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Upload New Document</CardTitle>
+      <Card className="rounded-none">
+        <CardHeader className="text-center">
+          <CardTitle className="text-center">Upload New Document</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -139,6 +139,7 @@ export default function DocumentManager() {
                 type="file"
                 accept=".pdf,.doc,.docx,.xlsx,.xls"
                 onChange={handleFileSelect}
+                className="rounded-none"
               />
             </div>
             <div>
@@ -148,6 +149,7 @@ export default function DocumentManager() {
                 value={documentTitle}
                 onChange={(e) => setDocumentTitle(e.target.value)}
                 placeholder="Enter document title"
+                className="rounded-none"
               />
             </div>
           </div>
@@ -159,7 +161,7 @@ export default function DocumentManager() {
                 id="category"
                 value={documentCategory}
                 onChange={(e) => setDocumentCategory(e.target.value as Document['category'])}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                className="w-full p-2 border border-gray-300 rounded-none"
               >
                 <option value="handbook">Employee Handbook</option>
                 <option value="policy">Policy Document</option>
@@ -175,6 +177,7 @@ export default function DocumentManager() {
                 onChange={(e) => setDocumentDescription(e.target.value)}
                 placeholder="Brief description of the document"
                 rows={3}
+                className="rounded-none"
               />
             </div>
           </div>
@@ -182,7 +185,7 @@ export default function DocumentManager() {
           <Button
             onClick={handleUpload}
             disabled={!selectedFile || !documentTitle || uploadMutation.isPending}
-            className="w-full md:w-auto"
+            className="w-full md:w-auto rounded-none"
           >
             {uploadMutation.isPending ? (
               <>Uploading...</>
@@ -197,9 +200,9 @@ export default function DocumentManager() {
       </Card>
 
       {/* Documents List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Existing Documents</CardTitle>
+      <Card className="rounded-none">
+        <CardHeader className="text-center">
+          <CardTitle className="text-center">Existing Documents</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
