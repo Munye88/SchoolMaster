@@ -96,24 +96,32 @@ export function useDashboardStats(): DashboardStats {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  // Calculate student counts from courses data - this is where the real student numbers are
+  // Calculate student counts from ACTIVE courses only - exclude completed/archived courses
   useEffect(() => {
     if (courses.length > 0) {
-      const calculateStudentCountFromCourses = (schoolId?: number) => {
-        const filteredCourses = schoolId 
-          ? courses.filter(c => c.schoolId === schoolId)
-          : courses;
+      const calculateStudentCountFromActiveCourses = (schoolId?: number) => {
+        // Filter courses by school and active status
+        const filteredCourses = courses.filter(course => {
+          // First filter by school if specified
+          const matchesSchool = schoolId ? course.schoolId === schoolId : true;
+          
+          // Then filter to only include active/in-progress courses
+          const status = getCourseStatus(course, true);
+          const isActive = status === 'In Progress';
+          
+          return matchesSchool && isActive;
+        });
           
         return filteredCourses.reduce((total, course) => 
           total + (course.studentCount || 0), 0);
       };
       
-      // Update the cached counts based on course data
+      // Update the cached counts based on ACTIVE course data only
       const newStudentCounts = {
-        totalStudents: calculateStudentCountFromCourses(),
-        knfa: calculateStudentCountFromCourses(349), // School with ID 349 is KFNA
-        nfsEast: calculateStudentCountFromCourses(350),
-        nfsWest: calculateStudentCountFromCourses(351)
+        totalStudents: calculateStudentCountFromActiveCourses(),
+        knfa: calculateStudentCountFromActiveCourses(349), // School with ID 349 is KFNA
+        nfsEast: calculateStudentCountFromActiveCourses(350),
+        nfsWest: calculateStudentCountFromActiveCourses(351)
       };
       
       // Always update cache to ensure we show latest data
@@ -121,15 +129,25 @@ export function useDashboardStats(): DashboardStats {
       cacheVersion++; // Force re-render
       forceUpdate(cacheVersion); // Trigger component re-render
       
+      console.log("✅ ACTIVE COURSE STUDENT COUNTS (Excluding Completed/Archived):");
       console.log("KFNA Students:", cachedStudentCounts.knfa);
       console.log("NFS East Students:", cachedStudentCounts.nfsEast);
       console.log("NFS West Students:", cachedStudentCounts.nfsWest);
-      console.log("Total Students:", cachedStudentCounts.totalStudents);
+      console.log("Total Active Students:", cachedStudentCounts.totalStudents);
       
-      // Debug: Show the courses being used for calculation
-      console.log("Courses for KFNA (349):", courses.filter(c => c.schoolId === 349));
-      console.log("Courses for NFS East (350):", courses.filter(c => c.schoolId === 350));
-      console.log("Courses for NFS West (351):", courses.filter(c => c.schoolId === 351));
+      // Debug: Show the ACTIVE courses being used for calculation
+      console.log("Active courses for KFNA (349):", courses.filter(c => {
+        const status = getCourseStatus(c, true);
+        return c.schoolId === 349 && status === 'In Progress';
+      }));
+      console.log("Active courses for NFS East (350):", courses.filter(c => {
+        const status = getCourseStatus(c, true);
+        return c.schoolId === 350 && status === 'In Progress';
+      }));
+      console.log("Active courses for NFS West (351):", courses.filter(c => {
+        const status = getCourseStatus(c, true);
+        return c.schoolId === 351 && status === 'In Progress';
+      }));
     }
   }, [courses]);
   
