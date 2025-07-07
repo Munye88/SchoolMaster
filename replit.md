@@ -310,6 +310,7 @@ The system manages multiple interconnected entities:
 - July 6, 2025: CROSS-BROWSER COMPATIBILITY - All nationality flags now use pure CSS styling instead of emoji fonts for consistent display across all browsers and systems
 - July 7, 2025: STUDENT COUNT ACCURACY FIX - Fixed dashboard to show correct 127 total students from active courses only instead of 431 from all courses by implementing date-based filtering in /api/statistics/schools endpoint
 - July 7, 2025: UI ALIGNMENT FIX - Centered "Edit Course" dialog title and description text for better visual presentation and consistency with application design standards
+- July 7, 2025: TEXT VISIBILITY FIX - Enhanced Leave History table headers in instructor lookup to use darker text (text-gray-900), larger font size (text-sm), and bold weight for improved readability and visibility
 
 ## User Preferences
 
