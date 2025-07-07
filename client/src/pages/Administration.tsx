@@ -463,10 +463,10 @@ const Administration = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-[#0A2463]">
+              <h1 className="text-2xl font-bold text-[#0A2463] text-center">
                 Instructor Performance & Evaluation Policy
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 mt-1 text-center">
                 Guidelines for instructor performance expectations and evaluation procedures
               </p>
             </div>
@@ -484,7 +484,7 @@ const Administration = () => {
           
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="p-6 border-b border-gray-200">
-              <p className="text-gray-700">
+              <p className="text-gray-700 text-center px-4">
                 This document provides comprehensive guidelines for instructor performance expectations, evaluation
                 methods, and professional development procedures. Please review this document to understand the
                 performance standards and evaluation process at SAMS.
