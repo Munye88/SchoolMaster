@@ -29,12 +29,6 @@ const Administration = () => {
     "instructor-performance-policy": "Instructor Performance & Evaluation Policy"
   };
 
-  // Debug logging
-  console.log("Administration debug - URL location:", location);
-  console.log("Administration debug - Document type:", documentType);
-  console.log("Administration debug - Documents:", documents);
-  console.log("Administration debug - Active document:", activeDocument);
-
   // Get documents
   const { data: documents, isLoading } = useQuery({
     queryKey: ['/api/documents'],
@@ -73,8 +67,15 @@ const Administration = () => {
       const mappedCategory = documentTypeMap[documentType];
       const document = documents?.find(doc => doc.category === mappedCategory);
       setActiveDocument(document || null);
+      
+      // Debug logging after data is loaded
+      console.log("Administration debug - URL location:", location);
+      console.log("Administration debug - Document type:", documentType);
+      console.log("Administration debug - Mapped category:", mappedCategory);
+      console.log("Administration debug - Documents:", documents);
+      console.log("Administration debug - Active document:", document);
     }
-  }, [documents, documentType]);
+  }, [documents, documentType, location]);
 
   // Special cases for PDFs
   const isEvaluationGuideline = documentType === "evaluation-guideline";
@@ -600,15 +601,15 @@ const Administration = () => {
             <CardContent>
               {documentType === "employee-handbook" ? (
                 <div className="space-y-4">
-                  <div className="aspect-auto h-[600px] rounded-md overflow-hidden bg-gray-100 border border-gray-200">
+                  <div className="aspect-auto h-[600px] rounded-none overflow-hidden bg-gray-100 border border-gray-200">
                     <iframe
                       src={`/api/documents/${activeDocument.id}/download`}
                       className="w-full h-full border-0"
                       title="SAMS Employee Handbook"
                     />
                   </div>
-                  <div className="flex items-center justify-center p-4 bg-blue-50 rounded-md border border-blue-200">
-                    <p className="text-sm text-gray-600 mr-4">
+                  <div className="flex items-center justify-center p-4 bg-blue-50 rounded-none border border-blue-200">
+                    <p className="text-sm text-gray-600 mr-4 text-center">
                       If the PDF doesn't display above, you can:
                     </p>
                     <a 
@@ -621,25 +622,25 @@ const Administration = () => {
                     </a>
                   </div>
                   
-                  <div className="flex justify-end">
+                  <div className="flex justify-center">
                     <a 
                       href={`/api/documents/${activeDocument.id}/download`}
                       download={activeDocument.originalName || activeDocument.title}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center rounded-md bg-[#0A2463] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                      className="inline-flex items-center justify-center rounded-none bg-[#0A2463] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                     >
                       <Download className="mr-2 h-4 w-4" />
                       Download Handbook
                     </a>
                   </div>
                   
-                  <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
-                    <h3 className="text-blue-800 font-medium mb-2 flex items-center">
+                  <div className="bg-blue-50 p-4 rounded-none border border-blue-100">
+                    <h3 className="text-blue-800 font-medium mb-2 flex items-center justify-center text-center">
                       <Info className="h-4 w-4 mr-2 text-blue-600" />
                       About the SAMS Employee Handbook
                     </h3>
-                    <p className="text-gray-700 text-sm">
+                    <p className="text-gray-700 text-sm text-center">
                       This handbook contains important information about policies, procedures, and expectations for all 
                       Aviation English Language Training (ELT) employees. All staff members should thoroughly review this 
                       document. For any questions, please contact the administration.
@@ -658,15 +659,15 @@ const Administration = () => {
             </CardContent>
           </Card>
         ) : (
-          <Card>
+          <Card className="rounded-none">
             <CardHeader>
-              <CardTitle>Document Not Found</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-center">Document Not Found</CardTitle>
+              <CardDescription className="text-center">
                 The requested document does not exist or is not accessible.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p>Please check the URL or contact an administrator if you believe this is an error.</p>
+              <p className="text-center">Please check the URL or contact an administrator if you believe this is an error.</p>
             </CardContent>
           </Card>
         )}
