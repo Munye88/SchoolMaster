@@ -416,11 +416,11 @@ const ReportsEnhanced: React.FC = () => {
               {/* Attendance by School */}
               <Card className="bg-white shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center justify-center gap-2">
                     <BarChart className="h-5 w-5" />
                     Attendance by School
                   </CardTitle>
-                  <CardDescription>Current month attendance breakdown</CardDescription>
+                  <CardDescription className="text-center">Current month attendance breakdown</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
@@ -453,11 +453,11 @@ const ReportsEnhanced: React.FC = () => {
               {/* Monthly Attendance Trend */}
               <Card className="bg-white shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center justify-center gap-2">
                     <LineChart className="h-5 w-5" />
                     Monthly Attendance Trend
                   </CardTitle>
-                  <CardDescription>Attendance percentage over time</CardDescription>
+                  <CardDescription className="text-center">Attendance percentage over time</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
@@ -756,7 +756,7 @@ const ReportsEnhanced: React.FC = () => {
         {/* Summary and Recommendations */}
         <Card className="bg-white shadow-sm mt-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center justify-center gap-2">
               <Lightbulb className="h-5 w-5" />
               Summary & Recommendations
             </CardTitle>
