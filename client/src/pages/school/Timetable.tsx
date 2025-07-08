@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSchool } from "@/hooks/useSchool";
+import { useSchoolParam } from "@/hooks/use-school-param";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,8 @@ import { Download, FileText, Share2, Printer, Clock, Users, Upload } from "lucid
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SchoolTimetable = () => {
-  const { currentSchool } = useSchool();
+  const { selectedSchool, selectSchool } = useSchool();
+  const schoolFromUrl = useSchoolParam();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("aviation");
@@ -24,6 +26,16 @@ const SchoolTimetable = () => {
     description: '',
     file: null as File | null
   });
+
+  // Auto-select school from URL if not already selected
+  useEffect(() => {
+    if (schoolFromUrl && (!selectedSchool || selectedSchool.id !== schoolFromUrl.id)) {
+      selectSchool(schoolFromUrl);
+    }
+  }, [schoolFromUrl, selectedSchool, selectSchool]);
+
+  // Use the school from URL or selected school
+  const currentSchool = selectedSchool || schoolFromUrl;
   
   // Always show timetables for now
   const isKNFA = true; // Force display for all schools until fixed
