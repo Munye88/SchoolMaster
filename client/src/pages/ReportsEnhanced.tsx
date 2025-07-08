@@ -345,7 +345,7 @@ const ReportsEnhanced: React.FC = () => {
       }
       
       return {
-        summary: `${totalEvaluations} evaluations completed with an average score of ${averageScore}/100. ${excellentCount} instructors (${excellenceRate}%) achieved excellence rating (≥90 points).`,
+        summary: `${totalEvaluations} evaluations completed with an average score of ${averageScore} out of 100 points. ${excellentCount} instructors (${excellenceRate}%) achieved excellence rating (≥90 points).`,
         recommendations
       };
     }
@@ -395,7 +395,7 @@ const ReportsEnhanced: React.FC = () => {
       }
       
       return {
-        summary: `${totalTests} tests administered with an average score of ${averageScore}/100. ${passingCount} students (${passingRate}%) achieved passing grade (≥80 points).`,
+        summary: `${totalTests} tests administered with an average score of ${averageScore} out of 100 points. ${passingCount} students (${passingRate}%) achieved passing grade.`,
         recommendations
       };
     }
@@ -924,7 +924,10 @@ const ReportsEnhanced: React.FC = () => {
                           borderRadius: '8px',
                           boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                         }}
-                        formatter={(value) => [`${value}`, 'Average Score']}
+                        formatter={(value, name, props) => [
+                          `${value} out of 100 points`, 
+                          `${props.payload.testType} Average Score`
+                        ]}
                       />
                       <Bar 
                         dataKey="average" 
