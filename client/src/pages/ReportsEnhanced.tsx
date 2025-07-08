@@ -553,6 +553,10 @@ const ReportsEnhanced: React.FC = () => {
                         dataKey="school" 
                         tick={{ fontSize: 12 }}
                         axisLine={{ stroke: '#e0e0e0' }}
+                        tickFormatter={(value, index) => {
+                          const schoolData = processedAttendanceData[index];
+                          return `${value} (${schoolData?.attendance || 0}%)`;
+                        }}
                       />
                       <YAxis 
                         tick={{ fontSize: 12 }}
@@ -564,6 +568,13 @@ const ReportsEnhanced: React.FC = () => {
                           border: '1px solid #e0e0e0',
                           borderRadius: '8px',
                           boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }}
+                        formatter={(value, name, props) => {
+                          if (name === 'Present') {
+                            const percentage = props.payload.attendance || 0;
+                            return [`${value} (${percentage}%)`, 'Present'];
+                          }
+                          return [value, name];
                         }}
                       />
                       <Bar dataKey="present" fill="#10b981" name="Present" radius={[2, 2, 0, 0]} />
