@@ -127,6 +127,42 @@ const ReportsEnhanced: React.FC = () => {
     }));
   }, [attendanceData, schools]);
 
+  // Process leave data for monthly tracking
+  const processedLeaveData = useMemo(() => {
+    if (!staffLeave.length || !schools.length) return [];
+    
+    const schoolMap = schools.reduce((acc, school) => {
+      acc[school.id] = school.name;
+      return acc;
+    }, {});
+
+    const currentYear = new Date().getFullYear();
+    const monthlyData = months.map((month, index) => {
+      const monthIndex = index + 1;
+      
+      // Filter leave for this month
+      const monthLeave = staffLeave.filter(leave => {
+        const leaveDate = new Date(leave.startDate);
+        return leaveDate.getFullYear() === currentYear && 
+               leaveDate.getMonth() === index;
+      });
+      
+      const ptoCount = monthLeave.filter(leave => leave.type === 'PTO').length;
+      const rrCount = monthLeave.filter(leave => leave.type === 'R&R').length;
+      const sickCount = monthLeave.filter(leave => leave.type === 'Sick').length;
+      
+      return {
+        month,
+        PTO: ptoCount,
+        'R&R': rrCount,
+        Sick: sickCount,
+        total: ptoCount + rrCount + sickCount
+      };
+    });
+
+    return monthlyData;
+  }, [staffLeave, schools]);
+
   // Process evaluation data for quarterly percentages by school
   const processedEvaluationData = useMemo(() => {
     if (!evaluations.length || !schools.length) return [];
@@ -625,6 +661,95 @@ const ReportsEnhanced: React.FC = () => {
                       />
                     </RechartsLineChart>
                   </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Leave Tracking Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Staff Leave Trends */}
+              <Card className="bg-white shadow-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    Staff Leave Trends
+                  </CardTitle>
+                  <CardDescription className="text-center">Monthly leave distribution by type</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <RechartsBarChart data={processedLeaveData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis 
+                        dataKey="month" 
+                        tick={{ fontSize: 12 }}
+                        axisLine={{ stroke: '#e0e0e0' }}
+                        angle={-45}
+                        textAnchor="end"
+                        height={70}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12 }}
+                        axisLine={{ stroke: '#e0e0e0' }}
+                      />
+                      <RechartsTooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'white', 
+                          border: '1px solid #e0e0e0',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }}
+                        formatter={(value, name) => [`${value} staff`, name]}
+                      />
+                      <Bar dataKey="PTO" fill="#3b82f6" name="PTO" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="R&R" fill="#10b981" name="R&R" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="Sick" fill="#ef4444" name="Sick" radius={[2, 2, 0, 0]} />
+                    </RechartsBarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {/* Leave Summary Stats */}
+              <Card className="bg-white shadow-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    Leave Summary
+                  </CardTitle>
+                  <CardDescription className="text-center">Current year leave statistics</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600">
+                          {processedLeaveData.reduce((sum, month) => sum + month.PTO, 0)}
+                        </div>
+                        <div className="text-sm text-gray-600">Total PTO</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-green-600">
+                          {processedLeaveData.reduce((sum, month) => sum + month['R&R'], 0)}
+                        </div>
+                        <div className="text-sm text-gray-600">Total R&R</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-red-600">
+                          {processedLeaveData.reduce((sum, month) => sum + month.Sick, 0)}
+                        </div>
+                        <div className="text-sm text-gray-600">Total Sick</div>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-4 border-t">
+                      <div className="text-center">
+                        <div className="text-xl font-semibold text-gray-900">
+                          {processedLeaveData.reduce((sum, month) => sum + month.total, 0)}
+                        </div>
+                        <div className="text-sm text-gray-600">Total Leave Requests</div>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
