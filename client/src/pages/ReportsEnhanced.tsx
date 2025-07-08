@@ -868,24 +868,54 @@ const ReportsEnhanced: React.FC = () => {
               <Card className="bg-white shadow-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-center gap-2">
-                    <LineChart className="h-5 w-5" />
-                    Monthly Performance Trend
+                    <BarChart className="h-5 w-5" />
+                    Test Averages by Type
                   </CardTitle>
-                  <CardDescription className="text-center">Performance scores over time</CardDescription>
+                  <CardDescription className="text-center">Average scores for each test type</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
-                    <RechartsLineChart data={monthlyTrendData}>
+                    <RechartsBarChart data={[
+                      {
+                        testType: 'ALCPT',
+                        average: testScores.filter(test => test.testType === 'ALCPT').length > 0 ? 
+                          Math.round((testScores.filter(test => test.testType === 'ALCPT').reduce((sum, test) => sum + test.score, 0) / 
+                          testScores.filter(test => test.testType === 'ALCPT').length) * 10) / 10 : 0,
+                        fill: '#3b82f6'
+                      },
+                      {
+                        testType: 'Book Test',
+                        average: testScores.filter(test => test.testType === 'Book').length > 0 ? 
+                          Math.round((testScores.filter(test => test.testType === 'Book').reduce((sum, test) => sum + test.score, 0) / 
+                          testScores.filter(test => test.testType === 'Book').length) * 10) / 10 : 0,
+                        fill: '#22c55e'
+                      },
+                      {
+                        testType: 'ECL',
+                        average: testScores.filter(test => test.testType === 'ECL').length > 0 ? 
+                          Math.round((testScores.filter(test => test.testType === 'ECL').reduce((sum, test) => sum + test.score, 0) / 
+                          testScores.filter(test => test.testType === 'ECL').length) * 10) / 10 : 0,
+                        fill: '#f59e0b'
+                      },
+                      {
+                        testType: 'OPI',
+                        average: testScores.filter(test => test.testType === 'OPI').length > 0 ? 
+                          Math.round((testScores.filter(test => test.testType === 'OPI').reduce((sum, test) => sum + test.score, 0) / 
+                          testScores.filter(test => test.testType === 'OPI').length) * 10) / 10 : 0,
+                        fill: '#ef4444'
+                      }
+                    ]}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis 
-                        dataKey="month" 
+                        dataKey="testType" 
                         tick={{ fontSize: 12 }}
                         axisLine={{ stroke: '#e0e0e0' }}
                       />
                       <YAxis 
-                        domain={[80, 95]}
+                        domain={[0, 100]}
                         tick={{ fontSize: 12 }}
                         axisLine={{ stroke: '#e0e0e0' }}
+                        label={{ value: 'Average Score', angle: -90, position: 'insideLeft' }}
                       />
                       <RechartsTooltip 
                         contentStyle={{ 
@@ -894,16 +924,18 @@ const ReportsEnhanced: React.FC = () => {
                           borderRadius: '8px',
                           boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                         }}
+                        formatter={(value) => [`${value}`, 'Average Score']}
                       />
-                      <Line 
-                        type="monotone" 
-                        dataKey="performance" 
-                        stroke="#f59e0b" 
-                        strokeWidth={3}
-                        dot={{ fill: '#f59e0b', strokeWidth: 2, r: 4 }}
-                        activeDot={{ r: 6, fill: '#f59e0b' }}
-                      />
-                    </RechartsLineChart>
+                      <Bar 
+                        dataKey="average" 
+                        radius={[4, 4, 0, 0]}
+                      >
+                        <Cell fill="#3b82f6" />
+                        <Cell fill="#22c55e" />
+                        <Cell fill="#f59e0b" />
+                        <Cell fill="#ef4444" />
+                      </Bar>
+                    </RechartsBarChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
