@@ -203,7 +203,7 @@ const Documents = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
-              {uniqueTypes.map(type => (
+              {Array.from(new Set(documents.map(doc => doc.type || 'PDF'))).map(type => (
                 <SelectItem key={type} value={type}>{type}</SelectItem>
               ))}
             </SelectContent>
