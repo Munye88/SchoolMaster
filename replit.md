@@ -321,6 +321,7 @@ The system manages multiple interconnected entities:
 - July 7, 2025: COURSE STATISTICS CARDS ALIGNMENT FIX - Fixed number alignment in all Course Programs statistics cards by adding flex-1 and text-center classes to prevent numbers from appearing at container edges, ensuring all statistics (Total Courses, Active Courses, Total Students, Completed Courses, Archived Courses) display centered text and numbers
 - July 8, 2025: DOCUMENT MANAGEMENT SYSTEM ACCESS FIX - Fixed TypeScript error in Documents.tsx preventing access to document management functionality, resolved uniqueTypes undefined error by implementing proper document type mapping
 - July 8, 2025: TIMETABLE DIRECT UPLOAD FEATURE - Added "Upload Timetable" button directly in each school's Timetable page for convenient timetable and schedule uploads without navigating to central Documents section
+- July 8, 2025: DOCUMENT DELETE FUNCTIONALITY - Added delete button with confirmation for uploaded documents in school timetable pages, allowing users to remove unwanted documents with red-styled delete button and loading state
 
 ## User Preferences
 

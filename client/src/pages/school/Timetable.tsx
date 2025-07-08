@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Download, FileText, Share2, Printer, Clock, Users, Upload } from "lucide-react";
+import { Download, FileText, Share2, Printer, Clock, Users, Upload, Trash2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SchoolTimetable = () => {
@@ -95,6 +95,33 @@ const SchoolTimetable = () => {
     },
   });
 
+  // Delete document mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await fetch(`/api/school-documents/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete document');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Document deleted",
+        description: "Document has been successfully removed",
+      });
+      queryClient.invalidateQueries({ queryKey: ['school-documents'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Delete failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     console.log('📁 File selected:', file ? {
@@ -155,6 +182,12 @@ const SchoolTimetable = () => {
     
     console.log('📤 Submitting upload mutation');
     uploadMutation.mutate(formData);
+  };
+
+  const handleDelete = (id: number, title: string) => {
+    if (confirm(`Are you sure you want to delete "${title}"?`)) {
+      deleteMutation.mutate(id);
+    }
   };
   
   return (
@@ -515,6 +548,16 @@ const SchoolTimetable = () => {
                     >
                       <Download className="h-4 w-4 mr-1" />
                       View
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDelete(doc.id, doc.title)}
+                      disabled={deleteMutation.isPending}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
                     </Button>
                   </div>
                 </div>
