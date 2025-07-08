@@ -167,9 +167,9 @@ const ReportsEnhanced: React.FC = () => {
                leaveDate.getMonth() === index;
       });
       
-      const ptoCount = monthLeave.filter(leave => leave.type === 'PTO').length;
-      const rrCount = monthLeave.filter(leave => leave.type === 'R&R').length;
-      const sickCount = monthLeave.filter(leave => leave.type === 'Sick').length;
+      const ptoCount = monthLeave.filter(leave => leave.leaveType === 'PTO').length;
+      const rrCount = monthLeave.filter(leave => leave.leaveType === 'R&R').length;
+      const sickCount = monthLeave.filter(leave => leave.leaveType === 'Sick').length;
       
       return {
         month,
@@ -178,6 +178,13 @@ const ReportsEnhanced: React.FC = () => {
         Sick: sickCount,
         total: ptoCount + rrCount + sickCount
       };
+    });
+
+    console.log('Leave processing debug:', {
+      totalLeaveRecords: staffLeave.length,
+      sampleLeaveData: staffLeave.slice(0, 3),
+      monthlyData: monthlyData.slice(0, 3),
+      currentYear
     });
 
     return monthlyData;

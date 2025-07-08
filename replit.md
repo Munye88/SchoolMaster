@@ -332,6 +332,9 @@ The system manages multiple interconnected entities:
 - July 8, 2025: COMPREHENSIVE TEST PASSING SCORES IMPLEMENTED - Updated all test scoring systems with accurate passing thresholds: Book Test 66+, ALCPT 50+, ECL 50+, OPI 2/2, applied across performance charts, recommendations, and school-specific test type percentage displays
 - July 8, 2025: TEST AVERAGES CHART IMPLEMENTATION - Replaced Monthly Performance Trend with Test Averages by Type chart showing average scores for ALCPT, Book Test, ECL, and OPI with color-coded bars and centered title alignment
 - July 8, 2025: ATTENDANCE CHART ENHANCEMENT - Updated Attendance by School chart to display school names with attendance percentages on X-axis labels and enhanced tooltips to show both count and percentage for better visibility
+- July 8, 2025: LEAVE TRACKING GRAPHS IMPLEMENTED - Added comprehensive Staff Leave Trends chart showing monthly PTO, R&R, and sick leave distribution with color-coded bars and Leave Summary statistics card
+- July 8, 2025: ATTENDANCE DATA ACCURACY FIX - Fixed attendance chart to properly map instructors to schools using instructor-school relationship, ensuring all three schools (KFNA 83%, NFS East 84%, NFS West 84%) display correctly
+- July 8, 2025: LEAVE DATA PROCESSING ENHANCEMENT - Fixed leave data processing to use correct leaveType field instead of type field, added sample sick leave data to demonstrate full functionality with 15 total leave records (11 PTO, 2 R&R, 2 Sick)
 
 ## User Preferences
 
