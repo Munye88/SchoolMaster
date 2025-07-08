@@ -497,33 +497,18 @@ const SchoolYearlySchedule = () => {
         </Card>
       </div>
       
-      {/* Uploaded Documents Section */}
-      <Card className="mt-6 rounded-none">
-        <CardHeader>
-          <CardTitle className="text-center">Uploaded Documents</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {documentsLoading ? (
-            <div className="text-center py-4">Loading documents...</div>
-          ) : yearlyScheduleDocuments.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <FileText className="mx-auto h-12 w-12 mb-2" />
-              <p>No yearly schedule documents uploaded yet.</p>
-              <p className="text-sm">Use the "Upload Yearly Schedule" button to add documents.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {yearlyScheduleDocuments.map((doc: any) => (
-                <div key={doc.id} className="flex items-center justify-between p-4 bg-gray-50 border rounded-none">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 text-blue-600" />
-                    <div>
-                      <p className="font-medium">{doc.title}</p>
-                      <p className="text-sm text-gray-500">{doc.fileName}</p>
-                      <p className="text-xs text-gray-400">
-                        Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}
-                      </p>
-                    </div>
+      {/* Display uploaded documents content inline */}
+      {yearlyScheduleDocuments.length > 0 && (
+        <div className="mt-6 space-y-6">
+          {yearlyScheduleDocuments.map((doc: any) => (
+            <Card key={doc.id} className="rounded-none">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg">{doc.title}</CardTitle>
+                    <p className="text-sm text-gray-500">
+                      {doc.fileName} • Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}
+                    </p>
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -532,7 +517,8 @@ const SchoolYearlySchedule = () => {
                       onClick={() => window.open(doc.fileUrl, '_blank')}
                       className="rounded-none"
                     >
-                      View
+                      <Download className="h-4 w-4 mr-1" />
+                      Download
                     </Button>
                     <Button
                       variant="outline"
@@ -552,7 +538,62 @@ const SchoolYearlySchedule = () => {
                     </Button>
                   </div>
                 </div>
-              ))}
+              </CardHeader>
+              <CardContent>
+                {/* Display document content inline */}
+                <div className="border rounded-none">
+                  {doc.fileName.toLowerCase().endsWith('.pdf') ? (
+                    <iframe
+                      src={doc.fileUrl}
+                      className="w-full h-[600px] border-none"
+                      title={doc.title}
+                    />
+                  ) : doc.fileName.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/i) ? (
+                    <img
+                      src={doc.fileUrl}
+                      alt={doc.title}
+                      className="w-full h-auto max-h-[600px] object-contain"
+                    />
+                  ) : (
+                    <div className="p-4 text-center">
+                      <FileText className="mx-auto h-12 w-12 mb-2 text-gray-400" />
+                      <p className="text-gray-600">
+                        Preview not available for this file type.
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Click "Download" to view the document.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+      
+      {/* Uploaded Documents Management Section */}
+      <Card className="mt-6 rounded-none">
+        <CardHeader>
+          <CardTitle className="text-center">Document Management</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {documentsLoading ? (
+            <div className="text-center py-4">Loading documents...</div>
+          ) : yearlyScheduleDocuments.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <FileText className="mx-auto h-12 w-12 mb-2" />
+              <p>No yearly schedule documents uploaded yet.</p>
+              <p className="text-sm">Use the "Upload Yearly Schedule" button to add documents.</p>
+            </div>
+          ) : (
+            <div className="text-center py-4 text-gray-600">
+              <p>
+                {yearlyScheduleDocuments.length} document{yearlyScheduleDocuments.length > 1 ? 's' : ''} uploaded
+              </p>
+              <p className="text-sm text-gray-500">
+                Documents are displayed above. Use the "Upload Yearly Schedule" button to add more.
+              </p>
             </div>
           )}
         </CardContent>

@@ -322,6 +322,8 @@ The system manages multiple interconnected entities:
 - July 8, 2025: DOCUMENT MANAGEMENT SYSTEM ACCESS FIX - Fixed TypeScript error in Documents.tsx preventing access to document management functionality, resolved uniqueTypes undefined error by implementing proper document type mapping
 - July 8, 2025: TIMETABLE DIRECT UPLOAD FEATURE - Added "Upload Timetable" button directly in each school's Timetable page for convenient timetable and schedule uploads without navigating to central Documents section
 - July 8, 2025: DOCUMENT DELETE FUNCTIONALITY - Added delete button with confirmation for uploaded documents in school timetable pages, allowing users to remove unwanted documents with red-styled delete button and loading state
+- July 8, 2025: YEARLY SCHEDULE UPLOAD SYSTEM - Implemented complete upload and delete functionality for yearly schedule documents across all three schools with same features as timetable system
+- July 8, 2025: INLINE DOCUMENT DISPLAY - Enhanced yearly schedule pages to display uploaded document content directly inline (PDFs via iframe, images directly embedded) instead of just showing metadata, providing immediate document visibility
 
 ## User Preferences
 
