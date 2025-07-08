@@ -31,14 +31,28 @@ const SchoolTimetable = () => {
   // Upload timetable mutation
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
+      console.log('Uploading timetable with data:', {
+        title: formData.get('title'),
+        documentType: formData.get('documentType'),
+        schoolId: formData.get('schoolId'),
+        hasFile: !!formData.get('file')
+      });
+      
       const response = await fetch('/api/school-documents', {
         method: 'POST',
         body: formData,
       });
-      if (!response.ok) throw new Error('Upload failed');
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Upload failed' }));
+        console.error('Upload error:', errorData);
+        throw new Error(errorData.message || 'Upload failed');
+      }
+      
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('Upload successful:', data);
       toast({
         title: "Success",
         description: "Timetable uploaded successfully",
@@ -47,10 +61,11 @@ const SchoolTimetable = () => {
       setUploadForm({ title: '', documentType: 'daily_schedule', description: '', file: null });
       queryClient.invalidateQueries({ queryKey: ['/api/school-documents'] });
     },
-    onError: () => {
+    onError: (error: Error) => {
+      console.error('Upload mutation error:', error);
       toast({
         title: "Error",
-        description: "Failed to upload timetable",
+        description: error.message || "Failed to upload timetable",
         variant: "destructive",
       });
     },

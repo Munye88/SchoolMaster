@@ -3133,27 +3133,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/school-documents", upload.single('file'), async (req, res) => {
     try {
+      console.log('📄 School document upload request received');
+      console.log('Request body:', req.body);
+      console.log('File info:', req.file ? { 
+        originalname: req.file.originalname, 
+        size: req.file.size, 
+        mimetype: req.file.mimetype 
+      } : 'No file');
+
       if (!req.file) {
+        console.log('❌ No file uploaded');
         return res.status(400).json({ message: "No file uploaded" });
       }
 
       const { title, documentType, description, schoolId } = req.body;
       const userId = req.user?.id || 1; // Default to admin user
 
+      console.log('📋 Processing upload:', { title, documentType, schoolId, userId });
+
+      // Validate required fields
+      if (!title || !documentType || !schoolId) {
+        console.log('❌ Missing required fields');
+        return res.status(400).json({ message: "Missing required fields: title, documentType, or schoolId" });
+      }
+
       // Create directory for school documents if it doesn't exist
       const dirPath = path.join("uploads", "school-documents");
       if (!fs.existsSync(dirPath)) {
+        console.log('📁 Creating uploads directory:', dirPath);
         fs.mkdirSync(dirPath, { recursive: true });
       }
 
       // Move the file to the school documents directory
       const fileName = `${Date.now()}-${req.file.originalname}`;
       const filePath = path.join(dirPath, fileName);
+      
+      console.log('📁 Moving file from', req.file.path, 'to', filePath);
       fs.renameSync(req.file.path, filePath);
 
       const fileUrl = `${req.protocol}://${req.get('host')}/uploads/school-documents/${fileName}`;
+      console.log('🔗 File URL:', fileUrl);
 
-      const documentData = insertSchoolDocumentSchema.parse({
+      const documentData = {
         title,
         fileName: req.file.originalname,
         fileUrl,
@@ -3161,17 +3182,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         schoolId: parseInt(schoolId),
         uploadedBy: userId,
         description: description || null,
-      });
+      };
+
+      console.log('💾 Inserting document data:', documentData);
+
+      // Validate the data against schema
+      const validatedData = insertSchoolDocumentSchema.parse(documentData);
 
       const [newDocument] = await db
         .insert(schoolDocuments)
-        .values(documentData)
+        .values(validatedData)
         .returning();
 
+      console.log('✅ Document uploaded successfully:', newDocument);
       res.status(201).json(newDocument);
     } catch (error) {
-      console.error("Error uploading school document:", error);
-      res.status(500).json({ message: "Failed to upload document" });
+      console.error("❌ Error uploading school document:", error);
+      
+      if (error instanceof z.ZodError) {
+        console.log('Schema validation error:', error.errors);
+        return res.status(400).json({ 
+          message: "Invalid document data", 
+          errors: error.errors 
+        });
+      }
+      
+      res.status(500).json({ 
+        message: "Failed to upload document", 
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 
