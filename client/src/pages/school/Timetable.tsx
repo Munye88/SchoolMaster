@@ -1,16 +1,80 @@
 import React, { useState } from "react";
 import { useSchool } from "@/hooks/useSchool";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, FileText, Share2, Printer, Clock, Users } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Download, FileText, Share2, Printer, Clock, Users, Upload } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SchoolTimetable = () => {
   const { currentSchool } = useSchool();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("aviation");
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [uploadForm, setUploadForm] = useState({
+    title: '',
+    documentType: 'daily_schedule' as const,
+    description: '',
+    file: null as File | null
+  });
   
   // Always show timetables for now
   const isKNFA = true; // Force display for all schools until fixed
+
+  // Upload timetable mutation
+  const uploadMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const response = await fetch('/api/school-documents', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) throw new Error('Upload failed');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Timetable uploaded successfully",
+      });
+      setUploadDialogOpen(false);
+      setUploadForm({ title: '', documentType: 'daily_schedule', description: '', file: null });
+      queryClient.invalidateQueries({ queryKey: ['/api/school-documents'] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to upload timetable",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploadForm(prev => ({ ...prev, file }));
+    }
+  };
+
+  const handleUpload = () => {
+    if (!uploadForm.file || !currentSchool) return;
+    
+    const formData = new FormData();
+    formData.append('file', uploadForm.file);
+    formData.append('title', uploadForm.title);
+    formData.append('documentType', uploadForm.documentType);
+    formData.append('description', uploadForm.description);
+    formData.append('schoolId', currentSchool.id.toString());
+    
+    uploadMutation.mutate(formData);
+  };
   
   return (
     <div className="flex-1 p-8 bg-gray-50 overflow-y-auto">
@@ -23,6 +87,93 @@ const SchoolTimetable = () => {
         </div>
         
         <div className="flex gap-2">
+          <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-[#0A2463] hover:bg-[#071A4A] gap-2">
+                <Upload size={16} /> Upload Timetable
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px] rounded-none">
+              <DialogHeader>
+                <DialogTitle className="text-center">Upload New Timetable</DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Timetable Title</Label>
+                  <Input
+                    id="title"
+                    value={uploadForm.title}
+                    onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="e.g., Aviation Officers Schedule - August 2024"
+                    className="rounded-none"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="documentType">Schedule Type</Label>
+                  <Select
+                    value={uploadForm.documentType}
+                    onValueChange={(value) => setUploadForm(prev => ({ 
+                      ...prev, 
+                      documentType: value as 'daily_schedule' | 'yearly_schedule' 
+                    }))}
+                  >
+                    <SelectTrigger className="rounded-none">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      <SelectItem value="daily_schedule">Daily Schedule</SelectItem>
+                      <SelectItem value="yearly_schedule">Yearly Schedule</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="description">Description (Optional)</Label>
+                  <Textarea
+                    id="description"
+                    value={uploadForm.description}
+                    onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Additional details about this timetable"
+                    className="rounded-none"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="file">Select File</Label>
+                  <Input
+                    id="file"
+                    type="file"
+                    onChange={handleFileChange}
+                    accept=".pdf,.doc,.docx,.xls,.xlsx"
+                    className="rounded-none"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Supported formats: PDF, Word, Excel
+                  </p>
+                </div>
+                
+                <div className="flex gap-2 pt-4">
+                  <Button 
+                    onClick={handleUpload}
+                    disabled={!uploadForm.file || !uploadForm.title || uploadMutation.isPending}
+                    className="flex-1 bg-[#0A2463] hover:bg-[#071A4A] rounded-none"
+                  >
+                    {uploadMutation.isPending ? "Uploading..." : "Upload Timetable"}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setUploadDialogOpen(false)}
+                    className="rounded-none"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+          
           <Button variant="outline" className="gap-2">
             <Download size={16} /> Export
           </Button>
