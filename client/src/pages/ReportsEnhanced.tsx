@@ -847,7 +847,7 @@ const ReportsEnhanced: React.FC = () => {
         {/* Summary and Recommendations */}
         <div className="mt-6 space-y-4">
           <div className="mb-4">
-            <h3 className="text-lg font-medium text-gray-900 flex items-center justify-center gap-2 mb-4">
+            <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2 mb-4">
               <Lightbulb className="h-5 w-5" />
               Summary & Recommendations
             </h3>
@@ -859,7 +859,7 @@ const ReportsEnhanced: React.FC = () => {
           </div>
           
           <div className="space-y-3">
-            <h4 className="font-medium text-gray-900 text-center">Recommendations</h4>
+            <h4 className="font-medium text-gray-900">Recommendations</h4>
             <div className="space-y-2">
               {recommendations.map((rec, index) => (
                 <p 
