@@ -12,6 +12,7 @@ import {
   BarChart,
   LineChart,
   Award,
+  PieChart,
   FileText,
   Check,
   AlertCircle,
@@ -722,24 +723,26 @@ const ReportsEnhanced: React.FC = () => {
               <Card className="bg-white shadow-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <LineChart className="h-5 w-5" />
-                    Monthly Evaluation Trend
+                    <PieChart className="h-5 w-5" />
+                    Performance Distribution
                   </CardTitle>
-                  <CardDescription>Evaluation scores over time</CardDescription>
+                  <CardDescription className="text-center">Evaluation scores by performance level</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
-                    <RechartsLineChart data={monthlyTrendData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis 
-                        dataKey="month" 
-                        tick={{ fontSize: 12 }}
-                        axisLine={{ stroke: '#e0e0e0' }}
-                      />
-                      <YAxis 
-                        domain={[80, 95]}
-                        tick={{ fontSize: 12 }}
-                        axisLine={{ stroke: '#e0e0e0' }}
+                    <RechartsPieChart>
+                      <Pie
+                        data={[
+                          { name: 'Excellent (90-100)', value: evaluations.filter(e => e.score >= 90).length, fill: '#22c55e' },
+                          { name: 'Good (80-89)', value: evaluations.filter(e => e.score >= 80 && e.score < 90).length, fill: '#3b82f6' },
+                          { name: 'Satisfactory (70-79)', value: evaluations.filter(e => e.score >= 70 && e.score < 80).length, fill: '#f59e0b' },
+                          { name: 'Needs Improvement (<70)', value: evaluations.filter(e => e.score < 70).length, fill: '#ef4444' }
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        dataKey="value"
+                        label={({ name, value }) => `${name}: ${value}`}
                       />
                       <RechartsTooltip 
                         contentStyle={{ 
@@ -749,15 +752,7 @@ const ReportsEnhanced: React.FC = () => {
                           boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                         }}
                       />
-                      <Line 
-                        type="monotone" 
-                        dataKey="evaluation" 
-                        stroke="#8b5cf6" 
-                        strokeWidth={3}
-                        dot={{ fill: '#8b5cf6', strokeWidth: 2, r: 4 }}
-                        activeDot={{ r: 6, fill: '#8b5cf6' }}
-                      />
-                    </RechartsLineChart>
+                    </RechartsPieChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
