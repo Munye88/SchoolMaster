@@ -128,39 +128,20 @@ const ReportsEnhanced: React.FC = () => {
 
   // Process evaluation data for quarterly percentages
   const processedEvaluationData = useMemo(() => {
-    if (!evaluations.length || !schools.length) return [];
+    if (!evaluations.length) return [];
     
-    const schoolMap = schools.reduce((acc, school) => {
-      acc[school.id] = school.name;
-      return acc;
-    }, {});
-
-    // Group evaluations by quarters
-    const currentYear = new Date().getFullYear();
     const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
     
     const quarterlyData = quarters.map(quarter => {
-      const quarterEvals = evaluations.filter(evaluation => {
-        const evalDate = new Date(evaluation.evaluationDate);
-        const evalMonth = evalDate.getMonth() + 1;
-        const evalYear = evalDate.getFullYear();
-        
-        if (evalYear !== currentYear) return false;
-        
-        switch (quarter) {
-          case 'Q1': return evalMonth >= 1 && evalMonth <= 3;
-          case 'Q2': return evalMonth >= 4 && evalMonth <= 6;
-          case 'Q3': return evalMonth >= 7 && evalMonth <= 9;
-          case 'Q4': return evalMonth >= 10 && evalMonth <= 12;
-          default: return false;
-        }
-      });
+      // Filter evaluations by quarter using the existing quarter field
+      const quarterEvals = evaluations.filter(evaluation => evaluation.quarter === quarter);
       
-      if (quarterEvals.length === 0) return { quarter, percentage: 0 };
+      if (quarterEvals.length === 0) return { quarter, percentage: 0, evaluationCount: 0 };
       
-      const totalScore = quarterEvals.reduce((sum, evaluation) => sum + evaluation.totalScore, 0);
+      // Use the score field directly
+      const totalScore = quarterEvals.reduce((sum, evaluation) => sum + evaluation.score, 0);
       const averageScore = totalScore / quarterEvals.length;
-      const percentage = Math.round((averageScore / 100) * 100);
+      const percentage = Math.round(averageScore);
       
       return {
         quarter,
@@ -170,7 +151,7 @@ const ReportsEnhanced: React.FC = () => {
     });
 
     return quarterlyData;
-  }, [evaluations, schools]);
+  }, [evaluations]);
 
   // Process performance data from test scores
   const processedPerformanceData = useMemo(() => {
