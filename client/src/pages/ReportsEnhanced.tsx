@@ -867,11 +867,11 @@ const ReportsEnhanced: React.FC = () => {
 
               <Card className="bg-white shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center justify-center gap-2">
                     <LineChart className="h-5 w-5" />
                     Monthly Performance Trend
                   </CardTitle>
-                  <CardDescription>Performance scores over time</CardDescription>
+                  <CardDescription className="text-center">Performance scores over time</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
