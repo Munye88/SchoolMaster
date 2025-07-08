@@ -319,13 +319,13 @@ const ReportsEnhanced: React.FC = () => {
       const totalEvaluations = evaluations.length;
       const averageScore = totalEvaluations > 0 ? 
         Math.round((evaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / totalEvaluations) * 10) / 10 : 0;
-      const excellentCount = evaluations.filter(evaluation => evaluation.score >= 90).length;
+      const excellentCount = evaluations.filter(evaluation => evaluation.score >= 85).length;
       const excellenceRate = totalEvaluations > 0 ? Math.round((excellentCount / totalEvaluations) * 100) : 0;
       
-      if (averageScore < 80) {
+      if (averageScore < 85) {
         recommendations.push({
           type: 'alert',
-          text: 'Average evaluation score is below 80. Consider additional training and support programs.'
+          text: 'Average evaluation score is below passing threshold (85). Consider additional training and support programs.'
         });
       }
       
@@ -655,11 +655,11 @@ const ReportsEnhanced: React.FC = () => {
                 <CardContent>
                   <div className="text-2xl font-bold text-green-600">
                     {evaluations.length > 0 ? 
-                      Math.round((evaluations.filter(evaluation => evaluation.score >= 90).length / evaluations.length) * 100)
+                      Math.round((evaluations.filter(evaluation => evaluation.score >= 85).length / evaluations.length) * 100)
                       : 0
                     }%
                   </div>
-                  <p className="text-xs text-gray-500">Scores ≥ 90 points</p>
+                  <p className="text-xs text-gray-500">Scores ≥ 85 points (passing)</p>
                 </CardContent>
               </Card>
             </div>
@@ -722,7 +722,7 @@ const ReportsEnhanced: React.FC = () => {
 
               <Card className="bg-white shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center justify-center gap-2">
                     <PieChart className="h-5 w-5" />
                     Performance Distribution
                   </CardTitle>
@@ -734,9 +734,9 @@ const ReportsEnhanced: React.FC = () => {
                       <Pie
                         data={[
                           { name: 'Excellent (90-100)', value: evaluations.filter(e => e.score >= 90).length, fill: '#22c55e' },
-                          { name: 'Good (80-89)', value: evaluations.filter(e => e.score >= 80 && e.score < 90).length, fill: '#3b82f6' },
-                          { name: 'Satisfactory (70-79)', value: evaluations.filter(e => e.score >= 70 && e.score < 80).length, fill: '#f59e0b' },
-                          { name: 'Needs Improvement (<70)', value: evaluations.filter(e => e.score < 70).length, fill: '#ef4444' }
+                          { name: 'Good (85-89)', value: evaluations.filter(e => e.score >= 85 && e.score < 90).length, fill: '#3b82f6' },
+                          { name: 'Below Passing (80-84)', value: evaluations.filter(e => e.score >= 80 && e.score < 85).length, fill: '#f59e0b' },
+                          { name: 'Needs Improvement (<80)', value: evaluations.filter(e => e.score < 80).length, fill: '#ef4444' }
                         ]}
                         cx="50%"
                         cy="50%"
