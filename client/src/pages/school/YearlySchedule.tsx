@@ -301,14 +301,107 @@ const SchoolYearlySchedule = () => {
         </div>
       </div>
       
-      <Card className="mb-6">
-        <CardHeader className="text-center pb-3">
-          <CardTitle className="text-2xl font-bold">Naval Forces Schools</CardTitle>
-          <p className="text-lg font-medium">Academic Year 2024-2025</p>
-          <p className="text-base text-gray-500">English Language Training Program</p>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
+      {/* Show uploaded documents first, then default content */}
+      {yearlyScheduleDocuments.length > 0 ? (
+        // Display uploaded documents content inline
+        <div className="space-y-6">
+          {yearlyScheduleDocuments.map((doc: any) => (
+            <Card key={doc.id} className="rounded-none">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg">{doc.title}</CardTitle>
+                    <p className="text-sm text-gray-500">
+                      {doc.fileName} • Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(doc.fileUrl, '_blank')}
+                      className="rounded-none"
+                    >
+                      <Download className="h-4 w-4 mr-1" />
+                      Download
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDelete(doc.id, doc.title)}
+                      disabled={deleteMutation.isPending}
+                      className="rounded-none text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      {deleteMutation.isPending ? (
+                        'Deleting...'
+                      ) : (
+                        <>
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {/* Display document content inline */}
+                <div className="border rounded-none">
+                  {doc.fileName.toLowerCase().endsWith('.pdf') ? (
+                    <iframe
+                      src={doc.fileUrl}
+                      className="w-full h-[600px] border-none"
+                      title={doc.title}
+                    />
+                  ) : doc.fileName.toLowerCase().match(/\.(jpg|jpeg|png|gif)$/i) ? (
+                    <img
+                      src={doc.fileUrl}
+                      alt={doc.title}
+                      className="w-full h-auto max-h-[600px] object-contain"
+                    />
+                  ) : doc.fileName.toLowerCase().match(/\.(xlsx|xls|docx|doc)$/i) ? (
+                    <div className="p-8 text-center bg-blue-50">
+                      <FileText className="mx-auto h-16 w-16 mb-4 text-blue-600" />
+                      <h3 className="text-xl font-semibold mb-2">Document Uploaded Successfully</h3>
+                      <p className="text-gray-700 mb-4">
+                        <strong>{doc.fileName}</strong> has been uploaded and is ready for viewing.
+                      </p>
+                      <div className="flex justify-center gap-2">
+                        <Button
+                          onClick={() => window.open(doc.fileUrl, '_blank')}
+                          className="bg-[#0A2463] hover:bg-[#071A4A] rounded-none"
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          Download & View
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-4 text-center">
+                      <FileText className="mx-auto h-12 w-12 mb-2 text-gray-400" />
+                      <p className="text-gray-600">
+                        Preview not available for this file type.
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Click "Download" to view the document.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        // Show default content when no documents uploaded
+        <Card className="mb-6">
+          <CardHeader className="text-center pb-3">
+            <CardTitle className="text-2xl font-bold">Naval Forces Schools</CardTitle>
+            <p className="text-lg font-medium">Academic Year 2024-2025</p>
+            <p className="text-base text-gray-500">English Language Training Program</p>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-[#0A2463] text-white">
@@ -418,6 +511,7 @@ const SchoolYearlySchedule = () => {
           </div>
         </CardContent>
       </Card>
+      )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
