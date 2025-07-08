@@ -95,37 +95,57 @@ const ReportsEnhanced: React.FC = () => {
 
   // Process attendance data
   const processedAttendanceData = useMemo(() => {
-    if (!attendanceData.length || !schools.length) return [];
+    if (!schools.length || !instructors.length) return [];
     
     const schoolMap = schools.reduce((acc, school) => {
       acc[school.id] = school.name;
       return acc;
     }, {});
 
+    // Create instructor to school mapping
+    const instructorSchoolMap = instructors.reduce((acc, instructor) => {
+      acc[instructor.id] = instructor.schoolId;
+      return acc;
+    }, {});
+
+    // Initialize stats for all schools
     const schoolStats = {};
+    schools.forEach(school => {
+      schoolStats[school.name] = { present: 0, absent: 0, late: 0, total: 0 };
+    });
     
+    // Process attendance data
     attendanceData.forEach(record => {
-      const schoolName = schoolMap[record.schoolId] || 'Unknown';
-      if (!schoolStats[schoolName]) {
-        schoolStats[schoolName] = { present: 0, absent: 0, late: 0, total: 0 };
-      }
+      const instructorSchoolId = instructorSchoolMap[record.instructorId];
+      const schoolName = schoolMap[instructorSchoolId] || 'Unknown';
       
-      schoolStats[schoolName].total++;
-      if (record.status === 'present') {
-        schoolStats[schoolName].present++;
-      } else if (record.status === 'absent') {
-        schoolStats[schoolName].absent++;
-      } else if (record.status === 'late') {
-        schoolStats[schoolName].late++;
+      if (schoolStats[schoolName]) {
+        schoolStats[schoolName].total++;
+        if (record.status === 'present') {
+          schoolStats[schoolName].present++;
+        } else if (record.status === 'absent') {
+          schoolStats[schoolName].absent++;
+        } else if (record.status === 'late') {
+          schoolStats[schoolName].late++;
+        }
       }
     });
 
-    return Object.entries(schoolStats).map(([school, stats]) => ({
+    const result = Object.entries(schoolStats).map(([school, stats]) => ({
       school,
       ...stats,
-      attendance: Math.round((stats.present / stats.total) * 100)
+      attendance: stats.total > 0 ? Math.round((stats.present / stats.total) * 100) : 0
     }));
-  }, [attendanceData, schools]);
+
+    console.log('Attendance processing debug:', {
+      schools: schools.map(s => s.name),
+      attendanceRecords: attendanceData.length,
+      instructorCount: instructors.length,
+      processedData: result
+    });
+
+    return result;
+  }, [attendanceData, schools, instructors]);
 
   // Process leave data for monthly tracking
   const processedLeaveData = useMemo(() => {
