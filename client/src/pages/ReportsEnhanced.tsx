@@ -852,37 +852,35 @@ const ReportsEnhanced: React.FC = () => {
               Summary & Recommendations
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 px-4 py-4">
-            <div className="p-3 bg-blue-50 rounded-none border border-blue-200">
-              <h4 className="font-medium text-blue-900 mb-2 text-center">Current Status</h4>
-              <p className="text-sm text-blue-800 text-center leading-relaxed">{summary}</p>
+          <CardContent className="space-y-4">
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h4 className="font-medium text-blue-900 mb-2">Current Status</h4>
+              <p className="text-sm text-blue-800">{summary}</p>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-3">
               <h4 className="font-medium text-gray-900 text-center">Recommendations</h4>
-              <div className="max-w-full overflow-hidden">
-                {recommendations.map((rec, index) => (
-                  <div 
-                    key={index}
-                    className={`p-2 rounded-none border flex items-start gap-2 mb-2 ${
-                      rec.type === 'success' ? 'bg-green-50 border-green-200' :
-                      rec.type === 'warning' ? 'bg-yellow-50 border-yellow-200' :
-                      'bg-red-50 border-red-200'
-                    }`}
-                  >
-                    {rec.type === 'success' && <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />}
-                    {rec.type === 'warning' && <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />}
-                    {rec.type === 'alert' && <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />}
-                    <p className={`text-xs leading-relaxed break-words ${
-                      rec.type === 'success' ? 'text-green-800' :
-                      rec.type === 'warning' ? 'text-yellow-800' :
-                      'text-red-800'
-                    }`}>
-                      {rec.text}
-                    </p>
-                  </div>
-                ))}
-              </div>
+              {recommendations.map((rec, index) => (
+                <div 
+                  key={index}
+                  className={`p-3 rounded-lg border flex items-start gap-2 ${
+                    rec.type === 'success' ? 'bg-green-50 border-green-200' :
+                    rec.type === 'warning' ? 'bg-yellow-50 border-yellow-200' :
+                    'bg-red-50 border-red-200'
+                  }`}
+                >
+                  {rec.type === 'success' && <CheckCircle className="h-4 w-4 text-green-600 mt-0.5" />}
+                  {rec.type === 'warning' && <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5" />}
+                  {rec.type === 'alert' && <AlertCircle className="h-4 w-4 text-red-600 mt-0.5" />}
+                  <p className={`text-sm ${
+                    rec.type === 'success' ? 'text-green-800' :
+                    rec.type === 'warning' ? 'text-yellow-800' :
+                    'text-red-800'
+                  }`}>
+                    {rec.text}
+                  </p>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
