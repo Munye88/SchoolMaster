@@ -126,32 +126,63 @@ const ReportsEnhanced: React.FC = () => {
     }));
   }, [attendanceData, schools]);
 
-  // Process evaluation data for quarterly percentages
+  // Process evaluation data for quarterly percentages by school
   const processedEvaluationData = useMemo(() => {
-    if (!evaluations.length) return [];
+    if (!evaluations.length || !schools.length) return [];
+    
+    const schoolMap = schools.reduce((acc, school) => {
+      acc[school.id] = school.name;
+      return acc;
+    }, {});
     
     const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
     
     const quarterlyData = quarters.map(quarter => {
-      // Filter evaluations by quarter using the existing quarter field
+      // Filter evaluations by quarter
       const quarterEvals = evaluations.filter(evaluation => evaluation.quarter === quarter);
       
-      if (quarterEvals.length === 0) return { quarter, percentage: 0, evaluationCount: 0 };
+      if (quarterEvals.length === 0) {
+        return { 
+          quarter, 
+          KFNA: 0, 
+          'NFS East': 0, 
+          'NFS West': 0, 
+          Average: 0 
+        };
+      }
       
-      // Use the score field directly
+      // Calculate by school
+      const schoolScores = {};
+      quarterEvals.forEach(evaluation => {
+        const schoolName = schoolMap[evaluation.schoolId] || 'Unknown';
+        if (!schoolScores[schoolName]) {
+          schoolScores[schoolName] = { total: 0, count: 0 };
+        }
+        schoolScores[schoolName].total += evaluation.score;
+        schoolScores[schoolName].count++;
+      });
+      
+      // Calculate averages for each school
+      const schoolAverages = {};
+      Object.keys(schoolScores).forEach(school => {
+        schoolAverages[school] = Math.round(schoolScores[school].total / schoolScores[school].count);
+      });
+      
+      // Calculate overall average
       const totalScore = quarterEvals.reduce((sum, evaluation) => sum + evaluation.score, 0);
-      const averageScore = totalScore / quarterEvals.length;
-      const percentage = Math.round(averageScore);
+      const overallAverage = Math.round(totalScore / quarterEvals.length);
       
       return {
         quarter,
-        percentage,
-        evaluationCount: quarterEvals.length
+        KFNA: schoolAverages['KFNA'] || 0,
+        'NFS East': schoolAverages['NFS East'] || 0,
+        'NFS West': schoolAverages['NFS West'] || 0,
+        Average: overallAverage
       };
     });
 
     return quarterlyData;
-  }, [evaluations]);
+  }, [evaluations, schools]);
 
   // Process performance data from test scores
   const processedPerformanceData = useMemo(() => {
@@ -639,7 +670,7 @@ const ReportsEnhanced: React.FC = () => {
                     <BarChart className="h-5 w-5" />
                     Evaluation Scores by School
                   </CardTitle>
-                  <CardDescription className="text-center">Quarterly performance percentages</CardDescription>
+                  <CardDescription className="text-center">Quarterly performance by school with combined average</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
@@ -663,7 +694,26 @@ const ReportsEnhanced: React.FC = () => {
                           boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                         }}
                       />
-                      <Bar dataKey="percentage" fill="#3b82f6" name="Performance %" radius={[2, 2, 0, 0]} />
+                      <Legend 
+                        wrapperStyle={{ paddingTop: '20px' }}
+                        content={({ payload }) => (
+                          <div className="flex justify-center gap-4 flex-wrap">
+                            {payload?.map((entry, index) => (
+                              <div key={index} className="flex items-center gap-1">
+                                <div 
+                                  className="w-3 h-3 rounded-none" 
+                                  style={{ backgroundColor: entry.color }}
+                                />
+                                <span className="text-sm text-gray-600">{entry.value}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      />
+                      <Bar dataKey="KFNA" fill="#E4424D" name="KFNA" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="NFS East" fill="#22A783" name="NFS East" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="NFS West" fill="#6247AA" name="NFS West" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="Average" fill="#3b82f6" name="Combined Average" radius={[2, 2, 0, 0]} />
                     </RechartsBarChart>
                   </ResponsiveContainer>
                 </CardContent>
