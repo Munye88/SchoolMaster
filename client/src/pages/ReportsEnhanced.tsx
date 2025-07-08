@@ -126,7 +126,7 @@ const ReportsEnhanced: React.FC = () => {
     }));
   }, [attendanceData, schools]);
 
-  // Process evaluation data
+  // Process evaluation data for quarterly percentages
   const processedEvaluationData = useMemo(() => {
     if (!evaluations.length || !schools.length) return [];
     
@@ -135,24 +135,41 @@ const ReportsEnhanced: React.FC = () => {
       return acc;
     }, {});
 
-    const schoolEvals = {};
+    // Group evaluations by quarters
+    const currentYear = new Date().getFullYear();
+    const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
     
-    evaluations.forEach(evaluation => {
-      const schoolName = schoolMap[evaluation.schoolId] || 'Unknown';
-      if (!schoolEvals[schoolName]) {
-        schoolEvals[schoolName] = { total: 0, sum: 0, count: 0 };
-      }
+    const quarterlyData = quarters.map(quarter => {
+      const quarterEvals = evaluations.filter(evaluation => {
+        const evalDate = new Date(evaluation.evaluationDate);
+        const evalMonth = evalDate.getMonth() + 1;
+        const evalYear = evalDate.getFullYear();
+        
+        if (evalYear !== currentYear) return false;
+        
+        switch (quarter) {
+          case 'Q1': return evalMonth >= 1 && evalMonth <= 3;
+          case 'Q2': return evalMonth >= 4 && evalMonth <= 6;
+          case 'Q3': return evalMonth >= 7 && evalMonth <= 9;
+          case 'Q4': return evalMonth >= 10 && evalMonth <= 12;
+          default: return false;
+        }
+      });
       
-      schoolEvals[schoolName].total += evaluation.totalScore;
-      schoolEvals[schoolName].sum += evaluation.totalScore;
-      schoolEvals[schoolName].count++;
+      if (quarterEvals.length === 0) return { quarter, percentage: 0 };
+      
+      const totalScore = quarterEvals.reduce((sum, evaluation) => sum + evaluation.totalScore, 0);
+      const averageScore = totalScore / quarterEvals.length;
+      const percentage = Math.round((averageScore / 100) * 100);
+      
+      return {
+        quarter,
+        percentage,
+        evaluationCount: quarterEvals.length
+      };
     });
 
-    return Object.entries(schoolEvals).map(([school, data]) => ({
-      school,
-      averageScore: Math.round((data.sum / data.count) * 10) / 10,
-      totalEvaluations: data.count
-    }));
+    return quarterlyData;
   }, [evaluations, schools]);
 
   // Process performance data from test scores
@@ -637,22 +654,23 @@ const ReportsEnhanced: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="bg-white shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center justify-center gap-2">
                     <BarChart className="h-5 w-5" />
                     Evaluation Scores by School
                   </CardTitle>
-                  <CardDescription>Average evaluation scores</CardDescription>
+                  <CardDescription className="text-center">Quarterly performance percentages</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
                     <RechartsBarChart data={processedEvaluationData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis 
-                        dataKey="school" 
+                        dataKey="quarter" 
                         tick={{ fontSize: 12 }}
                         axisLine={{ stroke: '#e0e0e0' }}
                       />
                       <YAxis 
+                        domain={[0, 100]}
                         tick={{ fontSize: 12 }}
                         axisLine={{ stroke: '#e0e0e0' }}
                       />
@@ -664,7 +682,7 @@ const ReportsEnhanced: React.FC = () => {
                           boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                         }}
                       />
-                      <Bar dataKey="averageScore" fill="#3b82f6" name="Average Score" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="percentage" fill="#3b82f6" name="Performance %" radius={[2, 2, 0, 0]} />
                     </RechartsBarChart>
                   </ResponsiveContainer>
                 </CardContent>
