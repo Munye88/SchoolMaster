@@ -286,8 +286,8 @@ const ReportsEnhanced: React.FC = () => {
       const recommendations = [];
       const totalEvaluations = evaluations.length;
       const averageScore = totalEvaluations > 0 ? 
-        Math.round((evaluations.reduce((sum, evaluation) => sum + evaluation.totalScore, 0) / totalEvaluations) * 10) / 10 : 0;
-      const excellentCount = evaluations.filter(evaluation => evaluation.totalScore >= 90).length;
+        Math.round((evaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / totalEvaluations) * 10) / 10 : 0;
+      const excellentCount = evaluations.filter(evaluation => evaluation.score >= 90).length;
       const excellenceRate = totalEvaluations > 0 ? Math.round((excellentCount / totalEvaluations) * 100) : 0;
       
       if (averageScore < 80) {
@@ -607,7 +607,7 @@ const ReportsEnhanced: React.FC = () => {
                 <CardContent>
                   <div className="text-2xl font-bold text-blue-600">
                     {evaluations.length > 0 ? 
-                      Math.round((evaluations.reduce((sum, evaluation) => sum + evaluation.totalScore, 0) / evaluations.length) * 10) / 10 
+                      Math.round((evaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / evaluations.length) * 10) / 10 
                       : 0
                     }
                   </div>
@@ -623,7 +623,7 @@ const ReportsEnhanced: React.FC = () => {
                 <CardContent>
                   <div className="text-2xl font-bold text-green-600">
                     {evaluations.length > 0 ? 
-                      Math.round((evaluations.filter(evaluation => evaluation.totalScore >= 90).length / evaluations.length) * 100)
+                      Math.round((evaluations.filter(evaluation => evaluation.score >= 90).length / evaluations.length) * 100)
                       : 0
                     }%
                   </div>
