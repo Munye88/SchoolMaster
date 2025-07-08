@@ -845,38 +845,37 @@ const ReportsEnhanced: React.FC = () => {
         </Tabs>
 
         {/* Summary and Recommendations */}
-        <Card className="bg-white shadow-sm mt-6">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-center gap-2">
+        <div className="mt-6 space-y-4">
+          <div className="mb-4">
+            <h3 className="text-lg font-medium text-gray-900 flex items-center justify-center gap-2 mb-4">
               <Lightbulb className="h-5 w-5" />
               Summary & Recommendations
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <h4 className="font-medium text-blue-900 mb-2">Current Status</h4>
-              <p className="text-sm text-blue-800 leading-relaxed">• {summary}</p>
+            </h3>
+          </div>
+          
+          <div className="space-y-3">
+            <h4 className="font-medium text-blue-900 mb-2">Current Status</h4>
+            <p className="text-sm text-blue-800 leading-relaxed">• {summary}</p>
+          </div>
+          
+          <div className="space-y-3">
+            <h4 className="font-medium text-gray-900 text-center">Recommendations</h4>
+            <div className="space-y-2">
+              {recommendations.map((rec, index) => (
+                <p 
+                  key={index}
+                  className={`text-sm leading-relaxed ${
+                    rec.type === 'success' ? 'text-green-800' :
+                    rec.type === 'warning' ? 'text-yellow-800' :
+                    'text-red-800'
+                  }`}
+                >
+                  • {rec.text}
+                </p>
+              ))}
             </div>
-            
-            <div className="space-y-3">
-              <h4 className="font-medium text-gray-900 text-center">Recommendations</h4>
-              <div className="space-y-2">
-                {recommendations.map((rec, index) => (
-                  <p 
-                    key={index}
-                    className={`text-sm leading-relaxed ${
-                      rec.type === 'success' ? 'text-green-800' :
-                      rec.type === 'warning' ? 'text-yellow-800' :
-                      'text-red-800'
-                    }`}
-                  >
-                    • {rec.text}
-                  </p>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
