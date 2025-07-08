@@ -254,32 +254,123 @@ const ReportsEnhanced: React.FC = () => {
   const generateSummaryAndRecommendations = () => {
     const { attendanceRate, totalInstructors, presentToday, onLeave, absent } = summaryStats;
     
-    const recommendations = [];
-    
-    if (attendanceRate < 90) {
-      recommendations.push({
-        type: 'warning',
-        text: 'Attendance rate is below 90%. Consider implementing attendance improvement strategies.'
-      });
+    if (activeTab === 'attendance') {
+      const recommendations = [];
+      
+      if (attendanceRate < 90) {
+        recommendations.push({
+          type: 'warning',
+          text: 'Attendance rate is below 90%. Consider implementing attendance improvement strategies.'
+        });
+      }
+      
+      if (absent > 3) {
+        recommendations.push({
+          type: 'alert',
+          text: 'High number of unplanned absences. Review staff wellness and engagement programs.'
+        });
+      }
+      
+      if (attendanceRate >= 95) {
+        recommendations.push({
+          type: 'success',
+          text: 'Excellent attendance rate! Current strategies are working well.'
+        });
+      }
+      
+      return {
+        summary: `Current attendance rate of ${attendanceRate}% with ${presentToday} out of ${totalInstructors} instructors present. ${onLeave} instructors are on planned leave and ${absent} are absent.`,
+        recommendations
+      };
     }
     
-    if (absent > 3) {
-      recommendations.push({
-        type: 'alert',
-        text: 'High number of unplanned absences. Review staff wellness and engagement programs.'
-      });
+    if (activeTab === 'evaluation') {
+      const recommendations = [];
+      const totalEvaluations = evaluations.length;
+      const averageScore = totalEvaluations > 0 ? 
+        Math.round((evaluations.reduce((sum, evaluation) => sum + evaluation.totalScore, 0) / totalEvaluations) * 10) / 10 : 0;
+      const excellentCount = evaluations.filter(evaluation => evaluation.totalScore >= 90).length;
+      const excellenceRate = totalEvaluations > 0 ? Math.round((excellentCount / totalEvaluations) * 100) : 0;
+      
+      if (averageScore < 80) {
+        recommendations.push({
+          type: 'alert',
+          text: 'Average evaluation score is below 80. Consider additional training and support programs.'
+        });
+      }
+      
+      if (excellenceRate < 50) {
+        recommendations.push({
+          type: 'warning',
+          text: 'Excellence rate is below 50%. Focus on professional development initiatives.'
+        });
+      }
+      
+      if (averageScore >= 85) {
+        recommendations.push({
+          type: 'success',
+          text: 'Strong evaluation performance! Continue current training methods.'
+        });
+      }
+      
+      if (totalEvaluations === 0) {
+        recommendations.push({
+          type: 'warning',
+          text: 'No evaluations completed this period. Schedule regular evaluation sessions.'
+        });
+      }
+      
+      return {
+        summary: `${totalEvaluations} evaluations completed with an average score of ${averageScore}/100. ${excellentCount} instructors (${excellenceRate}%) achieved excellence rating (≥90 points).`,
+        recommendations
+      };
     }
     
-    if (attendanceRate >= 95) {
-      recommendations.push({
-        type: 'success',
-        text: 'Excellent attendance rate! Current strategies are working well.'
-      });
+    if (activeTab === 'performance') {
+      const recommendations = [];
+      const totalTests = testScores.length;
+      const averageScore = totalTests > 0 ? 
+        Math.round((testScores.reduce((sum, test) => sum + test.score, 0) / totalTests) * 10) / 10 : 0;
+      const passingCount = testScores.filter(test => test.score >= 80).length;
+      const passingRate = totalTests > 0 ? Math.round((passingCount / totalTests) * 100) : 0;
+      
+      if (averageScore < 75) {
+        recommendations.push({
+          type: 'alert',
+          text: 'Average test score is below 75. Review curriculum and teaching methods.'
+        });
+      }
+      
+      if (passingRate < 80) {
+        recommendations.push({
+          type: 'warning',
+          text: 'Passing rate is below 80%. Consider additional student support programs.'
+        });
+      }
+      
+      if (averageScore >= 85) {
+        recommendations.push({
+          type: 'success',
+          text: 'Excellent test performance! Students are meeting learning objectives.'
+        });
+      }
+      
+      if (totalTests === 0) {
+        recommendations.push({
+          type: 'warning',
+          text: 'No test scores recorded this period. Ensure regular assessment completion.'
+        });
+      }
+      
+      return {
+        summary: `${totalTests} tests administered with an average score of ${averageScore}/100. ${passingCount} students (${passingRate}%) achieved passing grade (≥80 points).`,
+        recommendations
+      };
     }
     
     return {
-      summary: `Current attendance rate of ${attendanceRate}% with ${presentToday} out of ${totalInstructors} instructors present. ${onLeave} instructors are on planned leave and ${absent} are absent.`,
-      recommendations
+      summary: 'No data available for the selected tab.',
+      recommendations: []
     };
   };
 
