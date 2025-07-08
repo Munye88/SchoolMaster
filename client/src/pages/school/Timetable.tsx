@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSchool } from "@/hooks/useSchool";
 import { useSchoolParam } from "@/hooks/use-school-param";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,18 @@ const SchoolTimetable = () => {
 
   // Use the school from URL or selected school
   const currentSchool = selectedSchool || schoolFromUrl;
+
+  // Query to fetch uploaded documents for this school
+  const { data: schoolDocuments = [], isLoading: documentsLoading } = useQuery({
+    queryKey: ['school-documents', currentSchool?.id],
+    queryFn: async () => {
+      if (!currentSchool?.id) return [];
+      const response = await fetch(`/api/school-documents?schoolId=${currentSchool.id}`);
+      if (!response.ok) throw new Error('Failed to fetch documents');
+      return response.json();
+    },
+    enabled: !!currentSchool?.id,
+  });
   
   // Always show timetables for now
   const isKNFA = true; // Force display for all schools until fixed
@@ -71,7 +83,7 @@ const SchoolTimetable = () => {
       });
       setUploadDialogOpen(false);
       setUploadForm({ title: 'Updated Timetable', documentType: 'daily_schedule', description: '', file: null });
-      queryClient.invalidateQueries({ queryKey: ['/api/school-documents'] });
+      queryClient.invalidateQueries({ queryKey: ['school-documents'] });
     },
     onError: (error: Error) => {
       console.error('Upload mutation error:', error);
@@ -472,6 +484,49 @@ const SchoolTimetable = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Uploaded Documents Section */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="text-center">Uploaded Documents</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {documentsLoading ? (
+            <div className="text-center py-4">Loading documents...</div>
+          ) : schoolDocuments.length > 0 ? (
+            <div className="space-y-2">
+              {schoolDocuments.map((doc: any) => (
+                <div key={doc.id} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200">
+                  <div className="flex items-center space-x-3">
+                    <FileText className="h-5 w-5 text-blue-600" />
+                    <div>
+                      <div className="font-medium">{doc.title}</div>
+                      <div className="text-sm text-gray-500">{doc.fileName}</div>
+                      <div className="text-xs text-gray-400">
+                        Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(doc.fileUrl, '_blank')}
+                    >
+                      <Download className="h-4 w-4 mr-1" />
+                      View
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              No documents uploaded yet. Use the "Upload Timetable" button to add documents.
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
