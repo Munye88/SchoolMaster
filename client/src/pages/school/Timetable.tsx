@@ -98,13 +98,16 @@ const SchoolTimetable = () => {
   // Delete document mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
+      console.log('🗑️ Deleting document with ID:', id);
       const response = await fetch(`/api/school-documents/${id}`, {
         method: 'DELETE',
       });
+      console.log('Delete response status:', response.status);
       if (!response.ok) {
         throw new Error('Failed to delete document');
       }
-      return response.json();
+      // DELETE returns 204 with no content, so don't try to parse JSON
+      return { success: true };
     },
     onSuccess: () => {
       toast({
