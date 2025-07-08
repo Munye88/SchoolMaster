@@ -54,6 +54,35 @@ import { processAssistantQuery, chatWithMoonsAssistant, MoonsAssistantRequest } 
 import { AIChatRequest } from "../client/src/lib/ai-types";
 import { initDatabase } from "./initDb";
 
+// Configure multer for school documents upload
+const schoolDocumentsStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = 'uploads/school-documents';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const uploadSchoolDoc = multer({ 
+  storage: schoolDocumentsStorage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['.pdf', '.doc', '.docx', '.xlsx', '.xls', '.png', '.jpg', '.jpeg'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowedTypes.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type'), false);
+    }
+  },
+  limits: { fileSize: 50 * 1024 * 1024 } // 50MB limit
+});
+
 // Helper function to get a default instructor ID for a school
 async function getDefaultInstructorId(schoolId: number, excludeInstructorId?: number): Promise<number> {
   try {
@@ -3131,7 +3160,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/school-documents", upload.single('file'), async (req, res) => {
+  app.post("/api/school-documents", uploadSchoolDoc.single('file'), async (req, res) => {
     try {
       console.log('📄 School document upload request received');
       console.log('Request body:', req.body);
@@ -3157,21 +3186,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Missing required fields: title, documentType, or schoolId" });
       }
 
-      // Create directory for school documents if it doesn't exist
-      const dirPath = path.join("uploads", "school-documents");
-      if (!fs.existsSync(dirPath)) {
-        console.log('📁 Creating uploads directory:', dirPath);
-        fs.mkdirSync(dirPath, { recursive: true });
-      }
-
-      // Move the file to the school documents directory
-      const fileName = `${Date.now()}-${req.file.originalname}`;
-      const filePath = path.join(dirPath, fileName);
-      
-      console.log('📁 Moving file from', req.file.path, 'to', filePath);
-      fs.renameSync(req.file.path, filePath);
-
-      const fileUrl = `${req.protocol}://${req.get('host')}/uploads/school-documents/${fileName}`;
+      // File is automatically saved by multer diskStorage
+      const fileUrl = `${req.protocol}://${req.get('host')}/uploads/school-documents/${req.file.filename}`;
       console.log('🔗 File URL:', fileUrl);
 
       const documentData = {
