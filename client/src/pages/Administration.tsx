@@ -69,9 +69,17 @@ const Administration = () => {
       const mappedCategory = documentTypeMap[documentType];
       let document = documents?.find(doc => doc.category === mappedCategory);
       
-      // If no document found and we're looking for handbook, get the first handbook document
+      // If no document found and we're looking for handbook, get the most recent handbook document
       if (!document && mappedCategory === "handbook") {
-        document = documents?.find(doc => doc.category === "handbook");
+        // Get the most recent handbook document by sorting by uploadDate
+        const handbookDocs = documents?.filter(doc => doc.category === "handbook") || [];
+        document = handbookDocs.sort((a, b) => new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime())[0];
+      }
+      
+      // For handbook specifically, always get the most recent one
+      if (mappedCategory === "handbook" && documents) {
+        const handbookDocs = documents.filter(doc => doc.category === "handbook");
+        document = handbookDocs.sort((a, b) => new Date(b.uploadDate).getTime() - new Date(a.uploadDate).getTime())[0];
       }
       
       setActiveDocument(document || null);
