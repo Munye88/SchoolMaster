@@ -513,7 +513,9 @@ const SchoolYearlySchedule = () => {
       </Card>
       )}
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Only show Key Academic Dates and Calendar Notes if no documents are uploaded */}
+      {yearlyScheduleDocuments.length === 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -589,7 +591,8 @@ const SchoolYearlySchedule = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
+        </div>
+      )}
       
       {/* Display uploaded documents content inline */}
       {yearlyScheduleDocuments.length > 0 && (
