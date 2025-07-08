@@ -1,12 +1,197 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSchool } from "@/hooks/useSchool";
+import { useSchoolParam } from "@/hooks/use-school-param";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Printer, Share2, CalendarDays, FileSpreadsheet } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Download, Printer, Share2, CalendarDays, FileSpreadsheet, Upload, FileText, Trash2 } from "lucide-react";
 import { PrintButton } from "@/components/ui/print-button";
 
 const SchoolYearlySchedule = () => {
-  const { selectedSchool } = useSchool();
+  const { selectedSchool, selectSchool } = useSchool();
+  const schoolFromUrl = useSchoolParam();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [uploadForm, setUploadForm] = useState({
+    title: 'Updated Yearly Schedule',
+    documentType: 'yearly_schedule' as const,
+    description: '',
+    file: null as File | null
+  });
+
+  // Auto-select school from URL if not already selected
+  useEffect(() => {
+    if (schoolFromUrl && (!selectedSchool || selectedSchool.id !== schoolFromUrl.id)) {
+      selectSchool(schoolFromUrl);
+    }
+  }, [schoolFromUrl, selectedSchool, selectSchool]);
+
+  // Use the school from URL or selected school
+  const currentSchool = selectedSchool || schoolFromUrl;
+
+  // Query to fetch uploaded documents for this school
+  const { data: schoolDocuments = [], isLoading: documentsLoading } = useQuery({
+    queryKey: ['school-documents', currentSchool?.id],
+    queryFn: async () => {
+      if (!currentSchool?.id) return [];
+      const response = await fetch(`/api/school-documents?schoolId=${currentSchool.id}`);
+      if (!response.ok) throw new Error('Failed to fetch documents');
+      return response.json();
+    },
+    enabled: !!currentSchool?.id,
+  });
+
+  // Upload yearly schedule mutation
+  const uploadMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      console.log('Uploading yearly schedule with data:', {
+        title: formData.get('title'),
+        documentType: formData.get('documentType'),
+        schoolId: formData.get('schoolId'),
+        hasFile: !!formData.get('file')
+      });
+      
+      const response = await fetch('/api/school-documents', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Upload failed' }));
+        console.error('Upload error:', errorData);
+        throw new Error(errorData.message || 'Upload failed');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      console.log('Upload successful:', data);
+      toast({
+        title: "Success",
+        description: "Yearly schedule uploaded successfully",
+      });
+      setUploadDialogOpen(false);
+      setUploadForm({ title: 'Updated Yearly Schedule', documentType: 'yearly_schedule', description: '', file: null });
+      queryClient.invalidateQueries({ queryKey: ['school-documents'] });
+    },
+    onError: (error: Error) => {
+      console.error('Upload mutation error:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to upload yearly schedule",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete document mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      console.log('🗑️ Deleting document with ID:', id);
+      const response = await fetch(`/api/school-documents/${id}`, {
+        method: 'DELETE',
+      });
+      console.log('Delete response status:', response.status);
+      if (!response.ok) {
+        throw new Error('Failed to delete document');
+      }
+      // DELETE returns 204 with no content, so don't try to parse JSON
+      return { success: true };
+    },
+    onSuccess: () => {
+      toast({
+        title: "Document deleted",
+        description: "Document has been successfully removed",
+      });
+      queryClient.invalidateQueries({ queryKey: ['school-documents'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Delete failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    console.log('📁 File selected:', file ? {
+      name: file.name,
+      size: file.size,
+      type: file.type
+    } : 'No file');
+    if (file) {
+      setUploadForm(prev => ({ ...prev, file }));
+      console.log('✅ File added to upload form');
+    }
+  };
+
+  const handleUpload = () => {
+    console.log('🔵 Upload button clicked!');
+    console.log('Upload form state:', uploadForm);
+    console.log('Current school:', currentSchool);
+    
+    if (!uploadForm.file) {
+      console.error('❌ No file selected');
+      toast({
+        title: "Error",
+        description: "Please select a file to upload",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!uploadForm.title) {
+      console.error('❌ No title provided');
+      toast({
+        title: "Error", 
+        description: "Please enter a title for the yearly schedule",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!currentSchool) {
+      console.error('❌ No school selected');
+      toast({
+        title: "Error",
+        description: "No school selected",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    console.log('✅ All validation passed, creating FormData');
+    
+    const formData = new FormData();
+    formData.append('file', uploadForm.file);
+    formData.append('title', uploadForm.title);
+    formData.append('documentType', uploadForm.documentType);
+    formData.append('description', uploadForm.description);
+    formData.append('schoolId', currentSchool.id.toString());
+    
+    console.log('📤 Submitting upload mutation');
+    uploadMutation.mutate(formData);
+  };
+
+  const handleDelete = (id: number, title: string) => {
+    if (confirm(`Are you sure you want to delete "${title}"?`)) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  // Filter documents to show only yearly schedules
+  const yearlyScheduleDocuments = schoolDocuments.filter((doc: any) => 
+    doc.documentType === 'yearly_schedule'
+  );
   
   return (
     <div id="yearlyScheduleContent" className="flex-1 p-8 bg-gray-50 overflow-y-auto">
@@ -19,6 +204,90 @@ const SchoolYearlySchedule = () => {
         </div>
         
         <div className="flex gap-2">
+          <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-[#0A2463] hover:bg-[#071A4A] gap-2">
+                <Upload size={16} /> Upload Yearly Schedule
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px] rounded-none">
+              <DialogHeader>
+                <DialogTitle className="text-center">Upload New Yearly Schedule</DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Schedule Title</Label>
+                  <Input
+                    id="title"
+                    value={uploadForm.title}
+                    onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="e.g., Academic Year 2024-25 Schedule"
+                    className="rounded-none"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="documentType">Document Type</Label>
+                  <Select
+                    value={uploadForm.documentType}
+                    onValueChange={(value) => setUploadForm(prev => ({ ...prev, documentType: value as 'yearly_schedule' }))}
+                  >
+                    <SelectTrigger className="rounded-none">
+                      <SelectValue placeholder="Select document type" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      <SelectItem value="yearly_schedule">Yearly Schedule</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="description">Description (Optional)</Label>
+                  <Textarea
+                    id="description"
+                    value={uploadForm.description}
+                    onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Brief description of the yearly schedule"
+                    rows={3}
+                    className="rounded-none"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="file">Select File</Label>
+                  <Input
+                    id="file"
+                    type="file"
+                    onChange={handleFileChange}
+                    accept=".pdf,.doc,.docx,.xlsx,.xls,.png,.jpg,.jpeg"
+                    className="rounded-none"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Supported formats: PDF, Word, Excel, Images (Max 50MB)
+                  </p>
+                </div>
+                
+                <div className="flex justify-end space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setUploadDialogOpen(false)}
+                    className="rounded-none"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleUpload}
+                    disabled={uploadMutation.isPending}
+                    className="bg-[#0A2463] hover:bg-[#071A4A] rounded-none"
+                  >
+                    {uploadMutation.isPending ? 'Uploading...' : 'Upload Schedule'}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+          
           <PrintButton contentId="yearlyScheduleContent" />
           <Button variant="outline" className="gap-2">
             <Download size={16} /> Export
@@ -227,6 +496,67 @@ const SchoolYearlySchedule = () => {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Uploaded Documents Section */}
+      <Card className="mt-6 rounded-none">
+        <CardHeader>
+          <CardTitle className="text-center">Uploaded Documents</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {documentsLoading ? (
+            <div className="text-center py-4">Loading documents...</div>
+          ) : yearlyScheduleDocuments.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <FileText className="mx-auto h-12 w-12 mb-2" />
+              <p>No yearly schedule documents uploaded yet.</p>
+              <p className="text-sm">Use the "Upload Yearly Schedule" button to add documents.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {yearlyScheduleDocuments.map((doc: any) => (
+                <div key={doc.id} className="flex items-center justify-between p-4 bg-gray-50 border rounded-none">
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-5 w-5 text-blue-600" />
+                    <div>
+                      <p className="font-medium">{doc.title}</p>
+                      <p className="text-sm text-gray-500">{doc.fileName}</p>
+                      <p className="text-xs text-gray-400">
+                        Uploaded: {new Date(doc.uploadDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(doc.fileUrl, '_blank')}
+                      className="rounded-none"
+                    >
+                      View
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDelete(doc.id, doc.title)}
+                      disabled={deleteMutation.isPending}
+                      className="rounded-none text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      {deleteMutation.isPending ? (
+                        'Deleting...'
+                      ) : (
+                        <>
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
