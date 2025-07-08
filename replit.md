@@ -329,6 +329,7 @@ The system manages multiple interconnected entities:
 - July 8, 2025: QUARTERLY EVALUATION SYSTEM ENHANCEMENT - Enhanced Reports section evaluation tab to display quarterly performance data by individual school names (KFNA, NFS East, NFS West) plus combined average across all schools with proper color-coded bar charts and legends
 - July 8, 2025: PERFORMANCE DISTRIBUTION CHART - Replaced monthly evaluation trend with Performance Distribution pie chart showing evaluation scores by performance levels (Excellent 90-100, Good 80-89, Satisfactory 70-79, Needs Improvement <70) with proper color coding and centered title alignment
 - July 8, 2025: EVALUATION PASSING SCORE UPDATE - Updated evaluation system to reflect 85/100 as passing score: Excellence Rate now shows scores ≥85, Performance Distribution categories adjusted (Excellent 90-100, Good 85-89, Below Passing 80-84, Needs Improvement <80), and recommendations trigger when average score <85
+- July 8, 2025: COMPREHENSIVE TEST PASSING SCORES IMPLEMENTED - Updated all test scoring systems with accurate passing thresholds: Book Test 66+, ALCPT 50+, ECL 50+, OPI 2/2, applied across performance charts, recommendations, and school-specific test type percentage displays
 
 ## User Preferences
 

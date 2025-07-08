@@ -185,7 +185,7 @@ const ReportsEnhanced: React.FC = () => {
     return quarterlyData;
   }, [evaluations, schools]);
 
-  // Process performance data from test scores
+  // Process performance data for test type percentages by school
   const processedPerformanceData = useMemo(() => {
     if (!testScores.length || !schools.length) return [];
     
@@ -193,42 +193,36 @@ const ReportsEnhanced: React.FC = () => {
       acc[school.id] = school.name;
       return acc;
     }, {});
-
-    const schoolPerformance = {};
     
-    testScores.forEach(score => {
-      const schoolName = schoolMap[score.schoolId] || 'Unknown';
-      if (!schoolPerformance[schoolName]) {
-        schoolPerformance[schoolName] = { 
-          total: 0, 
-          sum: 0, 
-          count: 0,
-          passing: 0,
-          testTypes: {}
-        };
-      }
+    return schools.map(school => {
+      const schoolTests = testScores.filter(test => test.schoolId === school.id);
       
-      schoolPerformance[schoolName].total += score.score;
-      schoolPerformance[schoolName].sum += score.score;
-      schoolPerformance[schoolName].count++;
+      // Define test types for each school based on requirements
+      const testTypes = school.name === 'KFNA' ? ['ALCPT', 'Book'] :
+                       school.name === 'NFS West' ? ['ALCPT', 'Book', 'ECL'] :
+                       ['ALCPT', 'Book', 'ECL', 'OPI']; // NFS East gets all types
       
-      if (score.score >= 80) {
-        schoolPerformance[schoolName].passing++;
-      }
+      const result = { school: school.name };
       
-      if (!schoolPerformance[schoolName].testTypes[score.testType]) {
-        schoolPerformance[schoolName].testTypes[score.testType] = 0;
-      }
-      schoolPerformance[schoolName].testTypes[score.testType]++;
+      testTypes.forEach(testType => {
+        const typeTests = schoolTests.filter(test => test.testType === testType);
+        let passingRate = 0;
+        
+        if (typeTests.length > 0) {
+          const passingTests = typeTests.filter(test => {
+            if (testType === 'Book') return test.score >= 66;
+            if (testType === 'ALCPT' || testType === 'ECL') return test.score >= 50;
+            if (testType === 'OPI') return test.score >= 2;
+            return false;
+          });
+          passingRate = Math.round((passingTests.length / typeTests.length) * 100);
+        }
+        
+        result[testType] = passingRate;
+      });
+      
+      return result;
     });
-
-    return Object.entries(schoolPerformance).map(([school, data]) => ({
-      school,
-      averageScore: Math.round((data.sum / data.count) * 10) / 10,
-      passingRate: Math.round((data.passing / data.count) * 100),
-      totalTests: data.count,
-      testTypes: data.testTypes
-    }));
   }, [testScores, schools]);
 
   // Calculate summary statistics
@@ -361,7 +355,15 @@ const ReportsEnhanced: React.FC = () => {
       const totalTests = testScores.length;
       const averageScore = totalTests > 0 ? 
         Math.round((testScores.reduce((sum, test) => sum + test.score, 0) / totalTests) * 10) / 10 : 0;
-      const passingCount = testScores.filter(test => test.score >= 80).length;
+      
+      // Calculate passing count based on test-specific thresholds
+      const passingCount = testScores.filter(test => {
+        if (test.testType === 'Book') return test.score >= 66;
+        if (test.testType === 'ALCPT' || test.testType === 'ECL') return test.score >= 50;
+        if (test.testType === 'OPI') return test.score >= 2;
+        return false;
+      }).length;
+      
       const passingRate = totalTests > 0 ? Math.round((passingCount / totalTests) * 100) : 0;
       
       if (averageScore < 75) {
@@ -809,11 +811,11 @@ const ReportsEnhanced: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="bg-white shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center justify-center gap-2">
                     <BarChart className="h-5 w-5" />
                     Performance by School
                   </CardTitle>
-                  <CardDescription>Average test scores by school</CardDescription>
+                  <CardDescription className="text-center">Test type percentages by school</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
@@ -825,8 +827,10 @@ const ReportsEnhanced: React.FC = () => {
                         axisLine={{ stroke: '#e0e0e0' }}
                       />
                       <YAxis 
+                        domain={[0, 100]}
                         tick={{ fontSize: 12 }}
                         axisLine={{ stroke: '#e0e0e0' }}
+                        label={{ value: 'Pass Rate (%)', angle: -90, position: 'insideLeft' }}
                       />
                       <RechartsTooltip 
                         contentStyle={{ 
@@ -836,7 +840,26 @@ const ReportsEnhanced: React.FC = () => {
                           boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                         }}
                       />
-                      <Bar dataKey="averageScore" fill="#f59e0b" name="Average Score" radius={[2, 2, 0, 0]} />
+                      <Legend 
+                        wrapperStyle={{ paddingTop: '20px' }}
+                        content={({ payload }) => (
+                          <div className="flex justify-center gap-4 flex-wrap">
+                            {payload?.map((entry, index) => (
+                              <div key={index} className="flex items-center gap-1">
+                                <div 
+                                  className="w-3 h-3 rounded-none" 
+                                  style={{ backgroundColor: entry.color }}
+                                />
+                                <span className="text-sm text-gray-600">{entry.value}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      />
+                      <Bar dataKey="ALCPT" fill="#3b82f6" name="ALCPT" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="Book" fill="#22c55e" name="Book Test" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="ECL" fill="#f59e0b" name="ECL" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="OPI" fill="#ef4444" name="OPI" radius={[2, 2, 0, 0]} />
                     </RechartsBarChart>
                   </ResponsiveContainer>
                 </CardContent>
