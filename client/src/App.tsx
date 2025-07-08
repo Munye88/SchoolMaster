@@ -9,7 +9,7 @@ import NewInstructorProfile from "@/pages/instructor/InstructorProfile";
 import Courses from "@/pages/Courses";
 import CourseDetails from "@/pages/CourseDetails";
 import TestTrackerWithTabs from "@/pages/TestTrackerWithTabs";
-import Reports from "@/pages/Reports";
+import ReportsEnhanced from "@/pages/ReportsEnhanced";
 import Documents from "@/pages/Documents";
 import Administration from "@/pages/Administration";
 import TrainingDevelopment from "@/pages/TrainingDevelopment";
@@ -54,7 +54,7 @@ import ManageStudents from "./pages/management/ManageStudents";
 import ManageCourses from "./pages/management/ManageCoursesFixed";
 import ScheduleManager from "./pages/admin/ScheduleManager";
 import DocumentManager from "./pages/administration/DocumentManager";
-import ReportsEnhanced from "./pages/reports/ReportsEnhanced";
+
 import TestTrackerEnhanced from "./pages/test-tracker/TestTrackerEnhanced";
 import SchoolHome from "./pages/schools/SchoolHome";
 import EmployeeHandbook from "./pages/administration/EmployeeHandbook";
@@ -96,7 +96,7 @@ function Router() {
           <ProtectedRoute path="/dli/alcpt-order" component={AlcptOrder} />
           <ProtectedRoute path="/dli/answer-sheets" component={AnswerSheets} />
           <ProtectedRoute path="/test-tracker" component={TestTrackerWithTabs} />
-          <ProtectedRoute path="/reports" component={Reports} />
+          <ProtectedRoute path="/reports" component={ReportsEnhanced} />
           <ProtectedRoute path="/documents" component={Documents} />
           <ProtectedRoute path="/action-log" component={ActionLogPage} />
           <ProtectedRoute
