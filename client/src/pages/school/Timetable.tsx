@@ -19,7 +19,7 @@ const SchoolTimetable = () => {
   const [activeTab, setActiveTab] = useState("aviation");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [uploadForm, setUploadForm] = useState({
-    title: '',
+    title: 'Updated Timetable',
     documentType: 'daily_schedule' as const,
     description: '',
     file: null as File | null
@@ -58,7 +58,7 @@ const SchoolTimetable = () => {
         description: "Timetable uploaded successfully",
       });
       setUploadDialogOpen(false);
-      setUploadForm({ title: '', documentType: 'daily_schedule', description: '', file: null });
+      setUploadForm({ title: 'Updated Timetable', documentType: 'daily_schedule', description: '', file: null });
       queryClient.invalidateQueries({ queryKey: ['/api/school-documents'] });
     },
     onError: (error: Error) => {
@@ -73,13 +73,54 @@ const SchoolTimetable = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    console.log('📁 File selected:', file ? {
+      name: file.name,
+      size: file.size,
+      type: file.type
+    } : 'No file');
+    
     if (file) {
       setUploadForm(prev => ({ ...prev, file }));
+      console.log('✅ File added to upload form');
     }
   };
 
   const handleUpload = () => {
-    if (!uploadForm.file || !currentSchool) return;
+    console.log('🔵 Upload button clicked!');
+    console.log('Upload form state:', uploadForm);
+    console.log('Current school:', currentSchool);
+    
+    if (!uploadForm.file) {
+      console.error('❌ No file selected');
+      toast({
+        title: "Error",
+        description: "Please select a file to upload",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!uploadForm.title) {
+      console.error('❌ No title provided');
+      toast({
+        title: "Error", 
+        description: "Please enter a title for the timetable",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!currentSchool) {
+      console.error('❌ No school selected');
+      toast({
+        title: "Error",
+        description: "No school selected",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    console.log('✅ All validation passed, creating FormData');
     
     const formData = new FormData();
     formData.append('file', uploadForm.file);
@@ -88,6 +129,7 @@ const SchoolTimetable = () => {
     formData.append('description', uploadForm.description);
     formData.append('schoolId', currentSchool.id.toString());
     
+    console.log('📤 Submitting upload mutation');
     uploadMutation.mutate(formData);
   };
   
@@ -171,7 +213,16 @@ const SchoolTimetable = () => {
                 
                 <div className="flex gap-2 pt-4">
                   <Button 
-                    onClick={handleUpload}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      console.log('🔘 Button clicked - Debug state:', {
+                        hasFile: !!uploadForm.file,
+                        hasTitle: !!uploadForm.title,
+                        isPending: uploadMutation.isPending,
+                        isDisabled: !uploadForm.file || !uploadForm.title || uploadMutation.isPending
+                      });
+                      handleUpload();
+                    }}
                     disabled={!uploadForm.file || !uploadForm.title || uploadMutation.isPending}
                     className="flex-1 bg-[#0A2463] hover:bg-[#071A4A] rounded-none"
                   >
