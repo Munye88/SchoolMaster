@@ -457,7 +457,7 @@ const TestTrackerProfessional: React.FC = () => {
                     <SelectTrigger className="rounded-none h-9">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="rounded-none">
+                    <SelectContent className="rounded-none max-h-60">
                       <SelectItem value="ALCPT">ALCPT</SelectItem>
                       <SelectItem value="Book Test">Book Test</SelectItem>
                       <SelectItem value="ECL">ECL</SelectItem>
@@ -472,7 +472,7 @@ const TestTrackerProfessional: React.FC = () => {
                     <SelectTrigger className="rounded-none h-9">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="rounded-none">
+                    <SelectContent className="rounded-none max-h-60">
                       <SelectItem value="Cadets">Cadets</SelectItem>
                       <SelectItem value="Refresher">Refresher</SelectItem>
                       <SelectItem value="Aviation Officers">Aviation Officers</SelectItem>
@@ -488,7 +488,7 @@ const TestTrackerProfessional: React.FC = () => {
                     <SelectTrigger className="rounded-none h-9">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="rounded-none">
+                    <SelectContent className="rounded-none max-h-60">
                       <SelectItem value="KFNA">KFNA</SelectItem>
                       <SelectItem value="NFS East">NFS East</SelectItem>
                       <SelectItem value="NFS West">NFS West</SelectItem>
@@ -502,7 +502,7 @@ const TestTrackerProfessional: React.FC = () => {
                     <SelectTrigger className="rounded-none h-9">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="rounded-none">
+                    <SelectContent className="rounded-none max-h-60">
                       {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => (
                         <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                       ))}
@@ -517,7 +517,7 @@ const TestTrackerProfessional: React.FC = () => {
                   <SelectTrigger className="rounded-none h-9">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-none">
+                  <SelectContent className="rounded-none max-h-60">
                     {getPeriodOptions(formData.testType).map(period => (
                       <SelectItem key={period} value={period}>{period}</SelectItem>
                     ))}
@@ -583,7 +583,7 @@ const TestTrackerProfessional: React.FC = () => {
                     <SelectTrigger className="rounded-none h-9">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="rounded-none">
+                    <SelectContent className="rounded-none max-h-60">
                       <SelectItem value="ALCPT">ALCPT</SelectItem>
                       <SelectItem value="Book Test">Book Test</SelectItem>
                       <SelectItem value="ECL">ECL</SelectItem>
@@ -598,7 +598,7 @@ const TestTrackerProfessional: React.FC = () => {
                     <SelectTrigger className="rounded-none h-9">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="rounded-none">
+                    <SelectContent className="rounded-none max-h-60">
                       <SelectItem value="Cadets">Cadets</SelectItem>
                       <SelectItem value="Refresher">Refresher</SelectItem>
                       <SelectItem value="Aviation Officers">Aviation Officers</SelectItem>
@@ -614,7 +614,7 @@ const TestTrackerProfessional: React.FC = () => {
                     <SelectTrigger className="rounded-none h-9">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="rounded-none">
+                    <SelectContent className="rounded-none max-h-60">
                       <SelectItem value="KFNA">KFNA</SelectItem>
                       <SelectItem value="NFS East">NFS East</SelectItem>
                       <SelectItem value="NFS West">NFS West</SelectItem>
@@ -628,7 +628,7 @@ const TestTrackerProfessional: React.FC = () => {
                     <SelectTrigger className="rounded-none h-9">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="rounded-none">
+                    <SelectContent className="rounded-none max-h-60">
                       {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => (
                         <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                       ))}
@@ -643,7 +643,7 @@ const TestTrackerProfessional: React.FC = () => {
                   <SelectTrigger className="rounded-none h-9">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-none">
+                  <SelectContent className="rounded-none max-h-60">
                     {getPeriodOptions(formData.testType).map(period => (
                       <SelectItem key={period} value={period}>{period}</SelectItem>
                     ))}
@@ -704,7 +704,7 @@ const TestTrackerProfessional: React.FC = () => {
             <SelectTrigger className="w-32 rounded-none">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="rounded-none">
+            <SelectContent className="rounded-none max-h-60">
               {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => (
                 <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
               ))}
@@ -718,7 +718,7 @@ const TestTrackerProfessional: React.FC = () => {
             <SelectTrigger className="w-40 rounded-none">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="rounded-none">
+            <SelectContent className="rounded-none max-h-60">
               <SelectItem value="All Schools">All Schools</SelectItem>
               <SelectItem value="KFNA">KFNA</SelectItem>
               <SelectItem value="NFS East">NFS East</SelectItem>

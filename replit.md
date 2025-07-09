@@ -337,6 +337,8 @@ The system manages multiple interconnected entities:
 - July 8, 2025: LEAVE DATA PROCESSING ENHANCEMENT - Fixed leave data processing to use correct leaveType field instead of type field, added sample sick leave data to demonstrate full functionality with 15 total leave records (11 PTO, 2 R&R, 2 Sick)
 - July 9, 2025: ATTENDANCE CHART Y-AXIS FIX - Fixed attendance chart to display percentages (0-100%) on Y-axis instead of raw attendance counts, updated chart title to clarify percentage display, and improved tooltip formatting to show proper percentage values
 - July 9, 2025: TEST TRACKER PROFESSIONAL REDESIGN - Completely rebuilt test tracker with TestTrackerProfessional component, added manual entry system, perfect square styling (rounded-none), centered text alignment, and conditional form fields (OPI shows level score instead of average score since pie chart displays distribution)
+- July 9, 2025: OPI TRACKING SYSTEM REDESIGN - Changed OPI test tracking from "Level (0-2)" to "Students Passed" checkbox system for practical pass/fail tracking, updated backend data processing, enhanced chart visualization to show pass/fail rates instead of level scores, improved table display with "Passed/Total" format, and updated all dialog forms for new OPI interface
+- July 9, 2025: DROPDOWN HEIGHT FIX - Fixed Book Test period dropdown height issue by adding max-h-60 class to all SelectContent components, ensuring all cycles (1-20) are visible when dropdown is opened
 
 ## User Preferences
 
