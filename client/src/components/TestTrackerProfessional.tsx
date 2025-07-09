@@ -44,9 +44,15 @@ const TestTrackerProfessional: React.FC = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(2025);
   const [selectedSchool, setSelectedSchool] = useState<string>('All Schools');
+  const [selectedPeriod, setSelectedPeriod] = useState<string>('All Periods');
   const [editingTest, setEditingTest] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Reset period filter when test type changes
+  useEffect(() => {
+    setSelectedPeriod('All Periods');
+  }, [activeTab]);
 
   // Helper functions - defined before use
   const getPassingScore = (testType: string, courseType: string): number => {
@@ -352,11 +358,12 @@ const TestTrackerProfessional: React.FC = () => {
     const filtered = testResults.filter(result => 
       result.testType === activeTab &&
       result.year === selectedYear &&
-      (selectedSchool === 'All Schools' || result.school === selectedSchool)
+      (selectedSchool === 'All Schools' || result.school === selectedSchool) &&
+      (selectedPeriod === 'All Periods' || result.period === selectedPeriod)
     );
     
     console.log('Filtered results:', filtered.length);
-    console.log('Filter criteria:', { activeTab, selectedYear, selectedSchool });
+    console.log('Filter criteria:', { activeTab, selectedYear, selectedSchool, selectedPeriod });
     console.log('Sample filtered result:', filtered[0]);
     
     return filtered;
@@ -726,6 +733,21 @@ const TestTrackerProfessional: React.FC = () => {
             </SelectContent>
           </Select>
         </div>
+
+        <div>
+          <Label htmlFor="period">Period</Label>
+          <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+            <SelectTrigger className="w-40 rounded-none">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="rounded-none max-h-60">
+              <SelectItem value="All Periods">All Periods</SelectItem>
+              {getPeriodOptions(activeTab).map(period => (
+                <SelectItem key={period} value={period}>{period}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Test Type Tabs */}
@@ -879,7 +901,6 @@ const TestTrackerProfessional: React.FC = () => {
                   <th className="text-center p-2">Period</th>
                   <th className="text-center p-2">Students</th>
                   <th className="text-center p-2">{activeTab === 'OPI' ? 'Passed/Total' : 'Average Score'}</th>
-                  <th className="text-center p-2">Status</th>
                   <th className="text-center p-2">Actions</th>
                 </tr>
               </thead>
@@ -893,18 +914,6 @@ const TestTrackerProfessional: React.FC = () => {
                     <td className="p-2 text-center">{result.numberOfStudents}</td>
                     <td className="p-2 text-center">
                       {result.testType === 'OPI' ? `${result.averageScore}/${result.numberOfStudents}` : result.averageScore}
-                    </td>
-                    <td className="p-2 text-center">
-                      <Badge variant={
-                        result.testType === 'OPI' 
-                          ? (result.averageScore > 0 ? "default" : "destructive")
-                          : (result.averageScore >= result.passingScore ? "default" : "destructive")
-                      } className="rounded-none">
-                        {result.testType === 'OPI' 
-                          ? (result.averageScore > 0 ? "Pass" : "Fail")
-                          : (result.averageScore >= result.passingScore ? "Pass" : "Fail")
-                        }
-                      </Badge>
                     </td>
                     <td className="p-2 text-center">
                       <DropdownMenu>

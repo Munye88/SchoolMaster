@@ -339,6 +339,8 @@ The system manages multiple interconnected entities:
 - July 9, 2025: TEST TRACKER PROFESSIONAL REDESIGN - Completely rebuilt test tracker with TestTrackerProfessional component, added manual entry system, perfect square styling (rounded-none), centered text alignment, and conditional form fields (OPI shows level score instead of average score since pie chart displays distribution)
 - July 9, 2025: OPI TRACKING SYSTEM REDESIGN - Changed OPI test tracking from "Level (0-2)" to "Students Passed" checkbox system for practical pass/fail tracking, updated backend data processing, enhanced chart visualization to show pass/fail rates instead of level scores, improved table display with "Passed/Total" format, and updated all dialog forms for new OPI interface
 - July 9, 2025: DROPDOWN HEIGHT FIX - Fixed Book Test period dropdown height issue by adding max-h-60 class to all SelectContent components, ensuring all cycles (1-20) are visible when dropdown is opened
+- July 9, 2025: STATUS COLUMN REMOVAL - Removed status column from test results table as requested for cleaner display focusing on test data
+- July 9, 2025: PERIOD FILTERING SYSTEM - Added period filtering dropdown allowing users to view specific cycles (Book Test) or months (ALCPT/ECL/OPI), with automatic reset when switching between test types
 
 ## User Preferences
 
