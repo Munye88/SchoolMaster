@@ -151,13 +151,17 @@ const TestTrackerProfessional: React.FC = () => {
       const dbData = {
         schoolId,
         testType: testData.testType,
-        score: testData.averageScore,
-        maxScore: testData.testType === 'OPI' ? 2 : 100,
-        percentage: testData.testType === 'OPI' ? (testData.averageScore / 2) * 100 : testData.averageScore,
+        score: testData.testType === 'OPI' ? testData.averageScore : testData.averageScore,
+        maxScore: testData.testType === 'OPI' ? testData.numberOfStudents : 100,
+        percentage: testData.testType === 'OPI' ? 
+          Math.round((testData.averageScore / testData.numberOfStudents) * 100) : 
+          testData.averageScore,
         year: testData.year,
         month: testData.testType === 'Book Test' ? null : getMonthNumber(testData.period),
         cycle: testData.testType === 'Book Test' ? parseInt(testData.period.replace('Cycle ', '')) : null,
-        studentName: `${testData.numberOfStudents} students`,
+        studentName: testData.testType === 'OPI' ? 
+          `${testData.averageScore}/${testData.numberOfStudents} students passed` : 
+          `${testData.numberOfStudents} students`,
         course: testData.courseType,
         instructor: 'Manual Entry',
         testDate: new Date().toISOString(),
@@ -212,13 +216,17 @@ const TestTrackerProfessional: React.FC = () => {
       const dbData = {
         schoolId,
         testType: testData.testType,
-        score: testData.averageScore,
-        maxScore: testData.testType === 'OPI' ? 2 : 100,
-        percentage: testData.testType === 'OPI' ? (testData.averageScore / 2) * 100 : testData.averageScore,
+        score: testData.testType === 'OPI' ? testData.averageScore : testData.averageScore,
+        maxScore: testData.testType === 'OPI' ? testData.numberOfStudents : 100,
+        percentage: testData.testType === 'OPI' ? 
+          Math.round((testData.averageScore / testData.numberOfStudents) * 100) : 
+          testData.averageScore,
         year: testData.year,
         month: testData.testType === 'Book Test' ? null : getMonthNumber(testData.period),
         cycle: testData.testType === 'Book Test' ? parseInt(testData.period.replace('Cycle ', '')) : null,
-        studentName: `${testData.numberOfStudents} students`,
+        studentName: testData.testType === 'OPI' ? 
+          `${testData.averageScore}/${testData.numberOfStudents} students passed` : 
+          `${testData.numberOfStudents} students`,
         course: testData.courseType,
         instructor: 'Manual Entry',
         testDate: new Date().toISOString(),
@@ -358,13 +366,22 @@ const TestTrackerProfessional: React.FC = () => {
     const filteredResults = getFilteredResults();
     
     if (activeTab === 'OPI') {
-      // Pie chart data for OPI
-      const passCount = filteredResults.filter(r => r.averageScore >= r.passingScore).length;
-      const failCount = filteredResults.length - passCount;
+      // Pie chart data for OPI - showing pass/fail counts
+      let totalPassed = 0;
+      let totalFailed = 0;
+      
+      filteredResults.forEach(result => {
+        const passedStudents = result.averageScore; // This now represents students who passed
+        const totalStudents = result.numberOfStudents;
+        const failedStudents = totalStudents - passedStudents;
+        
+        totalPassed += passedStudents;
+        totalFailed += failedStudents;
+      });
       
       return [
-        { name: 'Pass (2/2)', value: passCount, color: '#10b981' },
-        { name: 'Fail (Below 2/2)', value: failCount, color: '#ef4444' }
+        { name: 'Students Passed', value: totalPassed, color: '#10b981' },
+        { name: 'Students Failed', value: totalFailed, color: '#ef4444' }
       ];
     } else {
       // Bar chart data for other tests
@@ -510,33 +527,35 @@ const TestTrackerProfessional: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="numberOfStudents" className="text-sm">Students</Label>
+                  <Label htmlFor="numberOfStudents" className="text-sm">
+                    {formData.testType === 'OPI' ? 'Total Students' : 'Students'}
+                  </Label>
                   <Input
                     type="number"
                     value={formData.numberOfStudents}
                     onChange={(e) => setFormData({ ...formData, numberOfStudents: parseInt(e.target.value) || 0 })}
-                    placeholder="Count"
+                    placeholder={formData.testType === 'OPI' ? 'Total count' : 'Count'}
                     className="rounded-none h-9"
                   />
                 </div>
 
                 <div>
                   <Label htmlFor="averageScore" className="text-sm">
-                    {formData.testType === 'OPI' ? 'Level (0-2)' : 'Average'}
+                    {formData.testType === 'OPI' ? 'Students Passed' : 'Average'}
                   </Label>
                   <Input
                     type="number"
-                    step="0.1"
+                    step={formData.testType === 'OPI' ? '1' : '0.1'}
                     value={formData.averageScore}
                     onChange={(e) => setFormData({ ...formData, averageScore: parseFloat(e.target.value) || 0 })}
-                    placeholder={formData.testType === 'OPI' ? '0-2' : 'Average'}
+                    placeholder={formData.testType === 'OPI' ? 'Passed count' : 'Average'}
                     className="rounded-none h-9"
                   />
                 </div>
               </div>
 
               <div className="text-xs text-gray-500 text-center">
-                Passing: {getPassingScore(formData.testType, formData.courseType)}{formData.testType === 'OPI' ? '/2' : '/100'}
+                {formData.testType === 'OPI' ? 'Pass Rate: Based on passed/total students' : `Passing: ${getPassingScore(formData.testType, formData.courseType)}/100`}
               </div>
 
               <Button 
@@ -634,33 +653,35 @@ const TestTrackerProfessional: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="numberOfStudents" className="text-sm">Students</Label>
+                  <Label htmlFor="numberOfStudents" className="text-sm">
+                    {formData.testType === 'OPI' ? 'Total Students' : 'Students'}
+                  </Label>
                   <Input
                     type="number"
                     value={formData.numberOfStudents}
                     onChange={(e) => setFormData({ ...formData, numberOfStudents: parseInt(e.target.value) || 0 })}
-                    placeholder="Count"
+                    placeholder={formData.testType === 'OPI' ? 'Total count' : 'Count'}
                     className="rounded-none h-9"
                   />
                 </div>
 
                 <div>
                   <Label htmlFor="averageScore" className="text-sm">
-                    {formData.testType === 'OPI' ? 'Level (0-2)' : 'Average'}
+                    {formData.testType === 'OPI' ? 'Students Passed' : 'Average'}
                   </Label>
                   <Input
                     type="number"
-                    step="0.1"
+                    step={formData.testType === 'OPI' ? '1' : '0.1'}
                     value={formData.averageScore}
                     onChange={(e) => setFormData({ ...formData, averageScore: parseFloat(e.target.value) || 0 })}
-                    placeholder={formData.testType === 'OPI' ? '0-2' : 'Average'}
+                    placeholder={formData.testType === 'OPI' ? 'Passed count' : 'Average'}
                     className="rounded-none h-9"
                   />
                 </div>
               </div>
 
               <div className="text-xs text-gray-500 text-center">
-                Passing: {getPassingScore(formData.testType, formData.courseType)}{formData.testType === 'OPI' ? '/2' : '/100'}
+                {formData.testType === 'OPI' ? 'Pass Rate: Based on passed/total students' : `Passing: ${getPassingScore(formData.testType, formData.courseType)}/100`}
               </div>
 
               <Button 
@@ -857,7 +878,7 @@ const TestTrackerProfessional: React.FC = () => {
                   <th className="text-center p-2">School</th>
                   <th className="text-center p-2">Period</th>
                   <th className="text-center p-2">Students</th>
-                  <th className="text-center p-2">Average Score</th>
+                  <th className="text-center p-2">{activeTab === 'OPI' ? 'Passed/Total' : 'Average Score'}</th>
                   <th className="text-center p-2">Status</th>
                   <th className="text-center p-2">Actions</th>
                 </tr>
@@ -870,10 +891,19 @@ const TestTrackerProfessional: React.FC = () => {
                     <td className="p-2 text-center">{result.school}</td>
                     <td className="p-2 text-center">{result.period}</td>
                     <td className="p-2 text-center">{result.numberOfStudents}</td>
-                    <td className="p-2 text-center">{result.averageScore}</td>
                     <td className="p-2 text-center">
-                      <Badge variant={result.averageScore >= result.passingScore ? "default" : "destructive"} className="rounded-none">
-                        {result.averageScore >= result.passingScore ? "Pass" : "Fail"}
+                      {result.testType === 'OPI' ? `${result.averageScore}/${result.numberOfStudents}` : result.averageScore}
+                    </td>
+                    <td className="p-2 text-center">
+                      <Badge variant={
+                        result.testType === 'OPI' 
+                          ? (result.averageScore > 0 ? "default" : "destructive")
+                          : (result.averageScore >= result.passingScore ? "default" : "destructive")
+                      } className="rounded-none">
+                        {result.testType === 'OPI' 
+                          ? (result.averageScore > 0 ? "Pass" : "Fail")
+                          : (result.averageScore >= result.passingScore ? "Pass" : "Fail")
+                        }
                       </Badge>
                     </td>
                     <td className="p-2 text-center">
