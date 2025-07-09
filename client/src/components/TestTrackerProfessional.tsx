@@ -266,21 +266,39 @@ const TestTrackerProfessional: React.FC = () => {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="averageScore">Average Score</Label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={formData.averageScore}
-                  onChange={(e) => setFormData({ ...formData, averageScore: parseFloat(e.target.value) || 0 })}
-                  placeholder="Enter average score"
-                  className="rounded-none"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Passing score: {getPassingScore(formData.testType, formData.courseType)}
-                  {formData.testType === 'OPI' ? '/2' : '/100'}
-                </p>
-              </div>
+              {formData.testType !== 'OPI' && (
+                <div>
+                  <Label htmlFor="averageScore">Average Score</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={formData.averageScore}
+                    onChange={(e) => setFormData({ ...formData, averageScore: parseFloat(e.target.value) || 0 })}
+                    placeholder="Enter average score"
+                    className="rounded-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Passing score: {getPassingScore(formData.testType, formData.courseType)}/100
+                  </p>
+                </div>
+              )}
+
+              {formData.testType === 'OPI' && (
+                <div>
+                  <Label htmlFor="averageScore">OPI Level Score</Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={formData.averageScore}
+                    onChange={(e) => setFormData({ ...formData, averageScore: parseFloat(e.target.value) || 0 })}
+                    placeholder="Enter OPI level (0-2)"
+                    className="rounded-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Passing score: {getPassingScore(formData.testType, formData.courseType)}/2
+                  </p>
+                </div>
+              )}
 
               <Button onClick={handleAddResult} className="w-full rounded-none">
                 Add Test Result
