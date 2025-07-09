@@ -336,7 +336,7 @@ const TestTrackerProfessional: React.FC = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-none">
-                      {[2024, 2025, 2026, 2027].map(year => (
+                      {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => (
                         <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                       ))}
                     </SelectContent>
@@ -410,7 +410,7 @@ const TestTrackerProfessional: React.FC = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="rounded-none">
-              {[2024, 2025, 2026, 2027].map(year => (
+              {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => (
                 <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
               ))}
             </SelectContent>
