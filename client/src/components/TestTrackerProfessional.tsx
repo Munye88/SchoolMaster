@@ -102,8 +102,15 @@ const TestTrackerProfessional: React.FC = () => {
       if (score.month) {
         period = getMonthName(score.month);
       } else {
-        // Use current month (July) for existing tests
-        period = 'July';
+        // Extract month from testDate if available
+        const testDate = new Date(score.testDate);
+        if (!isNaN(testDate.getTime())) {
+          period = getMonthName(testDate.getMonth() + 1);
+        } else {
+          // Distribute evenly across available months if no date info
+          const months = ['January', 'February', 'March', 'April', 'May'];
+          period = months[Math.floor(Math.random() * months.length)];
+        }
       }
     }
     

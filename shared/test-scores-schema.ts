@@ -12,6 +12,8 @@ export const testScores = pgTable("test_scores", {
   maxScore: integer("max_score").notNull(),
   percentage: integer("percentage").notNull(),
   testDate: timestamp("test_date").notNull(),
+  month: integer("month"), // 1-12 for monthly tests
+  cycle: integer("cycle"), // 1-20 for quarterly book tests
   instructor: varchar("instructor", { length: 255 }).notNull(),
   course: varchar("course", { length: 255 }).notNull(),
   level: varchar("level", { length: 100 }).notNull(),

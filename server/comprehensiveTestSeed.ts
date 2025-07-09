@@ -99,6 +99,8 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
                   maxScore: testType.maxScore,
                   percentage,
                   testDate,
+                  month: testDate.getMonth() + 1, // Add month information
+                  cycle: cycle, // Add cycle information for Book tests
                   instructor: instructors[Math.floor(Math.random() * instructors.length)],
                   course: testType.course,
                   level: testType.level
@@ -130,6 +132,8 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
                   maxScore: testType.maxScore,
                   percentage,
                   testDate,
+                  month: testDate.getMonth() + 1, // Add month information
+                  cycle: null, // No cycle for monthly tests
                   instructor: instructors[Math.floor(Math.random() * instructors.length)],
                   course: testType.course,
                   level: testType.level
