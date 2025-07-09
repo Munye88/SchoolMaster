@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { 
   BarChart, 
   Bar, 
@@ -20,7 +21,7 @@ import {
   Cell,
   Legend
 } from 'recharts';
-import { Plus, BookOpen, FileText, Headphones, MessageSquare, TrendingUp, Users } from 'lucide-react';
+import { Plus, BookOpen, FileText, Headphones, MessageSquare, TrendingUp, Users, Edit, Trash2, MoreHorizontal, Upload, Search } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -40,8 +41,10 @@ interface TestResult {
 const TestTrackerProfessional: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'ALCPT' | 'Book Test' | 'ECL' | 'OPI'>('ALCPT');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(2025);
   const [selectedSchool, setSelectedSchool] = useState<string>('All Schools');
+  const [editingTest, setEditingTest] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -180,6 +183,68 @@ const TestTrackerProfessional: React.FC = () => {
     }
   });
 
+  // Delete test result
+  const deleteTestMutation = useMutation({
+    mutationFn: async (testId: string) => {
+      const response = await fetch(`/api/test-scores/${testId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Failed to delete test result');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/test-scores'] });
+      toast({ title: "Success", description: "Test result deleted successfully" });
+    },
+    onError: (error) => {
+      toast({ title: "Error", description: "Failed to delete test result", variant: "destructive" });
+    }
+  });
+
+  // Edit test result
+  const editTestMutation = useMutation({
+    mutationFn: async (testData: any) => {
+      const schoolMapping = { 'KFNA': 349, 'NFS East': 350, 'NFS West': 351 };
+      const schoolId = schoolMapping[testData.school as keyof typeof schoolMapping];
+      
+      // Convert TestResult format to database format
+      const dbData = {
+        schoolId,
+        testType: testData.testType,
+        score: testData.averageScore,
+        maxScore: testData.testType === 'OPI' ? 2 : 100,
+        percentage: testData.testType === 'OPI' ? (testData.averageScore / 2) * 100 : testData.averageScore,
+        year: testData.year,
+        month: testData.testType === 'Book Test' ? null : getMonthNumber(testData.period),
+        cycle: testData.testType === 'Book Test' ? parseInt(testData.period.replace('Cycle ', '')) : null,
+        studentName: `${testData.numberOfStudents} students`,
+        course: testData.courseType,
+        instructor: 'Manual Entry',
+        testDate: new Date().toISOString(),
+        level: 'Beginner'
+      };
+
+      const response = await fetch(`/api/test-scores/${testData.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dbData)
+      });
+
+      if (!response.ok) throw new Error('Failed to update test result');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/test-scores'] });
+      toast({ title: "Success", description: "Test result updated successfully" });
+      setIsEditDialogOpen(false);
+      setEditingTest(null);
+    },
+    onError: (error) => {
+      toast({ title: "Error", description: "Failed to update test result", variant: "destructive" });
+    }
+  });
+
   // Form state
   const [formData, setFormData] = useState({
     testType: 'ALCPT' as 'ALCPT' | 'Book Test' | 'ECL' | 'OPI',
@@ -234,6 +299,45 @@ const TestTrackerProfessional: React.FC = () => {
       numberOfStudents: 0,
       averageScore: 0
     });
+  };
+
+  const handleEditResult = (testResult: TestResult) => {
+    setEditingTest(testResult);
+    setFormData({
+      testType: testResult.testType,
+      courseType: testResult.courseType,
+      school: testResult.school,
+      period: testResult.period,
+      year: testResult.year,
+      numberOfStudents: testResult.numberOfStudents,
+      averageScore: testResult.averageScore
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateResult = () => {
+    if (!editingTest) return;
+    
+    const passingScore = getPassingScore(formData.testType, formData.courseType);
+    const updatedResult = {
+      ...editingTest,
+      testType: formData.testType,
+      courseType: formData.courseType,
+      school: formData.school,
+      period: formData.period,
+      year: formData.year,
+      numberOfStudents: formData.numberOfStudents,
+      averageScore: formData.averageScore,
+      passingScore,
+    };
+
+    editTestMutation.mutate(updatedResult);
+  };
+
+  const handleDeleteResult = (testId: string) => {
+    if (window.confirm('Are you sure you want to delete this test result?')) {
+      deleteTestMutation.mutate(testId);
+    }
   };
 
   const getFilteredResults = () => {
@@ -445,6 +549,130 @@ const TestTrackerProfessional: React.FC = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Edit Test Result Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto rounded-none">
+            <DialogHeader>
+              <DialogTitle className="text-center">Edit Test Result</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="testType" className="text-sm">Test Type</Label>
+                  <Select value={formData.testType} onValueChange={(value: any) => setFormData({ ...formData, testType: value })}>
+                    <SelectTrigger className="rounded-none h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      <SelectItem value="ALCPT">ALCPT</SelectItem>
+                      <SelectItem value="Book Test">Book Test</SelectItem>
+                      <SelectItem value="ECL">ECL</SelectItem>
+                      <SelectItem value="OPI">OPI</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="courseType" className="text-sm">Course</Label>
+                  <Select value={formData.courseType} onValueChange={(value: any) => setFormData({ ...formData, courseType: value })}>
+                    <SelectTrigger className="rounded-none h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      <SelectItem value="Cadets">Cadets</SelectItem>
+                      <SelectItem value="Refresher">Refresher</SelectItem>
+                      <SelectItem value="Aviation Officers">Aviation Officers</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="school" className="text-sm">School</Label>
+                  <Select value={formData.school} onValueChange={(value: any) => setFormData({ ...formData, school: value })}>
+                    <SelectTrigger className="rounded-none h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      <SelectItem value="KFNA">KFNA</SelectItem>
+                      <SelectItem value="NFS East">NFS East</SelectItem>
+                      <SelectItem value="NFS West">NFS West</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="year" className="text-sm">Year</Label>
+                  <Select value={formData.year.toString()} onValueChange={(value) => setFormData({ ...formData, year: parseInt(value) })}>
+                    <SelectTrigger className="rounded-none h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="period" className="text-sm">Period</Label>
+                <Select value={formData.period} onValueChange={(value) => setFormData({ ...formData, period: value })}>
+                  <SelectTrigger className="rounded-none h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-none">
+                    {getPeriodOptions(formData.testType).map(period => (
+                      <SelectItem key={period} value={period}>{period}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="numberOfStudents" className="text-sm">Students</Label>
+                  <Input
+                    type="number"
+                    value={formData.numberOfStudents}
+                    onChange={(e) => setFormData({ ...formData, numberOfStudents: parseInt(e.target.value) || 0 })}
+                    placeholder="Count"
+                    className="rounded-none h-9"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="averageScore" className="text-sm">
+                    {formData.testType === 'OPI' ? 'Level (0-2)' : 'Average'}
+                  </Label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={formData.averageScore}
+                    onChange={(e) => setFormData({ ...formData, averageScore: parseFloat(e.target.value) || 0 })}
+                    placeholder={formData.testType === 'OPI' ? '0-2' : 'Average'}
+                    className="rounded-none h-9"
+                  />
+                </div>
+              </div>
+
+              <div className="text-xs text-gray-500 text-center">
+                Passing: {getPassingScore(formData.testType, formData.courseType)}{formData.testType === 'OPI' ? '/2' : '/100'}
+              </div>
+
+              <Button 
+                onClick={handleUpdateResult} 
+                className="w-full rounded-none h-9"
+                disabled={editTestMutation.isPending}
+              >
+                {editTestMutation.isPending ? 'Updating...' : 'Update Test Result'}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Filters */}
@@ -631,6 +859,7 @@ const TestTrackerProfessional: React.FC = () => {
                   <th className="text-center p-2">Students</th>
                   <th className="text-center p-2">Average Score</th>
                   <th className="text-center p-2">Status</th>
+                  <th className="text-center p-2">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -646,6 +875,31 @@ const TestTrackerProfessional: React.FC = () => {
                       <Badge variant={result.averageScore >= result.passingScore ? "default" : "destructive"} className="rounded-none">
                         {result.averageScore >= result.passingScore ? "Pass" : "Fail"}
                       </Badge>
+                    </td>
+                    <td className="p-2 text-center">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0 rounded-none">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="rounded-none">
+                          <DropdownMenuItem 
+                            onClick={() => handleEditResult(result)}
+                            className="cursor-pointer"
+                          >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteResult(result.id)}
+                            className="cursor-pointer text-red-600"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 ))}
