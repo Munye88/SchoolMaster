@@ -180,13 +180,6 @@ const ReportsEnhanced: React.FC = () => {
       };
     });
 
-    console.log('Leave processing debug:', {
-      totalLeaveRecords: staffLeave.length,
-      sampleLeaveData: staffLeave.slice(0, 3),
-      monthlyData: monthlyData.slice(0, 3),
-      currentYear
-    });
-
     return monthlyData;
   }, [staffLeave, schools]);
 
@@ -606,7 +599,7 @@ const ReportsEnhanced: React.FC = () => {
                     <BarChart className="h-5 w-5" />
                     Attendance by School
                   </CardTitle>
-                  <CardDescription className="text-center">Current month attendance breakdown</CardDescription>
+                  <CardDescription className="text-center">Current month attendance percentages</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
@@ -622,8 +615,10 @@ const ReportsEnhanced: React.FC = () => {
                         }}
                       />
                       <YAxis 
+                        domain={[0, 100]}
                         tick={{ fontSize: 12 }}
                         axisLine={{ stroke: '#e0e0e0' }}
+                        tickFormatter={(value) => `${value}%`}
                       />
                       <RechartsTooltip 
                         contentStyle={{ 
@@ -633,15 +628,13 @@ const ReportsEnhanced: React.FC = () => {
                           boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                         }}
                         formatter={(value, name, props) => {
-                          if (name === 'Present') {
-                            const percentage = props.payload.attendance || 0;
-                            return [`${value} (${percentage}%)`, 'Present'];
+                          if (name === 'Attendance Rate') {
+                            return [`${value}%`, 'Attendance Rate'];
                           }
                           return [value, name];
                         }}
                       />
-                      <Bar dataKey="present" fill="#10b981" name="Present" radius={[2, 2, 0, 0]} />
-                      <Bar dataKey="absent" fill="#ef4444" name="Absent" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="attendance" fill="#10b981" name="Attendance Rate" radius={[2, 2, 0, 0]} />
                     </RechartsBarChart>
                   </ResponsiveContainer>
                 </CardContent>

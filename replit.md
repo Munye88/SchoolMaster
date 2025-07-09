@@ -335,6 +335,7 @@ The system manages multiple interconnected entities:
 - July 8, 2025: LEAVE TRACKING GRAPHS IMPLEMENTED - Added comprehensive Staff Leave Trends chart showing monthly PTO, R&R, and sick leave distribution with color-coded bars and Leave Summary statistics card
 - July 8, 2025: ATTENDANCE DATA ACCURACY FIX - Fixed attendance chart to properly map instructors to schools using instructor-school relationship, ensuring all three schools (KFNA 83%, NFS East 84%, NFS West 84%) display correctly
 - July 8, 2025: LEAVE DATA PROCESSING ENHANCEMENT - Fixed leave data processing to use correct leaveType field instead of type field, added sample sick leave data to demonstrate full functionality with 15 total leave records (11 PTO, 2 R&R, 2 Sick)
+- July 9, 2025: ATTENDANCE CHART Y-AXIS FIX - Fixed attendance chart to display percentages (0-100%) on Y-axis instead of raw attendance counts, updated chart title to clarify percentage display, and improved tooltip formatting to show proper percentage values
 
 ## User Preferences
 
