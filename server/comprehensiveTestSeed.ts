@@ -53,9 +53,9 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
 
     // Use actual production school IDs from database
     const schools = [
-      { id: schoolIdMap.get('KFNA'), name: 'KFNA', studentCount: 253 },
-      { id: schoolIdMap.get('NFS_EAST'), name: 'NFS East', studentCount: 57 },
-      { id: schoolIdMap.get('NFS_WEST'), name: 'NFS West', studentCount: 121 }
+      { id: schoolIdMap.get('KFNA'), name: 'KFNA', studentCount: 24 },
+      { id: schoolIdMap.get('NFS_EAST'), name: 'NFS East', studentCount: 16 },
+      { id: schoolIdMap.get('NFS_WEST'), name: 'NFS West', studentCount: 196 }
     ];
 
     const testTypes = [
@@ -66,10 +66,10 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
     ];
 
     const instructors = ['Dr. Smith', 'Prof. Johnson', 'Ms. Wilson', 'Mr. Brown', 'Dr. Davis'];
-    const months = ['January', 'February', 'March', 'April', 'May'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     // Reduce data generation for faster startup - can be expanded later if needed
     const years = process.env.NODE_ENV === 'production' ? [2024, 2025] : [2025];
-    const cycles = [1, 2, 3, 4];
+    const cycles = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
     const allTestScores = [];
     let studentCounter = 1;
@@ -78,14 +78,14 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
       for (const school of schools) {
         for (const testType of testTypes) {
           if (testType.type === 'Book') {
-            // Book tests are quarterly (cycles)
+            // Book tests are quarterly (cycles) - distribute across year
             for (const cycle of cycles) {
-              const testsPerCycle = Math.floor(school.studentCount * 0.6);
+              const testsPerCycle = Math.floor(school.studentCount * 0.03); // Reduced to manage data volume
               
               for (let i = 0; i < testsPerCycle; i++) {
-                const cycleStartMonth = (cycle - 1) * 3;
-                const testMonth = cycleStartMonth + Math.floor(Math.random() * 3);
-                const testDate = new Date(year, testMonth, Math.floor(Math.random() * 28) + 1);
+                // Map cycle to month (cycle 1-5 = Jan-May, 6-10 = Jun-Oct, etc.)
+                const cycleMonth = ((cycle - 1) % 12);
+                const testDate = new Date(year, cycleMonth, Math.floor(Math.random() * 28) + 1);
                 
                 const baseScore = 65 + Math.random() * 30;
                 const score = Math.round(baseScore);
@@ -108,9 +108,9 @@ export async function seedComprehensiveTestScores(forceReseed = false) {
               }
             }
           } else {
-            // ALCPT, ECL, OPI tests are monthly (reduced for faster startup)
+            // ALCPT, ECL, OPI tests are monthly (distributed across all 12 months)
             for (const month of months) {
-              const testsPerMonth = Math.floor(school.studentCount * 0.1);
+              const testsPerMonth = Math.floor(school.studentCount * 0.15); // Increased for better distribution
               
               for (let i = 0; i < testsPerMonth; i++) {
                 const monthIndex = months.indexOf(month);
