@@ -278,58 +278,76 @@ const TestTrackerProfessional: React.FC = () => {
               Add Test Result
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md rounded-none">
+          <DialogContent className="max-w-sm max-h-[80vh] overflow-y-auto rounded-none">
             <DialogHeader>
-              <DialogTitle>Add New Test Result</DialogTitle>
+              <DialogTitle className="text-center">Add New Test Result</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="testType">Test Type</Label>
-                <Select value={formData.testType} onValueChange={(value: any) => setFormData({ ...formData, testType: value })}>
-                  <SelectTrigger className="rounded-none">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-none">
-                    <SelectItem value="ALCPT">ALCPT</SelectItem>
-                    <SelectItem value="Book Test">Book Test</SelectItem>
-                    <SelectItem value="ECL">ECL</SelectItem>
-                    <SelectItem value="OPI">OPI</SelectItem>
-                  </SelectContent>
-                </Select>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="testType" className="text-sm">Test Type</Label>
+                  <Select value={formData.testType} onValueChange={(value: any) => setFormData({ ...formData, testType: value })}>
+                    <SelectTrigger className="rounded-none h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      <SelectItem value="ALCPT">ALCPT</SelectItem>
+                      <SelectItem value="Book Test">Book Test</SelectItem>
+                      <SelectItem value="ECL">ECL</SelectItem>
+                      <SelectItem value="OPI">OPI</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="courseType" className="text-sm">Course</Label>
+                  <Select value={formData.courseType} onValueChange={(value: any) => setFormData({ ...formData, courseType: value })}>
+                    <SelectTrigger className="rounded-none h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      <SelectItem value="Cadets">Cadets</SelectItem>
+                      <SelectItem value="Refresher">Refresher</SelectItem>
+                      <SelectItem value="Aviation Officers">Aviation Officers</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="school" className="text-sm">School</Label>
+                  <Select value={formData.school} onValueChange={(value: any) => setFormData({ ...formData, school: value })}>
+                    <SelectTrigger className="rounded-none h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      <SelectItem value="KFNA">KFNA</SelectItem>
+                      <SelectItem value="NFS East">NFS East</SelectItem>
+                      <SelectItem value="NFS West">NFS West</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="year" className="text-sm">Year</Label>
+                  <Select value={formData.year.toString()} onValueChange={(value) => setFormData({ ...formData, year: parseInt(value) })}>
+                    <SelectTrigger className="rounded-none h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-none">
+                      {[2024, 2025, 2026, 2027].map(year => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div>
-                <Label htmlFor="courseType">Course Type</Label>
-                <Select value={formData.courseType} onValueChange={(value: any) => setFormData({ ...formData, courseType: value })}>
-                  <SelectTrigger className="rounded-none">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-none">
-                    <SelectItem value="Cadets">Cadets</SelectItem>
-                    <SelectItem value="Refresher">Refresher</SelectItem>
-                    <SelectItem value="Aviation Officers">Aviation Officers</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="school">School</Label>
-                <Select value={formData.school} onValueChange={(value: any) => setFormData({ ...formData, school: value })}>
-                  <SelectTrigger className="rounded-none">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-none">
-                    <SelectItem value="KFNA">KFNA</SelectItem>
-                    <SelectItem value="NFS East">NFS East</SelectItem>
-                    <SelectItem value="NFS West">NFS West</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="period">Period</Label>
+                <Label htmlFor="period" className="text-sm">Period</Label>
                 <Select value={formData.period} onValueChange={(value) => setFormData({ ...formData, period: value })}>
-                  <SelectTrigger className="rounded-none">
+                  <SelectTrigger className="rounded-none h-9">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-none">
@@ -340,68 +358,40 @@ const TestTrackerProfessional: React.FC = () => {
                 </Select>
               </div>
 
-              <div>
-                <Label htmlFor="year">Year</Label>
-                <Select value={formData.year.toString()} onValueChange={(value) => setFormData({ ...formData, year: parseInt(value) })}>
-                  <SelectTrigger className="rounded-none">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-none">
-                    {[2024, 2025, 2026, 2027].map(year => (
-                      <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="numberOfStudents">Number of Students</Label>
-                <Input
-                  type="number"
-                  value={formData.numberOfStudents}
-                  onChange={(e) => setFormData({ ...formData, numberOfStudents: parseInt(e.target.value) || 0 })}
-                  placeholder="Enter number of students"
-                  className="rounded-none"
-                />
-              </div>
-
-              {formData.testType !== 'OPI' && (
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="averageScore">Average Score</Label>
+                  <Label htmlFor="numberOfStudents" className="text-sm">Students</Label>
+                  <Input
+                    type="number"
+                    value={formData.numberOfStudents}
+                    onChange={(e) => setFormData({ ...formData, numberOfStudents: parseInt(e.target.value) || 0 })}
+                    placeholder="Count"
+                    className="rounded-none h-9"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="averageScore" className="text-sm">
+                    {formData.testType === 'OPI' ? 'Level (0-2)' : 'Score'}
+                  </Label>
                   <Input
                     type="number"
                     step="0.1"
                     value={formData.averageScore}
                     onChange={(e) => setFormData({ ...formData, averageScore: parseFloat(e.target.value) || 0 })}
-                    placeholder="Enter average score"
-                    className="rounded-none"
+                    placeholder={formData.testType === 'OPI' ? '0-2' : 'Score'}
+                    className="rounded-none h-9"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Passing score: {getPassingScore(formData.testType, formData.courseType)}/100
-                  </p>
                 </div>
-              )}
+              </div>
 
-              {formData.testType === 'OPI' && (
-                <div>
-                  <Label htmlFor="averageScore">OPI Level Score</Label>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    value={formData.averageScore}
-                    onChange={(e) => setFormData({ ...formData, averageScore: parseFloat(e.target.value) || 0 })}
-                    placeholder="Enter OPI level (0-2)"
-                    className="rounded-none"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Passing score: {getPassingScore(formData.testType, formData.courseType)}/2
-                  </p>
-                </div>
-              )}
+              <div className="text-xs text-gray-500 text-center">
+                Passing: {getPassingScore(formData.testType, formData.courseType)}{formData.testType === 'OPI' ? '/2' : '/100'}
+              </div>
 
               <Button 
                 onClick={handleAddResult} 
-                className="w-full rounded-none"
+                className="w-full rounded-none h-9"
                 disabled={saveTestMutation.isPending}
               >
                 {saveTestMutation.isPending ? 'Saving...' : 'Add Test Result'}
