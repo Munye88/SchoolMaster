@@ -45,6 +45,35 @@ const TestTrackerProfessional: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Helper functions - defined before use
+  const getPassingScore = (testType: string, courseType: string): number => {
+    if (testType === 'Book Test') return 66;
+    if (testType === 'ALCPT') {
+      return courseType === 'Aviation Officers' ? 80 : 50;
+    }
+    if (testType === 'ECL') {
+      return courseType === 'Aviation Officers' ? 80 : 50;
+    }
+    if (testType === 'OPI') return 2;
+    return 50;
+  };
+
+  const getMonthName = (monthNumber: number): string => {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[monthNumber - 1] || 'Unknown';
+  };
+
+  const getMonthNumber = (monthName: string): number => {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months.indexOf(monthName) + 1;
+  };
+
   // Fetch test scores from database
   const { data: testScores = [], isLoading } = useQuery({
     queryKey: ['/api/test-scores'],
@@ -111,22 +140,6 @@ const TestTrackerProfessional: React.FC = () => {
     }
   });
 
-  const getMonthName = (monthNumber: number): string => {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    return months[monthNumber - 1] || 'Unknown';
-  };
-
-  const getMonthNumber = (monthName: string): number => {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    return months.indexOf(monthName) + 1;
-  };
-
   // Form state
   const [formData, setFormData] = useState({
     testType: 'ALCPT' as 'ALCPT' | 'Book Test' | 'ECL' | 'OPI',
@@ -143,18 +156,6 @@ const TestTrackerProfessional: React.FC = () => {
     'Book Test': FileText,
     'ECL': Headphones,
     'OPI': MessageSquare
-  };
-
-  const getPassingScore = (testType: string, courseType: string): number => {
-    if (testType === 'Book Test') return 66;
-    if (testType === 'ALCPT') {
-      return courseType === 'Aviation Officers' ? 80 : 50;
-    }
-    if (testType === 'ECL') {
-      return courseType === 'Aviation Officers' ? 80 : 50;
-    }
-    if (testType === 'OPI') return 2;
-    return 50;
   };
 
   const getPeriodOptions = (testType: string): string[] => {
