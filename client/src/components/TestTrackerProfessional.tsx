@@ -21,6 +21,8 @@ import {
   Legend
 } from 'recharts';
 import { Plus, BookOpen, FileText, Headphones, MessageSquare, TrendingUp, Users } from 'lucide-react';
+import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface TestResult {
   id: string;
@@ -36,11 +38,94 @@ interface TestResult {
 }
 
 const TestTrackerProfessional: React.FC = () => {
-  const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [activeTab, setActiveTab] = useState<'ALCPT' | 'Book Test' | 'ECL' | 'OPI'>('ALCPT');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [selectedYear, setSelectedYear] = useState(2025);
   const [selectedSchool, setSelectedSchool] = useState<string>('All Schools');
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch test scores from database
+  const { data: testScores = [], isLoading } = useQuery({
+    queryKey: ['/api/test-scores'],
+    queryFn: async () => {
+      const response = await fetch('/api/test-scores');
+      if (!response.ok) throw new Error('Failed to fetch test scores');
+      return response.json();
+    }
+  });
+
+  // Convert database test scores to TestResult format
+  const testResults: TestResult[] = testScores.map((score: any) => ({
+    id: score.id.toString(),
+    testType: score.testType,
+    courseType: score.course || 'Cadets',
+    school: score.schoolId === 349 ? 'KFNA' : score.schoolId === 350 ? 'NFS East' : 'NFS West',
+    period: score.month ? getMonthName(score.month) : score.cycle ? `Cycle ${score.cycle}` : 'Unknown',
+    year: score.year,
+    numberOfStudents: 1, // Individual scores, so 1 student per record
+    averageScore: score.testType === 'OPI' ? score.score : score.percentage || score.score,
+    passingScore: getPassingScore(score.testType, score.course || 'Cadets'),
+    dateCreated: score.createdAt || new Date().toISOString()
+  }));
+
+  // Save test result to database
+  const saveTestMutation = useMutation({
+    mutationFn: async (testData: any) => {
+      const schoolMapping = { 'KFNA': 349, 'NFS East': 350, 'NFS West': 351 };
+      const schoolId = schoolMapping[testData.school as keyof typeof schoolMapping];
+      
+      // Convert TestResult format to database format
+      const dbData = {
+        schoolId,
+        testType: testData.testType,
+        score: testData.averageScore,
+        maxScore: testData.testType === 'OPI' ? 2 : 100,
+        percentage: testData.testType === 'OPI' ? (testData.averageScore / 2) * 100 : testData.averageScore,
+        year: testData.year,
+        month: testData.testType === 'Book Test' ? null : getMonthNumber(testData.period),
+        cycle: testData.testType === 'Book Test' ? parseInt(testData.period.replace('Cycle ', '')) : null,
+        studentName: `${testData.numberOfStudents} students`,
+        course: testData.courseType,
+        instructor: 'Manual Entry',
+        testDate: new Date().toISOString(),
+        level: 'Beginner'
+      };
+
+      const response = await fetch('/api/test-scores/manual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dbData)
+      });
+
+      if (!response.ok) throw new Error('Failed to save test result');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/test-scores'] });
+      toast({ title: "Success", description: "Test result saved successfully" });
+      setIsAddDialogOpen(false);
+    },
+    onError: (error) => {
+      toast({ title: "Error", description: "Failed to save test result", variant: "destructive" });
+    }
+  });
+
+  const getMonthName = (monthNumber: number): string => {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[monthNumber - 1] || 'Unknown';
+  };
+
+  const getMonthNumber = (monthName: string): number => {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months.indexOf(monthName) + 1;
+  };
 
   // Form state
   const [formData, setFormData] = useState({
@@ -84,8 +169,7 @@ const TestTrackerProfessional: React.FC = () => {
 
   const handleAddResult = () => {
     const passingScore = getPassingScore(formData.testType, formData.courseType);
-    const newResult: TestResult = {
-      id: Date.now().toString(),
+    const newResult = {
       testType: formData.testType,
       courseType: formData.courseType,
       school: formData.school,
@@ -94,11 +178,12 @@ const TestTrackerProfessional: React.FC = () => {
       numberOfStudents: formData.numberOfStudents,
       averageScore: formData.averageScore,
       passingScore,
-      dateCreated: new Date().toISOString()
     };
 
-    setTestResults([...testResults, newResult]);
-    setIsAddDialogOpen(false);
+    // Save to database instead of local state
+    saveTestMutation.mutate(newResult);
+    
+    // Reset form
     setFormData({
       testType: 'ALCPT',
       courseType: 'Cadets',
@@ -163,6 +248,19 @@ const TestTrackerProfessional: React.FC = () => {
   const stats = getStatistics();
   const chartData = getChartData();
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-center items-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading test results...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -174,7 +272,7 @@ const TestTrackerProfessional: React.FC = () => {
         
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 rounded-none">
+            <Button className="bg-blue-600 hover:bg-blue-700 rounded-none" disabled={isLoading}>
               <Plus className="h-4 w-4 mr-2" />
               Add Test Result
             </Button>
@@ -300,8 +398,12 @@ const TestTrackerProfessional: React.FC = () => {
                 </div>
               )}
 
-              <Button onClick={handleAddResult} className="w-full rounded-none">
-                Add Test Result
+              <Button 
+                onClick={handleAddResult} 
+                className="w-full rounded-none"
+                disabled={saveTestMutation.isPending}
+              >
+                {saveTestMutation.isPending ? 'Saving...' : 'Add Test Result'}
               </Button>
             </div>
           </DialogContent>
