@@ -50,7 +50,7 @@ function InstructorDetailsDialog({ instructor, quarter, year }: { instructor: Re
       </DialogTrigger>
       <DialogContent className="max-w-2xl rounded-none">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center justify-center gap-2 text-center">
             <User className="h-5 w-5" />
             {instructor.name} - {quarter} {year} Recognition Details
           </DialogTitle>
