@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Award, Star, Trophy, Medal, Calendar, CheckCircle, Target } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Award, Star, Trophy, Medal, Calendar, CheckCircle, Target, Eye, User } from "lucide-react";
 
 interface RecognitionCandidate {
   id: number;
@@ -27,6 +28,198 @@ interface QuarterlyData {
   attendanceCandidates: RecognitionCandidate[];
   evaluationCandidates: RecognitionCandidate[];
   dualCandidates: RecognitionCandidate[];
+}
+
+// Instructor Details Dialog Component
+function InstructorDetailsDialog({ instructor, quarter, year }: { instructor: RecognitionCandidate; quarter: string; year: string }) {
+  const { data: instructorDetails, isLoading } = useQuery({
+    queryKey: ['/api/recognition/instructor', instructor.id, quarter, year],
+    queryFn: async () => {
+      const response = await fetch(`/api/recognition/instructor/${instructor.id}?quarter=${quarter}&year=${year}`);
+      if (!response.ok) throw new Error('Failed to fetch instructor details');
+      return response.json();
+    }
+  });
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="link" className="text-blue-600 hover:text-blue-800 font-semibold p-0 h-auto">
+          {instructor.name}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl rounded-none">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            {instructor.name} - {quarter} {year} Recognition Details
+          </DialogTitle>
+        </DialogHeader>
+        
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {/* Summary */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card className="rounded-none">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span>School:</span>
+                      <span className="font-medium">{instructor.school}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Nationality:</span>
+                      <span className="font-medium">{instructor.nationality}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Quarter:</span>
+                      <span className="font-medium">{quarter} {year}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="rounded-none">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Performance</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span>Attendance Score:</span>
+                      <span className="font-medium">{instructorDetails?.summary?.attendanceScore || 0}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Evaluation Score:</span>
+                      <span className="font-medium">{instructorDetails?.summary?.evaluationScore || 0}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Total Days:</span>
+                      <span className="font-medium">{instructorDetails?.summary?.totalDays || 0}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Attendance Records */}
+            <Card className="rounded-none">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  Attendance Records
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">{instructorDetails?.summary?.totalPresent || 0}</div>
+                    <div className="text-sm text-gray-600">Present</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-red-600">{instructorDetails?.summary?.totalAbsent || 0}</div>
+                    <div className="text-sm text-gray-600">Absent</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-yellow-600">{instructorDetails?.summary?.totalLate || 0}</div>
+                    <div className="text-sm text-gray-600">Late</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-orange-600">{instructorDetails?.summary?.totalSick || 0}</div>
+                    <div className="text-sm text-gray-600">Sick</div>
+                  </div>
+                </div>
+                
+                {instructorDetails?.attendanceRecords?.length > 0 && (
+                  <div className="max-h-60 overflow-y-auto">
+                    <table className="w-full text-sm">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="text-left p-2">Date</th>
+                          <th className="text-left p-2">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {instructorDetails.attendanceRecords.map((record: any, index: number) => (
+                          <tr key={index} className="border-b">
+                            <td className="p-2">{new Date(record.date).toLocaleDateString()}</td>
+                            <td className="p-2">
+                              <Badge className={`rounded-none ${
+                                record.status === 'present' ? 'bg-green-500' :
+                                record.status === 'absent' ? 'bg-red-500' :
+                                record.status === 'late' ? 'bg-yellow-500' :
+                                'bg-orange-500'
+                              }`}>
+                                {record.status}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Evaluation Records */}
+            <Card className="rounded-none">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="h-5 w-5" />
+                  Evaluation Records
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {instructorDetails?.evaluationRecords?.length > 0 ? (
+                  <div className="max-h-60 overflow-y-auto">
+                    <table className="w-full text-sm">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="text-left p-2">Date</th>
+                          <th className="text-left p-2">Score</th>
+                          <th className="text-left p-2">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {instructorDetails.evaluationRecords.map((record: any, index: number) => (
+                          <tr key={index} className="border-b">
+                            <td className="p-2">{new Date(record.evaluationDate).toLocaleDateString()}</td>
+                            <td className="p-2 font-medium">{record.score}%</td>
+                            <td className="p-2">
+                              <Badge className={`rounded-none ${
+                                record.score >= 95 ? 'bg-green-500' :
+                                record.score >= 85 ? 'bg-yellow-500' :
+                                'bg-red-500'
+                              }`}>
+                                {record.score >= 95 ? 'Excellent' :
+                                 record.score >= 85 ? 'Good' : 'Needs Improvement'}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    No evaluation records found for this quarter
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export default function Recognition() {
@@ -58,10 +251,10 @@ export default function Recognition() {
   };
 
   const quarters = [
-    { value: "Q1", label: "Q1 (Jan-Mar)" },
-    { value: "Q2", label: "Q2 (Apr-Jun)" },
-    { value: "Q3", label: "Q3 (Jul-Sep)" },
-    { value: "Q4", label: "Q4 (Oct-Dec)" }
+    { value: "Q1", label: "Q1 (Jun-Aug)" },
+    { value: "Q2", label: "Q2 (Sep-Nov)" },
+    { value: "Q3", label: "Q3 (Dec-Feb)" },
+    { value: "Q4", label: "Q4 (Mar-May)" }
   ];
 
   const years = ["2024", "2025"];
@@ -225,7 +418,7 @@ export default function Recognition() {
                   <div key={candidate.id} className="bg-gradient-to-r from-yellow-50 to-yellow-100 p-4 rounded-none border border-yellow-200">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h3 className="font-semibold text-gray-900">{candidate.name}</h3>
+                        <InstructorDetailsDialog instructor={candidate} quarter={selectedQuarter} year={selectedYear} />
                         <p className="text-sm text-gray-600">{candidate.school}</p>
                       </div>
                       <Badge className="bg-yellow-500 text-white rounded-none">
@@ -258,7 +451,7 @@ export default function Recognition() {
                   <div key={candidate.id} className="bg-green-50 p-4 rounded-none border border-green-200">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h3 className="font-semibold text-gray-900">{candidate.name}</h3>
+                        <InstructorDetailsDialog instructor={candidate} quarter={selectedQuarter} year={selectedYear} />
                         <p className="text-sm text-gray-600">{candidate.school}</p>
                       </div>
                       <Badge className="bg-green-500 text-white rounded-none">
@@ -290,7 +483,7 @@ export default function Recognition() {
                   <div key={candidate.id} className="bg-blue-50 p-4 rounded-none border border-blue-200">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h3 className="font-semibold text-gray-900">{candidate.name}</h3>
+                        <InstructorDetailsDialog instructor={candidate} quarter={selectedQuarter} year={selectedYear} />
                         <p className="text-sm text-gray-600">{candidate.school}</p>
                       </div>
                       <Badge className="bg-blue-500 text-white rounded-none">

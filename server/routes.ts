@@ -5288,10 +5288,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Define quarter date ranges
       const quarterRanges = {
-        'Q1': { start: new Date(`${year}-01-01`), end: new Date(`${year}-03-31`) },
-        'Q2': { start: new Date(`${year}-04-01`), end: new Date(`${year}-06-30`) },
-        'Q3': { start: new Date(`${year}-07-01`), end: new Date(`${year}-09-30`) },
-        'Q4': { start: new Date(`${year}-10-01`), end: new Date(`${year}-12-31`) }
+        'Q1': { start: new Date(`${year}-06-01`), end: new Date(`${year}-08-31`) },
+        'Q2': { start: new Date(`${year}-09-01`), end: new Date(`${year}-11-30`) },
+        'Q3': { start: new Date(`${year}-12-01`), end: new Date(`${parseInt(year) + 1}-02-28`) },
+        'Q4': { start: new Date(`${year}-03-01`), end: new Date(`${year}-05-31`) }
       };
 
       const dateRange = quarterRanges[quarter as string];
@@ -5400,6 +5400,116 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching recognition data:", error);
       res.status(500).json({ error: "Failed to fetch recognition data" });
+    }
+  });
+
+  // Recognition instructor details API endpoint
+  app.get("/api/recognition/instructor/:id", async (req, res) => {
+    try {
+      const instructorId = parseInt(req.params.id);
+      const { quarter, year } = req.query;
+      
+      if (!quarter || !year) {
+        return res.status(400).json({ error: "Quarter and year parameters required" });
+      }
+
+      console.log(`📊 Recognition instructor details API called for instructor ${instructorId}, ${quarter} ${year}`);
+
+      // Define quarter date ranges
+      const quarterRanges = {
+        'Q1': { start: new Date(`${year}-06-01`), end: new Date(`${year}-08-31`) },
+        'Q2': { start: new Date(`${year}-09-01`), end: new Date(`${year}-11-30`) },
+        'Q3': { start: new Date(`${year}-12-01`), end: new Date(`${parseInt(year) + 1}-02-28`) },
+        'Q4': { start: new Date(`${year}-03-01`), end: new Date(`${year}-05-31`) }
+      };
+
+      const dateRange = quarterRanges[quarter as string];
+      if (!dateRange) {
+        return res.status(400).json({ error: "Invalid quarter specified" });
+      }
+
+      // Get instructor information
+      const instructor = await db
+        .select({
+          id: instructors.id,
+          name: instructors.name,
+          nationality: instructors.nationality,
+          schoolId: instructors.schoolId,
+          schoolName: schools.name
+        })
+        .from(instructors)
+        .innerJoin(schools, eq(instructors.schoolId, schools.id))
+        .where(eq(instructors.id, instructorId))
+        .limit(1);
+
+      if (instructor.length === 0) {
+        return res.status(404).json({ error: "Instructor not found" });
+      }
+
+      // Get detailed attendance data for the quarter
+      const attendanceRecords = await db
+        .select({
+          date: staffAttendance.date,
+          status: staffAttendance.status
+        })
+        .from(staffAttendance)
+        .where(
+          sql`${staffAttendance.instructorId} = ${instructorId} 
+              AND ${staffAttendance.date} >= ${dateRange.start.toISOString().split('T')[0]} 
+              AND ${staffAttendance.date} <= ${dateRange.end.toISOString().split('T')[0]}`
+        )
+        .orderBy(staffAttendance.date);
+
+      // Get detailed evaluation data for the quarter
+      const evaluationRecords = await db
+        .select({
+          evaluationDate: evaluations.evaluationDate,
+          score: evaluations.score,
+          evaluatorId: evaluations.evaluatorId
+        })
+        .from(evaluations)
+        .where(
+          sql`${evaluations.instructorId} = ${instructorId} 
+              AND ${evaluations.evaluationDate} >= ${dateRange.start.toISOString().split('T')[0]} 
+              AND ${evaluations.evaluationDate} <= ${dateRange.end.toISOString().split('T')[0]}`
+        )
+        .orderBy(evaluations.evaluationDate);
+
+      // Calculate summary statistics
+      const totalAbsent = attendanceRecords.filter(a => a.status === 'absent').length;
+      const totalLate = attendanceRecords.filter(a => a.status === 'late').length;
+      const totalSick = attendanceRecords.filter(a => a.status === 'sick').length;
+      const totalPresent = attendanceRecords.filter(a => a.status === 'present').length;
+      const totalDays = attendanceRecords.length;
+      const attendanceScore = totalDays > 0 ? Math.round((totalPresent / totalDays) * 100) : 0;
+
+      const evaluationScore = evaluationRecords.length > 0 
+        ? Math.round(evaluationRecords.reduce((sum, evaluation) => sum + evaluation.score, 0) / evaluationRecords.length)
+        : 0;
+
+      const result = {
+        instructor: instructor[0],
+        quarter,
+        year: parseInt(year as string),
+        attendanceRecords,
+        evaluationRecords,
+        summary: {
+          totalDays,
+          totalPresent,
+          totalAbsent,
+          totalLate,
+          totalSick,
+          attendanceScore,
+          evaluationScore,
+          qualifiesForAttendance: totalAbsent === 0 && totalLate === 0 && totalSick === 0,
+          qualifiesForEvaluation: evaluationScore >= 95
+        }
+      };
+
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching instructor recognition details:", error);
+      res.status(500).json({ error: "Failed to fetch instructor recognition details" });
     }
   });
 
