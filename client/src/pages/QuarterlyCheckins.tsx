@@ -747,7 +747,7 @@ const QuarterlyCheckins = () => {
                                 value={answerText}
                                 onChange={(e) => updateAnswer(question.id, e.target.value)}
                                 placeholder="Enter response..."
-                                className="min-h-[100px] border-gray-300 focus:border-blue-400"
+                                className="min-h-[100px] border-gray-300 focus:border-blue-400 text-center rounded-none"
                               />
                             </div>
                           );
@@ -768,7 +768,7 @@ const QuarterlyCheckins = () => {
                         value={currentSession.notes}
                         onChange={(e) => setCurrentSession({...currentSession, notes: e.target.value})}
                         placeholder="Enter any additional notes or follow-up items..."
-                        className="min-h-[120px] border-gray-300 focus:border-blue-400"
+                        className="min-h-[120px] border-gray-300 focus:border-blue-400 text-center rounded-none"
                       />
                     </div>
                   </div>
