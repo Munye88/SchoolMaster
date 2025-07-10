@@ -92,19 +92,19 @@ export default function TopNavigation() {
 
   return (
     <nav className="bg-[#2563EB] shadow-lg sticky top-0 z-50">
-      <div className="max-w-full mx-auto px-4 bg-[#2a4178]">
-        <div className="flex justify-between items-center h-16 text-[13px] bg-[#132d6a] overflow-hidden">
+      <div className="max-w-full mx-auto px-2 bg-[#2a4178]">
+        <div className="flex justify-between items-center h-16 text-[12px] bg-[#132d6a]">
           {/* Logo */}
-          <div className="flex items-center space-x-4">
-            <Link href="/" className="flex items-center space-x-2">
-              <span className="text-white font-bold text-[13px]">
+          <div className="flex items-center flex-shrink-0">
+            <Link href="/" className="flex items-center">
+              <span className="text-white font-bold text-[12px]">
                 GOVCIO-SAMS ELT
               </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-1 flex-1 justify-center max-w-4xl">
+          <div className="hidden lg:flex items-center space-x-1 flex-1 justify-center">
             {navigationItems.map((item) => (
               <div key={item.label} className="relative">
                 {item.dropdown ? (
@@ -112,14 +112,14 @@ export default function TopNavigation() {
                     <Button
                       variant="ghost"
                       className={cn(
-                        "text-white hover:bg-blue-700 px-3 py-2 flex items-center space-x-1",
+                        "text-white hover:bg-blue-700 px-2 py-1 flex items-center space-x-1 text-[11px]",
                         item.dropdown.some(dropItem => isActive(dropItem.path)) && "bg-blue-700"
                       )}
                       onClick={() => handleDropdownToggle(item.label)}
                     >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.label}</span>
-                      <ChevronDown className="h-3 w-3" />
+                      <item.icon className="h-3 w-3" />
+                      <span className="whitespace-nowrap">{item.label}</span>
+                      <ChevronDown className="h-2 w-2" />
                     </Button>
                     
                     {activeDropdown === item.label && (
@@ -145,12 +145,12 @@ export default function TopNavigation() {
                     <Button
                       variant="ghost"
                       className={cn(
-                        "text-white hover:bg-blue-700 px-3 py-2 flex items-center space-x-1",
+                        "text-white hover:bg-blue-700 px-2 py-1 flex items-center space-x-1 text-[11px]",
                         (item.exact ? location === item.path : isActive(item.path)) && "bg-blue-700"
                       )}
                     >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.label}</span>
+                      <item.icon className="h-3 w-3" />
+                      <span className="whitespace-nowrap">{item.label}</span>
                     </Button>
                   </Link>
                 )}
@@ -159,17 +159,17 @@ export default function TopNavigation() {
           </div>
 
           {/* Right side items */}
-          <div className="flex items-center space-x-2 flex-shrink-0">
+          <div className="flex items-center space-x-1 flex-shrink-0">
             {/* Activity Log */}
             <div className="relative">
               <Button
                 variant="ghost"
-                className="text-white hover:bg-blue-700 flex items-center space-x-1 px-2 py-2"
+                className="text-white hover:bg-blue-700 flex items-center space-x-1 px-2 py-1 text-[11px]"
                 onClick={() => handleDropdownToggle('activity')}
               >
-                <Activity className="h-4 w-4" />
-                <span className="hidden md:block text-sm">Activity</span>
-                <ChevronDown className="h-3 w-3" />
+                <Activity className="h-3 w-3" />
+                <span className="hidden md:block whitespace-nowrap">Activity</span>
+                <ChevronDown className="h-2 w-2" />
               </Button>
               
               {activeDropdown === 'activity' && (
@@ -194,7 +194,7 @@ export default function TopNavigation() {
 
             {/* School Selector */}
             {selectedSchool && (
-              <div className="hidden xl:block text-white text-xs px-2 py-1 bg-blue-700 rounded">
+              <div className="hidden xl:block text-white text-[10px] px-1 py-1 bg-blue-700 rounded">
                 {selectedSchool.name}
               </div>
             )}
@@ -203,12 +203,12 @@ export default function TopNavigation() {
             <div className="relative">
               <Button
                 variant="ghost"
-                className="text-white hover:bg-blue-700 flex items-center space-x-2 px-3 py-2"
+                className="text-white hover:bg-blue-700 flex items-center space-x-1 px-2 py-1 text-[11px]"
                 onClick={() => handleDropdownToggle('user')}
               >
-                <User className="h-4 w-4" />
-                <span className="hidden sm:block text-sm">{user?.username}</span>
-                <ChevronDown className="h-3 w-3" />
+                <User className="h-3 w-3" />
+                <span className="hidden sm:block whitespace-nowrap">{user?.username}</span>
+                <ChevronDown className="h-2 w-2" />
               </Button>
               
               {activeDropdown === 'user' && (
