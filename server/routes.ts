@@ -28,6 +28,8 @@ import {
   insertInventoryItemSchema,
   insertInventoryTransactionSchema,
   insertSchoolDocumentSchema,
+  insertQuarterlyCheckinSchema,
+  insertQuarterlyCheckinAnswerSchema,
   evaluations,
   courses,
   staffLeave,
@@ -43,7 +45,9 @@ import {
   inventoryTransactions,
   schools,
   schoolSchedules,
-  schoolDocuments
+  schoolDocuments,
+  quarterlyCheckins,
+  quarterlyCheckinAnswers
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import documentRoutes from "./documents";
@@ -5510,6 +5514,207 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching instructor recognition details:", error);
       res.status(500).json({ error: "Failed to fetch instructor recognition details" });
+    }
+  });
+
+  // Quarterly Check-ins API endpoints
+  app.get("/api/quarterly-checkins", async (req, res) => {
+    try {
+      const checkins = await db
+        .select()
+        .from(quarterlyCheckins)
+        .orderBy(quarterlyCheckins.createdAt);
+      
+      res.json(checkins);
+    } catch (error) {
+      console.error("Error fetching quarterly checkins:", error);
+      res.status(500).json({ error: "Failed to fetch quarterly checkins" });
+    }
+  });
+
+  app.get("/api/quarterly-checkins/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid checkin ID" });
+    }
+    
+    try {
+      const [checkin] = await db
+        .select()
+        .from(quarterlyCheckins)
+        .where(eq(quarterlyCheckins.id, id));
+      
+      if (!checkin) {
+        return res.status(404).json({ message: "Checkin not found" });
+      }
+      
+      // Get answers for this checkin
+      const answers = await db
+        .select()
+        .from(quarterlyCheckinAnswers)
+        .where(eq(quarterlyCheckinAnswers.checkinId, id));
+      
+      res.json({
+        ...checkin,
+        answers: answers
+      });
+    } catch (error) {
+      console.error("Error fetching quarterly checkin:", error);
+      res.status(500).json({ error: "Failed to fetch quarterly checkin" });
+    }
+  });
+
+  app.post("/api/quarterly-checkins", async (req, res) => {
+    try {
+      const { checkinData, answers } = req.body;
+      
+      // Validate checkin data
+      const validatedCheckinData = insertQuarterlyCheckinSchema.parse(checkinData);
+      
+      // Create the checkin
+      const [newCheckin] = await db
+        .insert(quarterlyCheckins)
+        .values(validatedCheckinData)
+        .returning();
+      
+      // Create answers if provided
+      if (answers && answers.length > 0) {
+        const validatedAnswers = answers.map((answer: any) => 
+          insertQuarterlyCheckinAnswerSchema.parse({
+            ...answer,
+            checkinId: newCheckin.id
+          })
+        );
+        
+        await db
+          .insert(quarterlyCheckinAnswers)
+          .values(validatedAnswers);
+      }
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "quarterly_checkin_created",
+        description: `Quarterly checkin created for ${validatedCheckinData.instructorName} - ${validatedCheckinData.quarter} ${validatedCheckinData.year}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(201).json(newCheckin);
+    } catch (error) {
+      console.error("Error creating quarterly checkin:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      res.status(500).json({ error: "Failed to create quarterly checkin" });
+    }
+  });
+
+  app.patch("/api/quarterly-checkins/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid checkin ID" });
+    }
+    
+    try {
+      const { checkinData, answers } = req.body;
+      
+      // Get existing checkin
+      const [existingCheckin] = await db
+        .select()
+        .from(quarterlyCheckins)
+        .where(eq(quarterlyCheckins.id, id));
+      
+      if (!existingCheckin) {
+        return res.status(404).json({ message: "Checkin not found" });
+      }
+      
+      // Update checkin data
+      const [updatedCheckin] = await db
+        .update(quarterlyCheckins)
+        .set({
+          ...checkinData,
+          updatedAt: new Date()
+        })
+        .where(eq(quarterlyCheckins.id, id))
+        .returning();
+      
+      // Update answers if provided
+      if (answers && answers.length > 0) {
+        // Delete existing answers
+        await db
+          .delete(quarterlyCheckinAnswers)
+          .where(eq(quarterlyCheckinAnswers.checkinId, id));
+        
+        // Insert new answers
+        const validatedAnswers = answers.map((answer: any) => 
+          insertQuarterlyCheckinAnswerSchema.parse({
+            ...answer,
+            checkinId: id
+          })
+        );
+        
+        await db
+          .insert(quarterlyCheckinAnswers)
+          .values(validatedAnswers);
+      }
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "quarterly_checkin_updated",
+        description: `Quarterly checkin updated for ${existingCheckin.instructorName} - ${existingCheckin.quarter} ${existingCheckin.year}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.json(updatedCheckin);
+    } catch (error) {
+      console.error("Error updating quarterly checkin:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      res.status(500).json({ error: "Failed to update quarterly checkin" });
+    }
+  });
+
+  app.delete("/api/quarterly-checkins/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid checkin ID" });
+    }
+    
+    try {
+      // Get existing checkin for logging
+      const [existingCheckin] = await db
+        .select()
+        .from(quarterlyCheckins)
+        .where(eq(quarterlyCheckins.id, id));
+      
+      if (!existingCheckin) {
+        return res.status(404).json({ message: "Checkin not found" });
+      }
+      
+      // Delete answers first (foreign key constraint)
+      await db
+        .delete(quarterlyCheckinAnswers)
+        .where(eq(quarterlyCheckinAnswers.checkinId, id));
+      
+      // Delete checkin
+      await db
+        .delete(quarterlyCheckins)
+        .where(eq(quarterlyCheckins.id, id));
+      
+      // Log activity
+      await dbStorage.createActivity({
+        type: "quarterly_checkin_deleted",
+        description: `Quarterly checkin deleted for ${existingCheckin.instructorName} - ${existingCheckin.quarter} ${existingCheckin.year}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting quarterly checkin:", error);
+      res.status(500).json({ error: "Failed to delete quarterly checkin" });
     }
   });
 

@@ -31,7 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
 import { useSchool } from "@/hooks/useSchool";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -83,21 +83,101 @@ const defaultQuestions: CheckinQuestion[] = [
   { id: 12, question: "What support do you need from me to perform more effectively in your role?", category: "Support & Feedback" },
 ];
 
-// Sample initial data - will be replaced with actual data from API
-const initialSessions: CheckinSession[] = [];
+// Available instructor names for selection
+const availableInstructors = [
+  "Mohamoud Abdulle",
+  "Michael Migliore", 
+  "Rafiq Abdul-Alim",
+  "Glenn Stevens",
+  "Mohamed Abdurahman"
+];
 
 const QuarterlyCheckins = () => {
   const { selectedSchool: userSelectedSchool } = useSchool();
+  const queryClient = useQueryClient();
   
   // State
   const [activeTab, setActiveTab] = useState("new");
-  const [sessions, setSessions] = useState<CheckinSession[]>(initialSessions);
   const [filterTerm, setFilterTerm] = useState("");
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [currentQuarter, setCurrentQuarter] = useState(`Q${Math.ceil((new Date().getMonth() + 1) / 3)}`);
   const [instructorName, setInstructorName] = useState("");
   const [checkinSchool, setCheckinSchool] = useState<string>("");
   const [checkinDate, setCheckinDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
+  
+  // Load existing quarterly check-ins from API
+  const { data: sessions = [], isLoading } = useQuery({
+    queryKey: ["quarterly-checkins"],
+    queryFn: async () => {
+      const response = await fetch("/api/quarterly-checkins");
+      if (!response.ok) {
+        throw new Error("Failed to fetch quarterly check-ins");
+      }
+      return response.json();
+    },
+  });
+
+  // Create new quarterly check-in
+  const createCheckinMutation = useMutation({
+    mutationFn: async (checkinData: any) => {
+      const response = await fetch("/api/quarterly-checkins", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(checkinData),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to create quarterly check-in");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["quarterly-checkins"] });
+      toast({
+        title: "Success",
+        description: "Quarterly check-in created successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to create quarterly check-in",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update existing quarterly check-in
+  const updateCheckinMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      const response = await fetch(`/api/quarterly-checkins/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update quarterly check-in");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["quarterly-checkins"] });
+      toast({
+        title: "Success",
+        description: "Quarterly check-in updated successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update quarterly check-in",
+        variant: "destructive",
+      });
+    },
+  });
   const [currentSession, setCurrentSession] = useState<CheckinSession | null>(null);
   const [expandedSession, setExpandedSession] = useState<number | null>(null);
   
@@ -120,7 +200,7 @@ const QuarterlyCheckins = () => {
     if (!instructorName.trim()) {
       toast({
         title: "Error",
-        description: "Please enter an instructor name to start a check-in",
+        description: "Please select an instructor to start a check-in",
         variant: "destructive",
       });
       return;
@@ -147,39 +227,62 @@ const QuarterlyCheckins = () => {
       answers: defaultQuestions.map(q => ({ questionId: q.id, answer: "" })),
     };
     
-    // Add to sessions and set as current
-    setSessions([...sessions, newSession]);
+    // Set as current session for editing
     setCurrentSession(newSession);
     setActiveTab("edit");
   };
   
   // Save the current session
-  const saveSession = (status: "draft" | "completed" = "draft") => {
+  const saveSession = async (status: "draft" | "completed" = "draft") => {
     if (!currentSession) return;
     
-    // Update status
-    const updatedSession = { ...currentSession, status };
+    // Find the school ID based on the selected school
+    const selectedSchoolData = schools.find(school => school.name === currentSession.school);
+    const schoolId = selectedSchoolData?.id || 349; // Default to KFNA if not found
     
-    // Update in sessions list
-    const updatedSessions = sessions.map(session => 
-      session.id === updatedSession.id ? updatedSession : session
-    );
+    // Prepare the data for API
+    const checkinData = {
+      instructorName: currentSession.instructorName,
+      schoolId: schoolId,
+      date: currentSession.date,
+      quarter: currentSession.quarter,
+      year: currentSession.year,
+      notes: currentSession.notes,
+      status: status,
+    };
     
-    setSessions(updatedSessions);
-    setCurrentSession(updatedSession);
+    const answers = currentSession.answers.map(answer => ({
+      questionId: answer.questionId,
+      answer: answer.answer,
+    }));
     
-    // Show success message
-    toast({
-      title: status === "completed" ? "Check-in Completed" : "Draft Saved",
-      description: status === "completed" 
-        ? "The check-in has been marked as completed." 
-        : "Your changes have been saved as a draft.",
-    });
-    
-    // If completed, go back to view
-    if (status === "completed") {
-      setActiveTab("view");
-      setCurrentSession(null);
+    try {
+      // Check if this is a new session (temporary ID) or existing session
+      const isNewSession = currentSession.id > 1000000; // Temporary IDs are large numbers
+      
+      if (isNewSession) {
+        // Create new check-in
+        await createCheckinMutation.mutateAsync({
+          checkinData,
+          answers,
+        });
+      } else {
+        // Update existing check-in
+        await updateCheckinMutation.mutateAsync({
+          id: currentSession.id,
+          data: { checkinData, answers },
+        });
+      }
+      
+      // If completed, go back to view
+      if (status === "completed") {
+        setActiveTab("view");
+        setCurrentSession(null);
+      }
+      
+    } catch (error) {
+      console.error("Error saving check-in:", error);
+      // The error is already handled in the mutation onError callback
     }
   };
   
@@ -395,7 +498,7 @@ const QuarterlyCheckins = () => {
           {/* Left side - Form/Edit Panel */}
           <div className="lg:col-span-5 space-y-6">
             {activeTab === "new" && (
-              <Card className="shadow-md border-blue-100">
+              <Card className="shadow-md border-blue-100 rounded-none">
                 <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100/50 border-b pb-4">
                   <div className="flex items-center mb-1">
                     <Calendar className="h-5 w-5 text-blue-700 mr-2" />
@@ -413,13 +516,21 @@ const QuarterlyCheckins = () => {
                       </Label>
                       <div className="relative">
                         <User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="instructorName"
+                        <Select
                           value={instructorName}
-                          onChange={(e) => setInstructorName(e.target.value)}
-                          placeholder="Enter name"
-                          className="pl-9"
-                        />
+                          onValueChange={setInstructorName}
+                        >
+                          <SelectTrigger id="instructorName" className="pl-9 rounded-none">
+                            <SelectValue placeholder="Select instructor name" />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-none">
+                            <SelectItem value="Mohamoud Abdulle">Mohamoud Abdulle</SelectItem>
+                            <SelectItem value="Michael Migliore">Michael Migliore</SelectItem>
+                            <SelectItem value="Rafiq Abdul-Alim">Rafiq Abdul-Alim</SelectItem>
+                            <SelectItem value="Glenn Stevens">Glenn Stevens</SelectItem>
+                            <SelectItem value="Mohamed Abdurahman">Mohamed Abdurahman</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
 
@@ -433,10 +544,10 @@ const QuarterlyCheckins = () => {
                           value={checkinSchool}
                           onValueChange={setCheckinSchool}
                         >
-                          <SelectTrigger id="school" className="pl-9">
+                          <SelectTrigger id="school" className="pl-9 rounded-none">
                             <SelectValue placeholder="Select school" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="rounded-none">
                             <SelectItem value="KFNA">KFNA</SelectItem>
                             <SelectItem value="NFS East">NFS East</SelectItem>
                             <SelectItem value="NFS West">NFS West</SelectItem>
@@ -457,7 +568,7 @@ const QuarterlyCheckins = () => {
                             type="date"
                             value={checkinDate}
                             onChange={(e) => setCheckinDate(e.target.value)}
-                            className="pl-9"
+                            className="pl-9 rounded-none"
                           />
                         </div>
                       </div>
@@ -470,10 +581,10 @@ const QuarterlyCheckins = () => {
                           value={currentQuarter}
                           onValueChange={setCurrentQuarter}
                         >
-                          <SelectTrigger id="quarter">
+                          <SelectTrigger id="quarter" className="rounded-none">
                             <SelectValue placeholder="Select quarter" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="rounded-none">
                             <SelectItem value="Q1">Q1</SelectItem>
                             <SelectItem value="Q2">Q2</SelectItem>
                             <SelectItem value="Q3">Q3</SelectItem>
@@ -491,10 +602,10 @@ const QuarterlyCheckins = () => {
                         value={currentYear.toString()}
                         onValueChange={(value) => setCurrentYear(parseInt(value))}
                       >
-                        <SelectTrigger id="year">
+                        <SelectTrigger id="year" className="rounded-none">
                           <SelectValue placeholder="Select year" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-none">
                           {[...Array(5)].map((_, i) => {
                             const year = new Date().getFullYear() - 2 + i;
                             return (
@@ -508,7 +619,7 @@ const QuarterlyCheckins = () => {
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-between border-t bg-gray-50/50 px-6 py-4">
+                <CardFooter className="flex justify-between border-t bg-gray-50/50 mx-6 px-0 py-4">
                   <Button 
                     variant="outline" 
                     onClick={() => {
@@ -516,14 +627,14 @@ const QuarterlyCheckins = () => {
                       setInstructorName("");
                       setCheckinSchool("");
                     }}
-                    className="border-gray-300"
+                    className="border-gray-300 rounded-none"
                   >
                     Cancel
                   </Button>
                   <Button 
                     onClick={startNewSession}
                     disabled={!instructorName.trim() || !checkinSchool}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-blue-600 hover:bg-blue-700 rounded-none"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Start Check-in

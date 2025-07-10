@@ -520,6 +520,63 @@ export const ptoBalanceRelations = relations(ptoBalance, ({ one }) => ({
 export type PtoBalance = typeof ptoBalance.$inferSelect;
 export type InsertPtoBalance = z.infer<typeof insertPtoBalanceSchema>;
 
+// Quarterly Check-ins System
+export const quarterlyCheckins = pgTable("quarterly_checkins", {
+  id: serial("id").primaryKey(),
+  instructorName: text("instructor_name").notNull(),
+  schoolId: integer("school_id").notNull().references(() => schools.id),
+  date: date("date").notNull(),
+  quarter: text("quarter").notNull(),
+  year: integer("year").notNull(),
+  notes: text("notes"),
+  status: text("status", { enum: ["draft", "completed"] }).notNull().default("draft"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const quarterlyCheckinAnswers = pgTable("quarterly_checkin_answers", {
+  id: serial("id").primaryKey(),
+  checkinId: integer("checkin_id").notNull().references(() => quarterlyCheckins.id),
+  questionId: integer("question_id").notNull(),
+  answer: text("answer").notNull(),
+});
+
+export const insertQuarterlyCheckinSchema = createInsertSchema(quarterlyCheckins).pick({
+  instructorName: true,
+  schoolId: true,
+  date: true,
+  quarter: true,
+  year: true,
+  notes: true,
+  status: true,
+});
+
+export const insertQuarterlyCheckinAnswerSchema = createInsertSchema(quarterlyCheckinAnswers).pick({
+  checkinId: true,
+  questionId: true,
+  answer: true,
+});
+
+export const quarterlyCheckinsRelations = relations(quarterlyCheckins, ({ one, many }) => ({
+  school: one(schools, {
+    fields: [quarterlyCheckins.schoolId],
+    references: [schools.id]
+  }),
+  answers: many(quarterlyCheckinAnswers)
+}));
+
+export const quarterlyCheckinAnswersRelations = relations(quarterlyCheckinAnswers, ({ one }) => ({
+  checkin: one(quarterlyCheckins, {
+    fields: [quarterlyCheckinAnswers.checkinId],
+    references: [quarterlyCheckins.id]
+  })
+}));
+
+export type QuarterlyCheckin = typeof quarterlyCheckins.$inferSelect;
+export type InsertQuarterlyCheckin = z.infer<typeof insertQuarterlyCheckinSchema>;
+export type QuarterlyCheckinAnswer = typeof quarterlyCheckinAnswers.$inferSelect;
+export type InsertQuarterlyCheckinAnswer = z.infer<typeof insertQuarterlyCheckinAnswerSchema>;
+
 // School Documents Management
 export const schoolDocuments = pgTable("school_documents", {
   id: serial("id").primaryKey(),
