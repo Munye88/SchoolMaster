@@ -156,7 +156,7 @@ const TestTrackerProfessional: React.FC = () => {
       // Convert TestResult format to database format
       const dbData = {
         schoolId,
-        testType: testData.testType,
+        testType: testData.testType === 'Book Test' ? 'Book' : testData.testType,
         score: testData.testType === 'OPI' ? testData.averageScore : testData.averageScore,
         maxScore: testData.testType === 'OPI' ? testData.numberOfStudents : 100,
         percentage: testData.testType === 'OPI' ? 
@@ -174,13 +174,19 @@ const TestTrackerProfessional: React.FC = () => {
         level: 'Beginner'
       };
 
+      console.log('Sending data to backend:', dbData);
+
       const response = await fetch('/api/test-scores/manual', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dbData)
       });
 
-      if (!response.ok) throw new Error('Failed to save test result');
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('Backend error:', errorData);
+        throw new Error(`Failed to save test result: ${response.status} ${errorData}`);
+      }
       return response.json();
     },
     onSuccess: () => {

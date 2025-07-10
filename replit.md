@@ -342,6 +342,7 @@ The system manages multiple interconnected entities:
 - July 9, 2025: STATUS COLUMN REMOVAL - Removed status column from test results table as requested for cleaner display focusing on test data
 - July 9, 2025: PERIOD FILTERING SYSTEM - Added period filtering dropdown allowing users to view specific cycles (Book Test) or months (ALCPT/ECL/OPI), with automatic reset when switching between test types
 - July 10, 2025: PERCENTAGE SYMBOL IMPLEMENTATION - Added percentage symbols (%) to all average score displays throughout the application including test tracker results table, statistics cards, chart tooltips, and reports section for consistent percentage formatting across all schools
+- July 10, 2025: CRITICAL TEST ENTRY BUG FIX - Fixed manual test entry functionality by correcting database schema configuration in server/db.ts to include testScores schema from shared/test-scores-schema.ts, resolving data persistence issues where book test results were disappearing after manual entry
 
 ## User Preferences
 

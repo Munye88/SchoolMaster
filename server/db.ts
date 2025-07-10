@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "@shared/schema";
+import * as testScoresSchema from "@shared/test-scores-schema";
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -16,4 +17,7 @@ export const pool = new Pool({
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
-export const db = drizzle(pool, { schema });
+// Combine all schemas
+const fullSchema = { ...schema, ...testScoresSchema };
+
+export const db = drizzle(pool, { schema: fullSchema });

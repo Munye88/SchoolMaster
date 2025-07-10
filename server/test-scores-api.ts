@@ -491,6 +491,8 @@ export function setupTestScoresAPI(app: Express) {
   // Manual entry endpoint
   app.post("/api/test-scores/manual", async (req, res) => {
     try {
+      console.log('📝 Manual test score entry received:', req.body);
+      
       const {
         studentName,
         schoolId,
@@ -499,16 +501,21 @@ export function setupTestScoresAPI(app: Express) {
         maxScore,
         testDate,
         instructor,
-        course
+        course,
+        year,
+        month,
+        cycle,
+        percentage
       } = req.body;
 
       // Validate required fields
-      if (!studentName || !schoolId || !score) {
-        return res.status(400).json({ error: 'Missing required fields' });
+      if (!studentName || !schoolId || score === undefined || score === null) {
+        console.error('❌ Missing required fields:', { studentName, schoolId, score });
+        return res.status(400).json({ error: 'Missing required fields: studentName, schoolId, and score are required' });
       }
 
-      // Calculate percentage
-      const percentage = Math.round((score / maxScore) * 100);
+      // Calculate percentage if not provided
+      const calculatedPercentage = percentage || Math.round((score / (maxScore || 100)) * 100);
 
       const testScore = {
         studentName,
@@ -516,25 +523,30 @@ export function setupTestScoresAPI(app: Express) {
         testType: testType || 'ALCPT',
         score: parseInt(score),
         maxScore: parseInt(maxScore) || 100,
-        percentage,
+        percentage: calculatedPercentage,
         testDate: new Date(testDate || new Date()),
         instructor: instructor || 'Unknown',
         course: course || 'Unknown',
         level: 'Beginner',
-        uploadDate: new Date()
+        month: month || null,
+        cycle: cycle || null
       };
 
-      await db.insert(testScores).values(testScore);
+      console.log('💾 Inserting test score:', testScore);
+
+      const result = await db.insert(testScores).values(testScore).returning();
+      
+      console.log('✅ Test score saved successfully:', result[0]);
 
       res.json({
         success: true,
         message: 'Test score added successfully',
-        testScore
+        testScore: result[0]
       });
 
     } catch (error) {
-      console.error('Manual entry error:', error);
-      res.status(500).json({ error: 'Failed to save test score' });
+      console.error('❌ Manual entry error:', error);
+      res.status(500).json({ error: `Failed to save test score: ${error.message}` });
     }
   });
 
