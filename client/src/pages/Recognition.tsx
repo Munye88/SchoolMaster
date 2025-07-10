@@ -64,45 +64,45 @@ function InstructorDetailsDialog({ instructor, quarter, year }: { instructor: Re
           <div className="space-y-6">
             {/* Summary */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="rounded-none">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Summary</CardTitle>
+              <Card className="rounded-none border-2">
+                <CardHeader className="pb-3 bg-gray-50">
+                  <CardTitle className="text-lg text-gray-900 font-bold">Summary</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
+                <CardContent className="bg-white">
+                  <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span>School:</span>
-                      <span className="font-medium">{instructor.school}</span>
+                      <span className="text-gray-800 font-medium">School:</span>
+                      <span className="font-bold text-gray-900">{instructor.school}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Nationality:</span>
-                      <span className="font-medium">{instructor.nationality}</span>
+                      <span className="text-gray-800 font-medium">Nationality:</span>
+                      <span className="font-bold text-gray-900">{instructor.nationality}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Quarter:</span>
-                      <span className="font-medium">{quarter} {year}</span>
+                      <span className="text-gray-800 font-medium">Quarter:</span>
+                      <span className="font-bold text-gray-900">{quarter} {year}</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="rounded-none">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Performance</CardTitle>
+              <Card className="rounded-none border-2">
+                <CardHeader className="pb-3 bg-gray-50">
+                  <CardTitle className="text-lg text-gray-900 font-bold">Performance</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
+                <CardContent className="bg-white">
+                  <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span>Attendance Score:</span>
-                      <span className="font-medium">{instructorDetails?.summary?.attendanceScore || 0}%</span>
+                      <span className="text-gray-800 font-medium">Attendance Score:</span>
+                      <span className="font-bold text-xl text-blue-600">{instructorDetails?.summary?.attendanceScore || 0}%</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Evaluation Score:</span>
-                      <span className="font-medium">{instructorDetails?.summary?.evaluationScore || 0}%</span>
+                      <span className="text-gray-800 font-medium">Evaluation Score:</span>
+                      <span className="font-bold text-xl text-green-600">{instructorDetails?.summary?.evaluationScore || 0}%</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Total Days:</span>
-                      <span className="font-medium">{instructorDetails?.summary?.totalDays || 0}</span>
+                      <span className="text-gray-800 font-medium">Total Days:</span>
+                      <span className="font-bold text-xl text-gray-900">{instructorDetails?.summary?.totalDays || 0}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -110,54 +110,54 @@ function InstructorDetailsDialog({ instructor, quarter, year }: { instructor: Re
             </div>
 
             {/* Attendance Records */}
-            <Card className="rounded-none">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
+            <Card className="rounded-none border-2">
+              <CardHeader className="bg-gray-50">
+                <CardTitle className="flex items-center gap-2 text-gray-900 font-bold">
+                  <Calendar className="h-5 w-5 text-blue-600" />
                   Attendance Records
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">{instructorDetails?.summary?.totalPresent || 0}</div>
-                    <div className="text-sm text-gray-600">Present</div>
+              <CardContent className="bg-white">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div className="text-center bg-green-50 p-4 rounded-none border-2 border-green-200">
+                    <div className="text-3xl font-bold text-green-700">{instructorDetails?.summary?.totalPresent || 0}</div>
+                    <div className="text-sm font-semibold text-green-600">Present</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-red-600">{instructorDetails?.summary?.totalAbsent || 0}</div>
-                    <div className="text-sm text-gray-600">Absent</div>
+                  <div className="text-center bg-red-50 p-4 rounded-none border-2 border-red-200">
+                    <div className="text-3xl font-bold text-red-700">{instructorDetails?.summary?.totalAbsent || 0}</div>
+                    <div className="text-sm font-semibold text-red-600">Absent</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-yellow-600">{instructorDetails?.summary?.totalLate || 0}</div>
-                    <div className="text-sm text-gray-600">Late</div>
+                  <div className="text-center bg-yellow-50 p-4 rounded-none border-2 border-yellow-200">
+                    <div className="text-3xl font-bold text-yellow-700">{instructorDetails?.summary?.totalLate || 0}</div>
+                    <div className="text-sm font-semibold text-yellow-600">Late</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600">{instructorDetails?.summary?.totalSick || 0}</div>
-                    <div className="text-sm text-gray-600">Sick</div>
+                  <div className="text-center bg-orange-50 p-4 rounded-none border-2 border-orange-200">
+                    <div className="text-3xl font-bold text-orange-700">{instructorDetails?.summary?.totalSick || 0}</div>
+                    <div className="text-sm font-semibold text-orange-600">Sick</div>
                   </div>
                 </div>
                 
                 {instructorDetails?.attendanceRecords?.length > 0 && (
-                  <div className="max-h-60 overflow-y-auto">
+                  <div className="max-h-60 overflow-y-auto border-2 border-gray-200">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-gray-100">
                         <tr>
-                          <th className="text-left p-2">Date</th>
-                          <th className="text-left p-2">Status</th>
+                          <th className="text-left p-3 font-bold text-gray-900">Date</th>
+                          <th className="text-left p-3 font-bold text-gray-900">Status</th>
                         </tr>
                       </thead>
                       <tbody>
                         {instructorDetails.attendanceRecords.map((record: any, index: number) => (
-                          <tr key={index} className="border-b">
-                            <td className="p-2">{new Date(record.date).toLocaleDateString()}</td>
-                            <td className="p-2">
-                              <Badge className={`rounded-none ${
-                                record.status === 'present' ? 'bg-green-500' :
-                                record.status === 'absent' ? 'bg-red-500' :
-                                record.status === 'late' ? 'bg-yellow-500' :
-                                'bg-orange-500'
+                          <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
+                            <td className="p-3 text-gray-800 font-medium">{new Date(record.date).toLocaleDateString()}</td>
+                            <td className="p-3">
+                              <Badge className={`rounded-none font-semibold ${
+                                record.status === 'present' ? 'bg-green-600 text-white' :
+                                record.status === 'absent' ? 'bg-red-600 text-white' :
+                                record.status === 'late' ? 'bg-yellow-600 text-white' :
+                                'bg-orange-600 text-white'
                               }`}>
-                                {record.status}
+                                {record.status.toUpperCase()}
                               </Badge>
                             </td>
                           </tr>
@@ -170,37 +170,37 @@ function InstructorDetailsDialog({ instructor, quarter, year }: { instructor: Re
             </Card>
 
             {/* Evaluation Records */}
-            <Card className="rounded-none">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Star className="h-5 w-5" />
+            <Card className="rounded-none border-2">
+              <CardHeader className="bg-gray-50">
+                <CardTitle className="flex items-center gap-2 text-gray-900 font-bold">
+                  <Star className="h-5 w-5 text-yellow-600" />
                   Evaluation Records
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="bg-white">
                 {instructorDetails?.evaluationRecords?.length > 0 ? (
-                  <div className="max-h-60 overflow-y-auto">
+                  <div className="max-h-60 overflow-y-auto border-2 border-gray-200">
                     <table className="w-full text-sm">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-gray-100">
                         <tr>
-                          <th className="text-left p-2">Date</th>
-                          <th className="text-left p-2">Score</th>
-                          <th className="text-left p-2">Status</th>
+                          <th className="text-left p-3 font-bold text-gray-900">Date</th>
+                          <th className="text-left p-3 font-bold text-gray-900">Score</th>
+                          <th className="text-left p-3 font-bold text-gray-900">Status</th>
                         </tr>
                       </thead>
                       <tbody>
                         {instructorDetails.evaluationRecords.map((record: any, index: number) => (
-                          <tr key={index} className="border-b">
-                            <td className="p-2">{new Date(record.evaluationDate).toLocaleDateString()}</td>
-                            <td className="p-2 font-medium">{record.score}%</td>
-                            <td className="p-2">
-                              <Badge className={`rounded-none ${
-                                record.score >= 95 ? 'bg-green-500' :
-                                record.score >= 85 ? 'bg-yellow-500' :
-                                'bg-red-500'
+                          <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
+                            <td className="p-3 text-gray-800 font-medium">{new Date(record.evaluationDate).toLocaleDateString()}</td>
+                            <td className="p-3 font-bold text-xl text-blue-600">{record.score}%</td>
+                            <td className="p-3">
+                              <Badge className={`rounded-none font-semibold ${
+                                record.score >= 95 ? 'bg-green-600 text-white' :
+                                record.score >= 85 ? 'bg-yellow-600 text-white' :
+                                'bg-red-600 text-white'
                               }`}>
-                                {record.score >= 95 ? 'Excellent' :
-                                 record.score >= 85 ? 'Good' : 'Needs Improvement'}
+                                {record.score >= 95 ? 'EXCELLENT' :
+                                 record.score >= 85 ? 'GOOD' : 'NEEDS IMPROVEMENT'}
                               </Badge>
                             </td>
                           </tr>
@@ -209,8 +209,9 @@ function InstructorDetailsDialog({ instructor, quarter, year }: { instructor: Re
                     </table>
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
-                    No evaluation records found for this quarter
+                  <div className="text-center py-8 bg-gray-50 border-2 border-gray-200 rounded-none">
+                    <div className="text-lg font-semibold text-gray-700">No evaluation records found for this quarter</div>
+                    <div className="text-sm text-gray-500 mt-2">This instructor has not been evaluated during the selected quarter period.</div>
                   </div>
                 )}
               </CardContent>
