@@ -176,9 +176,9 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
               <div className="text-sm font-medium text-red-600">Under Review</div>
               <div className="text-2xl font-bold text-red-600">{statusCounts.under_review || 0}</div>
             </div>
-            <div className="flex items-center justify-between pt-2 px-1">
-              <div className="text-sm font-medium text-purple-600 flex-1 pr-2">Avg. Completion Time</div>
-              <div className="text-2xl font-bold text-purple-600 flex-shrink-0">
+            <div className="flex items-center justify-between pt-2 px-3">
+              <div className="text-sm font-medium text-purple-600 truncate pr-2">Avg. Time</div>
+              <div className="text-2xl font-bold text-purple-600 text-right">
                 {completedLogs.length > 0 ? `${avgCompletionTime} days` : 'N/A'}
               </div>
             </div>
