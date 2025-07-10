@@ -202,7 +202,8 @@ const QuarterlyCheckins = () => {
       if (!response.ok) {
         throw new Error("Failed to delete quarterly check-in");
       }
-      return response.json();
+      // DELETE returns 204 No Content, so no JSON to parse
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["quarterly-checkins"] });
