@@ -25,6 +25,8 @@ interface AccessRequest {
 export default function AccessRequests() {
   const [selectedRequest, setSelectedRequest] = useState<AccessRequest | null>(null);
   const [approvalForm, setApprovalForm] = useState({ username: '', password: '' });
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const queryClient = useQueryClient();
 
   const { data: requests = [], isLoading } = useQuery({
@@ -76,6 +78,29 @@ export default function AccessRequests() {
     }
   });
 
+  const changePasswordMutation = useMutation({
+    mutationFn: async ({ currentPassword, newPassword }: { currentPassword: string; newPassword: string }) => {
+      const response = await fetch('/api/change-password', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword })
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to change password');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      setShowPasswordChange(false);
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      alert('Password changed successfully!');
+    },
+    onError: (error: Error) => {
+      alert(`Error: ${error.message}`);
+    }
+  });
+
   const handleApprove = () => {
     if (!selectedRequest || !approvalForm.username || !approvalForm.password) return;
     
@@ -90,6 +115,28 @@ export default function AccessRequests() {
     if (confirm(`Are you sure you want to reject the access request from ${request.fullName}?`)) {
       rejectMutation.mutate(request.id);
     }
+  };
+
+  const handlePasswordChange = () => {
+    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+      alert('All fields are required');
+      return;
+    }
+    
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      alert('New password and confirmation do not match');
+      return;
+    }
+    
+    if (passwordForm.newPassword.length < 6) {
+      alert('New password must be at least 6 characters long');
+      return;
+    }
+    
+    changePasswordMutation.mutate({
+      currentPassword: passwordForm.currentPassword,
+      newPassword: passwordForm.newPassword
+    });
   };
 
   const getStatusBadge = (status: string) => {
@@ -118,7 +165,15 @@ export default function AccessRequests() {
   return (
     <div className="p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">Access Request Management</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Access Request Management</h1>
+          <Button 
+            onClick={() => setShowPasswordChange(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-none"
+          >
+            Change Password
+          </Button>
+        </div>
         
         {/* Pending Requests */}
         <div className="mb-12">
@@ -289,6 +344,82 @@ export default function AccessRequests() {
                 </Card>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Password Change Modal */}
+        {showPasswordChange && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <Card className="w-full max-w-md rounded-none">
+              <div className="p-6">
+                <h2 className="text-2xl font-semibold text-center text-gray-900 mb-6">Change Password</h2>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="currentPassword" className="text-gray-700 font-medium">
+                      Current Password
+                    </Label>
+                    <Input
+                      id="currentPassword"
+                      type="password"
+                      value={passwordForm.currentPassword}
+                      onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                      className="rounded-none"
+                      placeholder="Enter your current password"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="newPassword" className="text-gray-700 font-medium">
+                      New Password
+                    </Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      value={passwordForm.newPassword}
+                      onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                      className="rounded-none"
+                      placeholder="Enter your new password"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">
+                      Confirm New Password
+                    </Label>
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      value={passwordForm.confirmPassword}
+                      onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                      className="rounded-none"
+                      placeholder="Confirm your new password"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <Button
+                    onClick={() => setShowPasswordChange(false)}
+                    variant="outline"
+                    className="flex-1 rounded-none"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handlePasswordChange}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-none"
+                    disabled={changePasswordMutation.isPending}
+                  >
+                    {changePasswordMutation.isPending ? 'Changing...' : 'Change Password'}
+                  </Button>
+                </div>
+                
+                <div className="mt-4 text-sm text-gray-600 text-center">
+                  Password must be at least 6 characters long
+                </div>
+              </div>
+            </Card>
           </div>
         )}
       </div>

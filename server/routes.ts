@@ -181,6 +181,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // API routes - prefix all routes with /api
   
+  // Change password endpoint (admin only)
+  app.patch("/api/change-password", async (req, res) => {
+    try {
+      if (!req.user || req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { currentPassword, newPassword } = req.body;
+      
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current password and new password are required" });
+      }
+
+      // Get current user from database
+      const [currentUser] = await db.select().from(users).where(eq(users.id, req.user.id));
+      
+      if (!currentUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Verify current password using scrypt (same method as auth.ts)
+      const crypto = require('crypto');
+      const util = require('util');
+      const scrypt = util.promisify(crypto.scrypt);
+      
+      const [storedHash, storedSalt] = currentUser.password.split('.');
+      const derivedKey = await scrypt(currentPassword, storedSalt, 64);
+      const currentPasswordIsValid = storedHash === derivedKey.toString('hex');
+
+      if (!currentPasswordIsValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+
+      // Hash new password using scrypt
+      const salt = crypto.randomBytes(16).toString('hex');
+      const newHashedPassword = await scrypt(newPassword, salt, 64);
+      const newPasswordHash = `${newHashedPassword.toString('hex')}.${salt}`;
+
+      // Update password in database
+      await db.update(users)
+        .set({ password: newPasswordHash })
+        .where(eq(users.id, req.user.id));
+
+      console.log(`🔐 Password changed for admin user: ${req.user.username}`);
+
+      res.json({ message: "Password changed successfully" });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+  
   // Access Request Routes
   app.post("/api/access-request", async (req, res) => {
     try {
