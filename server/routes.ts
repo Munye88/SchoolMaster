@@ -57,6 +57,7 @@ import { seedComprehensiveTestScores } from "./comprehensiveTestSeed";
 import { processAssistantQuery, chatWithMoonsAssistant, MoonsAssistantRequest } from "./services/aiAssistant";
 import { AIChatRequest } from "../client/src/lib/ai-types";
 import { initDatabase } from "./initDb";
+import { sendAccessRequestEmail } from "./emailService";
 
 // Configure multer for school documents upload
 const schoolDocumentsStorage = multer.diskStorage({
@@ -172,6 +173,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // API routes - prefix all routes with /api
+  
+  // Access Request Routes
+  app.post("/api/access-request", async (req, res) => {
+    try {
+      const { fullName, email, reason, requestType } = req.body;
+      
+      // Validate input
+      if (!fullName || !email || !reason || !requestType) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+      
+      if (!['registration', 'password_reset'].includes(requestType)) {
+        return res.status(400).json({ message: "Invalid request type" });
+      }
+      
+      // Send email notification
+      const emailSent = await sendAccessRequestEmail({
+        fullName,
+        email,
+        reason,
+        requestType: requestType as 'registration' | 'password_reset',
+        timestamp: new Date().toISOString()
+      });
+      
+      if (emailSent) {
+        res.json({ 
+          message: requestType === 'registration' 
+            ? "Access request sent to administrator for approval" 
+            : "Reset request sent to administrator for approval"
+        });
+      } else {
+        res.status(500).json({ message: "Failed to send request email" });
+      }
+    } catch (error) {
+      console.error("Access request error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
   
   // Schools
   app.get("/api/schools", async (req, res) => {
