@@ -77,7 +77,7 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
       <Card className="col-span-1">
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 text-center">
           <CardTitle>Action Items Summary</CardTitle>
           <CardDescription>Status distribution overview</CardDescription>
         </CardHeader>
@@ -154,32 +154,31 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
       )}
 
       <Card className="col-span-1">
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 text-center">
           <CardTitle>Key Metrics</CardTitle>
           <CardDescription>Current action log stats</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-2">
-            <div className="flex items-center justify-between rounded-lg bg-muted p-3">
-              <div className="text-sm font-medium">Total Items</div>
-              <div className="text-xl font-bold">{logs.length}</div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b pb-2">
+              <div className="text-sm font-medium text-gray-600">Total Items</div>
+              <div className="text-2xl font-bold text-gray-900">{logs.length}</div>
             </div>
-            <div className="flex items-center justify-between rounded-lg bg-blue-50 dark:bg-blue-900/20 p-3">
-              <div className="text-sm font-medium text-blue-700 dark:text-blue-300">Pending</div>
-              <div className="text-xl font-bold text-blue-700 dark:text-blue-300">{statusCounts.pending || 0}</div>
+            <div className="flex items-center justify-between border-b pb-2">
+              <div className="text-sm font-medium text-blue-600">Pending</div>
+              <div className="text-2xl font-bold text-blue-600">{statusCounts.pending || 0}</div>
             </div>
-            <div className="flex items-center justify-between rounded-lg bg-green-50 dark:bg-green-900/20 p-3">
-              <div className="text-sm font-medium text-green-700 dark:text-green-300">Completed</div>
-              <div className="text-xl font-bold text-green-700 dark:text-green-300">{statusCounts.completed || 0}</div>
+            <div className="flex items-center justify-between border-b pb-2">
+              <div className="text-sm font-medium text-green-600">Completed</div>
+              <div className="text-2xl font-bold text-green-600">{statusCounts.completed || 0}</div>
             </div>
-            <div className="flex items-center justify-between rounded-lg bg-red-50 dark:bg-red-900/20 p-3">
-              <div className="text-sm font-medium text-red-700 dark:text-red-300">Under Review</div>
-              <div className="text-xl font-bold text-red-700 dark:text-red-300">{statusCounts.under_review || 0}</div>
+            <div className="flex items-center justify-between border-b pb-2">
+              <div className="text-sm font-medium text-red-600">Under Review</div>
+              <div className="text-2xl font-bold text-red-600">{statusCounts.under_review || 0}</div>
             </div>
-            {/* Due Soon metric removed as requested */}
-            <div className="flex items-center justify-between rounded-lg bg-purple-50 dark:bg-purple-900/20 p-3">
-              <div className="text-sm font-medium text-purple-700 dark:text-purple-300">Avg. Completion Time</div>
-              <div className="text-xl font-bold text-purple-700 dark:text-purple-300">
+            <div className="flex items-center justify-between pt-2">
+              <div className="text-sm font-medium text-purple-600">Avg. Completion Time</div>
+              <div className="text-2xl font-bold text-purple-600">
                 {completedLogs.length > 0 ? `${avgCompletionTime} days` : 'N/A'}
               </div>
             </div>
