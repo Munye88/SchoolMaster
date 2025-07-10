@@ -53,6 +53,8 @@ import {
 } from "@shared/schema";
 import { setupAuth } from "./auth";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
+import { promisify } from "util";
 
 async function hashPassword(password: string) {
   return bcrypt.hash(password, 10);
@@ -202,9 +204,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Verify current password using scrypt (same method as auth.ts)
-      const crypto = require('crypto');
-      const util = require('util');
-      const scrypt = util.promisify(crypto.scrypt);
+      const scrypt = promisify(crypto.scrypt);
       
       const [storedHash, storedSalt] = currentUser.password.split('.');
       const derivedKey = await scrypt(currentPassword, storedSalt, 64);
@@ -5365,7 +5365,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'No file uploaded' });
       }
 
-      const XLSX = require('xlsx');
+      const XLSX = await import('xlsx');
       const workbook = XLSX.readFile(req.file.path);
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
@@ -5429,7 +5429,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Clean up uploaded file
-      require('fs').unlinkSync(req.file.path);
+      fs.unlinkSync(req.file.path);
       
       res.json({ 
         success: true, 
