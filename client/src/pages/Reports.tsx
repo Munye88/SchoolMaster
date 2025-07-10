@@ -263,16 +263,21 @@ const Reports: React.FC = () => {
     return results;
   }, [testScores]);
 
-  // Monthly trends data (full academic year: June-May)
+  // Monthly trends data (academic year: June-May)
   const monthlyTrends = useMemo(() => {
-    return months.map((month, index) => ({
+    const academicYearMonths = [
+      "June", "July", "August", "September", "October", "November", 
+      "December", "January", "February", "March", "April", "May"
+    ];
+    
+    return academicYearMonths.map((month, index) => ({
       month: month.substring(0, 3),
-      attendance: 88 + Math.random() * 8,
-      evaluation: 4.0 + Math.random() * 0.8,
-      performance: 75 + Math.random() * 15,
-      tests: 120 + Math.floor(Math.random() * 40)
+      attendance: 88 + (index * 2) % 8,
+      evaluation: 4.0 + (index * 0.1) % 0.8,
+      performance: 75 + (index * 3) % 15,
+      tests: 120 + (index * 10) % 40
     }));
-  }, [months]);
+  }, []);
 
   const isLoading = instructorsLoading || coursesLoading || testResultsLoading || evaluationsLoading || staffLeaveLoading || testScoresLoading;
 
