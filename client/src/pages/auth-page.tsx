@@ -291,18 +291,16 @@ export default function AuthPage() {
                         <FormItem>
                           <FormLabel className="text-[#081f5c] font-medium">Full Name</FormLabel>
                           <FormControl>
-                            <div className="relative group">
-                              <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-[#00a2ff] transition-colors">
-                                <User className="h-5 w-5" />
-                              </div>
-                              <Input
-                                placeholder="Enter your full name"
-                                className="pl-12 py-6 bg-white border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
-                                autoComplete="name"
-                                disabled={false}
-                                {...field}
-                              />
-                            </div>
+                            <Input
+                              placeholder="Enter your full name"
+                              className="py-6 bg-white border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
+                              autoComplete="name"
+                              value={field.value}
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              name={field.name}
+                              ref={field.ref}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -316,19 +314,17 @@ export default function AuthPage() {
                         <FormItem>
                           <FormLabel className="text-[#081f5c] font-medium">Email Address</FormLabel>
                           <FormControl>
-                            <div className="relative group">
-                              <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-[#00a2ff] transition-colors">
-                                <Mail className="h-5 w-5" />
-                              </div>
-                              <Input
-                                type="email"
-                                placeholder="Enter your email address"
-                                className="pl-12 py-6 bg-white border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
-                                autoComplete="email"
-                                disabled={false}
-                                {...field}
-                              />
-                            </div>
+                            <Input
+                              type="email"
+                              placeholder="Enter your email address"
+                              className="py-6 bg-white border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
+                              autoComplete="email"
+                              value={field.value}
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              name={field.name}
+                              ref={field.ref}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -347,8 +343,11 @@ export default function AuthPage() {
                             <Textarea
                               placeholder={isPasswordReset ? "Please explain why you need your password reset..." : "Please explain why you need access to the system..."}
                               className="py-3 bg-white border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c] min-h-[120px] resize-none text-center"
-                              disabled={false}
-                              {...field}
+                              value={field.value}
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              name={field.name}
+                              ref={field.ref}
                             />
                           </FormControl>
                           <FormMessage />
