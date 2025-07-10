@@ -393,8 +393,8 @@ const TestTrackerProfessional: React.FC = () => {
       });
       
       return [
-        { name: 'Students Passed', value: totalPassed, color: '#10b981' },
-        { name: 'Students Failed', value: totalFailed, color: '#ef4444' }
+        { name: 'Students Passed', value: totalPassed, color: '#16a34a' },
+        { name: 'Students Failed', value: totalFailed, color: '#dc2626' }
       ];
     } else {
       // Bar chart data for other tests
@@ -840,17 +840,56 @@ const TestTrackerProfessional: React.FC = () => {
                             cx="50%"
                             cy="50%"
                             labelLine={false}
-                            label={({ name, value }) => `${name}: ${value}`}
-                            outerRadius={120}
+                            label={({ name, value, percent }) => `${name}: ${value} (${(percent * 100).toFixed(0)}%)`}
+                            outerRadius={140}
+                            innerRadius={60}
                             fill="#8884d8"
                             dataKey="value"
+                            paddingAngle={3}
+                            animationBegin={0}
+                            animationDuration={1000}
                           >
                             {(chartData as any[]).map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
+                              <Cell 
+                                key={`cell-${index}`} 
+                                fill={entry.color}
+                                stroke={entry.color}
+                                strokeWidth={2}
+                              />
                             ))}
                           </Pie>
-                          <Tooltip />
-                          <Legend />
+                          <Tooltip 
+                            content={({ active, payload }) => {
+                              if (active && payload && payload.length) {
+                                const data = payload[0].payload;
+                                const total = (chartData as any[]).reduce((sum, item) => sum + item.value, 0);
+                                const percentage = ((data.value / total) * 100).toFixed(1);
+                                return (
+                                  <div className="bg-white p-4 border rounded-lg shadow-lg">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <div 
+                                        className="w-4 h-4 rounded-full" 
+                                        style={{ backgroundColor: data.color }}
+                                      ></div>
+                                      <p className="font-semibold text-gray-800">{data.name}</p>
+                                    </div>
+                                    <p className="text-lg font-bold text-gray-900">{data.value} students</p>
+                                    <p className="text-sm text-gray-600">{percentage}% of total</p>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                          <Legend 
+                            verticalAlign="bottom" 
+                            height={36}
+                            formatter={(value, entry) => (
+                              <span style={{ color: entry.color, fontWeight: 'bold' }}>
+                                {value}
+                              </span>
+                            )}
+                          />
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
