@@ -11,6 +11,7 @@ import CourseDetails from "@/pages/CourseDetails";
 import TestTrackerProfessionalPage from "@/pages/TestTrackerProfessionalPage";
 import ReportsEnhanced from "@/pages/ReportsEnhanced";
 import Documents from "@/pages/Documents";
+import Recognition from "@/pages/Recognition";
 import Administration from "@/pages/Administration";
 import TrainingDevelopment from "@/pages/TrainingDevelopment";
 import DLI from "@/pages/DLI";
@@ -98,6 +99,7 @@ function Router() {
           <ProtectedRoute path="/test-tracker" component={TestTrackerProfessionalPage} />
           <ProtectedRoute path="/reports" component={ReportsEnhanced} />
           <ProtectedRoute path="/documents" component={Documents} />
+          <ProtectedRoute path="/recognition" component={Recognition} />
           <ProtectedRoute path="/action-log" component={ActionLogPage} />
           <ProtectedRoute
             path="/quarterly-checkins"

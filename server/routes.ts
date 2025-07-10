@@ -5275,6 +5275,134 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Recognition API endpoint
+  app.get("/api/recognition/quarterly", async (req, res) => {
+    try {
+      const { quarter, year } = req.query;
+      
+      if (!quarter || !year) {
+        return res.status(400).json({ error: "Quarter and year parameters required" });
+      }
+
+      console.log(`📊 Recognition API called for ${quarter} ${year}`);
+
+      // Define quarter date ranges
+      const quarterRanges = {
+        'Q1': { start: new Date(`${year}-01-01`), end: new Date(`${year}-03-31`) },
+        'Q2': { start: new Date(`${year}-04-01`), end: new Date(`${year}-06-30`) },
+        'Q3': { start: new Date(`${year}-07-01`), end: new Date(`${year}-09-30`) },
+        'Q4': { start: new Date(`${year}-10-01`), end: new Date(`${year}-12-31`) }
+      };
+
+      const dateRange = quarterRanges[quarter as string];
+      if (!dateRange) {
+        return res.status(400).json({ error: "Invalid quarter specified" });
+      }
+
+      // Get all instructors with their school information
+      const allInstructors = await db
+        .select({
+          id: instructors.id,
+          name: instructors.name,
+          nationality: instructors.nationality,
+          schoolId: instructors.schoolId,
+          schoolName: schools.name
+        })
+        .from(instructors)
+        .innerJoin(schools, eq(instructors.schoolId, schools.id));
+
+      console.log(`👥 Found ${allInstructors.length} instructors`);
+
+      // Get attendance data for the quarter
+      const attendanceData = await db
+        .select({
+          instructorId: staffAttendance.instructorId,
+          status: staffAttendance.status
+        })
+        .from(staffAttendance)
+        .where(
+          sql`${staffAttendance.date} >= ${dateRange.start.toISOString().split('T')[0]} 
+              AND ${staffAttendance.date} <= ${dateRange.end.toISOString().split('T')[0]}`
+        );
+
+      console.log(`📅 Found ${attendanceData.length} attendance records for ${quarter} ${year}`);
+
+      // Get evaluation data for the quarter
+      const evaluationData = await db
+        .select({
+          instructorId: evaluations.instructorId,
+          score: evaluations.score
+        })
+        .from(evaluations)
+        .where(
+          sql`${evaluations.evaluationDate} >= ${dateRange.start.toISOString().split('T')[0]} 
+              AND ${evaluations.evaluationDate} <= ${dateRange.end.toISOString().split('T')[0]}`
+        );
+
+      console.log(`📊 Found ${evaluationData.length} evaluation records for ${quarter} ${year}`);
+
+      // Process each instructor
+      const recognitionCandidates = allInstructors.map(instructor => {
+        // Calculate attendance metrics
+        const instructorAttendance = attendanceData.filter(a => a.instructorId === instructor.id);
+        const totalAbsent = instructorAttendance.filter(a => a.status === 'absent').length;
+        const totalLate = instructorAttendance.filter(a => a.status === 'late').length;
+        const totalSick = instructorAttendance.filter(a => a.status === 'sick').length;
+        const totalPresent = instructorAttendance.filter(a => a.status === 'present').length;
+
+        // Calculate attendance score
+        const totalDays = instructorAttendance.length;
+        const attendanceScore = totalDays > 0 ? Math.round((totalPresent / totalDays) * 100) : 0;
+
+        // Calculate evaluation metrics
+        const instructorEvaluations = evaluationData.filter(e => e.instructorId === instructor.id);
+        const evaluationScore = instructorEvaluations.length > 0 
+          ? Math.round(instructorEvaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / instructorEvaluations.length)
+          : 0;
+
+        // Determine qualification criteria
+        const qualifiesForAttendance = totalAbsent === 0 && totalLate === 0 && totalSick === 0;
+        const qualifiesForEvaluation = evaluationScore >= 95;
+        const qualifiesForBoth = qualifiesForAttendance && qualifiesForEvaluation;
+
+        return {
+          id: instructor.id,
+          name: instructor.name,
+          school: instructor.schoolName,
+          nationality: instructor.nationality,
+          attendanceScore,
+          evaluationScore,
+          totalAbsent,
+          totalLate,
+          totalSick,
+          qualifiesForAttendance,
+          qualifiesForEvaluation,
+          qualifiesForBoth
+        };
+      });
+
+      // Filter candidates by criteria
+      const attendanceCandidates = recognitionCandidates.filter(c => c.qualifiesForAttendance);
+      const evaluationCandidates = recognitionCandidates.filter(c => c.qualifiesForEvaluation);
+      const dualCandidates = recognitionCandidates.filter(c => c.qualifiesForBoth);
+
+      console.log(`🏆 Recognition results: ${attendanceCandidates.length} attendance, ${evaluationCandidates.length} evaluation, ${dualCandidates.length} dual excellence`);
+
+      const result = {
+        quarter,
+        year: parseInt(year as string),
+        attendanceCandidates,
+        evaluationCandidates,
+        dualCandidates
+      };
+
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching recognition data:", error);
+      res.status(500).json({ error: "Failed to fetch recognition data" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

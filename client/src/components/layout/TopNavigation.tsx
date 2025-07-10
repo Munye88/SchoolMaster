@@ -75,9 +75,9 @@ export default function TopNavigation() {
       icon: BarChart2 
     },
     { 
-      label: "Documents", 
-      path: "/documents", 
-      icon: FileText 
+      label: "Recognition", 
+      path: "/recognition", 
+      icon: Activity 
     },
 
   ];
