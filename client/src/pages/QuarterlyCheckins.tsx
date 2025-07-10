@@ -105,16 +105,29 @@ const QuarterlyCheckins = () => {
   const [checkinSchool, setCheckinSchool] = useState<string>("");
   const [checkinDate, setCheckinDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
   
+  // Fetch schools data first
+  const { data: schools = [] } = useQuery({
+    queryKey: ['/api/schools'],
+  });
+
   // Load existing quarterly check-ins from API
   const { data: sessions = [], isLoading } = useQuery({
-    queryKey: ["quarterly-checkins"],
+    queryKey: ["quarterly-checkins", schools.length],
     queryFn: async () => {
       const response = await fetch("/api/quarterly-checkins");
       if (!response.ok) {
         throw new Error("Failed to fetch quarterly check-ins");
       }
-      return response.json();
+      const data = await response.json();
+      
+      // Transform the data to match frontend expectations
+      return data.map((session: any) => ({
+        ...session,
+        school: schools.find(school => school.id === session.schoolId)?.name || "Unknown School",
+        answers: session.answers || []
+      }));
     },
+    enabled: schools.length > 0,
   });
 
   // Create new quarterly check-in
@@ -210,11 +223,6 @@ const QuarterlyCheckins = () => {
   const [expandedSession, setExpandedSession] = useState<number | null>(null);
   const [editingCheckin, setEditingCheckin] = useState<CheckinSession | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  
-  // Fetch schools data
-  const { data: schools = [] } = useQuery({
-    queryKey: ['/api/schools'],
-  });
   
   // Filter sessions by search term and year/quarter if needed
   const filteredSessions = sessions.filter(session => {
