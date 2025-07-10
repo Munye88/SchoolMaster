@@ -297,7 +297,8 @@ export default function AuthPage() {
                               </div>
                               <Input
                                 placeholder="Enter your full name"
-                                className="pl-12 py-6 bg-[#f7f9fc] border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
+                                className="pl-12 py-6 bg-white border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
+                                autoComplete="name"
                                 {...field}
                               />
                             </div>
@@ -321,7 +322,8 @@ export default function AuthPage() {
                               <Input
                                 type="email"
                                 placeholder="Enter your email address"
-                                className="pl-12 py-6 bg-[#f7f9fc] border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
+                                className="pl-12 py-6 bg-white border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
+                                autoComplete="email"
                                 {...field}
                               />
                             </div>
@@ -342,7 +344,7 @@ export default function AuthPage() {
                           <FormControl>
                             <Textarea
                               placeholder={isPasswordReset ? "Please explain why you need your password reset..." : "Please explain why you need access to the system..."}
-                              className="py-3 bg-[#f7f9fc] border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c] min-h-[120px] resize-none text-center"
+                              className="py-3 bg-white border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c] min-h-[120px] resize-none text-center"
                               {...field}
                             />
                           </FormControl>
