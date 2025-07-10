@@ -1,11 +1,20 @@
 import { db } from './server/db';
 import { users } from './shared/schema';
 import { eq } from 'drizzle-orm';
-import bcrypt from 'bcrypt';
+import { scrypt, randomBytes } from "crypto";
+import { promisify } from "util";
+
+const scryptAsync = promisify(scrypt);
+
+async function hashPassword(password: string) {
+  const salt = randomBytes(16).toString("hex");
+  const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+  return `${buf.toString("hex")}.${salt}`;
+}
 
 async function updateAdminUser() {
   try {
-    const hashedPassword = await bcrypt.hash('Moon@7716', 10);
+    const hashedPassword = await hashPassword('Moon@7716');
     
     // Check if Munye88 exists
     const existingUser = await db.select().from(users).where(eq(users.username, 'Munye88'));
