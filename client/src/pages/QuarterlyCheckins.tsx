@@ -65,22 +65,20 @@ const defaultQuestions: CheckinQuestion[] = [
   // Section 2: Performance & Leadership
   { id: 1, question: "How do you feel about your performance this quarter as a Senior ELT?", category: "Performance & Leadership" },
   { id: 2, question: "What tasks, initiatives, or contributions are you most proud of this quarter?", category: "Performance & Leadership" },
-  { id: 3, question: "Have you encountered any recurring challenges with your instructors or within the team?", category: "Performance & Leadership" },
-  { id: 4, question: "If yes, how have you addressed them?", category: "Performance & Leadership" },
-  { id: 5, question: "How are you supporting the instructors under your supervision in achieving their goals?", category: "Performance & Leadership" },
+  { id: 3, question: "Have you experienced any challenges or difficulties in working with the instructors?", category: "Performance & Leadership" },
+  { id: 4, question: "In what ways are you supporting the instructors on a day-to-day basis?", category: "Performance & Leadership" },
   
   // Section 3: Program Improvement
-  { id: 6, question: "What suggestions do you have to improve the English Language Training program (instructional, administrative, or operational)?", category: "Program Improvement" },
-  { id: 7, question: "Are there any SOPs, policies, or procedures that you believe should be revised or updated? Why?", category: "Program Improvement" },
-  { id: 8, question: "What feedback have you received from instructors or students that should be considered?", category: "Program Improvement" },
+  { id: 5, question: "What suggestions do you have to improve the English Language Training program (instructional, administrative, or operational)?", category: "Program Improvement" },
+  { id: 6, question: "Are there any SOPs, policies, or procedures that you believe should be revised or updated? Why?", category: "Program Improvement" },
+  { id: 7, question: "What feedback have you received from instructors or students that should be considered?", category: "Program Improvement" },
   
   // Section 4: Professional Development
-  { id: 9, question: "What professional development topics would you like to explore or receive training in?", category: "Professional Development" },
-  { id: 10, question: "Have you supported or mentored any instructor in their professional growth this quarter?", category: "Professional Development" },
-  { id: 11, question: "If yes, how?", category: "Professional Development" },
+  { id: 8, question: "What professional development topics would you like to explore or receive training in?", category: "Professional Development" },
+  { id: 9, question: "Have you supported or mentored any instructor in their professional growth this quarter?", category: "Professional Development" },
   
   // Section 5: Support & Feedback
-  { id: 12, question: "What support do you need from me to perform more effectively in your role?", category: "Support & Feedback" },
+  { id: 10, question: "What support do you need from me to perform more effectively in your role?", category: "Support & Feedback" },
 ];
 
 // Available instructor names for selection
