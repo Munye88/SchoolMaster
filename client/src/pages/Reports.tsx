@@ -270,13 +270,16 @@ const Reports: React.FC = () => {
       "December", "January", "February", "March", "April", "May"
     ];
     
-    return academicYearMonths.map((month, index) => ({
+    const trends = academicYearMonths.map((month, index) => ({
       month: month.substring(0, 3),
       attendance: 88 + (index * 2) % 8,
       evaluation: 4.0 + (index * 0.1) % 0.8,
       performance: 75 + (index * 3) % 15,
       tests: 120 + (index * 10) % 40
     }));
+    
+    console.log('Academic Year Monthly Trends Data:', trends.map(t => t.month).join(', '));
+    return trends;
   }, []);
 
   const isLoading = instructorsLoading || coursesLoading || testResultsLoading || evaluationsLoading || staffLeaveLoading || testScoresLoading;
@@ -453,13 +456,13 @@ const Reports: React.FC = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <LineChart className="h-5 w-5" />
-                    Monthly Attendance Trend
+                    Monthly Attendance Trend (Academic Year)
                   </CardTitle>
-                  <CardDescription>Attendance percentage over time</CardDescription>
+                  <CardDescription>Attendance percentage over time (June-May)</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RechartsLineChart data={monthlyTrends}>
+                    <RechartsLineChart data={monthlyTrends} key="academic-year-chart">
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis domain={[80, 100]} />
