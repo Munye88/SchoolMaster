@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import multer from "multer";
 import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, desc } from "drizzle-orm";
 import { 
   insertInstructorSchema, 
   insertCourseSchema, 
@@ -226,7 +226,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Admin access required" });
       }
       
-      const requests = await db.select().from(accessRequests).orderBy(accessRequests.createdAt);
+      console.log("📋 Fetching access requests for admin:", req.user.username);
+      const requests = await db.select().from(accessRequests).orderBy(desc(accessRequests.createdAt));
+      console.log("📋 Found access requests:", requests.length);
       res.json(requests);
     } catch (error) {
       console.error("Error fetching access requests:", error);
