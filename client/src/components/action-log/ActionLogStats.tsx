@@ -76,26 +76,61 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-      <Card className="col-span-1">
-        <CardHeader className="pb-2 text-center">
-          <CardTitle>Action Items Summary</CardTitle>
-          <CardDescription>Status distribution overview</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="col-span-1">
+        <div className="pb-2 text-center mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Action Items Summary</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Status distribution overview</p>
+        </div>
+        <div className="h-[200px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={statusData}
+                cx="50%"
+                cy="50%"
+                innerRadius={40}
+                outerRadius={70}
+                paddingAngle={5}
+                dataKey="value"
+                // Remove the inline labels that were hard to read
+              >
+                {statusData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip 
+                formatter={(value, name) => [`${value} items`, name]}
+              />
+              <Legend 
+                layout="horizontal" 
+                verticalAlign="bottom" 
+                align="center"
+                wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {hasCategoryData && (
+        <div className="col-span-1">
+          <div className="pb-2 text-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Categories</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Items by category</p>
+          </div>
           <div className="h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={statusData}
+                  data={categoryData}
                   cx="50%"
                   cy="50%"
                   innerRadius={40}
                   outerRadius={70}
                   paddingAngle={5}
                   dataKey="value"
-                  // Remove the inline labels that were hard to read
                 >
-                  {statusData.map((entry, index) => (
+                  {categoryData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -111,46 +146,7 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
               </PieChart>
             </ResponsiveContainer>
           </div>
-        </CardContent>
-      </Card>
-
-      {hasCategoryData && (
-        <Card className="col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle>Categories</CardTitle>
-            <CardDescription>Items by category</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[200px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={categoryData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={70}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value, name) => [`${value} items`, name]}
-                  />
-                  <Legend 
-                    layout="horizontal" 
-                    verticalAlign="bottom" 
-                    align="center"
-                    wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        </div>
       )}
 
       <div className="col-span-1">
