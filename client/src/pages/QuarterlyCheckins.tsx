@@ -165,6 +165,7 @@ const QuarterlyCheckins = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["quarterly-checkins"] });
+      setEditingCheckin(null);
       toast({
         title: "Success",
         description: "Quarterly check-in updated successfully",
@@ -178,8 +179,37 @@ const QuarterlyCheckins = () => {
       });
     },
   });
+
+  // Delete quarterly check-in
+  const deleteCheckinMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await fetch(`/api/quarterly-checkins/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete quarterly check-in");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["quarterly-checkins"] });
+      toast({
+        title: "Success",
+        description: "Quarterly check-in deleted successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete quarterly check-in",
+        variant: "destructive",
+      });
+    },
+  });
   const [currentSession, setCurrentSession] = useState<CheckinSession | null>(null);
   const [expandedSession, setExpandedSession] = useState<number | null>(null);
+  const [editingCheckin, setEditingCheckin] = useState<CheckinSession | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   // Fetch schools data
   const { data: schools = [] } = useQuery({
@@ -303,6 +333,26 @@ const QuarterlyCheckins = () => {
       setExpandedSession(null);
     } else {
       setExpandedSession(sessionId);
+    }
+  };
+
+  // Edit an existing session
+  const editSession = (session: CheckinSession) => {
+    setCurrentSession(session);
+    setActiveTab("edit");
+  };
+
+  // Delete a session
+  const deleteSession = async (sessionId: number) => {
+    if (window.confirm("Are you sure you want to delete this quarterly check-in? This action cannot be undone.")) {
+      try {
+        setIsDeleting(true);
+        await deleteCheckinMutation.mutateAsync(sessionId);
+      } catch (error) {
+        console.error("Error deleting check-in:", error);
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
   
@@ -848,21 +898,32 @@ const QuarterlyCheckins = () => {
                               <Printer className="h-4 w-4" />
                             </Button>
                             
-                            {session.status === "draft" && (
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setCurrentSession(session);
-                                  setActiveTab("edit");
-                                }}
-                                title="Edit Check-in"
-                                className="text-gray-500 hover:text-amber-600"
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            )}
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                editSession(session);
+                              }}
+                              title="Edit Check-in"
+                              className="text-gray-500 hover:text-amber-600"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteSession(session.id);
+                              }}
+                              title="Delete Check-in"
+                              className="text-gray-500 hover:text-red-600"
+                              disabled={isDeleting}
+                            >
+                              <Ban className="h-4 w-4" />
+                            </Button>
                             
                             {expandedSession === session.id ? (
                               <ChevronUp className="h-5 w-5 text-gray-400" />
