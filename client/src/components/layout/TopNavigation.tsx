@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { 
   Home, Users, BookOpen, Calendar, BarChart2, Settings, 
   ChevronDown, Menu, X, Bell, User, LogOut, Search,
-  GraduationCap, FileText, Activity, Wrench, Building
+  FileText, Activity, Wrench, Building, ClipboardList
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -67,7 +67,7 @@ export default function TopNavigation() {
     { 
       label: "Test Tracker", 
       path: "/test-tracker", 
-      icon: GraduationCap 
+      icon: ClipboardList 
     },
     { 
       label: "Reports", 
@@ -104,10 +104,7 @@ export default function TopNavigation() {
           {/* Logo */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-400 flex items-center justify-center">
-                <GraduationCap className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-white font-bold hidden md:block text-[13px]">
+              <span className="text-white font-bold text-[13px]">
                 GOVCIO-SAMS ELT
               </span>
             </Link>
@@ -169,10 +166,10 @@ export default function TopNavigation() {
           </div>
 
           {/* Right side items */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             {/* School Selector */}
             {selectedSchool && (
-              <div className="hidden md:block text-white text-sm px-3 py-1 bg-blue-700">
+              <div className="hidden lg:block text-white text-sm px-3 py-1 bg-blue-700 rounded">
                 {selectedSchool.name}
               </div>
             )}
@@ -181,11 +178,11 @@ export default function TopNavigation() {
             <div className="relative">
               <Button
                 variant="ghost"
-                className="text-white hover:bg-blue-700 flex items-center space-x-2"
+                className="text-white hover:bg-blue-700 flex items-center space-x-2 px-3 py-2"
                 onClick={() => handleDropdownToggle('user')}
               >
                 <User className="h-4 w-4" />
-                <span className="hidden md:block">{user?.username}</span>
+                <span className="hidden sm:block text-sm">{user?.username}</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
               
