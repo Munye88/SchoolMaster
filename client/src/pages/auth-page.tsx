@@ -56,11 +56,8 @@ export default function AuthPage() {
 
   const accessRequestMutation = useMutation({
     mutationFn: async (data: AccessRequestData) => {
-      const response = await apiRequest("/api/access-request", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      return response;
+      const response = await apiRequest("POST", "/api/access-request", data);
+      return await response.json();
     },
     onSuccess: (data) => {
       setSuccessMessage(data.message);
