@@ -345,6 +345,7 @@ The system manages multiple interconnected entities:
 - July 10, 2025: CRITICAL TEST ENTRY BUG FIX - Fixed manual test entry functionality by correcting database schema configuration in server/db.ts to include testScores schema from shared/test-scores-schema.ts, resolving data persistence issues where book test results were disappearing after manual entry
 - July 10, 2025: OPI PIE CHART VISUAL ENHANCEMENT - Redesigned OPI pie chart with donut style (inner radius 60), improved colors (green #16a34a for passed, red #dc2626 for failed), smooth animations, enhanced tooltips with detailed information including percentages, custom legend styling, padding angles for better separation, and professional shadow effects
 - July 10, 2025: NAVIGATION BAR REFINEMENT - Removed graduation cap icon from left side of top navigation bar, improved user sign-in icon display with better spacing (space-x-3), enhanced responsive design for user menu visibility, and updated Test Tracker icon to ClipboardList for better visual consistency
+- July 10, 2025: ACTIVITY LOG REPOSITIONING - Moved Activity dropdown from main navigation to right side of top bar next to user menu, added dedicated Activity button with dropdown for Action Log and Quarterly Check-ins, improved navigation layout with proper spacing and mobile compatibility
 
 ## User Preferences
 

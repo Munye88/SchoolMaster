@@ -79,14 +79,7 @@ export default function TopNavigation() {
       path: "/documents", 
       icon: FileText 
     },
-    {
-      label: "Activity",
-      icon: Activity,
-      dropdown: [
-        { label: "Action Log", path: "/action-log" },
-        { label: "Quarterly Check-ins", path: "/quarterly-checkins" },
-      ]
-    },
+
   ];
 
   const handleDropdownToggle = (label: string) => {
@@ -100,7 +93,7 @@ export default function TopNavigation() {
   return (
     <nav className="bg-[#2563EB] shadow-lg sticky top-0 z-50">
       <div className="max-w-full mx-auto px-4 bg-[#2a4178]">
-        <div className="flex justify-between items-center h-16 text-[13px] bg-[#132d6a]">
+        <div className="flex justify-between items-center h-16 text-[13px] bg-[#132d6a] overflow-hidden">
           {/* Logo */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center space-x-2">
@@ -111,7 +104,7 @@ export default function TopNavigation() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-1">
+          <div className="hidden lg:flex items-center space-x-1 flex-1 justify-center max-w-4xl">
             {navigationItems.map((item) => (
               <div key={item.label} className="relative">
                 {item.dropdown ? (
@@ -166,10 +159,42 @@ export default function TopNavigation() {
           </div>
 
           {/* Right side items */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 flex-shrink-0">
+            {/* Activity Log */}
+            <div className="relative">
+              <Button
+                variant="ghost"
+                className="text-white hover:bg-blue-700 flex items-center space-x-1 px-2 py-2"
+                onClick={() => handleDropdownToggle('activity')}
+              >
+                <Activity className="h-4 w-4" />
+                <span className="hidden md:block text-sm">Activity</span>
+                <ChevronDown className="h-3 w-3" />
+              </Button>
+              
+              {activeDropdown === 'activity' && (
+                <div className="absolute top-full right-0 mt-1 w-48 bg-white shadow-lg border border-gray-200 py-1 z-50 rounded-none">
+                  <Link
+                    href="/action-log"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setActiveDropdown(null)}
+                  >
+                    Action Log
+                  </Link>
+                  <Link
+                    href="/quarterly-checkins"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setActiveDropdown(null)}
+                  >
+                    Quarterly Check-ins
+                  </Link>
+                </div>
+              )}
+            </div>
+
             {/* School Selector */}
             {selectedSchool && (
-              <div className="hidden lg:block text-white text-sm px-3 py-1 bg-blue-700 rounded">
+              <div className="hidden xl:block text-white text-xs px-2 py-1 bg-blue-700 rounded">
                 {selectedSchool.name}
               </div>
             )}
@@ -269,6 +294,44 @@ export default function TopNavigation() {
                   )}
                 </div>
               ))}
+              
+              {/* Mobile Activity Section */}
+              <div className="border-t border-blue-700 pt-2">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-white hover:bg-blue-700 px-3 py-2"
+                  onClick={() => handleDropdownToggle('mobile-activity')}
+                >
+                  <Activity className="h-4 w-4 mr-2" />
+                  Activity
+                  <ChevronDown className="h-3 w-3 ml-auto" />
+                </Button>
+                
+                {activeDropdown === 'mobile-activity' && (
+                  <div className="ml-4 space-y-1">
+                    <Link
+                      href="/action-log"
+                      className="block px-3 py-3 text-sm text-white hover:bg-blue-700 text-center"
+                      onClick={() => {
+                        setIsOpen(false);
+                        setActiveDropdown(null);
+                      }}
+                    >
+                      Action Log
+                    </Link>
+                    <Link
+                      href="/quarterly-checkins"
+                      className="block px-3 py-3 text-sm text-white hover:bg-blue-700 text-center"
+                      onClick={() => {
+                        setIsOpen(false);
+                        setActiveDropdown(null);
+                      }}
+                    >
+                      Quarterly Check-ins
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
