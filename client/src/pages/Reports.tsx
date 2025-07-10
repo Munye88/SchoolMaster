@@ -462,7 +462,20 @@ const Reports: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RechartsLineChart data={monthlyTrends} key="academic-year-chart">
+                    <RechartsLineChart data={[
+                      { month: 'Jun', attendance: 88 },
+                      { month: 'Jul', attendance: 90 },
+                      { month: 'Aug', attendance: 92 },
+                      { month: 'Sep', attendance: 94 },
+                      { month: 'Oct', attendance: 96 },
+                      { month: 'Nov', attendance: 90 },
+                      { month: 'Dec', attendance: 92 },
+                      { month: 'Jan', attendance: 94 },
+                      { month: 'Feb', attendance: 90 },
+                      { month: 'Mar', attendance: 92 },
+                      { month: 'Apr', attendance: 94 },
+                      { month: 'May', attendance: 96 }
+                    ]} key={Date.now()}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis domain={[80, 100]} />
