@@ -153,38 +153,36 @@ export function ActionLogStats({ logs }: ActionLogStatsProps) {
         </Card>
       )}
 
-      <Card className="col-span-1">
-        <CardHeader className="pb-2 text-center">
-          <CardTitle>Key Metrics</CardTitle>
-          <CardDescription>Current action log stats</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border-b pb-2">
-              <div className="text-sm font-medium text-gray-600">Total Items</div>
-              <div className="text-2xl font-bold text-gray-900">{logs.length}</div>
-            </div>
-            <div className="flex items-center justify-between border-b pb-2">
-              <div className="text-sm font-medium text-blue-600">Pending</div>
-              <div className="text-2xl font-bold text-blue-600">{statusCounts.pending || 0}</div>
-            </div>
-            <div className="flex items-center justify-between border-b pb-2">
-              <div className="text-sm font-medium text-green-600">Completed</div>
-              <div className="text-2xl font-bold text-green-600">{statusCounts.completed || 0}</div>
-            </div>
-            <div className="flex items-center justify-between border-b pb-2">
-              <div className="text-sm font-medium text-red-600">Under Review</div>
-              <div className="text-2xl font-bold text-red-600">{statusCounts.under_review || 0}</div>
-            </div>
-            <div className="flex items-center justify-between pt-2 px-3">
-              <div className="text-sm font-medium text-purple-600 truncate pr-2">Avg. Time</div>
-              <div className="text-2xl font-bold text-purple-600 text-right">
-                {completedLogs.length > 0 ? `${avgCompletionTime} days` : 'N/A'}
-              </div>
+      <div className="col-span-1">
+        <div className="pb-2 text-center mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Key Metrics</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Current action log stats</p>
+        </div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b pb-2">
+            <div className="text-sm font-medium text-gray-600">Total Items</div>
+            <div className="text-2xl font-bold text-gray-900">{logs.length}</div>
+          </div>
+          <div className="flex items-center justify-between border-b pb-2">
+            <div className="text-sm font-medium text-blue-600">Pending</div>
+            <div className="text-2xl font-bold text-blue-600">{statusCounts.pending || 0}</div>
+          </div>
+          <div className="flex items-center justify-between border-b pb-2">
+            <div className="text-sm font-medium text-green-600">Completed</div>
+            <div className="text-2xl font-bold text-green-600">{statusCounts.completed || 0}</div>
+          </div>
+          <div className="flex items-center justify-between border-b pb-2">
+            <div className="text-sm font-medium text-red-600">Under Review</div>
+            <div className="text-2xl font-bold text-red-600">{statusCounts.under_review || 0}</div>
+          </div>
+          <div className="flex items-center justify-between pt-2">
+            <div className="text-sm font-medium text-purple-600">Avg. Time</div>
+            <div className="text-2xl font-bold text-purple-600">
+              {completedLogs.length > 0 ? `${avgCompletionTime} days` : 'N/A'}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
