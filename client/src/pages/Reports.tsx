@@ -95,8 +95,8 @@ const Reports: React.FC = () => {
   });
   
   const months = [
-    "January", "February", "March", "April", "May", "June", 
-    "July", "August", "September", "October", "November", "December"
+    "June", "July", "August", "September", "October", "November", 
+    "December", "January", "February", "March", "April", "May"
   ];
   
   const currentMonthIndex = months.indexOf(currentMonth);
@@ -107,6 +107,10 @@ const Reports: React.FC = () => {
       setCurrentYear(prev => prev - 1);
     } else {
       setCurrentMonth(months[currentMonthIndex - 1]);
+      // If moving from January to December (December-May to June-November), decrease year
+      if (months[currentMonthIndex - 1] === "December" && currentMonth === "January") {
+        setCurrentYear(prev => prev - 1);
+      }
     }
   };
   
@@ -116,6 +120,10 @@ const Reports: React.FC = () => {
       setCurrentYear(prev => prev + 1);
     } else {
       setCurrentMonth(months[currentMonthIndex + 1]);
+      // If moving from December to January (June-November to December-May), increase year
+      if (months[currentMonthIndex + 1] === "January" && currentMonth === "December") {
+        setCurrentYear(prev => prev + 1);
+      }
     }
   };
 
@@ -255,16 +263,16 @@ const Reports: React.FC = () => {
     return results;
   }, [testScores]);
 
-  // Monthly trends data
+  // Monthly trends data (full academic year: June-May)
   const monthlyTrends = useMemo(() => {
-    return months.slice(0, 6).map((month, index) => ({
+    return months.map((month, index) => ({
       month: month.substring(0, 3),
       attendance: 88 + Math.random() * 8,
       evaluation: 4.0 + Math.random() * 0.8,
       performance: 75 + Math.random() * 15,
       tests: 120 + Math.floor(Math.random() * 40)
     }));
-  }, []);
+  }, [months]);
 
   const isLoading = instructorsLoading || coursesLoading || testResultsLoading || evaluationsLoading || staffLeaveLoading || testScoresLoading;
 
