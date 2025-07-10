@@ -120,12 +120,18 @@ const QuarterlyCheckins = () => {
       }
       const data = await response.json();
       
+      console.log("Raw quarterly check-ins data:", data);
+      console.log("Available schools:", schools);
+      
       // Transform the data to match frontend expectations
-      return data.map((session: any) => ({
+      const transformedData = data.map((session: any) => ({
         ...session,
         school: schools.find(school => school.id === session.schoolId)?.name || "Unknown School",
         answers: session.answers || []
       }));
+      
+      console.log("Transformed quarterly check-ins:", transformedData);
+      return transformedData;
     },
     enabled: schools.length > 0,
   });
