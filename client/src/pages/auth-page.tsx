@@ -51,6 +51,7 @@ export default function AuthPage() {
       reason: "",
       requestType: isPasswordReset ? "password_reset" : "registration"
     },
+    mode: "onChange"
   });
 
   const accessRequestMutation = useMutation({
@@ -282,98 +283,58 @@ export default function AuthPage() {
                 </Form>
               ) : (
                 /* Access Request Form */
-                <Form {...accessRequestForm}>
-                  <form onSubmit={accessRequestForm.handleSubmit(onAccessRequestSubmit)} className="space-y-5">
-                    <FormField
-                      control={accessRequestForm.control}
-                      name="fullName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[#081f5c] font-medium">Full Name</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter your full name"
-                              className="py-6 bg-white border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
-                              autoComplete="name"
-                              value={field.value}
-                              onChange={field.onChange}
-                              onBlur={field.onBlur}
-                              name={field.name}
-                              ref={field.ref}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                <form onSubmit={accessRequestForm.handleSubmit(onAccessRequestSubmit)} className="space-y-5">
+                  <div>
+                    <label className="block text-[#081f5c] font-medium mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      placeholder="Enter your full name"
+                      className="w-full py-6 px-4 bg-white border border-[#e1e8ef] rounded-none focus:ring-2 focus:ring-[#00a2ff] focus:border-[#00a2ff] text-[#081f5c]"
+                      autoComplete="name"
+                      onChange={(e) => accessRequestForm.setValue('fullName', e.target.value)}
                     />
-                    
-                    <FormField
-                      control={accessRequestForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[#081f5c] font-medium">Email Address</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="email"
-                              placeholder="Enter your email address"
-                              className="py-6 bg-white border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c]"
-                              autoComplete="email"
-                              value={field.value}
-                              onChange={field.onChange}
-                              onBlur={field.onBlur}
-                              name={field.name}
-                              ref={field.ref}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-[#081f5c] font-medium mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      placeholder="Enter your email address"
+                      className="w-full py-6 px-4 bg-white border border-[#e1e8ef] rounded-none focus:ring-2 focus:ring-[#00a2ff] focus:border-[#00a2ff] text-[#081f5c]"
+                      autoComplete="email"
+                      onChange={(e) => accessRequestForm.setValue('email', e.target.value)}
                     />
-                    
-                    <FormField
-                      control={accessRequestForm.control}
-                      name="reason"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[#081f5c] font-medium">
-                            {isPasswordReset ? "Reason for Password Reset" : "Reason for Access Request"}
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder={isPasswordReset ? "Please explain why you need your password reset..." : "Please explain why you need access to the system..."}
-                              className="py-3 bg-white border-[#e1e8ef] rounded-none focus-visible:ring-[#00a2ff] focus-visible:border-[#00a2ff] text-[#081f5c] min-h-[120px] resize-none text-center"
-                              value={field.value}
-                              onChange={field.onChange}
-                              onBlur={field.onBlur}
-                              name={field.name}
-                              ref={field.ref}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-[#081f5c] font-medium mb-2">
+                      {isPasswordReset ? "Reason for Password Reset" : "Reason for Access Request"}
+                    </label>
+                    <textarea
+                      placeholder={isPasswordReset ? "Please explain why you need your password reset..." : "Please explain why you need access to the system..."}
+                      className="w-full py-3 px-4 bg-white border border-[#e1e8ef] rounded-none focus:ring-2 focus:ring-[#00a2ff] focus:border-[#00a2ff] text-[#081f5c] min-h-[120px] resize-none text-center"
+                      onChange={(e) => accessRequestForm.setValue('reason', e.target.value)}
                     />
-                    
-                    <Button
-                      type="submit"
-                      className="w-full py-6 mt-4 bg-gradient-to-r from-[#081f5c] to-[#00a2ff] hover:from-[#071849] hover:to-[#0091e6] text-white font-medium rounded-none shadow-md transition-all hover:shadow-xl disabled:opacity-70"
-                      disabled={accessRequestMutation.isPending}
-                    >
-                      {accessRequestMutation.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                          {isPasswordReset ? "Sending Reset Request..." : "Sending Access Request..."}
-                        </>
-                      ) : (
-                        <>
-                          <UserPlus className="mr-2 h-5 w-5" />
-                          {isPasswordReset ? "Submit Reset Request" : "Submit Access Request"}
-                        </>
-                      )}
-                    </Button>
-                  </form>
-                </Form>
+                  </div>
+                  
+                  <Button
+                    type="submit"
+                    className="w-full py-6 mt-4 bg-gradient-to-r from-[#081f5c] to-[#00a2ff] hover:from-[#071849] hover:to-[#0091e6] text-white font-medium rounded-none shadow-md transition-all hover:shadow-xl disabled:opacity-70"
+                    disabled={accessRequestMutation.isPending}
+                  >
+                    {accessRequestMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        {isPasswordReset ? "Sending Reset Request..." : "Sending Access Request..."}
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="mr-2 h-5 w-5" />
+                        {isPasswordReset ? "Submit Reset Request" : "Submit Access Request"}
+                      </>
+                    )}
+                  </Button>
+                </form>
               )}
               
               {/* Forgot Password Link - only show for login */}
