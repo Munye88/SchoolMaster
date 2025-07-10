@@ -606,7 +606,7 @@ const QuarterlyCheckins = () => {
                           <SelectValue placeholder="Select year" />
                         </SelectTrigger>
                         <SelectContent className="rounded-none">
-                          {[...Array(5)].map((_, i) => {
+                          {[...Array(8)].map((_, i) => {
                             const year = new Date().getFullYear() - 2 + i;
                             return (
                               <SelectItem key={year} value={year.toString()}>

@@ -354,6 +354,7 @@ The system manages multiple interconnected entities:
 - July 10, 2025: RECOGNITION SYSTEM QUARTER UPDATES - Updated quarter definitions to match user's academic schedule (Q1: Jun-Aug, Q2: Sep-Nov, Q3: Dec-Feb, Q4: Mar-May)
 - July 10, 2025: RECOGNITION SYSTEM INTERACTIVITY - Made all instructor names clickable with detailed dialogs showing comprehensive attendance records (dates/status) and evaluation scores with enhanced visibility and contrast
 - July 10, 2025: RECOGNITION SYSTEM UI ENHANCEMENT - Improved dialog visibility with bold text, colored backgrounds, enhanced borders, and better contrast for all text elements to ensure clear readability
+- July 10, 2025: QUARTERLY CHECK-INS YEAR RANGE EXTENSION - Updated year dropdown in quarterly check-ins to extend from 2023-2030 (8 years total) instead of previous 2023-2027 range for comprehensive future planning
 
 ## User Preferences
 
