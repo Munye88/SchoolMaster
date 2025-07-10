@@ -55,6 +55,7 @@ import ManageStudents from "./pages/management/ManageStudents";
 import ManageCourses from "./pages/management/ManageCoursesFixed";
 import ScheduleManager from "./pages/admin/ScheduleManager";
 import DocumentManager from "./pages/administration/DocumentManager";
+import AccessRequests from "./pages/admin/AccessRequests";
 
 import TestTrackerEnhanced from "./pages/test-tracker/TestTrackerEnhanced";
 import SchoolHome from "./pages/schools/SchoolHome";
@@ -200,6 +201,12 @@ function Router() {
           <ProtectedRoute
             path="/administration/document-manager"
             component={DocumentManager}
+          />
+          
+          {/* Admin routes */}
+          <ProtectedRoute
+            path="/admin/access-requests"
+            component={AccessRequests}
           />
           
           {/* Instructor Profile Routes - Enhanced for transferred website */}

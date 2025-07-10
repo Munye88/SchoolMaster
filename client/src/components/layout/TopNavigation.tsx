@@ -216,6 +216,14 @@ export default function TopNavigation() {
                   <div className="px-4 py-3 text-sm text-gray-700 border-b text-center">
                     Signed in as <strong>{user?.username}</strong>
                   </div>
+                  {user?.role === 'admin' && (
+                    <Link href="/admin/access-requests">
+                      <button className="w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center justify-center space-x-2">
+                        <Settings className="h-4 w-4" />
+                        <span>Access Requests</span>
+                      </button>
+                    </Link>
+                  )}
                   <button
                     onClick={handleLogout}
                     className="w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center justify-center space-x-2"

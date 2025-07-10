@@ -1,4 +1,6 @@
 import { MailService } from '@sendgrid/mail';
+import { db } from './db';
+import { accessRequests } from '@shared/schema';
 
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 
@@ -22,6 +24,15 @@ interface AccessRequestEmail {
 
 export async function sendAccessRequestEmail(params: AccessRequestEmail): Promise<boolean> {
   try {
+    // First, save the request to the database
+    const [savedRequest] = await db.insert(accessRequests).values({
+      fullName: params.fullName,
+      email: params.email,
+      reason: params.reason,
+      requestType: params.requestType,
+    }).returning();
+
+    console.log('Access request saved to database:', savedRequest);
     const subject = params.requestType === 'registration' 
       ? 'New Registration Request - GOVCIO-SAMS ELT System'
       : 'Password Reset Request - GOVCIO-SAMS ELT System';

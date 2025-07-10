@@ -245,6 +245,25 @@ export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
 });
 
+export const accessRequests = pgTable("access_requests", {
+  id: serial("id").primaryKey(),
+  fullName: text("full_name").notNull(),
+  email: text("email").notNull(),
+  reason: text("reason").notNull(),
+  requestType: text("request_type").notNull(), // 'registration' or 'password_reset'
+  status: text("status").notNull().default("pending"), // 'pending', 'approved', 'rejected'
+  createdAt: timestamp("created_at").defaultNow(),
+  processedAt: timestamp("processed_at"),
+  processedBy: text("processed_by"),
+});
+
+export const insertAccessRequestSchema = createInsertSchema(accessRequests).pick({
+  fullName: true,
+  email: true,
+  reason: true,
+  requestType: true,
+});
+
 // Relations will be defined after all table definitions
 
 export const instructorsRelations = relations(instructors, ({ one, many }) => ({

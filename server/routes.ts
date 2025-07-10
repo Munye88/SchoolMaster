@@ -47,9 +47,16 @@ import {
   schoolSchedules,
   schoolDocuments,
   quarterlyCheckins,
-  quarterlyCheckinAnswers
+  quarterlyCheckinAnswers,
+  accessRequests,
+  users
 } from "@shared/schema";
 import { setupAuth } from "./auth";
+import bcrypt from "bcrypt";
+
+async function hashPassword(password: string) {
+  return bcrypt.hash(password, 10);
+}
 import documentRoutes from "./documents";
 import { generateAIResponse } from "./services/ai";
 import { setupTestScoresAPI } from "./test-scores-api";
@@ -209,6 +216,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Access request error:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Get all access requests (admin only)
+  app.get("/api/access-requests", async (req, res) => {
+    try {
+      if (!req.user || req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const requests = await db.select().from(accessRequests).orderBy(accessRequests.createdAt);
+      res.json(requests);
+    } catch (error) {
+      console.error("Error fetching access requests:", error);
+      res.status(500).json({ message: "Failed to fetch access requests" });
+    }
+  });
+
+  // Approve access request (admin only)
+  app.patch("/api/access-requests/:id/approve", async (req, res) => {
+    try {
+      if (!req.user || req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const { id } = req.params;
+      const { username, password } = req.body;
+      
+      // Get the request
+      const [request] = await db.select()
+        .from(accessRequests)
+        .where(eq(accessRequests.id, parseInt(id)));
+      
+      if (!request) {
+        return res.status(404).json({ message: "Access request not found" });
+      }
+      
+      // Create the user account
+      const hashedPassword = await hashPassword(password);
+      const [newUser] = await db.insert(users).values({
+        username,
+        password: hashedPassword,
+        role: 'user',
+        name: request.fullName,
+        email: request.email,
+      }).returning();
+      
+      // Update request status
+      await db.update(accessRequests)
+        .set({ 
+          status: 'approved',
+          processedAt: new Date(),
+          processedBy: req.user.username
+        })
+        .where(eq(accessRequests.id, parseInt(id)));
+      
+      res.json({ message: "Access request approved and user created", user: newUser });
+    } catch (error) {
+      console.error("Error approving access request:", error);
+      res.status(500).json({ message: "Failed to approve access request" });
+    }
+  });
+
+  // Reject access request (admin only)
+  app.patch("/api/access-requests/:id/reject", async (req, res) => {
+    try {
+      if (!req.user || req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const { id } = req.params;
+      
+      await db.update(accessRequests)
+        .set({ 
+          status: 'rejected',
+          processedAt: new Date(),
+          processedBy: req.user.username
+        })
+        .where(eq(accessRequests.id, parseInt(id)));
+      
+      res.json({ message: "Access request rejected" });
+    } catch (error) {
+      console.error("Error rejecting access request:", error);
+      res.status(500).json({ message: "Failed to reject access request" });
     }
   });
   
