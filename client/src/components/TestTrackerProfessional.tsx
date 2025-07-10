@@ -794,7 +794,7 @@ const TestTrackerProfessional: React.FC = () => {
               <TrendingUp className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.averageScore}</div>
+              <div className="text-2xl font-bold">{activeTab === 'OPI' ? stats.averageScore : `${stats.averageScore}%`}</div>
               <p className="text-xs text-muted-foreground">
                 {activeTab === 'OPI' ? 'Out of 2' : 'Out of 100'}
               </p>
@@ -862,11 +862,11 @@ const TestTrackerProfessional: React.FC = () => {
                                 return (
                                   <div className="bg-white p-3 border rounded shadow">
                                     <p className="font-semibold">{label}</p>
-                                    <p>Score: {data.score}</p>
+                                    <p>Score: {data.score}%</p>
                                     <p>Students: {data.students}</p>
                                     <p>School: {data.school}</p>
                                     <p>Course: {data.courseType}</p>
-                                    <p>Passing: {data.passingScore}</p>
+                                    <p>Passing: {data.passingScore}%</p>
                                   </div>
                                 );
                               }
@@ -913,7 +913,7 @@ const TestTrackerProfessional: React.FC = () => {
                     <td className="p-2 text-center">{result.period}</td>
                     <td className="p-2 text-center">{result.numberOfStudents}</td>
                     <td className="p-2 text-center">
-                      {result.testType === 'OPI' ? `${result.averageScore}/${result.numberOfStudents}` : result.averageScore}
+                      {result.testType === 'OPI' ? `${result.averageScore}/${result.numberOfStudents}` : `${result.averageScore}%`}
                     </td>
                     <td className="p-2 text-center">
                       <DropdownMenu>

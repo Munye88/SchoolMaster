@@ -799,7 +799,7 @@ const ReportsEnhanced: React.FC = () => {
                     {evaluations.length > 0 ? 
                       Math.round((evaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / evaluations.length) * 10) / 10 
                       : 0
-                    }
+                    }%
                   </div>
                   <p className="text-xs text-gray-500">Out of 100 points</p>
                 </CardContent>
@@ -1081,7 +1081,7 @@ const ReportsEnhanced: React.FC = () => {
                           boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                         }}
                         formatter={(value, name, props) => [
-                          `${value} out of 100 points`, 
+                          `${value}% out of 100 points`, 
                           `${props.payload.testType} Average Score`
                         ]}
                       />
