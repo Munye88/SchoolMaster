@@ -474,23 +474,29 @@ const Reports: React.FC = () => {
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
                     <RechartsLineChart data={[
-                      { month: 'Jun', attendance: 88 },
-                      { month: 'Jul', attendance: 90 },
-                      { month: 'Aug', attendance: 92 },
-                      { month: 'Sep', attendance: 94 },
-                      { month: 'Oct', attendance: 96 },
-                      { month: 'Nov', attendance: 90 },
-                      { month: 'Dec', attendance: 92 },
-                      { month: 'Jan', attendance: 94 },
-                      { month: 'Feb', attendance: 90 },
-                      { month: 'Mar', attendance: 92 },
-                      { month: 'Apr', attendance: 94 },
-                      { month: 'May', attendance: 96 }
+                      { order: 1, month: 'Jun', attendance: 88 },
+                      { order: 2, month: 'Jul', attendance: 90 },
+                      { order: 3, month: 'Aug', attendance: 92 },
+                      { order: 4, month: 'Sep', attendance: 94 },
+                      { order: 5, month: 'Oct', attendance: 96 },
+                      { order: 6, month: 'Nov', attendance: 90 },
+                      { order: 7, month: 'Dec', attendance: 92 },
+                      { order: 8, month: 'Jan', attendance: 94 },
+                      { order: 9, month: 'Feb', attendance: 90 },
+                      { order: 10, month: 'Mar', attendance: 92 },
+                      { order: 11, month: 'Apr', attendance: 94 },
+                      { order: 12, month: 'May', attendance: 96 }
                     ]}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
+                      <XAxis dataKey="order" type="number" domain={[1, 12]} tickFormatter={(value) => {
+                        const months = ['', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'];
+                        return months[value] || '';
+                      }} />
                       <YAxis domain={[80, 100]} />
-                      <RechartsTooltip />
+                      <RechartsTooltip labelFormatter={(value) => {
+                        const months = ['', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'];
+                        return months[value] || '';
+                      }} />
                       <Line type="monotone" dataKey="attendance" stroke="#0A2463" strokeWidth={3} name="Attendance %" />
                     </RechartsLineChart>
                   </ResponsiveContainer>
