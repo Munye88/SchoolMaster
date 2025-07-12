@@ -263,24 +263,21 @@ const Reports: React.FC = () => {
     return results;
   }, [testScores]);
 
-  // Monthly trends data (academic year: June-May)
-  const monthlyTrends = useMemo(() => {
-    const academicYearMonths = [
-      "June", "July", "August", "September", "October", "November", 
-      "December", "January", "February", "March", "April", "May"
-    ];
-    
-    const trends = academicYearMonths.map((month, index) => ({
-      month: month.substring(0, 3),
-      attendance: 88 + (index * 2) % 8,
-      evaluation: 4.0 + (index * 0.1) % 0.8,
-      performance: 75 + (index * 3) % 15,
-      tests: 120 + (index * 10) % 40
-    }));
-    
-    console.log('Academic Year Monthly Trends Data:', trends.map(t => t.month).join(', '));
-    return trends;
-  }, []);
+  // Academic year data (June-May)
+  const academicYearData = [
+    { month: 'Jun', attendance: 88, evaluation: 4.0, performance: 75, tests: 120 },
+    { month: 'Jul', attendance: 90, evaluation: 4.1, performance: 78, tests: 130 },
+    { month: 'Aug', attendance: 92, evaluation: 4.2, performance: 81, tests: 125 },
+    { month: 'Sep', attendance: 94, evaluation: 4.3, performance: 84, tests: 135 },
+    { month: 'Oct', attendance: 96, evaluation: 4.4, performance: 87, tests: 140 },
+    { month: 'Nov', attendance: 90, evaluation: 4.2, performance: 80, tests: 128 },
+    { month: 'Dec', attendance: 92, evaluation: 4.3, performance: 82, tests: 132 },
+    { month: 'Jan', attendance: 94, evaluation: 4.4, performance: 85, tests: 138 },
+    { month: 'Feb', attendance: 90, evaluation: 4.1, performance: 79, tests: 126 },
+    { month: 'Mar', attendance: 92, evaluation: 4.2, performance: 83, tests: 133 },
+    { month: 'Apr', attendance: 94, evaluation: 4.3, performance: 86, tests: 139 },
+    { month: 'May', attendance: 96, evaluation: 4.5, performance: 89, tests: 145 }
+  ];
 
   const isLoading = instructorsLoading || coursesLoading || testResultsLoading || evaluationsLoading || staffLeaveLoading || testScoresLoading;
 
@@ -690,7 +687,7 @@ const Reports: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RechartsLineChart data={monthlyTrends}>
+                    <RechartsLineChart data={academicYearData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis domain={[3.5, 5]} />
@@ -866,7 +863,7 @@ const Reports: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RechartsLineChart data={monthlyTrends}>
+                    <RechartsLineChart data={academicYearData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis domain={[70, 90]} />
@@ -918,7 +915,7 @@ const Reports: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <RechartsLineChart data={monthlyTrends}>
+                  <RechartsLineChart data={academicYearData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
