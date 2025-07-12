@@ -263,29 +263,29 @@ const Reports: React.FC = () => {
     return results;
   }, [testScores]);
 
-  // Academic year data - ordered correctly for display
-  const academicYearMonths = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'];
-  
-  const forceAcademicYear = [
-    { month: 'Jun', attendance: 88, evaluation: 4.0, performance: 75, tests: 120, index: 0 },
-    { month: 'Jul', attendance: 90, evaluation: 4.1, performance: 78, tests: 130, index: 1 },
-    { month: 'Aug', attendance: 92, evaluation: 4.2, performance: 81, tests: 125, index: 2 },
-    { month: 'Sep', attendance: 94, evaluation: 4.3, performance: 84, tests: 135, index: 3 },
-    { month: 'Oct', attendance: 96, evaluation: 4.4, performance: 87, tests: 140, index: 4 },
-    { month: 'Nov', attendance: 90, evaluation: 4.2, performance: 80, tests: 128, index: 5 },
-    { month: 'Dec', attendance: 92, evaluation: 4.3, performance: 82, tests: 132, index: 6 },
-    { month: 'Jan', attendance: 94, evaluation: 4.4, performance: 85, tests: 138, index: 7 },
-    { month: 'Feb', attendance: 90, evaluation: 4.1, performance: 79, tests: 126, index: 8 },
-    { month: 'Mar', attendance: 92, evaluation: 4.2, performance: 83, tests: 133, index: 9 },
-    { month: 'Apr', attendance: 94, evaluation: 4.3, performance: 86, tests: 139, index: 10 },
-    { month: 'May', attendance: 96, evaluation: 4.5, performance: 89, tests: 145, index: 11 }
+  // Academic year data ordered for display
+  const academicYearData = [
+    { month: 'Jun', attendance: 88, evaluation: 4.0, performance: 75, tests: 120 },
+    { month: 'Jul', attendance: 90, evaluation: 4.1, performance: 78, tests: 130 },
+    { month: 'Aug', attendance: 92, evaluation: 4.2, performance: 81, tests: 125 },
+    { month: 'Sep', attendance: 94, evaluation: 4.3, performance: 84, tests: 135 },
+    { month: 'Oct', attendance: 96, evaluation: 4.4, performance: 87, tests: 140 },
+    { month: 'Nov', attendance: 90, evaluation: 4.2, performance: 80, tests: 128 },
+    { month: 'Dec', attendance: 92, evaluation: 4.3, performance: 82, tests: 132 },
+    { month: 'Jan', attendance: 94, evaluation: 4.4, performance: 85, tests: 138 },
+    { month: 'Feb', attendance: 90, evaluation: 4.1, performance: 79, tests: 126 },
+    { month: 'Mar', attendance: 92, evaluation: 4.2, performance: 83, tests: 133 },
+    { month: 'Apr', attendance: 94, evaluation: 4.3, performance: 86, tests: 139 },
+    { month: 'May', attendance: 96, evaluation: 4.5, performance: 89, tests: 145 }
   ];
 
-  // Custom tick formatter to show month names
+  // Custom tick formatter to show academic year months
   const formatXAxisTick = (tickItem: any) => {
-    const monthMap: { [key: number]: string } = {
-      1: 'Jun', 2: 'Jul', 3: 'Aug', 4: 'Sep', 5: 'Oct', 6: 'Nov',
-      7: 'Dec', 8: 'Jan', 9: 'Feb', 10: 'Mar', 11: 'Apr', 12: 'May'
+    const academicMonths = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'];
+    // Map calendar months to academic year order
+    const monthMap: { [key: string]: string } = {
+      'Jan': 'Jan', 'Feb': 'Feb', 'Mar': 'Mar', 'Apr': 'Apr', 'May': 'May', 'Jun': 'Jun',
+      'Jul': 'Jul', 'Aug': 'Aug', 'Sep': 'Sep', 'Oct': 'Oct', 'Nov': 'Nov', 'Dec': 'Dec'
     };
     return monthMap[tickItem] || tickItem;
   };
@@ -490,27 +490,27 @@ const Reports: React.FC = () => {
                             <line key={y} x1="0" y1={`${y}%`} x2="100%" y2={`${y}%`} stroke="#e5e7eb" strokeDasharray="2,2" />
                           ))}
                           {/* Vertical grid lines */}
-                          {academicYearMonths.map((_, i) => (
+                          {academicYearData.map((_, i) => (
                             <line key={i} x1={`${(i * 100) / 11}%`} y1="0" x2={`${(i * 100) / 11}%`} y2="100%" stroke="#e5e7eb" strokeDasharray="2,2" />
                           ))}
                           
                           {/* Data line */}
                           <polyline
-                            points={forceAcademicYear.map((d, i) => `${(i * 100) / 11},${100 - ((d.attendance - 80) / 20) * 100}`).join(' ')}
+                            points={academicYearData.map((d, i) => `${(i * 100) / 11},${100 - ((d.attendance - 80) / 20) * 100}`).join(' ')}
                             fill="none"
                             stroke="#0A2463"
                             strokeWidth="3"
                           />
                           
                           {/* Data points */}
-                          {forceAcademicYear.map((d, i) => (
+                          {academicYearData.map((d, i) => (
                             <circle
                               key={i}
                               cx={`${(i * 100) / 11}%`}
                               cy={`${100 - ((d.attendance - 80) / 20) * 100}%`}
                               r="4"
                               fill="#0A2463"
-                              title={`${academicYearMonths[i]}: ${d.attendance}%`}
+                              title={`${d.month}: ${d.attendance}%`}
                             />
                           ))}
                         </svg>
@@ -518,8 +518,8 @@ const Reports: React.FC = () => {
                       
                       {/* X-axis labels */}
                       <div className="absolute bottom-0 left-8 right-4 h-8 flex justify-between items-center text-xs text-gray-500">
-                        {academicYearMonths.map((month, i) => (
-                          <span key={i}>{month}</span>
+                        {academicYearData.map((data, i) => (
+                          <span key={i}>{data.month}</span>
                         ))}
                       </div>
                     </div>
