@@ -93,7 +93,7 @@ const ReportsEnhanced: React.FC = () => {
     "December", "January", "February", "March", "April", "May"
   ];
 
-  // Process attendance data
+  // Process attendance data filtered by selected month
   const processedAttendanceData = useMemo(() => {
     if (!schools.length || !instructors.length) return [];
     
@@ -114,8 +114,16 @@ const ReportsEnhanced: React.FC = () => {
       schoolStats[school.name] = { present: 0, absent: 0, late: 0, total: 0 };
     });
     
-    // Process attendance data
-    attendanceData.forEach(record => {
+    // Filter attendance data by selected month and year
+    const filteredAttendanceData = attendanceData.filter(record => {
+      const recordDate = new Date(record.date);
+      const recordMonth = recordDate.toLocaleString('default', { month: 'long' });
+      const recordYear = recordDate.getFullYear();
+      return recordMonth === currentMonth && recordYear === currentYear;
+    });
+    
+    // Process filtered attendance data
+    filteredAttendanceData.forEach(record => {
       const instructorSchoolId = instructorSchoolMap[record.instructorId];
       const schoolName = schoolMap[instructorSchoolId] || 'Unknown';
       
@@ -138,14 +146,17 @@ const ReportsEnhanced: React.FC = () => {
     }));
 
     console.log('Attendance processing debug:', {
+      selectedMonth: currentMonth,
+      selectedYear: currentYear,
       schools: schools.map(s => s.name),
-      attendanceRecords: attendanceData.length,
+      totalAttendanceRecords: attendanceData.length,
+      filteredAttendanceRecords: filteredAttendanceData.length,
       instructorCount: instructors.length,
       processedData: result
     });
 
     return result;
-  }, [attendanceData, schools, instructors]);
+  }, [attendanceData, schools, instructors, currentMonth, currentYear]);
 
   // Process leave data for monthly tracking
   const processedLeaveData = useMemo(() => {
@@ -183,7 +194,7 @@ const ReportsEnhanced: React.FC = () => {
     return monthlyData;
   }, [staffLeave, schools]);
 
-  // Process evaluation data for quarterly percentages by school
+  // Process evaluation data filtered by selected month
   const processedEvaluationData = useMemo(() => {
     if (!evaluations.length || !schools.length) return [];
     
@@ -192,56 +203,53 @@ const ReportsEnhanced: React.FC = () => {
       return acc;
     }, {});
     
-    const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+    // Filter evaluations by selected month and year
+    const filteredEvaluations = evaluations.filter(evaluation => {
+      const evalDate = new Date(evaluation.evaluationDate);
+      const evalMonth = evalDate.toLocaleString('default', { month: 'long' });
+      const evalYear = evalDate.getFullYear();
+      return evalMonth === currentMonth && evalYear === currentYear;
+    });
     
-    const quarterlyData = quarters.map(quarter => {
-      // Filter evaluations by quarter
-      const quarterEvals = evaluations.filter(evaluation => evaluation.quarter === quarter);
+    if (filteredEvaluations.length === 0) {
+      return schools.map(school => ({
+        school: school.name,
+        evaluations: 0,
+        average: 0,
+        passingRate: 0
+      }));
+    }
+    
+    // Calculate by school for selected month
+    const schoolData = schools.map(school => {
+      const schoolEvals = filteredEvaluations.filter(evaluation => evaluation.schoolId === school.id);
       
-      if (quarterEvals.length === 0) {
-        return { 
-          quarter, 
-          KFNA: 0, 
-          'NFS East': 0, 
-          'NFS West': 0, 
-          Average: 0 
+      if (schoolEvals.length === 0) {
+        return {
+          school: school.name,
+          evaluations: 0,
+          average: 0,
+          passingRate: 0
         };
       }
       
-      // Calculate by school
-      const schoolScores = {};
-      quarterEvals.forEach(evaluation => {
-        const schoolName = schoolMap[evaluation.schoolId] || 'Unknown';
-        if (!schoolScores[schoolName]) {
-          schoolScores[schoolName] = { total: 0, count: 0 };
-        }
-        schoolScores[schoolName].total += evaluation.score;
-        schoolScores[schoolName].count++;
-      });
-      
-      // Calculate averages for each school
-      const schoolAverages = {};
-      Object.keys(schoolScores).forEach(school => {
-        schoolAverages[school] = Math.round(schoolScores[school].total / schoolScores[school].count);
-      });
-      
-      // Calculate overall average
-      const totalScore = quarterEvals.reduce((sum, evaluation) => sum + evaluation.score, 0);
-      const overallAverage = Math.round(totalScore / quarterEvals.length);
+      const totalScore = schoolEvals.reduce((sum, evaluation) => sum + evaluation.score, 0);
+      const average = Math.round(totalScore / schoolEvals.length);
+      const passingEvals = schoolEvals.filter(evaluation => evaluation.score >= 85);
+      const passingRate = Math.round((passingEvals.length / schoolEvals.length) * 100);
       
       return {
-        quarter,
-        KFNA: schoolAverages['KFNA'] || 0,
-        'NFS East': schoolAverages['NFS East'] || 0,
-        'NFS West': schoolAverages['NFS West'] || 0,
-        Average: overallAverage
+        school: school.name,
+        evaluations: schoolEvals.length,
+        average,
+        passingRate
       };
     });
 
-    return quarterlyData;
-  }, [evaluations, schools]);
+    return schoolData;
+  }, [evaluations, schools, currentMonth, currentYear]);
 
-  // Process performance data for test type percentages by school
+  // Process performance data filtered by selected month
   const processedPerformanceData = useMemo(() => {
     if (!testScores.length || !schools.length) return [];
     
@@ -250,8 +258,16 @@ const ReportsEnhanced: React.FC = () => {
       return acc;
     }, {});
     
+    // Filter test scores by selected month and year
+    const filteredTestScores = testScores.filter(test => {
+      const testDate = new Date(test.testDate);
+      const testMonth = testDate.toLocaleString('default', { month: 'long' });
+      const testYear = testDate.getFullYear();
+      return testMonth === currentMonth && testYear === currentYear;
+    });
+    
     return schools.map(school => {
-      const schoolTests = testScores.filter(test => test.schoolId === school.id);
+      const schoolTests = filteredTestScores.filter(test => test.schoolId === school.id);
       
       // Define test types for each school based on requirements
       const testTypes = school.name === 'KFNA' ? ['ALCPT', 'Book'] :
@@ -279,38 +295,80 @@ const ReportsEnhanced: React.FC = () => {
       
       return result;
     });
-  }, [testScores, schools]);
+  }, [testScores, schools, currentMonth, currentYear]);
 
-  // Calculate summary statistics
+  // Calculate summary statistics for selected month
   const summaryStats = useMemo(() => {
     const totalInstructors = instructors.length;
-    const presentToday = processedAttendanceData.reduce((sum, school) => sum + school.present, 0);
-    const onLeave = staffLeave.filter(leave => {
+    const presentForMonth = processedAttendanceData.reduce((sum, school) => sum + school.present, 0);
+    
+    // Filter leave data for selected month
+    const monthlyLeave = staffLeave.filter(leave => {
       const startDate = new Date(leave.startDate);
       const endDate = new Date(leave.endDate);
-      const today = new Date();
-      return today >= startDate && today <= endDate;
-    }).length;
+      const selectedMonthStart = new Date(currentYear, months.indexOf(currentMonth), 1);
+      const selectedMonthEnd = new Date(currentYear, months.indexOf(currentMonth) + 1, 0);
+      
+      return (startDate <= selectedMonthEnd && endDate >= selectedMonthStart);
+    });
+    
     const absent = processedAttendanceData.reduce((sum, school) => sum + school.absent, 0);
+    const totalAttendanceRecords = processedAttendanceData.reduce((sum, school) => sum + school.total, 0);
     
     return {
       totalInstructors,
-      presentToday,
-      onLeave,
+      presentForMonth,
+      onLeave: monthlyLeave.length,
       absent,
-      attendanceRate: totalInstructors > 0 ? Math.round((presentToday / totalInstructors) * 100) : 0
+      attendanceRate: totalAttendanceRecords > 0 ? Math.round((presentForMonth / totalAttendanceRecords) * 100) : 0,
+      totalAttendanceRecords
     };
-  }, [instructors, processedAttendanceData, staffLeave]);
+  }, [instructors, processedAttendanceData, staffLeave, currentMonth, currentYear, months]);
 
-  // Generate monthly trend data
+  // Generate monthly trend data from actual data
   const monthlyTrendData = useMemo(() => {
-    return months.map((month, index) => ({
-      month: month.slice(0, 3),
-      attendance: 92 + Math.sin(index * 0.5) * 3 + Math.random() * 2,
-      evaluation: 85 + Math.cos(index * 0.3) * 4 + Math.random() * 3,
-      performance: 88 + Math.sin(index * 0.4) * 5 + Math.random() * 2
-    }));
-  }, []);
+    return months.map((month, index) => {
+      // Calculate attendance rate for this month
+      const monthAttendance = attendanceData.filter(record => {
+        const recordDate = new Date(record.date);
+        const recordMonth = recordDate.toLocaleString('default', { month: 'long' });
+        const recordYear = recordDate.getFullYear();
+        return recordMonth === month && recordYear === currentYear;
+      });
+      
+      const presentCount = monthAttendance.filter(record => record.status === 'present').length;
+      const attendanceRate = monthAttendance.length > 0 ? Math.round((presentCount / monthAttendance.length) * 100) : 0;
+      
+      // Calculate evaluation average for this month
+      const monthEvaluations = evaluations.filter(evaluation => {
+        const evalDate = new Date(evaluation.evaluationDate);
+        const evalMonth = evalDate.toLocaleString('default', { month: 'long' });
+        const evalYear = evalDate.getFullYear();
+        return evalMonth === month && evalYear === currentYear;
+      });
+      
+      const evaluationAverage = monthEvaluations.length > 0 ? 
+        Math.round(monthEvaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / monthEvaluations.length) : 0;
+      
+      // Calculate test performance for this month
+      const monthTests = testScores.filter(test => {
+        const testDate = new Date(test.testDate);
+        const testMonth = testDate.toLocaleString('default', { month: 'long' });
+        const testYear = testDate.getFullYear();
+        return testMonth === month && testYear === currentYear;
+      });
+      
+      const testAverage = monthTests.length > 0 ? 
+        Math.round(monthTests.reduce((sum, test) => sum + test.score, 0) / monthTests.length) : 0;
+      
+      return {
+        month: month.slice(0, 3),
+        attendance: attendanceRate,
+        evaluation: evaluationAverage,
+        performance: testAverage
+      };
+    });
+  }, [attendanceData, evaluations, testScores, currentYear, months]);
 
   const navigateMonth = (direction: 'prev' | 'next') => {
     const currentIndex = months.indexOf(currentMonth);
@@ -332,7 +390,7 @@ const ReportsEnhanced: React.FC = () => {
   };
 
   const generateSummaryAndRecommendations = () => {
-    const { attendanceRate, totalInstructors, presentToday, onLeave, absent } = summaryStats;
+    const { attendanceRate, totalInstructors, presentForMonth, onLeave, absent } = summaryStats;
     
     if (activeTab === 'attendance') {
       const recommendations = [];
@@ -359,7 +417,7 @@ const ReportsEnhanced: React.FC = () => {
       }
       
       return {
-        summary: `Current attendance rate of ${attendanceRate}% with ${presentToday} out of ${totalInstructors} instructors present. ${onLeave} instructors are on planned leave and ${absent} are absent.`,
+        summary: `Current attendance rate of ${attendanceRate}% with ${presentForMonth} out of ${totalInstructors} instructors present. ${onLeave} instructors are on planned leave and ${absent} are absent.`,
         recommendations
       };
     }
