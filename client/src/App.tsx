@@ -10,6 +10,7 @@ import Courses from "@/pages/Courses";
 import CourseDetails from "@/pages/CourseDetails";
 import TestTrackerProfessionalPage from "@/pages/TestTrackerProfessionalPage";
 import ReportsEnhanced from "@/pages/ReportsEnhanced";
+import ReportsSimple from "@/pages/ReportsSimple";
 import Documents from "@/pages/Documents";
 import Recognition from "@/pages/Recognition";
 import Administration from "@/pages/Administration";
@@ -98,7 +99,7 @@ function Router() {
           <ProtectedRoute path="/dli/alcpt-order" component={AlcptOrder} />
           <ProtectedRoute path="/dli/answer-sheets" component={AnswerSheets} />
           <ProtectedRoute path="/test-tracker" component={TestTrackerProfessionalPage} />
-          <ProtectedRoute path="/reports" component={ReportsEnhanced} />
+          <ProtectedRoute path="/reports" component={ReportsSimple} />
           <ProtectedRoute path="/documents" component={Documents} />
           <ProtectedRoute path="/recognition" component={Recognition} />
           <ProtectedRoute path="/action-log" component={ActionLogPage} />
