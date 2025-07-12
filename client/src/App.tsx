@@ -99,7 +99,7 @@ function Router() {
           <ProtectedRoute path="/dli/alcpt-order" component={AlcptOrder} />
           <ProtectedRoute path="/dli/answer-sheets" component={AnswerSheets} />
           <ProtectedRoute path="/test-tracker" component={TestTrackerProfessionalPage} />
-          <ProtectedRoute path="/reports" component={ReportsSimple} />
+          <ProtectedRoute path="/reports" component={ReportsEnhanced} />
           <ProtectedRoute path="/documents" component={Documents} />
           <ProtectedRoute path="/recognition" component={Recognition} />
           <ProtectedRoute path="/action-log" component={ActionLogPage} />
