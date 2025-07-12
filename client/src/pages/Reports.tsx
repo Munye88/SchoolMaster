@@ -472,61 +472,28 @@ const Reports: React.FC = () => {
                   <CardDescription>Attendance percentage over time (June-May)</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="w-full h-80 flex flex-col">
-                    {/* Custom Academic Year Chart */}
-                    <div className="flex-1 relative border border-gray-200 bg-white">
-                      {/* Y-axis labels */}
-                      <div className="absolute left-0 top-0 h-full w-8 flex flex-col justify-between py-4 text-xs text-gray-500">
-                        <span>100%</span>
-                        <span>95%</span>
-                        <span>90%</span>
-                        <span>85%</span>
-                        <span>80%</span>
-                      </div>
-                      
-                      {/* Chart area */}
-                      <div className="ml-8 mr-4 h-full relative">
-                        {/* Grid lines */}
-                        <svg className="absolute inset-0 w-full h-full">
-                          {/* Horizontal grid lines */}
-                          {[20, 40, 60, 80].map((y) => (
-                            <line key={y} x1="0" y1={`${y}%`} x2="100%" y2={`${y}%`} stroke="#e5e7eb" strokeDasharray="2,2" />
-                          ))}
-                          {/* Vertical grid lines */}
-                          {academicYearData.map((_, i) => (
-                            <line key={i} x1={`${(i * 100) / 11}%`} y1="0" x2={`${(i * 100) / 11}%`} y2="100%" stroke="#e5e7eb" strokeDasharray="2,2" />
-                          ))}
-                          
-                          {/* Data line */}
-                          <polyline
-                            points={academicYearData.map((d, i) => `${(i * 100) / 11},${100 - ((d.attendance - 80) / 20) * 100}`).join(' ')}
-                            fill="none"
-                            stroke="#0A2463"
-                            strokeWidth="3"
-                          />
-                          
-                          {/* Data points */}
-                          {academicYearData.map((d, i) => (
-                            <circle
-                              key={i}
-                              cx={`${(i * 100) / 11}%`}
-                              cy={`${100 - ((d.attendance - 80) / 20) * 100}%`}
-                              r="4"
-                              fill="#0A2463"
-                              title={`${d.month}: ${d.attendance}%`}
-                            />
-                          ))}
-                        </svg>
-                      </div>
-                      
-                      {/* X-axis labels */}
-                      <div className="absolute bottom-0 left-8 right-4 h-8 flex justify-between items-center text-xs text-gray-500">
-                        {academicYearData.map((data, i) => (
-                          <span key={i}>{data.month}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <RechartsLineChart data={[
+                      { month: 'Jun', attendance: 88 },
+                      { month: 'Jul', attendance: 90 },
+                      { month: 'Aug', attendance: 92 },
+                      { month: 'Sep', attendance: 94 },
+                      { month: 'Oct', attendance: 96 },
+                      { month: 'Nov', attendance: 90 },
+                      { month: 'Dec', attendance: 92 },
+                      { month: 'Jan', attendance: 94 },
+                      { month: 'Feb', attendance: 90 },
+                      { month: 'Mar', attendance: 92 },
+                      { month: 'Apr', attendance: 94 },
+                      { month: 'May', attendance: 96 }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis domain={[80, 100]} />
+                      <RechartsTooltip />
+                      <Line type="monotone" dataKey="attendance" stroke="#0A2463" strokeWidth={3} name="Attendance %" />
+                    </RechartsLineChart>
+                  </ResponsiveContainer>
                 </CardContent>
               </Card>
             </div>
