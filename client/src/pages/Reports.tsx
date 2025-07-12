@@ -263,7 +263,7 @@ const Reports: React.FC = () => {
     return results;
   }, [testScores]);
 
-  // Academic year data with custom ordering
+  // Academic year data with numeric ordering
   const forceAcademicYear = [
     { order: 1, month: 'Jun', attendance: 88, evaluation: 4.0, performance: 75, tests: 120 },
     { order: 2, month: 'Jul', attendance: 90, evaluation: 4.1, performance: 78, tests: 130 },
@@ -278,6 +278,15 @@ const Reports: React.FC = () => {
     { order: 11, month: 'Apr', attendance: 94, evaluation: 4.3, performance: 86, tests: 139 },
     { order: 12, month: 'May', attendance: 96, evaluation: 4.5, performance: 89, tests: 145 }
   ];
+
+  // Custom tick formatter to show month names
+  const formatXAxisTick = (tickItem: any) => {
+    const monthMap: { [key: number]: string } = {
+      1: 'Jun', 2: 'Jul', 3: 'Aug', 4: 'Sep', 5: 'Oct', 6: 'Nov',
+      7: 'Dec', 8: 'Jan', 9: 'Feb', 10: 'Mar', 11: 'Apr', 12: 'May'
+    };
+    return monthMap[tickItem] || tickItem;
+  };
 
   const isLoading = instructorsLoading || coursesLoading || testResultsLoading || evaluationsLoading || staffLeaveLoading || testScoresLoading;
 
@@ -461,7 +470,7 @@ const Reports: React.FC = () => {
                   <ResponsiveContainer width="100%" height={300}>
                     <RechartsLineChart data={forceAcademicYear} key={`force-academic-${Date.now()}`}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" type="category" />
+                      <XAxis dataKey="order" type="number" domain={[1, 12]} ticks={[1,2,3,4,5,6,7,8,9,10,11,12]} tickFormatter={formatXAxisTick} />
                       <YAxis domain={[80, 100]} />
                       <RechartsTooltip />
                       <Line type="monotone" dataKey="attendance" stroke="#0A2463" strokeWidth={3} />
@@ -676,7 +685,7 @@ const Reports: React.FC = () => {
                   <ResponsiveContainer width="100%" height={300}>
                     <RechartsLineChart data={forceAcademicYear}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
+                      <XAxis dataKey="order" type="number" domain={[1, 12]} ticks={[1,2,3,4,5,6,7,8,9,10,11,12]} tickFormatter={formatXAxisTick} />
                       <YAxis domain={[3.5, 5]} />
                       <RechartsTooltip />
                       <Line type="monotone" dataKey="evaluation" stroke="#0A2463" strokeWidth={3} name="Average Rating" />
@@ -852,7 +861,7 @@ const Reports: React.FC = () => {
                   <ResponsiveContainer width="100%" height={300}>
                     <RechartsLineChart data={forceAcademicYear}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
+                      <XAxis dataKey="order" type="number" domain={[1, 12]} ticks={[1,2,3,4,5,6,7,8,9,10,11,12]} tickFormatter={formatXAxisTick} />
                       <YAxis domain={[70, 90]} />
                       <RechartsTooltip />
                       <Line type="monotone" dataKey="performance" stroke="#0A2463" strokeWidth={3} name="Average Performance %" />
@@ -904,7 +913,7 @@ const Reports: React.FC = () => {
                 <ResponsiveContainer width="100%" height={300}>
                   <RechartsLineChart data={forceAcademicYear}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
+                    <XAxis dataKey="order" type="number" domain={[1, 12]} ticks={[1,2,3,4,5,6,7,8,9,10,11,12]} tickFormatter={formatXAxisTick} />
                     <YAxis />
                     <RechartsTooltip />
                     <Legend />
