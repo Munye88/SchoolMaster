@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Instructor, Course, TestResult, Evaluation, StaffLeave } from "@shared/schema";
 import { 
@@ -93,70 +93,64 @@ const ReportsEnhanced: React.FC = () => {
     "December", "January", "February", "March", "April", "May"
   ];
 
-  // Process attendance data filtered by selected month
-  const processedAttendanceData = useMemo(() => {
-    if (!schools.length || !instructors.length) return [];
+  // Pre-process attendance data by month for better performance
+  const attendanceByMonth = useMemo(() => {
+    if (!schools.length || !instructors.length || !attendanceData.length) return {};
     
     const schoolMap = schools.reduce((acc, school) => {
       acc[school.id] = school.name;
       return acc;
     }, {});
 
-    // Create instructor to school mapping
     const instructorSchoolMap = instructors.reduce((acc, instructor) => {
       acc[instructor.id] = instructor.schoolId;
       return acc;
     }, {});
 
-    // Initialize stats for all schools
-    const schoolStats = {};
-    schools.forEach(school => {
-      schoolStats[school.name] = { present: 0, absent: 0, late: 0, total: 0 };
-    });
+    const monthlyData = {};
     
-    // Filter attendance data by selected month and year
-    const filteredAttendanceData = attendanceData.filter(record => {
+    attendanceData.forEach(record => {
       const recordDate = new Date(record.date);
       const recordMonth = recordDate.toLocaleString('default', { month: 'long' });
       const recordYear = recordDate.getFullYear();
-      return recordMonth === currentMonth && recordYear === currentYear;
-    });
-    
-    // Process filtered attendance data
-    filteredAttendanceData.forEach(record => {
+      const monthKey = `${recordMonth}-${recordYear}`;
+      
+      if (!monthlyData[monthKey]) {
+        monthlyData[monthKey] = {};
+        schools.forEach(school => {
+          monthlyData[monthKey][school.name] = { present: 0, absent: 0, late: 0, total: 0 };
+        });
+      }
+      
       const instructorSchoolId = instructorSchoolMap[record.instructorId];
       const schoolName = schoolMap[instructorSchoolId] || 'Unknown';
       
-      if (schoolStats[schoolName]) {
-        schoolStats[schoolName].total++;
+      if (monthlyData[monthKey][schoolName]) {
+        monthlyData[monthKey][schoolName].total++;
         if (record.status === 'present') {
-          schoolStats[schoolName].present++;
+          monthlyData[monthKey][schoolName].present++;
         } else if (record.status === 'absent') {
-          schoolStats[schoolName].absent++;
+          monthlyData[monthKey][schoolName].absent++;
         } else if (record.status === 'late') {
-          schoolStats[schoolName].late++;
+          monthlyData[monthKey][schoolName].late++;
         }
       }
     });
 
-    const result = Object.entries(schoolStats).map(([school, stats]) => ({
+    return monthlyData;
+  }, [attendanceData, schools, instructors]);
+
+  // Get processed attendance data for current month
+  const processedAttendanceData = useMemo(() => {
+    const monthKey = `${currentMonth}-${currentYear}`;
+    const monthData = attendanceByMonth[monthKey] || {};
+    
+    return Object.entries(monthData).map(([school, stats]) => ({
       school,
       ...stats,
       attendance: stats.total > 0 ? Math.round((stats.present / stats.total) * 100) : 0
     }));
-
-    console.log('Attendance processing debug:', {
-      selectedMonth: currentMonth,
-      selectedYear: currentYear,
-      schools: schools.map(s => s.name),
-      totalAttendanceRecords: attendanceData.length,
-      filteredAttendanceRecords: filteredAttendanceData.length,
-      instructorCount: instructors.length,
-      processedData: result
-    });
-
-    return result;
-  }, [attendanceData, schools, instructors, currentMonth, currentYear]);
+  }, [attendanceByMonth, currentMonth, currentYear]);
 
   // Process leave data for monthly tracking
   const processedLeaveData = useMemo(() => {
@@ -194,35 +188,42 @@ const ReportsEnhanced: React.FC = () => {
     return monthlyData;
   }, [staffLeave, schools]);
 
-  // Process evaluation data filtered by selected month
-  const processedEvaluationData = useMemo(() => {
-    if (!evaluations.length || !schools.length) return [];
+  // Pre-process evaluation data by month for better performance
+  const evaluationsByMonth = useMemo(() => {
+    if (!evaluations.length || !schools.length) return {};
     
-    const schoolMap = schools.reduce((acc, school) => {
-      acc[school.id] = school.name;
-      return acc;
-    }, {});
+    const monthlyData = {};
     
-    // Filter evaluations by selected month and year
-    const filteredEvaluations = evaluations.filter(evaluation => {
+    evaluations.forEach(evaluation => {
       const evalDate = new Date(evaluation.evaluationDate);
       const evalMonth = evalDate.toLocaleString('default', { month: 'long' });
       const evalYear = evalDate.getFullYear();
-      return evalMonth === currentMonth && evalYear === currentYear;
+      const monthKey = `${evalMonth}-${evalYear}`;
+      
+      if (!monthlyData[monthKey]) {
+        monthlyData[monthKey] = {};
+        schools.forEach(school => {
+          monthlyData[monthKey][school.id] = [];
+        });
+      }
+      
+      if (!monthlyData[monthKey][evaluation.schoolId]) {
+        monthlyData[monthKey][evaluation.schoolId] = [];
+      }
+      
+      monthlyData[monthKey][evaluation.schoolId].push(evaluation);
     });
+
+    return monthlyData;
+  }, [evaluations, schools]);
+
+  // Get processed evaluation data for current month
+  const processedEvaluationData = useMemo(() => {
+    const monthKey = `${currentMonth}-${currentYear}`;
+    const monthData = evaluationsByMonth[monthKey] || {};
     
-    if (filteredEvaluations.length === 0) {
-      return schools.map(school => ({
-        school: school.name,
-        evaluations: 0,
-        average: 0,
-        passingRate: 0
-      }));
-    }
-    
-    // Calculate by school for selected month
-    const schoolData = schools.map(school => {
-      const schoolEvals = filteredEvaluations.filter(evaluation => evaluation.schoolId === school.id);
+    return schools.map(school => {
+      const schoolEvals = monthData[school.id] || [];
       
       if (schoolEvals.length === 0) {
         return {
@@ -245,29 +246,44 @@ const ReportsEnhanced: React.FC = () => {
         passingRate
       };
     });
+  }, [evaluationsByMonth, schools, currentMonth, currentYear]);
 
-    return schoolData;
-  }, [evaluations, schools, currentMonth, currentYear]);
-
-  // Process performance data filtered by selected month
-  const processedPerformanceData = useMemo(() => {
-    if (!testScores.length || !schools.length) return [];
+  // Pre-process test scores by month for better performance
+  const testScoresByMonth = useMemo(() => {
+    if (!testScores.length || !schools.length) return {};
     
-    const schoolMap = schools.reduce((acc, school) => {
-      acc[school.id] = school.name;
-      return acc;
-    }, {});
+    const monthlyData = {};
     
-    // Filter test scores by selected month and year
-    const filteredTestScores = testScores.filter(test => {
+    testScores.forEach(test => {
       const testDate = new Date(test.testDate);
       const testMonth = testDate.toLocaleString('default', { month: 'long' });
       const testYear = testDate.getFullYear();
-      return testMonth === currentMonth && testYear === currentYear;
+      const monthKey = `${testMonth}-${testYear}`;
+      
+      if (!monthlyData[monthKey]) {
+        monthlyData[monthKey] = {};
+        schools.forEach(school => {
+          monthlyData[monthKey][school.id] = [];
+        });
+      }
+      
+      if (!monthlyData[monthKey][test.schoolId]) {
+        monthlyData[monthKey][test.schoolId] = [];
+      }
+      
+      monthlyData[monthKey][test.schoolId].push(test);
     });
+
+    return monthlyData;
+  }, [testScores, schools]);
+
+  // Get processed performance data for current month
+  const processedPerformanceData = useMemo(() => {
+    const monthKey = `${currentMonth}-${currentYear}`;
+    const monthData = testScoresByMonth[monthKey] || {};
     
     return schools.map(school => {
-      const schoolTests = filteredTestScores.filter(test => test.schoolId === school.id);
+      const schoolTests = monthData[school.id] || [];
       
       // Define test types for each school based on requirements
       const testTypes = school.name === 'KFNA' ? ['ALCPT', 'Book'] :
@@ -295,7 +311,7 @@ const ReportsEnhanced: React.FC = () => {
       
       return result;
     });
-  }, [testScores, schools, currentMonth, currentYear]);
+  }, [testScoresByMonth, schools, currentMonth, currentYear]);
 
   // Calculate summary statistics for selected month
   const summaryStats = useMemo(() => {
@@ -325,41 +341,34 @@ const ReportsEnhanced: React.FC = () => {
     };
   }, [instructors, processedAttendanceData, staffLeave, currentMonth, currentYear, months]);
 
-  // Generate monthly trend data from actual data
+  // Generate monthly trend data from pre-processed data
   const monthlyTrendData = useMemo(() => {
     return months.map((month, index) => {
-      // Calculate attendance rate for this month
-      const monthAttendance = attendanceData.filter(record => {
-        const recordDate = new Date(record.date);
-        const recordMonth = recordDate.toLocaleString('default', { month: 'long' });
-        const recordYear = recordDate.getFullYear();
-        return recordMonth === month && recordYear === currentYear;
+      const monthKey = `${month}-${currentYear}`;
+      
+      // Get attendance rate for this month
+      const monthAttendanceData = attendanceByMonth[monthKey] || {};
+      let totalPresent = 0;
+      let totalRecords = 0;
+      
+      Object.values(monthAttendanceData).forEach(schoolData => {
+        totalPresent += schoolData.present;
+        totalRecords += schoolData.total;
       });
       
-      const presentCount = monthAttendance.filter(record => record.status === 'present').length;
-      const attendanceRate = monthAttendance.length > 0 ? Math.round((presentCount / monthAttendance.length) * 100) : 0;
+      const attendanceRate = totalRecords > 0 ? Math.round((totalPresent / totalRecords) * 100) : 0;
       
-      // Calculate evaluation average for this month
-      const monthEvaluations = evaluations.filter(evaluation => {
-        const evalDate = new Date(evaluation.evaluationDate);
-        const evalMonth = evalDate.toLocaleString('default', { month: 'long' });
-        const evalYear = evalDate.getFullYear();
-        return evalMonth === month && evalYear === currentYear;
-      });
+      // Get evaluation average for this month
+      const monthEvaluationData = evaluationsByMonth[monthKey] || {};
+      const allEvaluations = Object.values(monthEvaluationData).flat();
+      const evaluationAverage = allEvaluations.length > 0 ? 
+        Math.round(allEvaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / allEvaluations.length) : 0;
       
-      const evaluationAverage = monthEvaluations.length > 0 ? 
-        Math.round(monthEvaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / monthEvaluations.length) : 0;
-      
-      // Calculate test performance for this month
-      const monthTests = testScores.filter(test => {
-        const testDate = new Date(test.testDate);
-        const testMonth = testDate.toLocaleString('default', { month: 'long' });
-        const testYear = testDate.getFullYear();
-        return testMonth === month && testYear === currentYear;
-      });
-      
-      const testAverage = monthTests.length > 0 ? 
-        Math.round(monthTests.reduce((sum, test) => sum + test.score, 0) / monthTests.length) : 0;
+      // Get test performance for this month
+      const monthTestData = testScoresByMonth[monthKey] || {};
+      const allTests = Object.values(monthTestData).flat();
+      const testAverage = allTests.length > 0 ? 
+        Math.round(allTests.reduce((sum, test) => sum + test.score, 0) / allTests.length) : 0;
       
       return {
         month: month.slice(0, 3),
@@ -368,9 +377,9 @@ const ReportsEnhanced: React.FC = () => {
         performance: testAverage
       };
     });
-  }, [attendanceData, evaluations, testScores, currentYear, months]);
+  }, [attendanceByMonth, evaluationsByMonth, testScoresByMonth, currentYear, months]);
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
+  const navigateMonth = useCallback((direction: 'prev' | 'next') => {
     const currentIndex = months.indexOf(currentMonth);
     if (direction === 'prev') {
       if (currentIndex > 0) {
@@ -387,7 +396,7 @@ const ReportsEnhanced: React.FC = () => {
         setCurrentYear(currentYear + 1);
       }
     }
-  };
+  }, [currentMonth, currentYear, months]);
 
   const generateSummaryAndRecommendations = () => {
     const { attendanceRate, totalInstructors, presentForMonth, onLeave, absent } = summaryStats;
