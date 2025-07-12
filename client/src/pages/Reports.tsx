@@ -263,20 +263,20 @@ const Reports: React.FC = () => {
     return results;
   }, [testScores]);
 
-  // Academic year data (June-May)
-  const academicYearData = [
-    { month: 'Jun', attendance: 88, evaluation: 4.0, performance: 75, tests: 120 },
-    { month: 'Jul', attendance: 90, evaluation: 4.1, performance: 78, tests: 130 },
-    { month: 'Aug', attendance: 92, evaluation: 4.2, performance: 81, tests: 125 },
-    { month: 'Sep', attendance: 94, evaluation: 4.3, performance: 84, tests: 135 },
-    { month: 'Oct', attendance: 96, evaluation: 4.4, performance: 87, tests: 140 },
-    { month: 'Nov', attendance: 90, evaluation: 4.2, performance: 80, tests: 128 },
-    { month: 'Dec', attendance: 92, evaluation: 4.3, performance: 82, tests: 132 },
-    { month: 'Jan', attendance: 94, evaluation: 4.4, performance: 85, tests: 138 },
-    { month: 'Feb', attendance: 90, evaluation: 4.1, performance: 79, tests: 126 },
-    { month: 'Mar', attendance: 92, evaluation: 4.2, performance: 83, tests: 133 },
-    { month: 'Apr', attendance: 94, evaluation: 4.3, performance: 86, tests: 139 },
-    { month: 'May', attendance: 96, evaluation: 4.5, performance: 89, tests: 145 }
+  // Force academic year sequence - Jun to May
+  const forceAcademicYear = [
+    { academicMonth: 'Jun', attendance: 88, evaluation: 4.0, performance: 75, tests: 120 },
+    { academicMonth: 'Jul', attendance: 90, evaluation: 4.1, performance: 78, tests: 130 },
+    { academicMonth: 'Aug', attendance: 92, evaluation: 4.2, performance: 81, tests: 125 },
+    { academicMonth: 'Sep', attendance: 94, evaluation: 4.3, performance: 84, tests: 135 },
+    { academicMonth: 'Oct', attendance: 96, evaluation: 4.4, performance: 87, tests: 140 },
+    { academicMonth: 'Nov', attendance: 90, evaluation: 4.2, performance: 80, tests: 128 },
+    { academicMonth: 'Dec', attendance: 92, evaluation: 4.3, performance: 82, tests: 132 },
+    { academicMonth: 'Jan', attendance: 94, evaluation: 4.4, performance: 85, tests: 138 },
+    { academicMonth: 'Feb', attendance: 90, evaluation: 4.1, performance: 79, tests: 126 },
+    { academicMonth: 'Mar', attendance: 92, evaluation: 4.2, performance: 83, tests: 133 },
+    { academicMonth: 'Apr', attendance: 94, evaluation: 4.3, performance: 86, tests: 139 },
+    { academicMonth: 'May', attendance: 96, evaluation: 4.5, performance: 89, tests: 145 }
   ];
 
   const isLoading = instructorsLoading || coursesLoading || testResultsLoading || evaluationsLoading || staffLeaveLoading || testScoresLoading;
@@ -459,22 +459,9 @@ const Reports: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RechartsLineChart data={[
-                      { month: 'Jun', attendance: 88 },
-                      { month: 'Jul', attendance: 90 },
-                      { month: 'Aug', attendance: 92 },
-                      { month: 'Sep', attendance: 94 },
-                      { month: 'Oct', attendance: 96 },
-                      { month: 'Nov', attendance: 90 },
-                      { month: 'Dec', attendance: 92 },
-                      { month: 'Jan', attendance: 94 },
-                      { month: 'Feb', attendance: 90 },
-                      { month: 'Mar', attendance: 92 },
-                      { month: 'Apr', attendance: 94 },
-                      { month: 'May', attendance: 96 }
-                    ]} key={Date.now()}>
+                    <RechartsLineChart data={forceAcademicYear} key={`force-academic-${Date.now()}`}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
+                      <XAxis dataKey="academicMonth" type="category" />
                       <YAxis domain={[80, 100]} />
                       <RechartsTooltip />
                       <Line type="monotone" dataKey="attendance" stroke="#0A2463" strokeWidth={3} />
@@ -687,9 +674,9 @@ const Reports: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RechartsLineChart data={academicYearData}>
+                    <RechartsLineChart data={forceAcademicYear}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
+                      <XAxis dataKey="academicMonth" />
                       <YAxis domain={[3.5, 5]} />
                       <RechartsTooltip />
                       <Line type="monotone" dataKey="evaluation" stroke="#0A2463" strokeWidth={3} name="Average Rating" />
@@ -863,9 +850,9 @@ const Reports: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RechartsLineChart data={academicYearData}>
+                    <RechartsLineChart data={forceAcademicYear}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
+                      <XAxis dataKey="academicMonth" />
                       <YAxis domain={[70, 90]} />
                       <RechartsTooltip />
                       <Line type="monotone" dataKey="performance" stroke="#0A2463" strokeWidth={3} name="Average Performance %" />
@@ -915,9 +902,9 @@ const Reports: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <RechartsLineChart data={academicYearData}>
+                  <RechartsLineChart data={forceAcademicYear}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
+                    <XAxis dataKey="academicMonth" />
                     <YAxis />
                     <RechartsTooltip />
                     <Legend />
