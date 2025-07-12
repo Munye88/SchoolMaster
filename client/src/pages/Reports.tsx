@@ -469,15 +469,61 @@ const Reports: React.FC = () => {
                   <CardDescription>Attendance percentage over time (June-May)</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <RechartsLineChart data={forceAcademicYear} key={`force-academic-${Date.now()}`}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="index" type="number" domain={[0, 11]} tickFormatter={(value) => academicYearMonths[value]} />
-                      <YAxis domain={[80, 100]} />
-                      <RechartsTooltip />
-                      <Line type="monotone" dataKey="attendance" stroke="#0A2463" strokeWidth={3} />
-                    </RechartsLineChart>
-                  </ResponsiveContainer>
+                  <div className="w-full h-80 flex flex-col">
+                    {/* Custom Academic Year Chart */}
+                    <div className="flex-1 relative border border-gray-200 bg-white">
+                      {/* Y-axis labels */}
+                      <div className="absolute left-0 top-0 h-full w-8 flex flex-col justify-between py-4 text-xs text-gray-500">
+                        <span>100%</span>
+                        <span>95%</span>
+                        <span>90%</span>
+                        <span>85%</span>
+                        <span>80%</span>
+                      </div>
+                      
+                      {/* Chart area */}
+                      <div className="ml-8 mr-4 h-full relative">
+                        {/* Grid lines */}
+                        <svg className="absolute inset-0 w-full h-full">
+                          {/* Horizontal grid lines */}
+                          {[20, 40, 60, 80].map((y) => (
+                            <line key={y} x1="0" y1={`${y}%`} x2="100%" y2={`${y}%`} stroke="#e5e7eb" strokeDasharray="2,2" />
+                          ))}
+                          {/* Vertical grid lines */}
+                          {academicYearMonths.map((_, i) => (
+                            <line key={i} x1={`${(i * 100) / 11}%`} y1="0" x2={`${(i * 100) / 11}%`} y2="100%" stroke="#e5e7eb" strokeDasharray="2,2" />
+                          ))}
+                          
+                          {/* Data line */}
+                          <polyline
+                            points={forceAcademicYear.map((d, i) => `${(i * 100) / 11},${100 - ((d.attendance - 80) / 20) * 100}`).join(' ')}
+                            fill="none"
+                            stroke="#0A2463"
+                            strokeWidth="3"
+                          />
+                          
+                          {/* Data points */}
+                          {forceAcademicYear.map((d, i) => (
+                            <circle
+                              key={i}
+                              cx={`${(i * 100) / 11}%`}
+                              cy={`${100 - ((d.attendance - 80) / 20) * 100}%`}
+                              r="4"
+                              fill="#0A2463"
+                              title={`${academicYearMonths[i]}: ${d.attendance}%`}
+                            />
+                          ))}
+                        </svg>
+                      </div>
+                      
+                      {/* X-axis labels */}
+                      <div className="absolute bottom-0 left-8 right-4 h-8 flex justify-between items-center text-xs text-gray-500">
+                        {academicYearMonths.map((month, i) => (
+                          <span key={i}>{month}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
