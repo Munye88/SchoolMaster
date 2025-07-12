@@ -152,41 +152,49 @@ const ReportsEnhanced: React.FC = () => {
     }));
   }, [attendanceByMonth, currentMonth, currentYear]);
 
-  // Process leave data for monthly tracking
-  const processedLeaveData = useMemo(() => {
-    if (!staffLeave.length || !schools.length) return [];
+  // Pre-process leave data by month for better performance
+  const leaveByMonth = useMemo(() => {
+    if (!staffLeave.length) return {};
     
-    const schoolMap = schools.reduce((acc, school) => {
-      acc[school.id] = school.name;
-      return acc;
-    }, {});
-
-    const currentYear = new Date().getFullYear();
-    const monthlyData = months.map((month, index) => {
-      const monthIndex = index + 1;
+    const monthlyData = {};
+    
+    staffLeave.forEach(leave => {
+      const leaveDate = new Date(leave.startDate);
+      const leaveMonth = leaveDate.toLocaleString('default', { month: 'long' });
+      const leaveYear = leaveDate.getFullYear();
+      const monthKey = `${leaveMonth}-${leaveYear}`;
       
-      // Filter leave for this month
-      const monthLeave = staffLeave.filter(leave => {
-        const leaveDate = new Date(leave.startDate);
-        return leaveDate.getFullYear() === currentYear && 
-               leaveDate.getMonth() === index;
-      });
+      if (!monthlyData[monthKey]) {
+        monthlyData[monthKey] = {
+          PTO: 0,
+          'R&R': 0,
+          Sick: 0
+        };
+      }
       
-      const ptoCount = monthLeave.filter(leave => leave.leaveType === 'PTO').length;
-      const rrCount = monthLeave.filter(leave => leave.leaveType === 'R&R').length;
-      const sickCount = monthLeave.filter(leave => leave.leaveType === 'Sick').length;
-      
-      return {
-        month,
-        PTO: ptoCount,
-        'R&R': rrCount,
-        Sick: sickCount,
-        total: ptoCount + rrCount + sickCount
-      };
+      if (leave.leaveType === 'PTO') {
+        monthlyData[monthKey].PTO++;
+      } else if (leave.leaveType === 'R&R') {
+        monthlyData[monthKey]['R&R']++;
+      } else if (leave.leaveType === 'Sick') {
+        monthlyData[monthKey].Sick++;
+      }
     });
 
     return monthlyData;
-  }, [staffLeave, schools]);
+  }, [staffLeave]);
+
+  // Get processed leave data for current month
+  const processedLeaveData = useMemo(() => {
+    const monthKey = `${currentMonth}-${currentYear}`;
+    const monthData = leaveByMonth[monthKey] || { PTO: 0, 'R&R': 0, Sick: 0 };
+    
+    return [
+      { type: 'PTO', count: monthData.PTO },
+      { type: 'R&R', count: monthData['R&R'] },
+      { type: 'Sick', count: monthData.Sick }
+    ];
+  }, [leaveByMonth, currentMonth, currentYear]);
 
   // Pre-process evaluation data by month for better performance
   const evaluationsByMonth = useMemo(() => {
@@ -216,6 +224,16 @@ const ReportsEnhanced: React.FC = () => {
 
     return monthlyData;
   }, [evaluations, schools]);
+
+  // Get current month evaluations for statistics
+  const currentMonthEvaluations = useMemo(() => {
+    const monthKey = `${currentMonth}-${currentYear}`;
+    const monthData = evaluationsByMonth[monthKey] || {};
+    
+    return Object.values(monthData).flat();
+  }, [evaluationsByMonth, currentMonth, currentYear]);
+
+
 
   // Get processed evaluation data for current month
   const processedEvaluationData = useMemo(() => {
@@ -276,6 +294,14 @@ const ReportsEnhanced: React.FC = () => {
 
     return monthlyData;
   }, [testScores, schools]);
+
+  // Get current month test scores for statistics
+  const currentMonthTestScores = useMemo(() => {
+    const monthKey = `${currentMonth}-${currentYear}`;
+    const monthData = testScoresByMonth[monthKey] || {};
+    
+    return Object.values(monthData).flat();
+  }, [testScoresByMonth, currentMonth, currentYear]);
 
   // Get processed performance data for current month
   const processedPerformanceData = useMemo(() => {
@@ -765,7 +791,12 @@ const ReportsEnhanced: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RechartsBarChart data={processedLeaveData}>
+                    <RechartsBarChart data={[{
+                      month: currentMonth,
+                      PTO: processedLeaveData.find(item => item.type === 'PTO')?.count || 0,
+                      'R&R': processedLeaveData.find(item => item.type === 'R&R')?.count || 0,
+                      Sick: processedLeaveData.find(item => item.type === 'Sick')?.count || 0
+                    }]}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis 
                         dataKey="month" 
@@ -810,30 +841,30 @@ const ReportsEnhanced: React.FC = () => {
                     <div className="grid grid-cols-3 gap-4">
                       <div className="text-center">
                         <div className="text-2xl font-bold text-blue-600">
-                          {processedLeaveData.reduce((sum, month) => sum + month.PTO, 0)}
+                          {processedLeaveData.find(item => item.type === 'PTO')?.count || 0}
                         </div>
-                        <div className="text-sm text-gray-600">Total PTO</div>
+                        <div className="text-sm text-gray-600">PTO This Month</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-green-600">
-                          {processedLeaveData.reduce((sum, month) => sum + month['R&R'], 0)}
+                          {processedLeaveData.find(item => item.type === 'R&R')?.count || 0}
                         </div>
-                        <div className="text-sm text-gray-600">Total R&R</div>
+                        <div className="text-sm text-gray-600">R&R This Month</div>
                       </div>
                       <div className="text-center">
                         <div className="text-2xl font-bold text-red-600">
-                          {processedLeaveData.reduce((sum, month) => sum + month.Sick, 0)}
+                          {processedLeaveData.find(item => item.type === 'Sick')?.count || 0}
                         </div>
-                        <div className="text-sm text-gray-600">Total Sick</div>
+                        <div className="text-sm text-gray-600">Sick This Month</div>
                       </div>
                     </div>
                     
                     <div className="pt-4 border-t">
                       <div className="text-center">
                         <div className="text-xl font-semibold text-gray-900">
-                          {processedLeaveData.reduce((sum, month) => sum + month.total, 0)}
+                          {processedLeaveData.reduce((sum, item) => sum + item.count, 0)}
                         </div>
-                        <div className="text-sm text-gray-600">Total Leave Requests</div>
+                        <div className="text-sm text-gray-600">Total Leave This Month</div>
                       </div>
                     </div>
                   </div>
@@ -851,7 +882,7 @@ const ReportsEnhanced: React.FC = () => {
                   <ClipboardCheck className="h-4 w-4 text-gray-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-gray-900">{evaluations.length}</div>
+                  <div className="text-2xl font-bold text-gray-900">{currentMonthEvaluations.length}</div>
                   <p className="text-xs text-gray-500">Completed this month</p>
                 </CardContent>
               </Card>
@@ -863,8 +894,8 @@ const ReportsEnhanced: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-blue-600">
-                    {evaluations.length > 0 ? 
-                      Math.round((evaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / evaluations.length) * 10) / 10 
+                    {currentMonthEvaluations.length > 0 ? 
+                      Math.round((currentMonthEvaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / currentMonthEvaluations.length) * 10) / 10 
                       : 0
                     }%
                   </div>
@@ -879,8 +910,8 @@ const ReportsEnhanced: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-green-600">
-                    {evaluations.length > 0 ? 
-                      Math.round((evaluations.filter(evaluation => evaluation.score >= 85).length / evaluations.length) * 100)
+                    {currentMonthEvaluations.length > 0 ? 
+                      Math.round((currentMonthEvaluations.filter(evaluation => evaluation.score >= 85).length / currentMonthEvaluations.length) * 100)
                       : 0
                     }%
                   </div>
@@ -958,10 +989,10 @@ const ReportsEnhanced: React.FC = () => {
                     <RechartsPieChart>
                       <Pie
                         data={[
-                          { name: 'Excellent (90-100)', value: evaluations.filter(e => e.score >= 90).length, fill: '#22c55e' },
-                          { name: 'Good (85-89)', value: evaluations.filter(e => e.score >= 85 && e.score < 90).length, fill: '#3b82f6' },
-                          { name: 'Below Passing (80-84)', value: evaluations.filter(e => e.score >= 80 && e.score < 85).length, fill: '#f59e0b' },
-                          { name: 'Needs Improvement (<80)', value: evaluations.filter(e => e.score < 80).length, fill: '#ef4444' }
+                          { name: 'Excellent (90-100)', value: currentMonthEvaluations.filter(e => e.score >= 90).length, fill: '#22c55e' },
+                          { name: 'Good (85-89)', value: currentMonthEvaluations.filter(e => e.score >= 85 && e.score < 90).length, fill: '#3b82f6' },
+                          { name: 'Below Passing (80-84)', value: currentMonthEvaluations.filter(e => e.score >= 80 && e.score < 85).length, fill: '#f59e0b' },
+                          { name: 'Needs Improvement (<80)', value: currentMonthEvaluations.filter(e => e.score < 80).length, fill: '#ef4444' }
                         ]}
                         cx="50%"
                         cy="50%"
@@ -993,7 +1024,7 @@ const ReportsEnhanced: React.FC = () => {
                   <FileText className="h-4 w-4 text-gray-400" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-gray-900">{testScores.length}</div>
+                  <div className="text-2xl font-bold text-gray-900">{currentMonthTestScores.length}</div>
                   <p className="text-xs text-gray-500">Administered this month</p>
                 </CardContent>
               </Card>
@@ -1005,10 +1036,10 @@ const ReportsEnhanced: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-blue-600">
-                    {testScores.length > 0 ? 
-                      Math.round((testScores.reduce((sum, test) => sum + test.score, 0) / testScores.length) * 10) / 10 
+                    {currentMonthTestScores.length > 0 ? 
+                      Math.round((currentMonthTestScores.reduce((sum, test) => sum + test.score, 0) / currentMonthTestScores.length) * 10) / 10 
                       : 0
-                    }
+                    }%
                   </div>
                   <p className="text-xs text-gray-500">Out of 100 points</p>
                 </CardContent>
@@ -1021,8 +1052,8 @@ const ReportsEnhanced: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-green-600">
-                    {testScores.length > 0 ? 
-                      Math.round((testScores.filter(test => test.score >= 80).length / testScores.length) * 100)
+                    {currentMonthTestScores.length > 0 ? 
+                      Math.round((currentMonthTestScores.filter(test => test.score >= 80).length / currentMonthTestScores.length) * 100)
                       : 0
                     }%
                   </div>
@@ -1101,30 +1132,30 @@ const ReportsEnhanced: React.FC = () => {
                     <RechartsBarChart data={[
                       {
                         testType: 'ALCPT',
-                        average: testScores.filter(test => test.testType === 'ALCPT').length > 0 ? 
-                          Math.round((testScores.filter(test => test.testType === 'ALCPT').reduce((sum, test) => sum + test.score, 0) / 
-                          testScores.filter(test => test.testType === 'ALCPT').length) * 10) / 10 : 0,
+                        average: currentMonthTestScores.filter(test => test.testType === 'ALCPT').length > 0 ? 
+                          Math.round((currentMonthTestScores.filter(test => test.testType === 'ALCPT').reduce((sum, test) => sum + test.score, 0) / 
+                          currentMonthTestScores.filter(test => test.testType === 'ALCPT').length) * 10) / 10 : 0,
                         fill: '#3b82f6'
                       },
                       {
                         testType: 'Book Test',
-                        average: testScores.filter(test => test.testType === 'Book').length > 0 ? 
-                          Math.round((testScores.filter(test => test.testType === 'Book').reduce((sum, test) => sum + test.score, 0) / 
-                          testScores.filter(test => test.testType === 'Book').length) * 10) / 10 : 0,
+                        average: currentMonthTestScores.filter(test => test.testType === 'Book').length > 0 ? 
+                          Math.round((currentMonthTestScores.filter(test => test.testType === 'Book').reduce((sum, test) => sum + test.score, 0) / 
+                          currentMonthTestScores.filter(test => test.testType === 'Book').length) * 10) / 10 : 0,
                         fill: '#22c55e'
                       },
                       {
                         testType: 'ECL',
-                        average: testScores.filter(test => test.testType === 'ECL').length > 0 ? 
-                          Math.round((testScores.filter(test => test.testType === 'ECL').reduce((sum, test) => sum + test.score, 0) / 
-                          testScores.filter(test => test.testType === 'ECL').length) * 10) / 10 : 0,
+                        average: currentMonthTestScores.filter(test => test.testType === 'ECL').length > 0 ? 
+                          Math.round((currentMonthTestScores.filter(test => test.testType === 'ECL').reduce((sum, test) => sum + test.score, 0) / 
+                          currentMonthTestScores.filter(test => test.testType === 'ECL').length) * 10) / 10 : 0,
                         fill: '#f59e0b'
                       },
                       {
                         testType: 'OPI',
-                        average: testScores.filter(test => test.testType === 'OPI').length > 0 ? 
-                          Math.round((testScores.filter(test => test.testType === 'OPI').reduce((sum, test) => sum + test.score, 0) / 
-                          testScores.filter(test => test.testType === 'OPI').length) * 10) / 10 : 0,
+                        average: currentMonthTestScores.filter(test => test.testType === 'OPI').length > 0 ? 
+                          Math.round((currentMonthTestScores.filter(test => test.testType === 'OPI').reduce((sum, test) => sum + test.score, 0) / 
+                          currentMonthTestScores.filter(test => test.testType === 'OPI').length) * 10) / 10 : 0,
                         fill: '#ef4444'
                       }
                     ]}>
