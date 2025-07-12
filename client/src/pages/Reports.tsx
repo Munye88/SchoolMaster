@@ -279,6 +279,9 @@ const Reports: React.FC = () => {
     { month: 'May', attendance: 96, evaluation: 4.5, performance: 89, tests: 145, index: 11 }
   ];
 
+  // Debug: Log the month order to console
+  console.log('🗓️ Academic Year Month Order:', academicYearData.map(d => d.month).join(', '));
+
   // Custom tick formatter to show academic year months
   const formatXAxisTick = (tickItem: any) => {
     const academicMonths = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'];
