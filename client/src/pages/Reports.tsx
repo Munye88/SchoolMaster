@@ -263,20 +263,20 @@ const Reports: React.FC = () => {
     return results;
   }, [testScores]);
 
-  // Academic year data ordered for display
+  // Academic year data with index to maintain order
   const academicYearData = [
-    { month: 'Jun', attendance: 88, evaluation: 4.0, performance: 75, tests: 120 },
-    { month: 'Jul', attendance: 90, evaluation: 4.1, performance: 78, tests: 130 },
-    { month: 'Aug', attendance: 92, evaluation: 4.2, performance: 81, tests: 125 },
-    { month: 'Sep', attendance: 94, evaluation: 4.3, performance: 84, tests: 135 },
-    { month: 'Oct', attendance: 96, evaluation: 4.4, performance: 87, tests: 140 },
-    { month: 'Nov', attendance: 90, evaluation: 4.2, performance: 80, tests: 128 },
-    { month: 'Dec', attendance: 92, evaluation: 4.3, performance: 82, tests: 132 },
-    { month: 'Jan', attendance: 94, evaluation: 4.4, performance: 85, tests: 138 },
-    { month: 'Feb', attendance: 90, evaluation: 4.1, performance: 79, tests: 126 },
-    { month: 'Mar', attendance: 92, evaluation: 4.2, performance: 83, tests: 133 },
-    { month: 'Apr', attendance: 94, evaluation: 4.3, performance: 86, tests: 139 },
-    { month: 'May', attendance: 96, evaluation: 4.5, performance: 89, tests: 145 }
+    { month: 'Jun', attendance: 88, evaluation: 4.0, performance: 75, tests: 120, index: 0 },
+    { month: 'Jul', attendance: 90, evaluation: 4.1, performance: 78, tests: 130, index: 1 },
+    { month: 'Aug', attendance: 92, evaluation: 4.2, performance: 81, tests: 125, index: 2 },
+    { month: 'Sep', attendance: 94, evaluation: 4.3, performance: 84, tests: 135, index: 3 },
+    { month: 'Oct', attendance: 96, evaluation: 4.4, performance: 87, tests: 140, index: 4 },
+    { month: 'Nov', attendance: 90, evaluation: 4.2, performance: 80, tests: 128, index: 5 },
+    { month: 'Dec', attendance: 92, evaluation: 4.3, performance: 82, tests: 132, index: 6 },
+    { month: 'Jan', attendance: 94, evaluation: 4.4, performance: 85, tests: 138, index: 7 },
+    { month: 'Feb', attendance: 90, evaluation: 4.1, performance: 79, tests: 126, index: 8 },
+    { month: 'Mar', attendance: 92, evaluation: 4.2, performance: 83, tests: 133, index: 9 },
+    { month: 'Apr', attendance: 94, evaluation: 4.3, performance: 86, tests: 139, index: 10 },
+    { month: 'May', attendance: 96, evaluation: 4.5, performance: 89, tests: 145, index: 11 }
   ];
 
   // Custom tick formatter to show academic year months
@@ -733,7 +733,7 @@ const Reports: React.FC = () => {
                   <ResponsiveContainer width="100%" height={300}>
                     <RechartsLineChart data={academicYearData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
+                      <XAxis dataKey="index" type="number" domain={[0, 11]} tickFormatter={(value) => academicYearData[value]?.month || ''} />
                       <YAxis domain={[3.5, 5]} />
                       <RechartsTooltip />
                       <Line type="monotone" dataKey="evaluation" stroke="#0A2463" strokeWidth={3} name="Average Rating" />
@@ -909,7 +909,7 @@ const Reports: React.FC = () => {
                   <ResponsiveContainer width="100%" height={300}>
                     <RechartsLineChart data={academicYearData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
+                      <XAxis dataKey="index" type="number" domain={[0, 11]} tickFormatter={(value) => academicYearData[value]?.month || ''} />
                       <YAxis domain={[70, 90]} />
                       <RechartsTooltip />
                       <Line type="monotone" dataKey="performance" stroke="#0A2463" strokeWidth={3} name="Average Performance %" />
@@ -961,7 +961,7 @@ const Reports: React.FC = () => {
                 <ResponsiveContainer width="100%" height={300}>
                   <RechartsLineChart data={academicYearData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
+                    <XAxis dataKey="index" type="number" domain={[0, 11]} tickFormatter={(value) => academicYearData[value]?.month || ''} />
                     <YAxis />
                     <RechartsTooltip />
                     <Legend />
