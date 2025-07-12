@@ -731,9 +731,9 @@ const Reports: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RechartsLineChart data={forceAcademicYear}>
+                    <RechartsLineChart data={academicYearData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="index" type="number" domain={[0, 11]} tickFormatter={(value) => academicYearMonths[value]} />
+                      <XAxis dataKey="month" />
                       <YAxis domain={[3.5, 5]} />
                       <RechartsTooltip />
                       <Line type="monotone" dataKey="evaluation" stroke="#0A2463" strokeWidth={3} name="Average Rating" />
@@ -907,9 +907,9 @@ const Reports: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RechartsLineChart data={forceAcademicYear}>
+                    <RechartsLineChart data={academicYearData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="index" type="number" domain={[0, 11]} tickFormatter={(value) => academicYearMonths[value]} />
+                      <XAxis dataKey="month" />
                       <YAxis domain={[70, 90]} />
                       <RechartsTooltip />
                       <Line type="monotone" dataKey="performance" stroke="#0A2463" strokeWidth={3} name="Average Performance %" />
@@ -959,9 +959,9 @@ const Reports: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <RechartsLineChart data={forceAcademicYear}>
+                  <RechartsLineChart data={academicYearData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="index" type="number" domain={[0, 11]} tickFormatter={(value) => academicYearMonths[value]} />
+                    <XAxis dataKey="month" />
                     <YAxis />
                     <RechartsTooltip />
                     <Legend />
