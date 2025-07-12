@@ -472,28 +472,25 @@ const Reports: React.FC = () => {
                   <CardDescription>Attendance percentage over time (June-May)</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <RechartsLineChart data={[
-                      { month: 'Jun', attendance: 88 },
-                      { month: 'Jul', attendance: 90 },
-                      { month: 'Aug', attendance: 92 },
-                      { month: 'Sep', attendance: 94 },
-                      { month: 'Oct', attendance: 96 },
-                      { month: 'Nov', attendance: 90 },
-                      { month: 'Dec', attendance: 92 },
-                      { month: 'Jan', attendance: 94 },
-                      { month: 'Feb', attendance: 90 },
-                      { month: 'Mar', attendance: 92 },
-                      { month: 'Apr', attendance: 94 },
-                      { month: 'May', attendance: 96 }
-                    ]}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" type="category" scale="point" />
-                      <YAxis domain={[80, 100]} />
-                      <RechartsTooltip />
-                      <Line type="monotone" dataKey="attendance" stroke="#0A2463" strokeWidth={3} name="Attendance %" />
-                    </RechartsLineChart>
-                  </ResponsiveContainer>
+                  <div className="w-full h-[300px] flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-lg font-semibold text-gray-700 mb-4">Academic Year Attendance Pattern</div>
+                      <div className="grid grid-cols-6 gap-4 text-sm">
+                        <div className="text-center"><div className="font-medium">Jun</div><div className="text-2xl font-bold text-blue-600">88%</div></div>
+                        <div className="text-center"><div className="font-medium">Jul</div><div className="text-2xl font-bold text-blue-600">90%</div></div>
+                        <div className="text-center"><div className="font-medium">Aug</div><div className="text-2xl font-bold text-blue-600">92%</div></div>
+                        <div className="text-center"><div className="font-medium">Sep</div><div className="text-2xl font-bold text-blue-600">94%</div></div>
+                        <div className="text-center"><div className="font-medium">Oct</div><div className="text-2xl font-bold text-blue-600">96%</div></div>
+                        <div className="text-center"><div className="font-medium">Nov</div><div className="text-2xl font-bold text-blue-600">90%</div></div>
+                        <div className="text-center"><div className="font-medium">Dec</div><div className="text-2xl font-bold text-blue-600">92%</div></div>
+                        <div className="text-center"><div className="font-medium">Jan</div><div className="text-2xl font-bold text-blue-600">94%</div></div>
+                        <div className="text-center"><div className="font-medium">Feb</div><div className="text-2xl font-bold text-blue-600">90%</div></div>
+                        <div className="text-center"><div className="font-medium">Mar</div><div className="text-2xl font-bold text-blue-600">92%</div></div>
+                        <div className="text-center"><div className="font-medium">Apr</div><div className="text-2xl font-bold text-blue-600">94%</div></div>
+                        <div className="text-center"><div className="font-medium">May</div><div className="text-2xl font-bold text-blue-600">96%</div></div>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
