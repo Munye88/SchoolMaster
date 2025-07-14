@@ -595,9 +595,9 @@ const InstructorLookup = () => {
                         </Card>
                       </div>
 
-                      <div className="border rounded-none overflow-hidden">
+                      <div className="border rounded-none overflow-hidden max-h-96 overflow-y-auto">
                         <table className="min-w-full divide-y divide-gray-200">
-                          <thead className="bg-gray-50">
+                          <thead className="bg-gray-50 sticky top-0 z-10">
                             <tr>
                               <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Date</th>
                               <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Status</th>
@@ -614,7 +614,7 @@ const InstructorLookup = () => {
                                 const dateB = new Date(b.date);
                                 return dateB.getTime() - dateA.getTime();
                               })
-                              .slice(0, 10).map(record => (
+                              .map(record => (
                               <tr key={record.id}>
                                 <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-bold text-gray-900">
                                   {format(new Date(record.date), 'MMM dd, yyyy')}
