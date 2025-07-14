@@ -28,6 +28,7 @@ interface QuarterlyData {
   attendanceCandidates: RecognitionCandidate[];
   evaluationCandidates: RecognitionCandidate[];
   dualCandidates: RecognitionCandidate[];
+  hasData?: boolean;
 }
 
 // Instructor Details Dialog Component
@@ -341,6 +342,22 @@ export default function Recognition() {
           </div>
         </div>
       </div>
+
+      {/* No Data Message for Future Years */}
+      {recognitionData && recognitionData.hasData === false && parseInt(selectedYear) > new Date().getFullYear() && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-none p-6 mb-8">
+          <div className="flex items-center gap-3">
+            <Trophy className="h-6 w-6 text-yellow-600" />
+            <div>
+              <h3 className="text-lg font-semibold text-yellow-800">No Recognition Data Available</h3>
+              <p className="text-yellow-700">
+                No attendance or evaluation data has been recorded for {selectedQuarter} {selectedYear} yet. 
+                Recognition candidates will appear here once data is available.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Recognition Categories */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

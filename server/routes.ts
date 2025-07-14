@@ -5548,9 +5548,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ? Math.round(instructorEvaluations.reduce((sum, evaluation) => sum + evaluation.score, 0) / instructorEvaluations.length)
           : 0;
 
-        // Determine qualification criteria
-        const qualifiesForAttendance = totalAbsent === 0 && totalLate === 0 && totalSick === 0;
-        const qualifiesForEvaluation = evaluationScore >= 95;
+        // Determine qualification criteria - only qualify if there's actual data
+        const hasAttendanceData = instructorAttendance.length > 0;
+        const hasEvaluationData = instructorEvaluations.length > 0;
+        
+        const qualifiesForAttendance = hasAttendanceData && totalAbsent === 0 && totalLate === 0 && totalSick === 0;
+        const qualifiesForEvaluation = hasEvaluationData && evaluationScore >= 95;
         const qualifiesForBoth = qualifiesForAttendance && qualifiesForEvaluation;
 
         return {
@@ -5576,12 +5579,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`🏆 Recognition results: ${attendanceCandidates.length} attendance, ${evaluationCandidates.length} evaluation, ${dualCandidates.length} dual excellence`);
 
+      // Check if this is a future year with no data
+      const currentYear = new Date().getFullYear();
+      const requestedYear = parseInt(year as string);
+      const hasData = attendanceData.length > 0 || evaluationData.length > 0;
+      
+      if (requestedYear > currentYear && !hasData) {
+        console.log(`⚠️ No data available for future year ${requestedYear}`);
+      }
+
       const result = {
         quarter,
-        year: parseInt(year as string),
+        year: requestedYear,
         attendanceCandidates,
         evaluationCandidates,
-        dualCandidates
+        dualCandidates,
+        hasData
       };
 
       res.json(result);
