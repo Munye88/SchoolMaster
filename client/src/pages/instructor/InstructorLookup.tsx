@@ -601,9 +601,6 @@ const InstructorLookup = () => {
                             <tr>
                               <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Date</th>
                               <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Status</th>
-                              <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Time In</th>
-                              <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Time Out</th>
-                              <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Notes</th>
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
@@ -634,15 +631,6 @@ const InstructorLookup = () => {
                                   }`}>
                                     {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
                                   </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-bold text-gray-900">
-                                  {record.timeIn || 'N/A'}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-bold text-gray-900">
-                                  {record.timeOut || 'N/A'}
-                                </td>
-                                <td className="px-6 py-4 text-center text-sm font-bold text-gray-900 max-w-xs truncate">
-                                  {record.notes || '-'}
                                 </td>
                               </tr>
                             ))}
