@@ -5578,6 +5578,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const dualCandidates = recognitionCandidates.filter(c => c.qualifiesForBoth);
 
       console.log(`🏆 Recognition results: ${attendanceCandidates.length} attendance, ${evaluationCandidates.length} evaluation, ${dualCandidates.length} dual excellence`);
+      
+      // Debug: Show closest candidates for perfect attendance
+      if (attendanceCandidates.length === 0 && attendanceData.length > 0) {
+        const closestCandidates = recognitionCandidates
+          .filter(c => c.totalAbsent + c.totalLate + c.totalSick > 0)
+          .sort((a, b) => (a.totalAbsent + a.totalLate + a.totalSick) - (b.totalAbsent + b.totalLate + b.totalSick))
+          .slice(0, 3);
+        
+        console.log(`📊 Closest to perfect attendance (but disqualified):`);
+        closestCandidates.forEach(c => {
+          console.log(`   - ${c.name}: ${c.totalAbsent} absent, ${c.totalLate} late, ${c.totalSick} sick`);
+        });
+      }
 
       // Check if this is a future year with no data
       const currentYear = new Date().getFullYear();

@@ -375,6 +375,8 @@ The system manages multiple interconnected entities:
 - July 10, 2025: ADMIN PASSWORD SECURITY ENHANCEMENT - Added secure password change feature with current password verification, UI button in admin panel, form validation, and scrypt encryption matching authentication system
 - July 14, 2025: RECOGNITION YEAR RANGE EXTENSION - Updated Recognition component year dropdown to include years 2023-2030 (8 years total) for comprehensive historical and future instructor recognition tracking
 - July 14, 2025: INSTRUCTOR LOOKUP ATTENDANCE IMPROVEMENTS - Removed Time In, Time Out, and Notes columns from attendance table since these fields aren't captured during attendance recording, showing only Date and Status for cleaner data display
+- July 14, 2025: RECOGNITION SYSTEM DATA ACCURACY FIX - Fixed Recognition system to only show candidates when actual attendance/evaluation data exists, preventing false positives for future years and ensuring instructors qualify only with recorded data (perfect attendance requires 0 absent, 0 late, 0 sick days)
+- July 14, 2025: RECOGNITION SYSTEM UI ENHANCEMENT - Added explanatory text when no perfect attendance candidates exist to clarify that all instructors have at least one absent, late, or sick day during the selected period
 
 ## User Preferences
 

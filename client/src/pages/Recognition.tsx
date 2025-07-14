@@ -377,6 +377,11 @@ export default function Recognition() {
               {attendanceCandidates.length}
             </div>
             <p className="text-sm text-gray-500">Qualified instructors</p>
+            {attendanceCandidates.length === 0 && recognitionData && recognitionData.hasData && (
+              <p className="text-xs text-gray-500 mt-2">
+                All instructors have at least one absent, late, or sick day this period
+              </p>
+            )}
           </CardContent>
         </Card>
 
