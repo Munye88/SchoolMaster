@@ -225,7 +225,7 @@ export default function StaffLeaveTracker() {
     error: ptoBalanceError
   } = useQuery<(PtoBalance & { instructorName: string, schoolId: number })[]>({
     queryKey: ['/api/pto-balance', currentSchool?.id],
-    enabled: !!currentSchool?.id && activeTab === "pto-balance",
+    enabled: !!currentSchool?.id && (activeTab === "pto-balance" || isDialogOpen),
   });
   
   // Filter PTO balances for the current school
@@ -264,6 +264,17 @@ export default function StaffLeaveTracker() {
   const schoolInstructors = currentSchool 
     ? instructors.filter((instructor) => instructor.schoolId === currentSchool.id)
     : [];
+  
+  // Get current instructor's PTO balance
+  const getInstructorPtoBalance = (instructorId: number) => {
+    const balance = ptoBalances.find(b => b.instructorId === instructorId);
+    return balance ? {
+      totalDays: balance.totalDays || 21,
+      usedDays: balance.usedDays || 0,
+      remainingDays: balance.remainingDays || 21,
+      year: balance.year || new Date().getFullYear()
+    } : null;
+  };
   
   // Filter leave records by selected school, employee ID, and month
   const schoolLeaveRecords = currentSchool 
@@ -603,6 +614,54 @@ export default function StaffLeaveTracker() {
                       </FormItem>
                     )}
                   />
+                  
+                  {/* PTO Balance Display */}
+                  {form.watch('instructorId') > 0 && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-none p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <InfoIcon className="h-4 w-4 text-blue-600" />
+                        <h4 className="font-semibold text-blue-900">Current PTO Balance</h4>
+                      </div>
+                      {(() => {
+                        const balance = getInstructorPtoBalance(form.watch('instructorId'));
+                        const instructor = schoolInstructors.find(i => i.id === form.watch('instructorId'));
+                        
+                        if (!balance) {
+                          return (
+                            <div className="text-sm text-gray-600">
+                              <p><strong>{instructor?.name || 'Selected instructor'}</strong></p>
+                              <p>No PTO balance record found for {new Date().getFullYear()}</p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                Balance will be created automatically when this leave request is processed
+                              </p>
+                            </div>
+                          );
+                        }
+                        
+                        return (
+                          <div className="text-sm">
+                            <p className="font-medium text-gray-900 mb-1">
+                              <strong>{instructor?.name || 'Selected instructor'}</strong> - {balance.year}
+                            </p>
+                            <div className="grid grid-cols-3 gap-4 text-xs">
+                              <div>
+                                <span className="text-gray-600">Total Days:</span>
+                                <span className="font-semibold ml-1">{balance.totalDays}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Used Days:</span>
+                                <span className="font-semibold ml-1">{balance.usedDays}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Remaining:</span>
+                                <span className="font-semibold ml-1 text-blue-700">{balance.remainingDays}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
                   
                   <FormField
                     control={form.control}
