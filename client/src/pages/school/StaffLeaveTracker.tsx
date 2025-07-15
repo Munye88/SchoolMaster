@@ -118,6 +118,10 @@ const leaveFormSchema = z.object({
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().min(1, "End date is required"),
   returnDate: z.string().min(1, "Return date is required"),
+  leaveBalance: z.number({
+    required_error: "Leave balance is required",
+    invalid_type_error: "Leave balance must be a number",
+  }).min(0, "Leave balance must be a positive number"),
   ptodays: z.number({
     required_error: "PTO days are required",
     invalid_type_error: "PTO days must be a number",
@@ -161,6 +165,7 @@ export default function StaffLeaveTracker() {
       startDate: format(new Date(), 'yyyy-MM-dd'),
       endDate: format(new Date(), 'yyyy-MM-dd'),
       returnDate: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
+      leaveBalance: 0,
       ptodays: 0,
       rrdays: 0,
       leaveType: 'PTO',
@@ -298,6 +303,7 @@ export default function StaffLeaveTracker() {
       startDate: format(new Date(), 'yyyy-MM-dd'),
       endDate: format(new Date(), 'yyyy-MM-dd'),
       returnDate: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
+      leaveBalance: 0,
       ptodays: 0,
       rrdays: 0,
       leaveType: 'PTO',
@@ -765,6 +771,29 @@ export default function StaffLeaveTracker() {
                       )}
                     />
                   </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="leaveBalance"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Leave Balance</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            {...field}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            placeholder="Enter leave balance"
+                            className="rounded-none"
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Enter the current leave balance for this instructor
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   
                   <FormField
                     control={form.control}
