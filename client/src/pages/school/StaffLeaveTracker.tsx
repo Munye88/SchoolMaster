@@ -615,12 +615,12 @@ export default function StaffLeaveTracker() {
                     )}
                   />
                   
-                  {/* PTO Balance Display */}
+                  {/* Leave Balance Display */}
                   {form.watch('instructorId') > 0 && (
                     <div className="bg-blue-50 border border-blue-200 rounded-none p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <InfoIcon className="h-4 w-4 text-blue-600" />
-                        <h4 className="font-semibold text-blue-900">Current PTO Balance</h4>
+                        <h4 className="font-semibold text-blue-900">Current Leave Balance</h4>
                       </div>
                       {(() => {
                         const balance = getInstructorPtoBalance(form.watch('instructorId'));
@@ -630,7 +630,7 @@ export default function StaffLeaveTracker() {
                           return (
                             <div className="text-sm text-gray-600">
                               <p><strong>{instructor?.name || 'Selected instructor'}</strong></p>
-                              <p>No PTO balance record found for {new Date().getFullYear()}</p>
+                              <p>No leave balance record found for {new Date().getFullYear()}</p>
                               <p className="text-xs text-gray-500 mt-1">
                                 Balance will be created automatically when this leave request is processed
                               </p>
