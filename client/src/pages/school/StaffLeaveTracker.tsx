@@ -54,7 +54,7 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useState, useEffect, useRef } from 'react';
-import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer, Search, RefreshCw, Info as InfoIcon, Pencil as PencilIcon, Plus, Clock, X, Users, User, MapPin } from 'lucide-react';
+import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer, Search, RefreshCw, Info as InfoIcon, Pencil as PencilIcon, Plus, Clock, X, MapPin } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { useSchool } from '@/hooks/useSchool';
 import { format, addDays, differenceInCalendarDays } from 'date-fns';
@@ -950,7 +950,7 @@ export default function StaffLeaveTracker() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Users className="h-4 w-4" />
+                    <FileText className="h-4 w-4" />
                     <span>{schoolLeaveRecords.length} records found</span>
                   </div>
                 </div>
@@ -962,7 +962,7 @@ export default function StaffLeaveTracker() {
                     <TableRow className="border-b border-slate-200">
                       <TableHead className="min-w-[140px] font-semibold text-slate-700 py-4">
                         <div className="flex items-center gap-2">
-                          <User className="h-4 w-4" />
+                          <FileText className="h-4 w-4" />
                           INSTRUCTOR
                         </div>
                       </TableHead>
