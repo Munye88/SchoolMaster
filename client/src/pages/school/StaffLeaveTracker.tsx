@@ -766,6 +766,35 @@ export default function StaffLeaveTracker() {
                     />
                   </div>
                   
+                  <FormField
+                    control={form.control}
+                    name="leaveType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Leave Type</FormLabel>
+                        <Select 
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="rounded-none">
+                              <SelectValue placeholder="Select leave type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="rounded-none">
+                            <SelectItem value="PTO">PTO (Paid Time Off)</SelectItem>
+                            <SelectItem value="R&R">R&R (Rest & Recuperation)</SelectItem>
+                            <SelectItem value="Emergency">Emergency Leave</SelectItem>
+                            <SelectItem value="Paternity">Paternity Leave</SelectItem>
+                            <SelectItem value="Bereavement">Bereavement Leave</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
                   {/* Conditional days fields based on leave type */}
                   <div className="grid grid-cols-1 gap-4">
                     {/* Show PTO days field only when leave type is PTO or not yet selected */}
@@ -820,35 +849,6 @@ export default function StaffLeaveTracker() {
                       />
                     )}
                   </div>
-                  
-                  <FormField
-                    control={form.control}
-                    name="leaveType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Leave Type</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select leave type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="PTO">PTO (Paid Time Off)</SelectItem>
-                            <SelectItem value="R&R">R&R (Rest & Recuperation)</SelectItem>
-                            <SelectItem value="Emergency">Emergency Leave</SelectItem>
-                            <SelectItem value="Paternity">Paternity Leave</SelectItem>
-                            <SelectItem value="Bereavement">Bereavement Leave</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                   
                   <FormField
                     control={form.control}
