@@ -780,12 +780,13 @@ export default function StaffLeaveTracker() {
                               <Input 
                                 type="number" 
                                 {...field}
-                                readOnly
-                                className="bg-gray-50"
+                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                placeholder="Enter PTO days"
+                                className="rounded-none"
                               />
                             </FormControl>
                             <FormDescription>
-                              Automatically calculated based on selected dates (start to end)
+                              Enter the number of PTO days for this leave request
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -805,12 +806,13 @@ export default function StaffLeaveTracker() {
                               <Input 
                                 type="number" 
                                 {...field} 
-                                readOnly
-                                className="bg-gray-50"
+                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                placeholder="Enter R&R days"
+                                className="rounded-none"
                               />
                             </FormControl>
                             <FormDescription>
-                              Automatically calculated based on selected dates (start to end)
+                              Enter the number of R&R days for this leave request
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
