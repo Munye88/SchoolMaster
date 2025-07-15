@@ -10,6 +10,9 @@ export async function addColumnsToStaffLeave() {
     console.log("Adding attachment_url column to staff_leave table");
     await db.execute(sql`ALTER TABLE staff_leave ADD COLUMN IF NOT EXISTS attachment_url TEXT`);
     
+    console.log("Adding leave_balance column to staff_leave table");
+    await db.execute(sql`ALTER TABLE staff_leave ADD COLUMN IF NOT EXISTS leave_balance INTEGER`);
+    
     console.log("Staff leave table migration completed successfully");
   } catch (error) {
     console.error("Error migrating staff_leave table:", error);

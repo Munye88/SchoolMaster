@@ -467,6 +467,7 @@ export const staffLeave = pgTable("staff_leave", {
   startDate: date("start_date").notNull(),
   endDate: date("end_date").notNull(),
   returnDate: date("return_date").notNull(),
+  leaveBalance: integer("leave_balance"), // Manual leave balance entry
   ptodays: integer("ptodays").notNull(),
   rrdays: integer("rrdays").notNull(),
   leaveType: text("leave_type").default("PTO"),
@@ -483,6 +484,7 @@ export const insertStaffLeaveSchema = createInsertSchema(staffLeave).pick({
   startDate: true,
   endDate: true,
   returnDate: true,
+  leaveBalance: true,
   ptodays: true,
   rrdays: true,
   leaveType: true,

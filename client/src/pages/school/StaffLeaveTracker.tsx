@@ -94,6 +94,7 @@ interface StaffLeave {
   startDate: string;
   endDate: string;
   returnDate: string;
+  leaveBalance?: number; // Manual leave balance entry
   ptodays: number;
   rrdays: number;
   leaveType: "PTO" | "R&R" | "Emergency" | "Paternity" | "Bereavement" | "Other";

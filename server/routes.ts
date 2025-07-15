@@ -3199,12 +3199,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (existingBalanceResult.rows && existingBalanceResult.rows.length > 0) {
             currentBalance = existingBalanceResult.rows[0];
           } else {
-            // Create new balance record with default values
+            // Use manual leave balance from form or default to 21
+            const manualLeaveBalance = newLeave.leaveBalance || 21;
+            // Create new balance record with manual leave balance
             await db.execute(sql`
-              INSERT INTO pto_balance (instructor_id, year, total_days, used_days, remaining_days, adjustments)
-              VALUES (${newLeave.instructorId}, ${year}, 21, 0, 21, 0)
+              INSERT INTO pto_balance (instructor_id, year, total_days, used_days, remaining_days, adjustments, manual_entry)
+              VALUES (${newLeave.instructorId}, ${year}, ${manualLeaveBalance}, 0, ${manualLeaveBalance}, 0, true)
             `);
-            currentBalance = { total_days: 21, used_days: 0, remaining_days: 21, adjustments: 0 };
+            currentBalance = { total_days: manualLeaveBalance, used_days: 0, remaining_days: manualLeaveBalance, adjustments: 0 };
           }
           
           // Calculate new used days and remaining days
