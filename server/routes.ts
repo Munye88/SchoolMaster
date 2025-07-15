@@ -3179,15 +3179,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newLeave = req.body;
       const [leave] = await db.insert(staffLeave).values(newLeave).returning();
       
-      // Auto-sync PTO balance if this is a PTO leave type and it's approved
-      if (newLeave.leaveType === 'PTO' && newLeave.status === 'approved') {
+      // Auto-deduct from PTO balance when leave is recorded (regardless of status)
+      if ((newLeave.leaveType === 'PTO' || newLeave.leaveType === 'R&R') && (newLeave.ptodays > 0 || newLeave.rrdays > 0)) {
         try {
           const year = new Date(newLeave.startDate).getFullYear();
-          await syncPtoBalanceForInstructor(newLeave.instructorId, year);
-          console.log(`Automatically synced PTO balance for instructor ${newLeave.instructorId} after creating leave record`);
+          
+          // Calculate business days for the leave period
+          const startDate = new Date(newLeave.startDate);
+          const endDate = new Date(newLeave.endDate);
+          const businessDays = calculateBusinessDays(startDate, endDate);
+          
+          // Get or create PTO balance record
+          const existingBalanceResult = await db.execute(sql`
+            SELECT * FROM pto_balance
+            WHERE instructor_id = ${newLeave.instructorId} AND year = ${year}
+          `);
+          
+          let currentBalance;
+          if (existingBalanceResult.rows && existingBalanceResult.rows.length > 0) {
+            currentBalance = existingBalanceResult.rows[0];
+          } else {
+            // Create new balance record with default values
+            await db.execute(sql`
+              INSERT INTO pto_balance (instructor_id, year, total_days, used_days, remaining_days, adjustments)
+              VALUES (${newLeave.instructorId}, ${year}, 21, 0, 21, 0)
+            `);
+            currentBalance = { total_days: 21, used_days: 0, remaining_days: 21, adjustments: 0 };
+          }
+          
+          // Calculate new used days and remaining days
+          const currentUsedDays = parseInt(currentBalance.used_days) || 0;
+          const currentRemainingDays = parseInt(currentBalance.remaining_days) || 21;
+          const totalDays = parseInt(currentBalance.total_days) || 21;
+          const adjustments = parseInt(currentBalance.adjustments) || 0;
+          
+          // Add the business days from this leave request
+          const newUsedDays = currentUsedDays + businessDays;
+          const newRemainingDays = Math.max(0, totalDays - newUsedDays + adjustments);
+          
+          // Update the PTO balance
+          await db.execute(sql`
+            UPDATE pto_balance 
+            SET used_days = ${newUsedDays}, 
+                remaining_days = ${newRemainingDays},
+                last_updated = NOW()
+            WHERE instructor_id = ${newLeave.instructorId} AND year = ${year}
+          `);
+          
+          console.log(`Automatically deducted ${businessDays} days from PTO balance for instructor ${newLeave.instructorId}`);
         } catch (syncError) {
-          console.error("Error auto-syncing PTO balance after creating leave:", syncError);
-          // Don't block the leave creation if sync fails
+          console.error("Error auto-deducting PTO balance after creating leave:", syncError);
+          // Don't block the leave creation if balance deduction fails
         }
       }
       
@@ -3284,15 +3326,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Delete the leave record
       await db.delete(staffLeave).where(eq(staffLeave.id, id));
       
-      // If this was a PTO leave that was approved, sync the PTO balance
-      if (leaveRecord.leaveType === 'PTO' && leaveRecord.status === 'approved') {
+      // Add back the PTO balance when leave is deleted
+      if ((leaveRecord.leaveType === 'PTO' || leaveRecord.leaveType === 'R&R') && (leaveRecord.ptodays > 0 || leaveRecord.rrdays > 0)) {
         try {
           const year = new Date(leaveRecord.startDate).getFullYear();
-          await syncPtoBalanceForInstructor(leaveRecord.instructorId, year);
-          console.log(`Automatically synced PTO balance for instructor ${leaveRecord.instructorId} after deleting leave record`);
+          
+          // Calculate business days for the leave period
+          const startDate = new Date(leaveRecord.startDate);
+          const endDate = new Date(leaveRecord.endDate);
+          const businessDays = calculateBusinessDays(startDate, endDate);
+          
+          // Get current PTO balance
+          const existingBalanceResult = await db.execute(sql`
+            SELECT * FROM pto_balance
+            WHERE instructor_id = ${leaveRecord.instructorId} AND year = ${year}
+          `);
+          
+          if (existingBalanceResult.rows && existingBalanceResult.rows.length > 0) {
+            const currentBalance = existingBalanceResult.rows[0];
+            const currentUsedDays = parseInt(currentBalance.used_days) || 0;
+            const totalDays = parseInt(currentBalance.total_days) || 21;
+            const adjustments = parseInt(currentBalance.adjustments) || 0;
+            
+            // Subtract the business days from used days (add back to balance)
+            const newUsedDays = Math.max(0, currentUsedDays - businessDays);
+            const newRemainingDays = Math.max(0, totalDays - newUsedDays + adjustments);
+            
+            // Update the PTO balance
+            await db.execute(sql`
+              UPDATE pto_balance 
+              SET used_days = ${newUsedDays}, 
+                  remaining_days = ${newRemainingDays},
+                  last_updated = NOW()
+              WHERE instructor_id = ${leaveRecord.instructorId} AND year = ${year}
+            `);
+            
+            console.log(`Automatically added back ${businessDays} days to PTO balance for instructor ${leaveRecord.instructorId} after deleting leave record`);
+          }
         } catch (syncError) {
-          console.error("Error auto-syncing PTO balance after deleting leave:", syncError);
-          // Continue with the deletion response even if sync fails
+          console.error("Error auto-adjusting PTO balance after deleting leave:", syncError);
+          // Continue with the deletion response even if balance adjustment fails
         }
       }
       
