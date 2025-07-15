@@ -1714,8 +1714,8 @@ export default function StaffLeaveTracker() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="sm:max-w-[425px] rounded-none">
           <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-center">Confirm Deletion</DialogTitle>
+            <DialogDescription className="text-center">
               Are you sure you want to delete the PTO balance record for {ptoBalanceToDelete?.instructorName}?
             </DialogDescription>
           </DialogHeader>
