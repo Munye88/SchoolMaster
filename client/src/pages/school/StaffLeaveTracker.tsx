@@ -986,31 +986,31 @@ export default function StaffLeaveTracker() {
                       </TableHead>
                       <TableHead className="min-w-[90px] font-semibold text-slate-700 py-4">
                         <div className="flex items-center gap-2">
-                          <Timer className="h-4 w-4" />
+                          <Clock className="h-4 w-4" />
                           DURATION
                         </div>
                       </TableHead>
                       <TableHead className="min-w-[100px] font-semibold text-slate-700 py-4">
                         <div className="flex items-center gap-2">
-                          <CalendarCheck className="h-4 w-4" />
+                          <CalendarIcon className="h-4 w-4" />
                           RETURN
                         </div>
                       </TableHead>
                       <TableHead className="min-w-[100px] font-semibold text-slate-700 py-4">
                         <div className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4" />
+                          <Eye className="h-4 w-4" />
                           STATUS
                         </div>
                       </TableHead>
                       <TableHead className="min-w-[100px] font-semibold text-slate-700 py-4">
                         <div className="flex items-center gap-2">
-                          <Building className="h-4 w-4" />
+                          <FileText className="h-4 w-4" />
                           SCHOOL
                         </div>
                       </TableHead>
                       <TableHead className="min-w-[150px] font-semibold text-slate-700 py-4">
                         <div className="flex items-center gap-2">
-                          <Settings className="h-4 w-4" />
+                          <Edit className="h-4 w-4" />
                           ACTIONS
                         </div>
                       </TableHead>
