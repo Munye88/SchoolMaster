@@ -202,6 +202,10 @@ export default function StaffLeaveTracker() {
   // Track if PTO balances have been initialized
   const [ptoBalancesInitialized, setPtoBalancesInitialized] = useState<boolean>(false);
   
+  // For PTO balance deletion
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [ptoBalanceToDelete, setPtoBalanceToDelete] = useState<any>(null);
+  
   // Fetch staff leave data from API
   const { 
     data: leaveRecords = [], 
@@ -261,6 +265,42 @@ export default function StaffLeaveTracker() {
       });
       console.error("Error syncing PTO balances:", error);
     }
+  });
+
+  // Delete PTO balance mutation
+  const deletePtoBalanceMutation = useMutation({
+    mutationFn: async (balanceId: number) => {
+      const res = await fetch(`/api/pto-balance/${balanceId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || 'Failed to delete PTO balance');
+      }
+      
+      return res;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "PTO balance record has been deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/pto-balance'] });
+      setDeleteDialogOpen(false);
+      setPtoBalanceToDelete(null);
+    },
+    onError: (error) => {
+      console.error('Error deleting PTO balance:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete PTO balance record. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
   
   // Filter instructors by current school
@@ -1189,11 +1229,8 @@ export default function StaffLeaveTracker() {
                               size="sm"
                               className="text-red-600 hover:text-red-800"
                               onClick={() => {
-                                // Add delete functionality for PTO balance
-                                toast({
-                                  title: "Coming Soon",
-                                  description: "PTO balance deletion will be available in the next update",
-                                });
+                                setPtoBalanceToDelete(balance);
+                                setDeleteDialogOpen(true);
                               }}
                             >
                               <Trash2 className="h-4 w-4 mr-1" />
@@ -1670,6 +1707,49 @@ export default function StaffLeaveTracker() {
               </DialogFooter>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* PTO Balance Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px] rounded-none">
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete the PTO balance record for {ptoBalanceToDelete?.instructorName}?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-gray-600">
+              This action cannot be undone. The PTO balance record will be permanently deleted.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={() => {
+                if (ptoBalanceToDelete) {
+                  deletePtoBalanceMutation.mutate(ptoBalanceToDelete.id);
+                }
+              }}
+              disabled={deletePtoBalanceMutation.isPending}
+            >
+              {deletePtoBalanceMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </>
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

@@ -4724,6 +4724,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete PTO balance record
+  app.delete("/api/pto-balance/:id", async (req, res) => {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid PTO balance ID" });
+    }
+    
+    try {
+      // Get the record first for logging
+      const [existingRecord] = await db
+        .select()
+        .from(ptoBalance)
+        .where(eq(ptoBalance.id, id));
+      
+      if (!existingRecord) {
+        return res.status(404).json({ message: "PTO balance record not found" });
+      }
+      
+      // Delete the record
+      await db
+        .delete(ptoBalance)
+        .where(eq(ptoBalance.id, id));
+      
+      // Log activity
+      const instructor = await dbStorage.getInstructor(existingRecord.instructorId);
+      await dbStorage.createActivity({
+        type: "pto_balance_deleted",
+        description: `PTO balance record deleted for ${instructor?.name || 'Unknown'} for year ${existingRecord.year}`,
+        timestamp: new Date(),
+        userId: req.isAuthenticated() ? req.user.id : 1
+      });
+      
+      res.status(204).send(); // No content response for successful deletion
+    } catch (error) {
+      console.error("Error deleting PTO balance record:", error);
+      res.status(500).json({ message: "Failed to delete PTO balance record" });
+    }
+  });
+
   // School Schedule Management API Endpoints
   
   // Get all schedules for a school
