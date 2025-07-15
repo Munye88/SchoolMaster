@@ -377,6 +377,9 @@ The system manages multiple interconnected entities:
 - July 14, 2025: INSTRUCTOR LOOKUP ATTENDANCE IMPROVEMENTS - Removed Time In, Time Out, and Notes columns from attendance table since these fields aren't captured during attendance recording, showing only Date and Status for cleaner data display
 - July 14, 2025: RECOGNITION SYSTEM DATA ACCURACY FIX - Fixed Recognition system to only show candidates when actual attendance/evaluation data exists, preventing false positives for future years and ensuring instructors qualify only with recorded data (perfect attendance requires 0 absent, 0 late, 0 sick days)
 - July 14, 2025: RECOGNITION SYSTEM UI ENHANCEMENT - Added explanatory text when no perfect attendance candidates exist to clarify that all instructors have at least one absent, late, or sick day during the selected period
+- July 15, 2025: MANUAL LEAVE BALANCE SYSTEM - Added manual Leave Balance input field in leave request form for individual instructor leave balance entry since not all instructors receive same number of days
+- July 15, 2025: REMOVED AUTOMATIC PTO DISPLAY - Eliminated automatic PTO balance display that showed when selecting instructors, allowing full manual control of leave balance management
+- July 15, 2025: WEEKDAY-ONLY LEAVE CALCULATIONS - Confirmed business day calculation system excludes weekends (Friday-Saturday) and holidays, counting only weekdays (Sunday-Thursday) for PTO/R&R requests as required
 
 ## User Preferences
 

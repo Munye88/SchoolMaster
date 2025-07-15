@@ -621,54 +621,7 @@ export default function StaffLeaveTracker() {
                     )}
                   />
                   
-                  {/* Leave Balance Display */}
-                  {form.watch('instructorId') > 0 && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-none p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <InfoIcon className="h-4 w-4 text-blue-600" />
-                        <h4 className="font-semibold text-blue-900">Current Leave Balance</h4>
-                      </div>
-                      {(() => {
-                        const balance = getInstructorPtoBalance(form.watch('instructorId'));
-                        const instructor = schoolInstructors.find(i => i.id === form.watch('instructorId'));
-                        
-                        if (!balance) {
-                          return (
-                            <div className="text-sm text-gray-600">
-                              <p><strong>{instructor?.name || 'Selected instructor'}</strong></p>
-                              <p>No leave balance record found for {new Date().getFullYear()}</p>
-                              <p className="text-xs text-gray-500 mt-1">
-                                Balance will be created automatically when this leave request is processed
-                              </p>
-                            </div>
-                          );
-                        }
-                        
-                        return (
-                          <div className="text-sm">
-                            <p className="font-medium text-gray-900 mb-1">
-                              <strong>{instructor?.name || 'Selected instructor'}</strong> - {balance.year}
-                            </p>
-                            <div className="grid grid-cols-3 gap-4 text-xs">
-                              <div>
-                                <span className="text-gray-600">Total Days:</span>
-                                <span className="font-semibold ml-1">{balance.totalDays}</span>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">Used Days:</span>
-                                <span className="font-semibold ml-1">{balance.usedDays}</span>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">Remaining:</span>
-                                <span className="font-semibold ml-1 text-blue-700">{balance.remainingDays}</span>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  )}
-                  
+
                   <FormField
                     control={form.control}
                     name="attachmentUrl"
