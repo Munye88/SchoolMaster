@@ -3189,6 +3189,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const endDate = new Date(newLeave.endDate);
           const businessDays = calculateBusinessDays(startDate, endDate);
           
+          // Convert business days to hours (8 hours per day)
+          const businessHours = businessDays * 8;
+          
           // Get or create PTO balance record
           const existingBalanceResult = await db.execute(sql`
             SELECT * FROM pto_balance
@@ -3199,12 +3202,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (existingBalanceResult.rows && existingBalanceResult.rows.length > 0) {
             currentBalance = existingBalanceResult.rows[0];
           } else {
-            // Use manual leave balance from form
+            // Use manual leave balance from form (in hours)
             const manualLeaveBalance = newLeave.leaveBalance;
             
             // Only create balance if manual leave balance is provided and valid
             if (manualLeaveBalance && manualLeaveBalance > 0) {
-              // Create new balance record with manual leave balance
+              // Create new balance record with manual leave balance in hours
               await db.execute(sql`
                 INSERT INTO pto_balance (instructor_id, year, total_days, used_days, remaining_days, adjustments, manual_entry)
                 VALUES (${newLeave.instructorId}, ${year}, ${manualLeaveBalance}, 0, ${manualLeaveBalance}, 0, true)
@@ -3217,25 +3220,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           }
           
-          // Calculate new used days and remaining days
-          const currentUsedDays = parseInt(currentBalance.used_days) || 0;
-          const totalDays = parseInt(currentBalance.total_days) || 0;
+          // Calculate new used hours and remaining hours
+          const currentUsedHours = parseInt(currentBalance.used_days) || 0;
+          const totalHours = parseInt(currentBalance.total_days) || 0;
           const adjustments = parseInt(currentBalance.adjustments) || 0;
           
-          // Add the business days from this leave request
-          const newUsedDays = currentUsedDays + businessDays;
-          const newRemainingDays = Math.max(0, totalDays - newUsedDays + adjustments);
+          // Add the business hours from this leave request
+          const newUsedHours = currentUsedHours + businessHours;
+          const newRemainingHours = Math.max(0, totalHours - newUsedHours + adjustments);
           
-          // Update the PTO balance
+          // Update the PTO balance (storing hours in the days columns)
           await db.execute(sql`
             UPDATE pto_balance 
-            SET used_days = ${newUsedDays}, 
-                remaining_days = ${newRemainingDays},
+            SET used_days = ${newUsedHours}, 
+                remaining_days = ${newRemainingHours},
                 last_updated = NOW()
             WHERE instructor_id = ${newLeave.instructorId} AND year = ${year}
           `);
           
-          console.log(`Automatically deducted ${businessDays} days from PTO balance for instructor ${newLeave.instructorId}`);
+          console.log(`Automatically deducted ${businessHours} hours (${businessDays} days) from PTO balance for instructor ${newLeave.instructorId}`);
         } catch (syncError) {
           console.error("Error auto-deducting PTO balance after creating leave:", syncError);
           // Don't block the leave creation if balance deduction fails

@@ -731,18 +731,18 @@ export default function StaffLeaveTracker() {
                     name="leaveBalance"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Leave Balance</FormLabel>
+                        <FormLabel>Leave Balance (Hours)</FormLabel>
                         <FormControl>
                           <Input 
                             type="number" 
                             {...field}
                             onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                            placeholder="Enter leave balance"
+                            placeholder="Enter leave balance in hours"
                             className="rounded-none"
                           />
                         </FormControl>
                         <FormDescription>
-                          Enter the current leave balance for this instructor
+                          Enter the total leave balance for this instructor in hours (e.g., 168 hours = 21 days)
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -1197,10 +1197,10 @@ export default function StaffLeaveTracker() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>INSTRUCTOR</TableHead>
-                    <TableHead>TOTAL DAYS</TableHead>
-                    <TableHead>PTO DAYS TAKEN</TableHead>
+                    <TableHead>TOTAL HOURS</TableHead>
+                    <TableHead>PTO HOURS TAKEN</TableHead>
                     <TableHead>R&R TAKEN</TableHead>
-                    <TableHead>REMAINING DAYS
+                    <TableHead>REMAINING HOURS
                       <div className="text-xs font-normal opacity-75">(After PTO & R&R)</div>
                     </TableHead>
                     <TableHead>ADJUSTMENTS</TableHead>
