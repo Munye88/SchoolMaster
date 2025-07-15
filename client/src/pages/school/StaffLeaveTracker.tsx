@@ -54,7 +54,7 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useState, useEffect, useRef } from 'react';
-import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer, Search, RefreshCw, Info as InfoIcon, Pencil as PencilIcon, Plus, Clock, User, MapPin, Timer, CalendarCheck, CheckCircle, Building, Settings, Users, ArrowRight, Info, X } from 'lucide-react';
+import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer, Search, RefreshCw, Info as InfoIcon, Pencil as PencilIcon, Plus, Clock, X } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { useSchool } from '@/hooks/useSchool';
 import { format, addDays, differenceInCalendarDays } from 'date-fns';
@@ -1067,13 +1067,11 @@ export default function StaffLeaveTracker() {
                     <TableCell className="border-t border-b border-gray-200">
                       <div className="text-sm">
                         {leave.leaveType === 'PTO' ? (
-                          <span className="font-medium text-blue-600">{leave.ptodays || 0}h</span>
+                          <>{leave.ptodays || 0}h</>
                         ) : leave.leaveType === 'R&R' ? (
-                          <span className="font-medium text-green-600">{leave.rrdays || 0}h</span>
+                          <>{leave.rrdays || 0}h</>
                         ) : (
-                          <span className="font-medium text-purple-600">
-                            {((leave.ptodays || 0) + (leave.rrdays || 0))}h
-                          </span>
+                          <>{((leave.ptodays || 0) + (leave.rrdays || 0))}h</>
                         )}
                       </div>
                     </TableCell>
