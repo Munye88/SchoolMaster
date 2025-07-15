@@ -103,7 +103,6 @@ interface StaffLeave {
   comments?: string;
   approvedBy?: number;
   schoolId: number;
-  attachmentUrl?: string; // URL to attachment
 }
 
 // Alias for form data, including schoolId
@@ -138,7 +137,6 @@ const leaveFormSchema = z.object({
   destination: z.string().min(1, "Destination is required"),
   status: z.string().min(1, "Status is required"),
   comments: z.string().optional(),
-  attachmentUrl: z.string().optional(),
 });
 
 type LeaveFormValues = z.infer<typeof leaveFormSchema>;
@@ -173,7 +171,6 @@ export default function StaffLeaveTracker() {
       destination: '',
       status: 'Pending',
       comments: '',
-      attachmentUrl: '',
     },
   });
   
@@ -311,7 +308,6 @@ export default function StaffLeaveTracker() {
       destination: '',
       status: 'Pending',
       comments: '',
-      attachmentUrl: '',
     },
   });
   
@@ -350,10 +346,6 @@ export default function StaffLeaveTracker() {
   // PTO balances are now automatically managed
   
   // Form submission handler
-  // References to store the selected files for create and edit forms
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedEditFile, setSelectedEditFile] = useState<File | null>(null);
-  
   const onSubmit = async (values: LeaveFormValues) => {
     try {
       if (!currentSchool) {
@@ -365,39 +357,8 @@ export default function StaffLeaveTracker() {
         return;
       }
       
-      let attachmentUrl = values.attachmentUrl;
-      
-      // If there's a file selected, upload it first
-      if (selectedFile) {
-        const formData = new FormData();
-        formData.append('attachment', selectedFile);
-        
-        try {
-          const response = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData,
-          });
-          
-          if (!response.ok) {
-            throw new Error('File upload failed');
-          }
-          
-          const data = await response.json();
-          attachmentUrl = data.fileUrl; // Use the URL returned from the server
-        } catch (uploadError) {
-          console.error('Error uploading file:', uploadError);
-          toast({
-            title: "File Upload Error",
-            description: "Failed to upload attachment. Please try again.",
-            variant: "destructive",
-          });
-          return;
-        }
-      }
-      
       const leaveData: LeaveFormData = {
         ...values,
-        attachmentUrl,
         schoolId: currentSchool.id
       };
       
@@ -408,8 +369,7 @@ export default function StaffLeaveTracker() {
         description: "Leave request created successfully",
       });
       
-      // Reset form and file selection
-      setSelectedFile(null);
+      // Reset form
       form.reset();
       setIsDialogOpen(false);
     } catch (error) {
@@ -623,53 +583,7 @@ export default function StaffLeaveTracker() {
                   />
                   
 
-                  <FormField
-                    control={form.control}
-                    name="attachmentUrl"
-                    render={({ field }) => {
-                      const fileInputRef = useRef<HTMLInputElement>(null);
-                      return (
-                        <FormItem>
-                          <FormLabel>Leave Form Attachment</FormLabel>
-                          <FormControl>
-                            <div className="flex items-center gap-2">
-                              <Input
-                                type="file"
-                                className="hidden"
-                                ref={fileInputRef}
-                                onChange={async (e) => {
-                                  const file = e.target.files?.[0];
-                                  if (file) {
-                                    // Store the file for upload during form submission
-                                    setSelectedFile(file);
-                                    field.onChange(file.name); // Just for display purposes
-                                  }
-                                }}
-                              />
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => fileInputRef.current?.click()}
-                              >
-                                <Paperclip className="h-4 w-4 mr-2" />
-                                Attach Leave Form
-                              </Button>
-                              {field.value && (
-                                <span className="text-sm text-gray-500">
-                                  {field.value.split('/').pop()}
-                                </span>
-                              )}
-                            </div>
-                          </FormControl>
-                          <FormDescription>
-                            Upload a copy of the leave form (PDF or image)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )
-                    }}
-                  />
-                  
+
                   <div className="grid grid-cols-3 gap-4">
                     <FormField
                       control={form.control}
@@ -1065,26 +979,7 @@ export default function StaffLeaveTracker() {
                           <Eye className="h-4 w-4 mr-1" />
                           View
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => {
-                            if (leave.attachmentUrl) {
-                              // Download or view the attachment
-                              window.open(leave.attachmentUrl, '_blank');
-                            } else {
-                              toast({
-                                title: "No Attachment",
-                                description: "No attachment has been uploaded for this leave request.",
-                                variant: "default"
-                              });
-                            }
-                          }}
-                          className={!leave.attachmentUrl ? "opacity-50" : ""}
-                        >
-                          <Paperclip className="h-4 w-4 mr-1" />
-                          Attachment
-                        </Button>
+
                         <Button 
                           variant="ghost" 
                           size="sm"
@@ -1103,7 +998,6 @@ export default function StaffLeaveTracker() {
                               destination: leave.destination,
                               status: leave.status,
                               comments: leave.comments || '',
-                              attachmentUrl: leave.attachmentUrl || '',
                             });
                             setEditDialogOpen(true);
                           }}
@@ -1171,9 +1065,13 @@ export default function StaffLeaveTracker() {
                       <SelectValue placeholder="Select Year" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={(currentYear - 1).toString()}>{currentYear - 1}</SelectItem>
-                      <SelectItem value={currentYear.toString()}>{currentYear}</SelectItem>
-                      <SelectItem value={(currentYear + 1).toString()}>{currentYear + 1}</SelectItem>
+                      <SelectItem value="2024">2024</SelectItem>
+                      <SelectItem value="2025">2025</SelectItem>
+                      <SelectItem value="2026">2026</SelectItem>
+                      <SelectItem value="2027">2027</SelectItem>
+                      <SelectItem value="2028">2028</SelectItem>
+                      <SelectItem value="2029">2029</SelectItem>
+                      <SelectItem value="2030">2030</SelectItem>
                     </SelectContent>
                   </Select>
                   
@@ -1203,7 +1101,7 @@ export default function StaffLeaveTracker() {
                     <TableHead>REMAINING HOURS
                       <div className="text-xs font-normal opacity-75">(After PTO & R&R)</div>
                     </TableHead>
-                    <TableHead>ADJUSTMENTS</TableHead>
+
                     <TableHead>LAST UPDATED</TableHead>
                     <TableHead>ACTIONS</TableHead>
                   </TableRow>
@@ -1211,7 +1109,7 @@ export default function StaffLeaveTracker() {
                 <TableBody>
                   {isLoadingPtoBalances ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8">
+                      <TableCell colSpan={7} className="text-center py-8">
                         <div className="flex items-center justify-center">
                           <Loader2 className="h-6 w-6 animate-spin mr-2" />
                           <span>Loading PTO balances...</span>
@@ -1220,7 +1118,7 @@ export default function StaffLeaveTracker() {
                     </TableRow>
                   ) : schoolPtoBalances.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-8">
+                      <TableCell colSpan={7} className="text-center py-8">
                         <div className="flex flex-col items-center justify-center gap-2">
                           <p>No PTO balance records found for {selectedYear}.</p>
                           <p className="text-sm text-muted-foreground">
@@ -1267,24 +1165,41 @@ export default function StaffLeaveTracker() {
                             );
                           })()}
                         </TableCell>
-                        <TableCell>{balance.adjustments || 0}</TableCell>
+
                         <TableCell>{format(new Date(balance.lastUpdated), 'MMM d, yyyy')}</TableCell>
                         <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              // Open a dialog to edit PTO balance
-                              // We'll implement this in the next iteration
-                              toast({
-                                title: "Coming Soon",
-                                description: "PTO balance editing will be available in the next update",
-                              });
-                            }}
-                          >
-                            <PencilIcon className="h-4 w-4 mr-1" />
-                            Edit
-                          </Button>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                // Open a dialog to edit PTO balance
+                                // We'll implement this in the next iteration
+                                toast({
+                                  title: "Coming Soon",
+                                  description: "PTO balance editing will be available in the next update",
+                                });
+                              }}
+                            >
+                              <PencilIcon className="h-4 w-4 mr-1" />
+                              Edit
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-800"
+                              onClick={() => {
+                                // Add delete functionality for PTO balance
+                                toast({
+                                  title: "Coming Soon",
+                                  description: "PTO balance deletion will be available in the next update",
+                                });
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              Delete
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
@@ -1411,30 +1326,7 @@ export default function StaffLeaveTracker() {
                 </div>
               )}
               
-              {/* Attachment */}
-              <div>
-                <h4 className="text-base font-medium mb-1">Attachment</h4>
-                {selectedLeave.attachmentUrl ? (
-                  <div className="flex items-center gap-3">
-                    <Button 
-                      variant="outline" 
-                      size="default"
-                      onClick={() => {
-                        window.open(selectedLeave.attachmentUrl, '_blank');
-                      }}
-                      className="no-print"
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      View Attachment
-                    </Button>
-                    <span className="text-gray-500">
-                      {selectedLeave.attachmentUrl.split('/').pop()}
-                    </span>
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No attachment has been uploaded for this leave request.</p>
-                )}
-              </div>
+
             </div>
           )}
           
@@ -1499,54 +1391,15 @@ export default function StaffLeaveTracker() {
                   return;
                 }
                 
-                let attachmentUrl = values.attachmentUrl;
-                
-                // If there's a file selected for edit, upload it first
-                if (selectedEditFile) {
-                  const formData = new FormData();
-                  formData.append('attachment', selectedEditFile);
-                  
-                  try {
-                    const response = await fetch('/api/upload', {
-                      method: 'POST',
-                      body: formData,
-                    });
-                    
-                    if (!response.ok) {
-                      throw new Error('File upload failed');
-                    }
-                    
-                    const data = await response.json();
-                    attachmentUrl = data.fileUrl; // Use the URL returned from the server
-                  } catch (uploadError) {
-                    console.error('Error uploading file:', uploadError);
-                    toast({
-                      title: "File Upload Error",
-                      description: "Failed to upload attachment. Please try again.",
-                      variant: "destructive",
-                    });
-                    return;
-                  }
-                }
-                
-                // Update the form values with the new attachment URL if uploaded
-                const updatedValues = {
-                  ...values,
-                  attachmentUrl,
-                };
-                
                 await updateLeaveMutation.mutateAsync({
                   id: selectedLeave.id,
-                  data: updatedValues
+                  data: values
                 });
                 
                 toast({
                   title: "Success",
                   description: "Leave request updated successfully",
                 });
-                
-                // Reset edit file selection
-                setSelectedEditFile(null);
                 setEditDialogOpen(false);
               } catch (error) {
                 console.error("Error updating leave request:", error);
@@ -1592,66 +1445,7 @@ export default function StaffLeaveTracker() {
                 )}
               />
               
-              <FormField
-                control={editForm.control}
-                name="attachmentUrl"
-                render={({ field }) => {
-                  const fileInputRef = useRef<HTMLInputElement>(null);
-                  return (
-                    <FormItem>
-                      <FormLabel>Leave Form Attachment</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="file"
-                            className="hidden"
-                            ref={fileInputRef}
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                // Store the file for upload during form submission
-                                setSelectedEditFile(file);
-                                field.onChange(file.name); // Just for display purposes
-                              }
-                            }}
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => fileInputRef.current?.click()}
-                          >
-                            <Paperclip className="h-4 w-4 mr-2" />
-                            {field.value ? 'Replace Attachment' : 'Attach Leave Form'}
-                          </Button>
-                          {field.value && (
-                            <>
-                              <span className="text-sm text-gray-500">
-                                {field.value.split('/').pop()}
-                              </span>
-                              {!selectedEditFile && (
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => window.open(field.value, '_blank')}
-                                >
-                                  <Download className="h-4 w-4 mr-2" />
-                                  View
-                                </Button>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </FormControl>
-                      <FormDescription>
-                        Upload or replace the leave form (PDF or image)
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )
-                }}
-              />
-              
+
               <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={editForm.control}
