@@ -3199,20 +3199,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (existingBalanceResult.rows && existingBalanceResult.rows.length > 0) {
             currentBalance = existingBalanceResult.rows[0];
           } else {
-            // Use manual leave balance from form or default to 21
-            const manualLeaveBalance = newLeave.leaveBalance || 21;
-            // Create new balance record with manual leave balance
-            await db.execute(sql`
-              INSERT INTO pto_balance (instructor_id, year, total_days, used_days, remaining_days, adjustments, manual_entry)
-              VALUES (${newLeave.instructorId}, ${year}, ${manualLeaveBalance}, 0, ${manualLeaveBalance}, 0, true)
-            `);
-            currentBalance = { total_days: manualLeaveBalance, used_days: 0, remaining_days: manualLeaveBalance, adjustments: 0 };
+            // Use manual leave balance from form
+            const manualLeaveBalance = newLeave.leaveBalance;
+            
+            // Only create balance if manual leave balance is provided and valid
+            if (manualLeaveBalance && manualLeaveBalance > 0) {
+              // Create new balance record with manual leave balance
+              await db.execute(sql`
+                INSERT INTO pto_balance (instructor_id, year, total_days, used_days, remaining_days, adjustments, manual_entry)
+                VALUES (${newLeave.instructorId}, ${year}, ${manualLeaveBalance}, 0, ${manualLeaveBalance}, 0, true)
+              `);
+              currentBalance = { total_days: manualLeaveBalance, used_days: 0, remaining_days: manualLeaveBalance, adjustments: 0 };
+            } else {
+              // Skip PTO balance creation if no manual balance provided
+              console.log(`No manual leave balance provided for instructor ${newLeave.instructorId}, skipping PTO balance creation`);
+              return;
+            }
           }
           
           // Calculate new used days and remaining days
           const currentUsedDays = parseInt(currentBalance.used_days) || 0;
-          const currentRemainingDays = parseInt(currentBalance.remaining_days) || 21;
-          const totalDays = parseInt(currentBalance.total_days) || 21;
+          const totalDays = parseInt(currentBalance.total_days) || 0;
           const adjustments = parseInt(currentBalance.adjustments) || 0;
           
           // Add the business days from this leave request
@@ -3280,21 +3287,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (needToSyncPto) {
         try {
-          // Get the year(s) affected by this change
-          const originalYear = new Date(originalLeave.startDate).getFullYear();
-          let updatedYear = originalYear;
+          // Check if this is a manual leave balance entry - if so, skip automatic sync
+          const hasManualBalance = updateData.leaveBalance && updateData.leaveBalance > 0;
           
-          if (updateData.startDate) {
-            updatedYear = new Date(updateData.startDate).getFullYear();
+          if (!hasManualBalance) {
+            // Get the year(s) affected by this change
+            const originalYear = new Date(originalLeave.startDate).getFullYear();
+            let updatedYear = originalYear;
+            
+            if (updateData.startDate) {
+              updatedYear = new Date(updateData.startDate).getFullYear();
+            }
+            
+            // Sync PTO balance for the instructor for both years if they're different
+            await syncPtoBalanceForInstructor(updatedLeave.instructorId, originalYear);
+            if (updatedYear !== originalYear) {
+              await syncPtoBalanceForInstructor(updatedLeave.instructorId, updatedYear);
+            }
+            
+            console.log(`Automatically synced PTO balance for instructor ${updatedLeave.instructorId} after updating leave record`);
+          } else {
+            console.log(`Manual leave balance detected for instructor ${updatedLeave.instructorId}, skipping automatic sync`);
           }
-          
-          // Sync PTO balance for the instructor for both years if they're different
-          await syncPtoBalanceForInstructor(updatedLeave.instructorId, originalYear);
-          if (updatedYear !== originalYear) {
-            await syncPtoBalanceForInstructor(updatedLeave.instructorId, updatedYear);
-          }
-          
-          console.log(`Automatically synced PTO balance for instructor ${updatedLeave.instructorId} after updating leave record`);
         } catch (syncError) {
           console.error("Error auto-syncing PTO balance after updating leave:", syncError);
           // Don't block the leave update if sync fails
