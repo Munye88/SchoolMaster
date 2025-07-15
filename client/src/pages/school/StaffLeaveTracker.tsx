@@ -54,7 +54,7 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useState, useEffect, useRef } from 'react';
-import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer, Search, RefreshCw, Info as InfoIcon, Pencil as PencilIcon } from 'lucide-react';
+import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer, Search, RefreshCw, Info as InfoIcon, Pencil as PencilIcon, Plus, Clock, User, MapPin, Timer, CalendarCheck, CheckCircle, Building, Settings, Users, ArrowRight, Info, X } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { useSchool } from '@/hooks/useSchool';
 import { format, addDays, differenceInCalendarDays } from 'date-fns';
@@ -878,50 +878,144 @@ export default function StaffLeaveTracker() {
         </div>
       </div>
       
-      {/* Main card with table for display on screen */}
-      <Card className="rounded-none">
-        <CardHeader className="pb-3">
-          <CardTitle>Staff Leave Management</CardTitle>
-          <CardDescription>
-            Manage staff leave requests and PTO balances for all instructors
-          </CardDescription>
+      {/* Main card with enhanced design */}
+      <Card className="rounded-none shadow-lg border-0 bg-gradient-to-br from-slate-50 to-white">
+        <CardHeader className="pb-6 bg-gradient-to-r from-[#0A2463] to-[#1E3A8A] text-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl font-bold flex items-center gap-3">
+                <Calendar className="h-8 w-8" />
+                Staff Leave Management
+              </CardTitle>
+              <CardDescription className="text-blue-100 mt-2">
+                Comprehensive leave tracking and PTO management system for all instructors
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <div className="text-sm text-blue-100">Current School</div>
+                <div className="font-semibold text-lg">{currentSchool?.name}</div>
+              </div>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <Tabs defaultValue="leave-records" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="mb-4">
-              <TabsTrigger value="leave-records">Leave Records</TabsTrigger>
-              <TabsTrigger value="pto-balance">PTO Balance</TabsTrigger>
+            <TabsList className="mb-6 bg-white border shadow-sm rounded-lg p-1">
+              <TabsTrigger 
+                value="leave-records" 
+                className="flex items-center gap-2 data-[state=active]:bg-[#0A2463] data-[state=active]:text-white"
+              >
+                <FileText className="h-4 w-4" />
+                Leave Records
+              </TabsTrigger>
+              <TabsTrigger 
+                value="pto-balance" 
+                className="flex items-center gap-2 data-[state=active]:bg-[#0A2463] data-[state=active]:text-white"
+              >
+                <Clock className="h-4 w-4" />
+                PTO Balance
+              </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="leave-records">
-              {/* Search by Employee ID */}
-              <div className="flex mb-4">
-                <div className="relative w-full max-w-sm">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-                  <Input
-                    type="search"
-                    placeholder="Search by Employee ID..."
-                    className="w-full rounded-none border border-input bg-background pl-8 py-2 text-sm ring-offset-background"
-                    value={employeeIdSearch}
-                    onChange={(e) => setEmployeeIdSearch(e.target.value)}
-                  />
+            <TabsContent value="leave-records" className="space-y-6">
+              {/* Enhanced filters section */}
+              <div className="bg-white rounded-lg border shadow-sm p-4">
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                  <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
+                      <Input
+                        type="search"
+                        placeholder="Search by Employee ID..."
+                        className="w-full sm:w-64 rounded-lg border-gray-300 pl-10 py-2 text-sm focus:border-[#0A2463] focus:ring-[#0A2463]"
+                        value={employeeIdSearch}
+                        onChange={(e) => setEmployeeIdSearch(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-gray-500" />
+                      <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                        <SelectTrigger className="w-40 rounded-lg border-gray-300 focus:border-[#0A2463] focus:ring-[#0A2463]">
+                          <SelectValue placeholder="Select month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {months.map((month) => (
+                            <SelectItem key={month} value={month}>
+                              {month}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Users className="h-4 w-4" />
+                    <span>{schoolLeaveRecords.length} records found</span>
+                  </div>
                 </div>
               </div>
               
-              <Table className="border-separate border-spacing-y-3">
-                <TableHeader className="bg-white">
-                  <TableRow className="border-b-0">
-                    <TableHead className="min-w-[140px] font-bold text-slate-700">INSTRUCTOR</TableHead>
-                    <TableHead className="whitespace-nowrap min-w-[100px] font-bold text-slate-700">LEAVE</TableHead>
-                    <TableHead className="min-w-[180px] font-bold text-slate-700">PERIOD</TableHead>
-                    <TableHead className="min-w-[110px] font-bold text-slate-700">DESTINATION</TableHead>
-                    <TableHead className="min-w-[90px] font-bold text-slate-700">DURATION</TableHead>
-                    <TableHead className="min-w-[100px] font-bold text-slate-700">RETURN</TableHead>
-                    <TableHead className="min-w-[100px] font-bold text-slate-700">STATUS</TableHead>
-                    <TableHead className="min-w-[100px] font-bold text-slate-700">SCHOOL</TableHead>
-                    <TableHead className="min-w-[150px] font-bold text-slate-700">ACTIONS</TableHead>
-                  </TableRow>
-                </TableHeader>
+              <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+                <Table>
+                  <TableHeader className="bg-gradient-to-r from-slate-50 to-slate-100">
+                    <TableRow className="border-b border-slate-200">
+                      <TableHead className="min-w-[140px] font-semibold text-slate-700 py-4">
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4" />
+                          INSTRUCTOR
+                        </div>
+                      </TableHead>
+                      <TableHead className="whitespace-nowrap min-w-[100px] font-semibold text-slate-700 py-4">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          LEAVE TYPE
+                        </div>
+                      </TableHead>
+                      <TableHead className="min-w-[180px] font-semibold text-slate-700 py-4">
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4" />
+                          PERIOD
+                        </div>
+                      </TableHead>
+                      <TableHead className="min-w-[110px] font-semibold text-slate-700 py-4">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4" />
+                          DESTINATION
+                        </div>
+                      </TableHead>
+                      <TableHead className="min-w-[90px] font-semibold text-slate-700 py-4">
+                        <div className="flex items-center gap-2">
+                          <Timer className="h-4 w-4" />
+                          DURATION
+                        </div>
+                      </TableHead>
+                      <TableHead className="min-w-[100px] font-semibold text-slate-700 py-4">
+                        <div className="flex items-center gap-2">
+                          <CalendarCheck className="h-4 w-4" />
+                          RETURN
+                        </div>
+                      </TableHead>
+                      <TableHead className="min-w-[100px] font-semibold text-slate-700 py-4">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4" />
+                          STATUS
+                        </div>
+                      </TableHead>
+                      <TableHead className="min-w-[100px] font-semibold text-slate-700 py-4">
+                        <div className="flex items-center gap-2">
+                          <Building className="h-4 w-4" />
+                          SCHOOL
+                        </div>
+                      </TableHead>
+                      <TableHead className="min-w-[150px] font-semibold text-slate-700 py-4">
+                        <div className="flex items-center gap-2">
+                          <Settings className="h-4 w-4" />
+                          ACTIONS
+                        </div>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
                 <TableBody>
                   {isLoading ? (
                     <TableRow>
@@ -973,11 +1067,13 @@ export default function StaffLeaveTracker() {
                     <TableCell className="border-t border-b border-gray-200">
                       <div className="text-sm">
                         {leave.leaveType === 'PTO' ? (
-                          <>{leave.ptodays} days</>
+                          <span className="font-medium text-blue-600">{leave.ptodays || 0}h</span>
                         ) : leave.leaveType === 'R&R' ? (
-                          <>{leave.rrdays} days</>
+                          <span className="font-medium text-green-600">{leave.rrdays || 0}h</span>
                         ) : (
-                          <>{leave.ptodays} days</>
+                          <span className="font-medium text-purple-600">
+                            {((leave.ptodays || 0) + (leave.rrdays || 0))}h
+                          </span>
                         )}
                       </div>
                     </TableCell>
@@ -1090,8 +1186,9 @@ export default function StaffLeaveTracker() {
                   </TableRow>
                 ))
               )}
-            </TableBody>
-          </Table>
+                </TableBody>
+              </Table>
+            </div>
             </TabsContent>
             
             <TabsContent value="pto-balance">
