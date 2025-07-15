@@ -4632,53 +4632,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         return updatedRecordResult.rows[0];
       } else {
-        // For new records, check if instructor has any historical PTO balance records
-        const hasAnyPtoRecord = await db.execute(sql`
-          SELECT COUNT(*) as count FROM pto_balance
-          WHERE instructor_id = ${instructor.id}
-        `);
-        
-        const hasHistoricalRecord = hasAnyPtoRecord.rows[0].count > 0;
-        
-        // If instructor has historical records, preserve their last known total days
-        // Otherwise, start with 0 for truly new instructors
-        let totalDays = 0;
-        if (hasHistoricalRecord) {
-          const lastRecordResult = await db.execute(sql`
-            SELECT total_days FROM pto_balance
-            WHERE instructor_id = ${instructor.id} AND total_days > 0
-            ORDER BY year DESC, last_updated DESC
-            LIMIT 1
-          `);
-          totalDays = lastRecordResult.rows[0]?.total_days || 0;
-          
-          // If no positive total days found, check for any non-zero records
-          if (totalDays === 0) {
-            const anyNonZeroResult = await db.execute(sql`
-              SELECT total_days FROM pto_balance
-              WHERE instructor_id = ${instructor.id}
-              ORDER BY year DESC, last_updated DESC
-              LIMIT 1
-            `);
-            totalDays = anyNonZeroResult.rows[0]?.total_days || 0;
-          }
-        }
-        
-        const remainingDays = Math.max(0, totalDays - usedDays);
-        
-        const insertResult = await db.execute(sql`
-          INSERT INTO pto_balance (
-            instructor_id, year, total_days, used_days, 
-            remaining_days, adjustments, last_updated
-          )
-          VALUES (
-            ${instructor.id}, ${year}, ${totalDays}, ${usedDays},
-            ${remainingDays}, 0, NOW()
-          )
-          RETURNING *
-        `);
-        
-        return insertResult.rows[0];
+        // For new records, do not create automatic PTO balance records
+        // Manual leave balance entries should be the only way to create PTO balance records
+        console.log(`No PTO balance record found for instructor ${instructor.id} in year ${year}. Manual leave balance entry required.`);
+        return null;
       }
     } catch (error) {
       console.error(`Error in syncPtoBalanceForInstructor for ID ${instructorId}:`, error);
