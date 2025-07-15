@@ -380,6 +380,9 @@ The system manages multiple interconnected entities:
 - July 15, 2025: MANUAL LEAVE BALANCE SYSTEM - Added manual Leave Balance input field in leave request form for individual instructor leave balance entry since not all instructors receive same number of days
 - July 15, 2025: REMOVED AUTOMATIC PTO DISPLAY - Eliminated automatic PTO balance display that showed when selecting instructors, allowing full manual control of leave balance management
 - July 15, 2025: WEEKDAY-ONLY LEAVE CALCULATIONS - Confirmed business day calculation system excludes weekends (Friday-Saturday) and holidays, counting only weekdays (Sunday-Thursday) for PTO/R&R requests as required
+- July 15, 2025: HOUR-BASED PTO CALCULATIONS - Fixed PTO balance system to work in hours instead of days (8-hour workday standard)
+- July 15, 2025: UPDATED PTO SYNCHRONIZATION - Enhanced backend synchronization to convert business days to hours (1 day = 8 hours) for accurate leave balance calculations
+- July 15, 2025: FRONTEND HOUR LABELS - Updated all PTO balance table headers and form labels to display "Hours" instead of "Days" for consistency with hour-based calculations
 
 ## User Preferences
 

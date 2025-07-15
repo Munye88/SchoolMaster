@@ -4570,8 +4570,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           LOWER(status) = 'approved'
       `);
       
-      // Calculate total used business days (excluding weekends and holidays)
-      let usedDays = 0;
+      // Calculate total used business hours (excluding weekends and holidays)
+      let usedHours = 0;
       if (leaveRecordsResult.rows && leaveRecordsResult.rows.length > 0) {
         for (const row of leaveRecordsResult.rows) {
           const startDate = new Date(row.start_date);
@@ -4580,7 +4580,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Only count PTO and R&R leave types
           if (row.leave_type && (row.leave_type.toLowerCase() === 'pto' || row.leave_type.toLowerCase() === 'r&r')) {
-            usedDays += businessDays;
+            // Convert business days to hours (8 hours per day)
+            usedHours += businessDays * 8;
           }
         }
       }
@@ -4602,9 +4603,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const isManualEntry = existingRecord.manual_entry === true || existingRecord.manual_entry === 't';
         const totalDays = parseInt(existingRecord.total_days || '0'); // Keep manual value - never overwrite
         
-        // Calculate remaining days
-        const calculatedRemainingDays = totalDays - usedDays + adjustments;
-        const remainingDays = Math.max(0, calculatedRemainingDays);
+        // Calculate remaining hours
+        const calculatedRemainingHours = totalDays - usedHours + adjustments;
+        const remainingHours = Math.max(0, calculatedRemainingHours);
         
         // Only update used_days and remaining_days for manually set records
         // Never change total_days for manual entries
@@ -4612,8 +4613,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await db.execute(sql`
             UPDATE pto_balance
             SET 
-              used_days = ${usedDays},
-              remaining_days = ${remainingDays},
+              used_days = ${usedHours},
+              remaining_days = ${remainingHours},
               last_updated = NOW()
             WHERE id = ${existingRecord.id}
           `);
@@ -4621,8 +4622,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await db.execute(sql`
             UPDATE pto_balance
             SET 
-              used_days = ${usedDays},
-              remaining_days = ${remainingDays},
+              used_days = ${usedHours},
+              remaining_days = ${remainingHours},
               last_updated = NOW()
             WHERE id = ${existingRecord.id}
           `);
