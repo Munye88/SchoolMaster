@@ -252,21 +252,27 @@ export default function StaffLeaveTracker() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-center block mb-2">Instructor</Label>
-                      <Select 
-                        value={formData.instructorId} 
-                        onValueChange={(value) => setFormData({...formData, instructorId: value})}
-                      >
-                        <SelectTrigger className="rounded-none">
-                          <SelectValue placeholder="Select instructor" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-none max-h-60 overflow-y-auto">
-                          {schoolInstructors.map((instructor: Instructor) => (
-                            <SelectItem key={instructor.id} value={instructor.id.toString()}>
-                              {instructor.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      {schoolInstructors.length > 0 ? (
+                        <Select 
+                          value={formData.instructorId} 
+                          onValueChange={(value) => setFormData({...formData, instructorId: value})}
+                        >
+                          <SelectTrigger className="rounded-none">
+                            <SelectValue placeholder="Select instructor" />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-none max-h-60 overflow-y-auto">
+                            {schoolInstructors.map((instructor: Instructor) => (
+                              <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                                {instructor.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <div className="h-10 border rounded-none flex items-center px-3 bg-gray-50">
+                          <span className="text-gray-500">Loading instructors...</span>
+                        </div>
+                      )}
                     </div>
                     <div>
                       <Label className="text-center block mb-2">Leave Type</Label>
