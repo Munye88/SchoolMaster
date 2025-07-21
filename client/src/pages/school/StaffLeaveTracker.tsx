@@ -81,16 +81,16 @@ export default function StaffLeaveTracker() {
   // Find current school from schools array
   const currentSchool = schools.find(school => school.id === parseInt(schoolId || '0'));
 
-  const { data: leaveRecords = [], isLoading: isLoadingLeave } = useQuery({
+  const { data: leaveRecords = [], isLoading: isLoadingLeave } = useQuery<StaffLeave[]>({
     queryKey: ['/api/staff-leave', schoolId],
     enabled: !!schoolId,
   });
 
-  const { data: instructors = [] } = useQuery({
+  const { data: instructors = [] } = useQuery<Instructor[]>({
     queryKey: ['/api/instructors'],
   });
 
-  const { data: ptoBalances = [], isLoading: isLoadingPto } = useQuery({
+  const { data: ptoBalances = [], isLoading: isLoadingPto } = useQuery<PtoBalance[]>({
     queryKey: ['/api/pto-balance'],
   });
 
