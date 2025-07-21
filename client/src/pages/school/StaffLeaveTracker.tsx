@@ -253,29 +253,18 @@ export default function StaffLeaveTracker() {
                     <div>
                       <Label className="text-center block mb-2">Instructor</Label>
                       <Select 
-                        key={`${currentSchoolId}-${schoolInstructors.length}`}
                         value={formData.instructorId} 
                         onValueChange={(value) => setFormData({...formData, instructorId: value})}
-                        disabled={schoolInstructors.length === 0}
                       >
                         <SelectTrigger className="rounded-none">
-                          <SelectValue 
-                            key={`trigger-${currentSchoolId}-${schoolInstructors.length}`}
-                            placeholder={schoolInstructors.length === 0 ? "Loading instructors..." : "Select instructor"} 
-                          />
+                          <SelectValue placeholder="Select instructor" />
                         </SelectTrigger>
                         <SelectContent className="rounded-none max-h-60 overflow-y-auto">
-                          {schoolInstructors.length > 0 ? (
-                            schoolInstructors.map((instructor: Instructor) => (
-                              <SelectItem key={instructor.id} value={instructor.id.toString()}>
-                                {instructor.name}
-                              </SelectItem>
-                            ))
-                          ) : (
-                            <SelectItem value="loading" disabled>
-                              Loading instructors...
+                          {schoolInstructors.map((instructor: Instructor) => (
+                            <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                              {instructor.name}
                             </SelectItem>
-                          )}
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
