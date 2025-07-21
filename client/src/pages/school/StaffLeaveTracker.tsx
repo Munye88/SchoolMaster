@@ -108,10 +108,21 @@ export default function StaffLeaveTracker() {
 
   // Get school instructors - wait for all data to be ready
   const schoolInstructors = useMemo(() => {
+    console.log('🔄 INSTRUCTOR FILTER:', {
+      instructorsCount: instructors?.length || 0,
+      currentSchoolId,
+      currentSchool: currentSchool?.name,
+      isLoadingInstructors
+    });
+    
     if (!instructors || instructors.length === 0 || !currentSchool || isLoadingInstructors) {
+      console.log('❌ MISSING DATA - returning empty array');
       return [];
     }
-    return instructors.filter(instructor => instructor.schoolId === currentSchoolId);
+    
+    const filtered = instructors.filter(instructor => instructor.schoolId === currentSchoolId);
+    console.log('✅ FILTERED INSTRUCTORS:', filtered.length, 'for school', currentSchoolId);
+    return filtered;
   }, [instructors, currentSchoolId, currentSchool, isLoadingInstructors]);
 
   console.log('🔍 Filtered school instructors count:', schoolInstructors.length);
@@ -242,12 +253,16 @@ export default function StaffLeaveTracker() {
                     <div>
                       <Label className="text-center block mb-2">Instructor</Label>
                       <Select 
+                        key={`${currentSchoolId}-${schoolInstructors.length}`}
                         value={formData.instructorId} 
                         onValueChange={(value) => setFormData({...formData, instructorId: value})}
                         disabled={schoolInstructors.length === 0}
                       >
                         <SelectTrigger className="rounded-none">
-                          <SelectValue placeholder={schoolInstructors.length === 0 ? "Loading instructors..." : "Select instructor"} />
+                          <SelectValue 
+                            key={`trigger-${currentSchoolId}-${schoolInstructors.length}`}
+                            placeholder={schoolInstructors.length === 0 ? "Loading instructors..." : "Select instructor"} 
+                          />
                         </SelectTrigger>
                         <SelectContent className="rounded-none max-h-60 overflow-y-auto">
                           {schoolInstructors.length > 0 ? (
