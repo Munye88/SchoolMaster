@@ -32,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Plus, FileText, Clock, Edit, Trash2, Eye } from 'lucide-react';
 import { useSchool } from '@/hooks/useSchool';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -106,16 +106,26 @@ export default function StaffLeaveTracker() {
     (record: StaffLeave) => record.schoolId === currentSchoolId
   );
 
-  // Filter instructors for current school with detailed logging
-  const schoolInstructors = instructors.filter(
-    (instructor: Instructor) => {
-      const matches = instructor.schoolId === currentSchoolId;
-      if (matches) {
-        console.log('✅ Matched instructor:', instructor.name, 'schoolId:', instructor.schoolId);
-      }
-      return matches;
+  // Filter instructors for current school with detailed logging - only when data is ready
+  const schoolInstructors = useMemo(() => {
+    // Don't filter if still loading or no data
+    if (isLoadingInstructors || !instructors || instructors.length === 0 || !currentSchool) {
+      console.log('🔄 Waiting for instructor data to load...');
+      return [];
     }
-  );
+
+    const filtered = instructors.filter(
+      (instructor: Instructor) => {
+        const matches = instructor.schoolId === currentSchoolId;
+        if (matches) {
+          console.log('✅ Matched instructor:', instructor.name, 'schoolId:', instructor.schoolId);
+        }
+        return matches;
+      }
+    );
+
+    return filtered;
+  }, [instructors, currentSchoolId, currentSchool, isLoadingInstructors]);
 
   console.log('🔍 Filtered school instructors count:', schoolInstructors.length);
   console.log('📋 School instructors:', schoolInstructors.map(i => `${i.name} (ID: ${i.id})`));
