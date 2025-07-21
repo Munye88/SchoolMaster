@@ -86,7 +86,7 @@ export default function StaffLeaveTracker() {
     enabled: !!schoolId,
   });
 
-  const { data: instructors = [] } = useQuery<Instructor[]>({
+  const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
     queryKey: ['/api/instructors'],
   });
 
@@ -119,6 +119,7 @@ export default function StaffLeaveTracker() {
 
   console.log('🔍 Filtered school instructors count:', schoolInstructors.length);
   console.log('📋 School instructors:', schoolInstructors.map(i => `${i.name} (ID: ${i.id})`));
+  console.log('⏳ Loading states - Instructors:', isLoadingInstructors, 'Leave:', isLoadingLeave);
 
   const createLeaveMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -243,12 +244,20 @@ export default function StaffLeaveTracker() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-center block mb-2">Instructor</Label>
-                      <Select value={formData.instructorId} onValueChange={(value) => setFormData({...formData, instructorId: value})}>
+                      <Select 
+                        value={formData.instructorId} 
+                        onValueChange={(value) => setFormData({...formData, instructorId: value})}
+                        disabled={isLoadingInstructors}
+                      >
                         <SelectTrigger className="rounded-none">
-                          <SelectValue placeholder="Select instructor" />
+                          <SelectValue placeholder={isLoadingInstructors ? "Loading instructors..." : "Select instructor"} />
                         </SelectTrigger>
                         <SelectContent className="rounded-none max-h-60 overflow-y-auto">
-                          {schoolInstructors.length === 0 ? (
+                          {isLoadingInstructors ? (
+                            <SelectItem value="loading" disabled>
+                              Loading instructors...
+                            </SelectItem>
+                          ) : schoolInstructors.length === 0 ? (
                             <SelectItem value="no-instructors" disabled>
                               No instructors found for this school
                             </SelectItem>
