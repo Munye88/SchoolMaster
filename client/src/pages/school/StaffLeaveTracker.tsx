@@ -58,7 +58,7 @@ interface StaffLeave {
 
 export default function StaffLeaveTracker() {
   const { schoolId } = useParams();
-  const school = useSchool();
+  const { schools } = useSchool();
   const { toast } = useToast();
   
   const [activeTab, setActiveTab] = useState("leave-records");
@@ -78,6 +78,9 @@ export default function StaffLeaveTracker() {
     comments: ''
   });
 
+  // Find current school from schools array
+  const currentSchool = schools.find(school => school.id === parseInt(schoolId || '0'));
+
   const { data: leaveRecords = [], isLoading: isLoadingLeave } = useQuery({
     queryKey: ['/api/staff-leave', schoolId],
     enabled: !!schoolId,
@@ -91,6 +94,11 @@ export default function StaffLeaveTracker() {
     queryKey: ['/api/pto-balance'],
   });
 
+  // Debug logging to see what we have
+  console.log('School ID from params:', schoolId);
+  console.log('All instructors:', instructors);
+  console.log('Current school:', currentSchool);
+
   const schoolLeaveRecords = leaveRecords.filter(
     (record: StaffLeave) => record.schoolId === parseInt(schoolId || '0')
   );
@@ -98,6 +106,8 @@ export default function StaffLeaveTracker() {
   const schoolInstructors = instructors.filter(
     (instructor: Instructor) => instructor.schoolId === parseInt(schoolId || '0')
   );
+
+  console.log('Filtered school instructors:', schoolInstructors);
 
   const createLeaveMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -189,7 +199,7 @@ export default function StaffLeaveTracker() {
     <div className="container mx-auto p-6 space-y-8">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900">Staff Leave Tracker</h1>
-        <p className="text-gray-600 mt-2">Manage leave requests and PTO balances for {school?.name}</p>
+        <p className="text-gray-600 mt-2">Manage leave requests and PTO balances for {currentSchool?.name}</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
