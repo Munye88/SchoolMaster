@@ -106,24 +106,24 @@ export default function StaffLeaveTracker() {
     (record: StaffLeave) => record.schoolId === currentSchoolId
   );
 
-  // Get school instructors - wait for all data to be ready
+  // Get school instructors - SIMPLIFIED LOGIC
   const schoolInstructors = useMemo(() => {
-    console.log('🔄 INSTRUCTOR FILTER:', {
+    console.log('🔄 INSTRUCTOR FILTER - SIMPLIFIED:', {
       instructorsCount: instructors?.length || 0,
       currentSchoolId,
-      currentSchool: currentSchool?.name,
       isLoadingInstructors
     });
     
-    if (!instructors || instructors.length === 0 || !currentSchool || isLoadingInstructors) {
-      console.log('❌ MISSING DATA - returning empty array');
-      return [];
+    // If we have instructors and a school ID, filter them immediately
+    if (instructors && instructors.length > 0 && currentSchoolId) {
+      const filtered = instructors.filter(instructor => instructor.schoolId === currentSchoolId);
+      console.log('✅ FILTERED INSTRUCTORS:', filtered.length, 'for school', currentSchoolId);
+      return filtered;
     }
     
-    const filtered = instructors.filter(instructor => instructor.schoolId === currentSchoolId);
-    console.log('✅ FILTERED INSTRUCTORS:', filtered.length, 'for school', currentSchoolId);
-    return filtered;
-  }, [instructors, currentSchoolId, currentSchool, isLoadingInstructors]);
+    console.log('❌ NO DATA YET - instructors:', instructors?.length, 'schoolId:', currentSchoolId);
+    return [];
+  }, [instructors, currentSchoolId]);
 
   console.log('🔍 Filtered school instructors count:', schoolInstructors.length);
   console.log('📋 School instructors:', schoolInstructors.map(i => `${i.name} (ID: ${i.id})`));
