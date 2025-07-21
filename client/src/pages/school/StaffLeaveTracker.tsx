@@ -106,25 +106,12 @@ export default function StaffLeaveTracker() {
     (record: StaffLeave) => record.schoolId === currentSchoolId
   );
 
-  // Filter instructors for current school with detailed logging - only when data is ready
+  // Get school instructors - wait for all data to be ready
   const schoolInstructors = useMemo(() => {
-    // Don't filter if still loading or no data
-    if (isLoadingInstructors || !instructors || instructors.length === 0 || !currentSchool) {
-      console.log('🔄 Waiting for instructor data to load...');
+    if (!instructors || instructors.length === 0 || !currentSchool || isLoadingInstructors) {
       return [];
     }
-
-    const filtered = instructors.filter(
-      (instructor: Instructor) => {
-        const matches = instructor.schoolId === currentSchoolId;
-        if (matches) {
-          console.log('✅ Matched instructor:', instructor.name, 'schoolId:', instructor.schoolId);
-        }
-        return matches;
-      }
-    );
-
-    return filtered;
+    return instructors.filter(instructor => instructor.schoolId === currentSchoolId);
   }, [instructors, currentSchoolId, currentSchool, isLoadingInstructors]);
 
   console.log('🔍 Filtered school instructors count:', schoolInstructors.length);
@@ -257,26 +244,22 @@ export default function StaffLeaveTracker() {
                       <Select 
                         value={formData.instructorId} 
                         onValueChange={(value) => setFormData({...formData, instructorId: value})}
-                        disabled={isLoadingInstructors}
+                        disabled={schoolInstructors.length === 0}
                       >
                         <SelectTrigger className="rounded-none">
-                          <SelectValue placeholder={isLoadingInstructors ? "Loading instructors..." : "Select instructor"} />
+                          <SelectValue placeholder={schoolInstructors.length === 0 ? "Loading instructors..." : "Select instructor"} />
                         </SelectTrigger>
                         <SelectContent className="rounded-none max-h-60 overflow-y-auto">
-                          {isLoadingInstructors ? (
-                            <SelectItem value="loading" disabled>
-                              Loading instructors...
-                            </SelectItem>
-                          ) : schoolInstructors.length === 0 ? (
-                            <SelectItem value="no-instructors" disabled>
-                              No instructors found for this school
-                            </SelectItem>
-                          ) : (
+                          {schoolInstructors.length > 0 ? (
                             schoolInstructors.map((instructor: Instructor) => (
                               <SelectItem key={instructor.id} value={instructor.id.toString()}>
                                 {instructor.name}
                               </SelectItem>
                             ))
+                          ) : (
+                            <SelectItem value="loading" disabled>
+                              Loading instructors...
+                            </SelectItem>
                           )}
                         </SelectContent>
                       </Select>
