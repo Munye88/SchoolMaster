@@ -94,20 +94,31 @@ export default function StaffLeaveTracker() {
     queryKey: ['/api/pto-balance'],
   });
 
+  // Parse school ID once
+  const currentSchoolId = parseInt(schoolId || '0');
+  
   // Debug logging to see what we have
-  console.log('School ID from params:', schoolId);
-  console.log('All instructors:', instructors);
-  console.log('Current school:', currentSchool);
+  console.log('🏫 School ID from params:', schoolId, 'parsed:', currentSchoolId);
+  console.log('📚 All instructors loaded:', instructors?.length || 0);
+  console.log('🎯 Current school:', currentSchool);
 
   const schoolLeaveRecords = leaveRecords.filter(
-    (record: StaffLeave) => record.schoolId === parseInt(schoolId || '0')
+    (record: StaffLeave) => record.schoolId === currentSchoolId
   );
 
+  // Filter instructors for current school with detailed logging
   const schoolInstructors = instructors.filter(
-    (instructor: Instructor) => instructor.schoolId === parseInt(schoolId || '0')
+    (instructor: Instructor) => {
+      const matches = instructor.schoolId === currentSchoolId;
+      if (matches) {
+        console.log('✅ Matched instructor:', instructor.name, 'schoolId:', instructor.schoolId);
+      }
+      return matches;
+    }
   );
 
-  console.log('Filtered school instructors:', schoolInstructors);
+  console.log('🔍 Filtered school instructors count:', schoolInstructors.length);
+  console.log('📋 School instructors:', schoolInstructors.map(i => `${i.name} (ID: ${i.id})`));
 
   const createLeaveMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -236,12 +247,18 @@ export default function StaffLeaveTracker() {
                         <SelectTrigger className="rounded-none">
                           <SelectValue placeholder="Select instructor" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-none">
-                          {schoolInstructors.map((instructor: Instructor) => (
-                            <SelectItem key={instructor.id} value={instructor.id.toString()}>
-                              {instructor.name}
+                        <SelectContent className="rounded-none max-h-60 overflow-y-auto">
+                          {schoolInstructors.length === 0 ? (
+                            <SelectItem value="no-instructors" disabled>
+                              No instructors found for this school
                             </SelectItem>
-                          ))}
+                          ) : (
+                            schoolInstructors.map((instructor: Instructor) => (
+                              <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                                {instructor.name}
+                              </SelectItem>
+                            ))
+                          )}
                         </SelectContent>
                       </Select>
                     </div>

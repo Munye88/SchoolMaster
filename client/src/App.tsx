@@ -282,6 +282,24 @@ function Router() {
             component={DocumentManagement}
           />
 
+          {/* School ID-based routes (backward compatibility) */}
+          <ProtectedRoute
+            path="/school/:schoolId/staff-leave"
+            component={StaffLeaveTracker}
+          />
+          <ProtectedRoute
+            path="/school/:schoolId/staff-attendance"
+            component={StaffAttendance}
+          />
+          <ProtectedRoute
+            path="/school/:schoolId/staff-evaluations"
+            component={StaffEvaluations}
+          />
+          <ProtectedRoute
+            path="/school/:schoolId"
+            component={SchoolHome}
+          />
+
           {/* School home pages - must come after all specific routes */}
           <ProtectedRoute
             path="/schools/:schoolCode"
