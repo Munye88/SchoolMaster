@@ -188,8 +188,6 @@ export default function StaffLeaveTracker() {
   }, [currentSchool, schoolCode]);
   
   const [selectedMonth, setSelectedMonth] = useState<string>(format(new Date(), 'MMMM'));
-  const [showCalendar, setShowCalendar] = useState<boolean>(false);
-  const [date, setDate] = useState<Date | undefined>(new Date());
   
   // For the employee ID search
   const [employeeIdSearch, setEmployeeIdSearch] = useState<string>('');
@@ -538,34 +536,7 @@ export default function StaffLeaveTracker() {
             </SelectContent>
           </Select>
           
-          <div className="relative">
-            <Button 
-              variant="outline" 
-              className="flex items-center"
-              onClick={() => setShowCalendar(!showCalendar)}
-            >
-              <CalendarIcon className="h-4 w-4 mr-2" />
-              <span>{date ? format(date, 'PPP') : 'Pick a date'}</span>
-            </Button>
-            
-            {showCalendar && (
-              <div className="absolute right-0 z-10">
-                <Card className="rounded-none">
-                  <CardContent className="p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={(newDate) => {
-                        setDate(newDate);
-                        setShowCalendar(false);
-                      }}
-                      initialFocus
-                    />
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-          </div>
+
           
           <PrintButton 
             contentId="leaveTrackerContent" 
@@ -1597,6 +1568,7 @@ export default function StaffLeaveTracker() {
                           type="date" 
                           {...field} 
                           onChange={(e) => field.onChange(e.target.value)}
+                          className="rounded-none relative z-50"
                         />
                       </FormControl>
                       <FormMessage />
@@ -1615,6 +1587,7 @@ export default function StaffLeaveTracker() {
                           type="date" 
                           {...field} 
                           onChange={(e) => field.onChange(e.target.value)}
+                          className="rounded-none relative z-50"
                         />
                       </FormControl>
                       <FormMessage />
@@ -1633,6 +1606,7 @@ export default function StaffLeaveTracker() {
                           type="date" 
                           {...field} 
                           onChange={(e) => field.onChange(e.target.value)}
+                          className="rounded-none relative z-50"
                         />
                       </FormControl>
                       <FormMessage />
