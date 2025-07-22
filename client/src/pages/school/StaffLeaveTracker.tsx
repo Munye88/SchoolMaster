@@ -86,7 +86,7 @@ export default function StaffLeaveTracker() {
     enabled: !!schoolId,
   });
 
-  const { data: instructors = [] } = useQuery<Instructor[]>({
+  const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
     queryKey: ['/api/instructors'],
   });
 
@@ -187,9 +187,12 @@ export default function StaffLeaveTracker() {
             <h3 className="text-xl font-semibold text-center flex-1">Leave Requests</h3>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="rounded-none bg-[#0A2463] hover:bg-[#0A2463]/90">
+                <Button 
+                  className="rounded-none bg-[#0A2463] hover:bg-[#0A2463]/90"
+                  disabled={isLoadingInstructors || schoolInstructors.length === 0}
+                >
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Leave Request
+                  {isLoadingInstructors ? 'Loading...' : 'Add Leave Request'}
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl rounded-none">
@@ -200,28 +203,27 @@ export default function StaffLeaveTracker() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-center block mb-2">Instructor</Label>
-                      <Select 
-                        value={formData.instructorId} 
-                        onValueChange={(value) => setFormData({...formData, instructorId: value})}
-                      >
-                        <SelectTrigger className="rounded-none">
-                          <SelectValue placeholder="Select instructor" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-none max-h-60 overflow-y-auto">
-                          {console.log('🎯 DROPDOWN RENDER - School Instructors:', schoolInstructors.length, schoolInstructors)}
-                          {schoolInstructors.length > 0 ? (
-                            schoolInstructors.map((instructor: Instructor) => (
+                      {isLoadingInstructors ? (
+                        <div className="rounded-none border border-input bg-background px-3 py-2 text-center">
+                          Loading instructors...
+                        </div>
+                      ) : (
+                        <Select 
+                          value={formData.instructorId} 
+                          onValueChange={(value) => setFormData({...formData, instructorId: value})}
+                        >
+                          <SelectTrigger className="rounded-none">
+                            <SelectValue placeholder={`Select instructor (${schoolInstructors.length} available)`} />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-none max-h-60 overflow-y-auto">
+                            {schoolInstructors.map((instructor: Instructor) => (
                               <SelectItem key={instructor.id} value={instructor.id.toString()}>
                                 {instructor.name}
                               </SelectItem>
-                            ))
-                          ) : (
-                            <SelectItem value="no-instructors" disabled>
-                              No instructors available ({instructors.length} total instructors)
-                            </SelectItem>
-                          )}
-                        </SelectContent>
-                      </Select>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
                     </div>
                     <div>
                       <Label className="text-center block mb-2">Leave Type</Label>
@@ -325,7 +327,7 @@ export default function StaffLeaveTracker() {
                   <Button 
                     type="submit" 
                     className="w-full rounded-none bg-[#0A2463] hover:bg-[#0A2463]/90"
-                    disabled={addLeaveMutation.isPending}
+                    disabled={addLeaveMutation.isPending || isLoadingInstructors || !formData.instructorId}
                   >
                     {addLeaveMutation.isPending ? 'Adding...' : 'Add Leave Request'}
                   </Button>
