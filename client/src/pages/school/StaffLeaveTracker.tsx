@@ -239,10 +239,7 @@ export default function StaffLeaveTracker() {
             <h3 className="text-xl font-semibold text-center flex-1">Leave Requests</h3>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
-                <Button 
-                  className="rounded-none bg-[#0A2463] hover:bg-[#0A2463]/90"
-                  disabled={schoolInstructors.length === 0}
-                >
+                <Button className="rounded-none bg-[#0A2463] hover:bg-[#0A2463]/90">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Leave Request
                 </Button>
