@@ -51,7 +51,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from '@/components/ui/calendar';
+
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useState, useEffect, useRef } from 'react';
 import { PlusCircle, Calendar as CalendarIcon, FileText, Loader2, Save, Paperclip, Download, Eye, Edit, Trash2, Printer, Search, RefreshCw, Info as InfoIcon, Pencil as PencilIcon, Plus, Clock, User, MapPin, Timer, CalendarCheck, CheckCircle, Building, Settings, Users, ArrowRight, Info, X } from 'lucide-react';
@@ -860,7 +860,7 @@ export default function StaffLeaveTracker() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-2xl font-bold flex items-center gap-3">
-                <Calendar className="h-8 w-8" />
+                <CalendarIcon className="h-8 w-8" />
                 Staff Leave Management
               </CardTitle>
               <CardDescription className="text-blue-100 mt-2">
@@ -910,7 +910,7 @@ export default function StaffLeaveTracker() {
                       />
                     </div>
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-500" />
+                      <CalendarIcon className="h-4 w-4 text-gray-500" />
                       <Select value={selectedMonth} onValueChange={setSelectedMonth}>
                         <SelectTrigger className="w-40 rounded-lg border-gray-300 focus:border-[#0A2463] focus:ring-[#0A2463]">
                           <SelectValue placeholder="Select month" />
@@ -944,7 +944,7 @@ export default function StaffLeaveTracker() {
                       </TableHead>
                       <TableHead className="whitespace-nowrap min-w-[100px] font-semibold text-slate-700 py-4">
                         <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
+                          <CalendarIcon className="h-4 w-4" />
                           LEAVE TYPE
                         </div>
                       </TableHead>
