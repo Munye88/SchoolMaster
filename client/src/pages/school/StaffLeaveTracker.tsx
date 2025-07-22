@@ -550,7 +550,7 @@ export default function StaffLeaveTracker() {
                 New Leave Request
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-y-auto rounded-none relative z-[100]">
+            <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-y-auto rounded-none relative z-[100] dialog-content-enhanced">
               <DialogHeader className="text-center">
                 <DialogTitle className="text-center">Add New Leave Request</DialogTitle>
                 <DialogDescription className="text-center">
@@ -1362,7 +1362,7 @@ export default function StaffLeaveTracker() {
 
       {/* View Leave Dialog */}
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] rounded-none">
+        <DialogContent className="sm:max-w-[600px] rounded-none dialog-content-enhanced">
           <DialogHeader className="leave-details-dialog-header">
             <div className="flex items-center justify-between w-full print-header">
               <div>
@@ -1481,7 +1481,7 @@ export default function StaffLeaveTracker() {
       
       {/* Edit Leave Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-y-auto rounded-none dialog-content-enhanced">
           <DialogHeader className="text-center">
             <DialogTitle className="text-center">Edit Leave Request</DialogTitle>
             <DialogDescription className="text-center">
@@ -1788,7 +1788,7 @@ export default function StaffLeaveTracker() {
 
       {/* PTO Balance Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[425px] rounded-none">
+        <DialogContent className="sm:max-w-[425px] rounded-none dialog-content-enhanced">
           <DialogHeader>
             <DialogTitle className="text-center">Confirm Deletion</DialogTitle>
             <DialogDescription className="text-center">
