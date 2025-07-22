@@ -103,6 +103,7 @@ interface StaffLeave {
   comments?: string;
   approvedBy?: number;
   schoolId: number;
+  attachmentUrl?: string; // Optional attachment URL
 }
 
 // Alias for form data, including schoolId
@@ -137,6 +138,7 @@ const leaveFormSchema = z.object({
   destination: z.string().min(1, "Destination is required"),
   status: z.string().min(1, "Status is required"),
   comments: z.string().optional(),
+  attachmentUrl: z.string().optional(),
 });
 
 type LeaveFormValues = z.infer<typeof leaveFormSchema>;
