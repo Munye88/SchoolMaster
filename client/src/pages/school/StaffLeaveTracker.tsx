@@ -239,7 +239,10 @@ export default function StaffLeaveTracker() {
             <h3 className="text-xl font-semibold text-center flex-1">Leave Requests</h3>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="rounded-none bg-[#0A2463] hover:bg-[#0A2463]/90">
+                <Button 
+                  className="rounded-none bg-[#0A2463] hover:bg-[#0A2463]/90"
+                  disabled={schoolInstructors.length === 0}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Leave Request
                 </Button>
@@ -253,11 +256,14 @@ export default function StaffLeaveTracker() {
                     <div>
                       <Label className="text-center block mb-2">Instructor</Label>
                       <Select 
+                        key={`instructor-select-${schoolInstructors.length}-${currentSchoolId}`}
                         value={formData.instructorId} 
                         onValueChange={(value) => setFormData({...formData, instructorId: value})}
                       >
                         <SelectTrigger className="rounded-none">
-                          <SelectValue placeholder="Select instructor" />
+                          <SelectValue 
+                            placeholder={schoolInstructors.length > 0 ? "Select instructor" : "Loading instructors..."} 
+                          />
                         </SelectTrigger>
                         <SelectContent className="rounded-none max-h-60 overflow-y-auto">
                           {schoolInstructors.map((instructor: Instructor) => (
@@ -267,7 +273,7 @@ export default function StaffLeaveTracker() {
                           ))}
                           {schoolInstructors.length === 0 && (
                             <SelectItem value="loading" disabled>
-                              No instructors available
+                              Loading instructors...
                             </SelectItem>
                           )}
                         </SelectContent>
