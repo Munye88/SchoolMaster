@@ -385,6 +385,7 @@ The system manages multiple interconnected entities:
 - July 15, 2025: FRONTEND HOUR LABELS - Updated all PTO balance table headers and form labels to display "Hours" instead of "Days" for consistency with hour-based calculations
 - July 15, 2025: PTO BALANCE DELETE FUNCTIONALITY - Added complete delete functionality for PTO balance records with DELETE API endpoint, confirmation dialog with centered title text, proper error handling, loading states, and cache invalidation
 - July 15, 2025: DIALOG POSITIONING FIX - Fixed all Staff Leave Tracker dialogs to appear centered on screen instead of at bottom, enhanced with dark overlay backdrop and proper z-index layering for improved visibility and user experience
+- July 15, 2025: DROPDOWN Z-INDEX FIX - Fixed all dropdown menus (instructor selection, leave type, status) to appear above dialog modals with proper z-index hierarchy (overlay: 999, dialog: 1000, dropdowns: 1100) ensuring full visibility and functionality
 
 ## User Preferences
 

@@ -575,7 +575,7 @@ export default function StaffLeaveTracker() {
                               <SelectValue placeholder="Select instructor" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="rounded-none">
+                          <SelectContent className="rounded-none select-content-above-dialog">
                             {isLoadingInstructors ? (
                               <div className="p-2 flex items-center justify-center">
                                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -694,7 +694,7 @@ export default function StaffLeaveTracker() {
                               <SelectValue placeholder="Select leave type" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent className="rounded-none">
+                          <SelectContent className="rounded-none select-content-above-dialog">
                             <SelectItem value="PTO">PTO (Paid Time Off)</SelectItem>
                             <SelectItem value="R&R">R&R (Rest & Recuperation)</SelectItem>
                             <SelectItem value="Emergency">Emergency Leave</SelectItem>
@@ -1535,7 +1535,7 @@ export default function StaffLeaveTracker() {
                           <SelectValue placeholder="Select instructor" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="select-content-above-dialog">
                         {isLoadingInstructors ? (
                           <div className="p-2 flex items-center justify-center">
                             <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -1683,7 +1683,7 @@ export default function StaffLeaveTracker() {
                           <SelectValue placeholder="Select leave type" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="select-content-above-dialog">
                         <SelectItem value="PTO">PTO (Paid Time Off)</SelectItem>
                         <SelectItem value="R&R">R&R (Rest & Recuperation)</SelectItem>
                         <SelectItem value="Emergency">Emergency Leave</SelectItem>
@@ -1726,7 +1726,7 @@ export default function StaffLeaveTracker() {
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="select-content-above-dialog">
                         <SelectItem value="Pending">Pending</SelectItem>
                         <SelectItem value="Approved">Approved</SelectItem>
                         <SelectItem value="Rejected">Rejected</SelectItem>

@@ -101,4 +101,17 @@
     max-height: 85vh !important;
     overflow-y: auto !important;
   }
+  
+  /* Ensure dropdown menus appear above dialogs */
+  [data-radix-popper-content-wrapper] {
+    z-index: 1100 !important;
+  }
+  
+  [data-radix-select-content] {
+    z-index: 1100 !important;
+  }
+  
+  .select-content-above-dialog {
+    z-index: 1100 !important;
+  }
 }
