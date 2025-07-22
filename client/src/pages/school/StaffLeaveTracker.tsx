@@ -32,7 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Plus, FileText, Clock, Edit, Trash2, Eye } from 'lucide-react';
 import { useSchool } from '@/hooks/useSchool';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -86,149 +86,97 @@ export default function StaffLeaveTracker() {
     enabled: !!schoolId,
   });
 
-  const { data: instructors = [], isLoading: isLoadingInstructors } = useQuery<Instructor[]>({
+  const { data: instructors = [] } = useQuery<Instructor[]>({
     queryKey: ['/api/instructors'],
   });
 
-  const { data: ptoBalances = [], isLoading: isLoadingPto } = useQuery<PtoBalance[]>({
+  const { data: ptoBalances = [] } = useQuery<PtoBalance[]>({
     queryKey: ['/api/pto-balance'],
   });
 
-  // Parse school ID once
+  // Simple filtering
   const currentSchoolId = parseInt(schoolId || '0');
-  
-  // Debug logging to see what we have
-  console.log('🏫 School ID from params:', schoolId, 'parsed:', currentSchoolId);
-  console.log('📚 All instructors loaded:', instructors?.length || 0);
-  console.log('🎯 Current school:', currentSchool);
+  const schoolLeaveRecords = leaveRecords.filter(record => record.schoolId === currentSchoolId);
+  const schoolInstructors = instructors.filter(instructor => instructor.schoolId === currentSchoolId);
 
-  const schoolLeaveRecords = leaveRecords.filter(
-    (record: StaffLeave) => record.schoolId === currentSchoolId
-  );
-
-  // Get school instructors - SIMPLIFIED LOGIC
-  const schoolInstructors = useMemo(() => {
-    console.log('🔄 INSTRUCTOR FILTER - SIMPLIFIED:', {
-      instructorsCount: instructors?.length || 0,
-      currentSchoolId,
-      isLoadingInstructors
-    });
-    
-    // If we have instructors and a school ID, filter them immediately
-    if (instructors && instructors.length > 0 && currentSchoolId) {
-      const filtered = instructors.filter(instructor => instructor.schoolId === currentSchoolId);
-      console.log('✅ FILTERED INSTRUCTORS:', filtered.length, 'for school', currentSchoolId);
-      return filtered;
-    }
-    
-    console.log('❌ NO DATA YET - instructors:', instructors?.length, 'schoolId:', currentSchoolId);
-    return [];
-  }, [instructors, currentSchoolId]);
-
-  console.log('🔍 Filtered school instructors count:', schoolInstructors.length);
-  console.log('📋 School instructors:', schoolInstructors.map(i => `${i.name} (ID: ${i.id})`));
-  console.log('⏳ Loading states - Instructors:', isLoadingInstructors, 'Leave:', isLoadingLeave);
-
-  const createLeaveMutation = useMutation({
+  const addLeaveMutation = useMutation({
     mutationFn: async (data: any) => {
       const response = await fetch('/api/staff-leave', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...data,
-          schoolId: parseInt(schoolId || '0'),
-          ptodays: parseInt(data.ptodays) || 0,
-          rrdays: parseInt(data.rrdays) || 0,
-          leaveBalance: parseInt(data.leaveBalance) || 0,
-        }),
+        body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error('Failed to create leave request');
+      if (!response.ok) throw new Error('Failed to add leave request');
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/staff-leave'] });
       setIsAddDialogOpen(false);
-      resetForm();
-      toast({ title: "Success", description: "Leave request created successfully" });
-    },
-  });
-
-  const deleteLeaveMutation = useMutation({
-    mutationFn: async (id: number) => {
-      const response = await fetch(`/api/staff-leave/${id}`, {
-        method: 'DELETE',
+      setFormData({
+        instructorId: '',
+        startDate: '',
+        endDate: '',
+        returnDate: '',
+        leaveBalance: '',
+        ptodays: '',
+        rrdays: '',
+        leaveType: 'PTO',
+        destination: '',
+        status: 'Pending',
+        comments: ''
       });
-      if (!response.ok) throw new Error('Failed to delete leave request');
+      toast({ title: "Success", description: "Leave request added successfully" });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/staff-leave'] });
-      toast({ title: "Success", description: "Leave request deleted successfully" });
-    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: "Failed to add leave request", variant: "destructive" });
+    }
   });
-
-  const deletePtoMutation = useMutation({
-    mutationFn: async (id: number) => {
-      const response = await fetch(`/api/pto-balance/${id}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) throw new Error('Failed to delete PTO balance');
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/pto-balance'] });
-      toast({ title: "Success", description: "PTO balance deleted successfully" });
-    },
-  });
-
-  const resetForm = () => {
-    setFormData({
-      instructorId: '',
-      startDate: '',
-      endDate: '',
-      returnDate: '',
-      leaveBalance: '',
-      ptodays: '',
-      rrdays: '',
-      leaveType: 'PTO',
-      destination: '',
-      status: 'Pending',
-      comments: ''
-    });
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createLeaveMutation.mutate({
-      ...formData,
+    const selectedInstructor = schoolInstructors.find(i => i.id.toString() === formData.instructorId);
+    
+    const leaveData = {
       instructorId: parseInt(formData.instructorId),
-    });
-  };
+      instructorName: selectedInstructor?.name || '',
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      returnDate: formData.returnDate,
+      leaveBalance: parseInt(formData.leaveBalance) || 0,
+      ptodays: parseInt(formData.ptodays) || 0,
+      rrdays: parseInt(formData.rrdays) || 0,
+      leaveType: formData.leaveType,
+      destination: formData.destination,
+      status: formData.status,
+      comments: formData.comments,
+      schoolId: currentSchoolId
+    };
 
-  const handleDelete = (id: number) => {
-    if (confirm('Are you sure you want to delete this leave request?')) {
-      deleteLeaveMutation.mutate(id);
-    }
-  };
-
-  const handleDeletePto = (id: number) => {
-    if (confirm('Are you sure you want to delete this PTO balance record?')) {
-      deletePtoMutation.mutate(id);
-    }
+    addLeaveMutation.mutate(leaveData);
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900">Staff Leave Tracker</h1>
-        <p className="text-gray-600 mt-2">Manage leave requests and PTO balances for {currentSchool?.name}</p>
+    <div className="max-w-7xl mx-auto p-6 space-y-8">
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-bold">Staff Leave Tracker</h1>
+        <p className="text-gray-600">
+          Manage leave requests and PTO balances for {currentSchool?.name}
+        </p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-8 rounded-none">
-          <TabsTrigger value="leave-records" className="rounded-none">
+        <TabsList className="grid w-full grid-cols-2 rounded-none">
+          <TabsTrigger 
+            value="leave-records" 
+            className="rounded-none data-[state=active]:bg-[#0A2463] data-[state=active]:text-white"
+          >
             <FileText className="h-4 w-4 mr-2" />
             Leave Records
           </TabsTrigger>
-          <TabsTrigger value="pto-balance" className="rounded-none">
+          <TabsTrigger 
+            value="pto-balance" 
+            className="rounded-none data-[state=active]:bg-[#0A2463] data-[state=active]:text-white"
+          >
             <Clock className="h-4 w-4 mr-2" />
             PTO Balance
           </TabsTrigger>
@@ -237,28 +185,7 @@ export default function StaffLeaveTracker() {
         <TabsContent value="leave-records" className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold text-center flex-1">Leave Requests</h3>
-            <Dialog 
-              open={isAddDialogOpen} 
-              onOpenChange={(open) => {
-                setIsAddDialogOpen(open);
-                // Reset form when closing
-                if (!open) {
-                  setFormData({
-                    instructorId: '',
-                    startDate: '',
-                    endDate: '',
-                    returnDate: '',
-                    leaveBalance: '',
-                    ptodays: '',
-                    rrdays: '',
-                    leaveType: 'PTO',
-                    destination: '',
-                    status: 'Pending',
-                    comments: ''
-                  });
-                }
-              }}
-            >
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="rounded-none bg-[#0A2463] hover:bg-[#0A2463]/90">
                   <Plus className="h-4 w-4 mr-2" />
@@ -273,27 +200,21 @@ export default function StaffLeaveTracker() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-center block mb-2">Instructor</Label>
-                      <select 
+                      <Select 
                         value={formData.instructorId} 
-                        onChange={(e) => setFormData({...formData, instructorId: e.target.value})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-none bg-white text-center"
-                        required
+                        onValueChange={(value) => setFormData({...formData, instructorId: value})}
                       >
-                        <option value="">Select instructor...</option>
-                        {schoolInstructors.map((instructor: Instructor) => (
-                          <option key={instructor.id} value={instructor.id.toString()}>
-                            {instructor.name}
-                          </option>
-                        ))}
-                      </select>
-                      {schoolInstructors.length === 0 && (
-                        <p className="text-sm text-red-500 text-center mt-1">
-                          No instructors available for this school
-                        </p>
-                      )}
-                      <p className="text-xs text-gray-500 text-center mt-1">
-                        {schoolInstructors.length} instructors available
-                      </p>
+                        <SelectTrigger className="rounded-none">
+                          <SelectValue placeholder="Select instructor" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-none max-h-60 overflow-y-auto">
+                          {schoolInstructors.map((instructor: Instructor) => (
+                            <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                              {instructor.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div>
                       <Label className="text-center block mb-2">Leave Type</Label>
@@ -351,7 +272,7 @@ export default function StaffLeaveTracker() {
                         value={formData.leaveBalance}
                         onChange={(e) => setFormData({...formData, leaveBalance: e.target.value})}
                         className="rounded-none text-center"
-                        placeholder="Enter available hours"
+                        placeholder="Enter hours"
                       />
                     </div>
                     <div>
@@ -380,7 +301,7 @@ export default function StaffLeaveTracker() {
                       value={formData.destination}
                       onChange={(e) => setFormData({...formData, destination: e.target.value})}
                       className="rounded-none text-center"
-                      placeholder="Travel destination"
+                      placeholder="Enter destination"
                     />
                   </div>
 
@@ -390,24 +311,23 @@ export default function StaffLeaveTracker() {
                       value={formData.comments}
                       onChange={(e) => setFormData({...formData, comments: e.target.value})}
                       className="rounded-none text-center"
-                      rows={3}
+                      placeholder="Additional comments (optional)"
                     />
                   </div>
 
-                  <div className="flex justify-center space-x-4 pt-4">
-                    <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)} className="rounded-none">
-                      Cancel
-                    </Button>
-                    <Button type="submit" disabled={createLeaveMutation.isPending} className="rounded-none bg-[#0A2463] hover:bg-[#0A2463]/90">
-                      {createLeaveMutation.isPending ? 'Saving...' : 'Save Request'}
-                    </Button>
-                  </div>
+                  <Button 
+                    type="submit" 
+                    className="w-full rounded-none bg-[#0A2463] hover:bg-[#0A2463]/90"
+                    disabled={addLeaveMutation.isPending}
+                  >
+                    {addLeaveMutation.isPending ? 'Adding...' : 'Add Leave Request'}
+                  </Button>
                 </form>
               </DialogContent>
             </Dialog>
           </div>
 
-          <div className="bg-white">
+          <div className="rounded-none border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -421,20 +341,14 @@ export default function StaffLeaveTracker() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isLoadingLeave ? (
+                {schoolLeaveRecords.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
-                      Loading...
-                    </TableCell>
-                  </TableRow>
-                ) : schoolLeaveRecords.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
+                    <TableCell colSpan={7} className="text-center">
                       No leave records found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  schoolLeaveRecords.map((record: StaffLeave) => (
+                  schoolLeaveRecords.map((record) => (
                     <TableRow key={record.id}>
                       <TableCell className="text-center">{record.instructorName}</TableCell>
                       <TableCell className="text-center">{record.leaveType}</TableCell>
@@ -443,23 +357,18 @@ export default function StaffLeaveTracker() {
                       </TableCell>
                       <TableCell className="text-center">{record.destination}</TableCell>
                       <TableCell className="text-center">
-                        {record.ptodays + record.rrdays} days
+                        PTO: {record.ptodays}, R&R: {record.rrdays}
                       </TableCell>
                       <TableCell className="text-center">{record.status}</TableCell>
                       <TableCell className="text-center">
                         <div className="flex justify-center space-x-2">
-                          <Button size="sm" variant="outline" className="rounded-none">
+                          <Button variant="outline" size="sm" className="rounded-none">
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button size="sm" variant="outline" className="rounded-none">
+                          <Button variant="outline" size="sm" className="rounded-none">
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => handleDelete(record.id)}
-                            className="rounded-none text-red-600 hover:text-red-700"
-                          >
+                          <Button variant="outline" size="sm" className="rounded-none">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -474,8 +383,7 @@ export default function StaffLeaveTracker() {
 
         <TabsContent value="pto-balance" className="space-y-6">
           <h3 className="text-xl font-semibold text-center">PTO Balance Management</h3>
-
-          <div className="bg-white">
+          <div className="rounded-none border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -487,37 +395,34 @@ export default function StaffLeaveTracker() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isLoadingPto ? (
+                {ptoBalances.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      Loading...
-                    </TableCell>
-                  </TableRow>
-                ) : ptoBalances.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
+                    <TableCell colSpan={5} className="text-center">
                       No PTO balance records found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  ptoBalances.map((balance: any) => (
-                    <TableRow key={balance.id}>
-                      <TableCell className="text-center">{balance.instructorName || 'Unknown'}</TableCell>
-                      <TableCell className="text-center">{balance.totalDays}</TableCell>
-                      <TableCell className="text-center">{balance.usedDays}</TableCell>
-                      <TableCell className="text-center">{balance.remainingDays}</TableCell>
-                      <TableCell className="text-center">
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => handleDeletePto(balance.id)}
-                          className="rounded-none text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  ptoBalances
+                    .filter(balance => {
+                      const instructor = instructors.find(i => i.id === balance.instructorId);
+                      return instructor?.schoolId === currentSchoolId;
+                    })
+                    .map((balance) => {
+                      const instructor = instructors.find(i => i.id === balance.instructorId);
+                      return (
+                        <TableRow key={balance.id}>
+                          <TableCell className="text-center">{instructor?.name}</TableCell>
+                          <TableCell className="text-center">{balance.totalDays}</TableCell>
+                          <TableCell className="text-center">{balance.usedDays}</TableCell>
+                          <TableCell className="text-center">{balance.remainingDays}</TableCell>
+                          <TableCell className="text-center">
+                            <Button variant="outline" size="sm" className="rounded-none">
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
                 )}
               </TableBody>
             </Table>
