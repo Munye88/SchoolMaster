@@ -579,7 +579,7 @@ export default function StaffLeaveTracker() {
                 New Leave Request
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-y-auto rounded-none">
+            <DialogContent className="sm:max-w-[600px] h-[80vh] overflow-y-auto rounded-none relative z-[100]">
               <DialogHeader className="text-center">
                 <DialogTitle className="text-center">Add New Leave Request</DialogTitle>
                 <DialogDescription className="text-center">
@@ -638,6 +638,7 @@ export default function StaffLeaveTracker() {
                               type="date" 
                               {...field} 
                               onChange={(e) => field.onChange(e.target.value)}
+                              className="rounded-none relative z-50"
                             />
                           </FormControl>
                           <FormMessage />
@@ -656,6 +657,7 @@ export default function StaffLeaveTracker() {
                               type="date" 
                               {...field} 
                               onChange={(e) => field.onChange(e.target.value)}
+                              className="rounded-none relative z-50"
                             />
                           </FormControl>
                           <FormMessage />
@@ -674,6 +676,7 @@ export default function StaffLeaveTracker() {
                               type="date" 
                               {...field} 
                               onChange={(e) => field.onChange(e.target.value)}
+                              className="rounded-none relative z-50"
                             />
                           </FormControl>
                           <FormMessage />
@@ -958,7 +961,7 @@ export default function StaffLeaveTracker() {
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+              <div className="bg-white rounded-lg shadow-sm border overflow-hidden relative z-10">
                 <Table>
                   <TableHeader className="bg-gradient-to-r from-slate-50 to-slate-100">
                     <TableRow className="border-b border-slate-200">
