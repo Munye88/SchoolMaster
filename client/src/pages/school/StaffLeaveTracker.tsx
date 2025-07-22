@@ -208,11 +208,18 @@ export default function StaffLeaveTracker() {
                           <SelectValue placeholder="Select instructor" />
                         </SelectTrigger>
                         <SelectContent className="rounded-none max-h-60 overflow-y-auto">
-                          {schoolInstructors.map((instructor: Instructor) => (
-                            <SelectItem key={instructor.id} value={instructor.id.toString()}>
-                              {instructor.name}
+                          {console.log('🎯 DROPDOWN RENDER - School Instructors:', schoolInstructors.length, schoolInstructors)}
+                          {schoolInstructors.length > 0 ? (
+                            schoolInstructors.map((instructor: Instructor) => (
+                              <SelectItem key={instructor.id} value={instructor.id.toString()}>
+                                {instructor.name}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="no-instructors" disabled>
+                              No instructors available ({instructors.length} total instructors)
                             </SelectItem>
-                          ))}
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
