@@ -237,7 +237,28 @@ export default function StaffLeaveTracker() {
         <TabsContent value="leave-records" className="space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold text-center flex-1">Leave Requests</h3>
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <Dialog 
+              open={isAddDialogOpen} 
+              onOpenChange={(open) => {
+                setIsAddDialogOpen(open);
+                // Reset form when closing
+                if (!open) {
+                  setFormData({
+                    instructorId: '',
+                    startDate: '',
+                    endDate: '',
+                    returnDate: '',
+                    leaveBalance: '',
+                    ptodays: '',
+                    rrdays: '',
+                    leaveType: 'PTO',
+                    destination: '',
+                    status: 'Pending',
+                    comments: ''
+                  });
+                }
+              }}
+            >
               <DialogTrigger asChild>
                 <Button className="rounded-none bg-[#0A2463] hover:bg-[#0A2463]/90">
                   <Plus className="h-4 w-4 mr-2" />
@@ -252,29 +273,27 @@ export default function StaffLeaveTracker() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-center block mb-2">Instructor</Label>
-                      <Select 
-                        key={`instructor-select-${schoolInstructors.length}-${currentSchoolId}`}
+                      <select 
                         value={formData.instructorId} 
-                        onValueChange={(value) => setFormData({...formData, instructorId: value})}
+                        onChange={(e) => setFormData({...formData, instructorId: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-none bg-white text-center"
+                        required
                       >
-                        <SelectTrigger className="rounded-none">
-                          <SelectValue 
-                            placeholder={schoolInstructors.length > 0 ? "Select instructor" : "Loading instructors..."} 
-                          />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-none max-h-60 overflow-y-auto">
-                          {schoolInstructors.map((instructor: Instructor) => (
-                            <SelectItem key={instructor.id} value={instructor.id.toString()}>
-                              {instructor.name}
-                            </SelectItem>
-                          ))}
-                          {schoolInstructors.length === 0 && (
-                            <SelectItem value="loading" disabled>
-                              Loading instructors...
-                            </SelectItem>
-                          )}
-                        </SelectContent>
-                      </Select>
+                        <option value="">Select instructor...</option>
+                        {schoolInstructors.map((instructor: Instructor) => (
+                          <option key={instructor.id} value={instructor.id.toString()}>
+                            {instructor.name}
+                          </option>
+                        ))}
+                      </select>
+                      {schoolInstructors.length === 0 && (
+                        <p className="text-sm text-red-500 text-center mt-1">
+                          No instructors available for this school
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-500 text-center mt-1">
+                        {schoolInstructors.length} instructors available
+                      </p>
                     </div>
                     <div>
                       <Label className="text-center block mb-2">Leave Type</Label>
