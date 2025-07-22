@@ -81,11 +81,24 @@
   .dialog-overlay {
     background-color: rgba(0, 0, 0, 0.75) !important;
     backdrop-filter: blur(4px);
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 999 !important;
   }
   
   .dialog-content-enhanced {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
     border: 2px solid #e5e7eb !important;
     background: white !important;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 1000 !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
   }
 }
