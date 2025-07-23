@@ -934,57 +934,57 @@ export default function StaffLeaveTracker() {
               
               <div className="bg-white rounded-lg shadow-sm border overflow-hidden relative z-10">
                 <Table>
-                  <TableHeader className="bg-gradient-to-r from-slate-50 to-slate-100">
-                    <TableRow className="border-b border-slate-200">
-                      <TableHead className="min-w-[140px] font-semibold text-slate-700 py-4">
+                  <TableHeader className="bg-white">
+                    <TableRow className="border-none">
+                      <TableHead className="min-w-[140px] font-bold text-gray-900 py-4 text-sm">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4" />
                           INSTRUCTOR
                         </div>
                       </TableHead>
-                      <TableHead className="whitespace-nowrap min-w-[100px] font-semibold text-slate-700 py-4">
+                      <TableHead className="whitespace-nowrap min-w-[100px] font-bold text-gray-900 py-4 text-sm">
                         <div className="flex items-center gap-2">
                           <CalendarIcon className="h-4 w-4" />
                           LEAVE TYPE
                         </div>
                       </TableHead>
-                      <TableHead className="min-w-[180px] font-semibold text-slate-700 py-4">
+                      <TableHead className="min-w-[180px] font-bold text-gray-900 py-4 text-sm">
                         <div className="flex items-center gap-2">
                           <Clock className="h-4 w-4" />
                           PERIOD
                         </div>
                       </TableHead>
-                      <TableHead className="min-w-[110px] font-semibold text-slate-700 py-4">
+                      <TableHead className="min-w-[110px] font-bold text-gray-900 py-4 text-sm">
                         <div className="flex items-center gap-2">
                           <MapPin className="h-4 w-4" />
                           DESTINATION
                         </div>
                       </TableHead>
-                      <TableHead className="min-w-[90px] font-semibold text-slate-700 py-4">
+                      <TableHead className="min-w-[90px] font-bold text-gray-900 py-4 text-sm">
                         <div className="flex items-center gap-2">
                           <Timer className="h-4 w-4" />
                           DURATION
                         </div>
                       </TableHead>
-                      <TableHead className="min-w-[100px] font-semibold text-slate-700 py-4">
+                      <TableHead className="min-w-[100px] font-bold text-gray-900 py-4 text-sm">
                         <div className="flex items-center gap-2">
                           <CalendarCheck className="h-4 w-4" />
                           RETURN
                         </div>
                       </TableHead>
-                      <TableHead className="min-w-[100px] font-semibold text-slate-700 py-4">
+                      <TableHead className="min-w-[100px] font-bold text-gray-900 py-4 text-sm">
                         <div className="flex items-center gap-2">
                           <CheckCircle className="h-4 w-4" />
                           STATUS
                         </div>
                       </TableHead>
-                      <TableHead className="min-w-[100px] font-semibold text-slate-700 py-4">
+                      <TableHead className="min-w-[100px] font-bold text-gray-900 py-4 text-sm">
                         <div className="flex items-center gap-2">
                           <Building className="h-4 w-4" />
                           SCHOOL
                         </div>
                       </TableHead>
-                      <TableHead className="min-w-[150px] font-semibold text-slate-700 py-4">
+                      <TableHead className="min-w-[150px] font-bold text-gray-900 py-4 text-sm">
                         <div className="flex items-center gap-2">
                           <Settings className="h-4 w-4" />
                           ACTIONS
@@ -1011,12 +1011,12 @@ export default function StaffLeaveTracker() {
                   ) : (
                     schoolLeaveRecords.map((leave) => (
                   <TableRow key={leave.id} className="hover:bg-slate-50 bg-white mb-2">
-                    <TableCell className="border-t border-b border-l border-gray-200">
+                    <TableCell className="py-4">
                       <div className="flex flex-col">
                         <span className="font-medium">{leave.instructorName}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="border-t border-b border-gray-200">
+                    <TableCell className="py-4">
                       <div className={cn(
                         "inline-flex items-center rounded-none px-2.5 py-0.5 text-xs font-medium",
                         leave.leaveType === "PTO" 
@@ -1028,19 +1028,19 @@ export default function StaffLeaveTracker() {
                         {leave.leaveType || 'PTO'}
                       </div>
                     </TableCell>
-                    <TableCell className="border-t border-b border-gray-200">
+                    <TableCell className="py-4">
                       <div className="text-sm font-medium whitespace-nowrap">
                         <div>{leave.startDate && format(new Date(leave.startDate), 'MMM d, yyyy')}</div>
                         <div className="text-gray-500 text-sm">to</div>
                         <div>{leave.endDate && format(new Date(leave.endDate), 'MMM d, yyyy')}</div>
                       </div>
                     </TableCell>
-                    <TableCell className="border-t border-b border-gray-200">
+                    <TableCell className="py-4">
                       <div className="text-sm">
                         {leave.destination || 'N/A'}
                       </div>
                     </TableCell>
-                    <TableCell className="border-t border-b border-gray-200">
+                    <TableCell className="py-4">
                       <div className="text-sm">
                         {leave.leaveType === 'PTO' ? (
                           <span className="font-medium text-blue-600">{leave.ptodays || 0}h</span>
@@ -1053,12 +1053,12 @@ export default function StaffLeaveTracker() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="border-t border-b border-gray-200">
+                    <TableCell className="py-4">
                       <div className="text-sm">
                         {leave.returnDate ? format(new Date(leave.returnDate), 'MMM d, yyyy') : 'N/A'}
                       </div>
                     </TableCell>
-                    <TableCell className="border-t border-b border-gray-200">
+                    <TableCell className="py-4">
                       <div className={cn(
                         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
                         leave.status === "Pending" 
@@ -1070,7 +1070,7 @@ export default function StaffLeaveTracker() {
                         {leave.status}
                       </div>
                     </TableCell>
-                    <TableCell className="border-t border-b border-gray-200">
+                    <TableCell className="py-4">
                       <div className={cn(
                         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
                         "bg-blue-100 text-blue-800"
@@ -1078,7 +1078,7 @@ export default function StaffLeaveTracker() {
                         {currentSchool?.name ? currentSchool.name.replace('NFS ', '') : "Unknown"}
                       </div>
                     </TableCell>
-                    <TableCell className="border-t border-b border-r border-gray-200">
+                    <TableCell className="py-4">
                       <div className="flex items-center space-x-2">
                         <Button 
                           variant="ghost" 
