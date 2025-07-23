@@ -932,7 +932,7 @@ export default function StaffLeaveTracker() {
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm border overflow-hidden relative z-10">
+              <div className="bg-white overflow-hidden relative z-10">
                 <Table>
                   <TableHeader className="bg-white">
                     <TableRow className="border-none">
@@ -1205,18 +1205,17 @@ export default function StaffLeaveTracker() {
               </div>
               
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>INSTRUCTOR</TableHead>
-                    <TableHead>TOTAL HOURS</TableHead>
-                    <TableHead>PTO HOURS TAKEN</TableHead>
-                    <TableHead>R&R TAKEN</TableHead>
-                    <TableHead>REMAINING HOURS
+                <TableHeader className="bg-white">
+                  <TableRow className="border-none">
+                    <TableHead className="font-bold text-gray-900 py-4 text-sm">INSTRUCTOR</TableHead>
+                    <TableHead className="font-bold text-gray-900 py-4 text-sm">TOTAL HOURS</TableHead>
+                    <TableHead className="font-bold text-gray-900 py-4 text-sm">PTO HOURS TAKEN</TableHead>
+                    <TableHead className="font-bold text-gray-900 py-4 text-sm">R&R TAKEN</TableHead>
+                    <TableHead className="font-bold text-gray-900 py-4 text-sm">REMAINING HOURS
                       <div className="text-xs font-normal opacity-75">(After PTO & R&R)</div>
                     </TableHead>
-
-                    <TableHead>LAST UPDATED</TableHead>
-                    <TableHead>ACTIONS</TableHead>
+                    <TableHead className="font-bold text-gray-900 py-4 text-sm">LAST UPDATED</TableHead>
+                    <TableHead className="font-bold text-gray-900 py-4 text-sm">ACTIONS</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
