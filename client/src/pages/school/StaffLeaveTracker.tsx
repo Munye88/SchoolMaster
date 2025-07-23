@@ -963,7 +963,7 @@ export default function StaffLeaveTracker() {
                       <TableHead className="min-w-[90px] font-bold text-gray-900 py-4 text-sm">
                         <div className="flex items-center gap-2">
                           <Timer className="h-4 w-4" />
-                          DURATION
+                          DAYS
                         </div>
                       </TableHead>
                       <TableHead className="min-w-[100px] font-bold text-gray-900 py-4 text-sm">
