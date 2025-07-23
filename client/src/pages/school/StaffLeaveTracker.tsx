@@ -1042,15 +1042,19 @@ export default function StaffLeaveTracker() {
                     </TableCell>
                     <TableCell className="py-4">
                       <div className="text-sm">
-                        {leave.leaveType === 'PTO' ? (
-                          <span className="font-medium text-blue-600">{leave.ptodays || 0}h</span>
-                        ) : leave.leaveType === 'R&R' ? (
-                          <span className="font-medium text-green-600">{leave.rrdays || 0}h</span>
-                        ) : (
-                          <span className="font-medium text-purple-600">
-                            {((leave.ptodays || 0) + (leave.rrdays || 0))}h
-                          </span>
-                        )}
+                        {(() => {
+                          // Calculate actual number of days between start and end date
+                          const startDate = new Date(leave.startDate);
+                          const endDate = new Date(leave.endDate);
+                          const timeDiff = endDate.getTime() - startDate.getTime();
+                          const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end days
+                          
+                          return (
+                            <span className="font-medium text-gray-900">
+                              {daysDiff} {daysDiff === 1 ? 'day' : 'days'}
+                            </span>
+                          );
+                        })()}
                       </div>
                     </TableCell>
                     <TableCell className="py-4">
