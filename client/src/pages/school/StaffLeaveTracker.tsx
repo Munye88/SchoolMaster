@@ -1367,10 +1367,10 @@ export default function StaffLeaveTracker() {
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
         <DialogContent className="dialog-content-enhanced sm:max-w-[600px]">
           <DialogHeader className="leave-details-dialog-header">
-            <div className="flex items-center justify-between w-full print-header">
-              <div>
-                <DialogTitle>Leave Request Details</DialogTitle>
-                <DialogDescription>
+            <div className="flex items-center justify-center w-full print-header">
+              <div className="text-center">
+                <DialogTitle className="text-center">Leave Request Details</DialogTitle>
+                <DialogDescription className="text-center">
                   View details for {selectedLeave?.instructorName}'s leave request
                 </DialogDescription>
               </div>
