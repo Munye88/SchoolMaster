@@ -67,8 +67,58 @@ export default function CourseDetails() {
     return school ? school.name : "Unknown";
   };
 
-  // Generate color scheme based on course name
-  const getColorScheme = (courseName: string) => {
+  const getSchoolCode = (id: number): string => {
+    const school = schools.find((s: School) => s.id === id);
+    return school ? school.code : "UNKNOWN";
+  };
+
+  // Generate color scheme based on school, not course name
+  const getColorScheme = (courseName: string, schoolId?: number) => {
+    // School-based color schemes
+    if (schoolId) {
+      const schoolCode = getSchoolCode(schoolId);
+      
+      // KFNA: Red theme
+      if (schoolCode === 'KFNA') {
+        return {
+          headerBg: "bg-gradient-to-r from-red-700 to-red-500",
+          lightBg: "bg-red-50",
+          borderColor: "border-red-100",
+          progressColor: "bg-red-600",
+          iconColor: "text-red-500",
+          borderTop: "#E4424D",
+          accent: "red",
+        };
+      }
+      
+      // NFS East: Green theme
+      if (schoolCode === 'NFS_EAST') {
+        return {
+          headerBg: "bg-gradient-to-r from-emerald-700 to-emerald-500",
+          lightBg: "bg-emerald-50",
+          borderColor: "border-emerald-100",
+          progressColor: "bg-emerald-600",
+          iconColor: "text-emerald-500",
+          borderTop: "#22A783",
+          accent: "emerald",
+        };
+      }
+      
+      // NFS West: Purple theme
+      if (schoolCode === 'NFS_WEST') {
+        return {
+          headerBg: "bg-gradient-to-r from-violet-700 to-violet-500",
+          lightBg: "bg-violet-50",
+          borderColor: "border-violet-100",
+          progressColor: "bg-violet-600",
+          iconColor: "text-violet-500",
+          borderTop: "#6247AA",
+          accent: "violet",
+        };
+      }
+    }
+    
+    // Fall back to course-based color schemes if no school or unrecognized school
     const name = (courseName || "").toLowerCase();
     if (name.includes("aviation"))
       return {
@@ -145,8 +195,8 @@ export default function CourseDetails() {
     );
   }
 
-  // Get color scheme based on course name
-  const colors = getColorScheme(course.name);
+  // Get color scheme based on school, not course name
+  const colors = getColorScheme(course.name, course.schoolId);
 
   // Dummy data for demonstration (in a real app, these would come from the API)
   const testResults = [
