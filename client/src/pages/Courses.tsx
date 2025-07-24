@@ -515,7 +515,7 @@ export default function Courses() {
                 return (
                   <Link key={course.id} href={`/courses/${course.id}`}>
                     <Card 
-                      className={`overflow-hidden transition-all duration-200 hover:shadow-lg cursor-pointer ${colorScheme.lightBg} border-0 shadow relative rounded-none`}
+                      className={`overflow-hidden transition-all duration-200 hover:shadow-lg cursor-pointer ${colorScheme.lightBg} border-0 shadow relative rounded-none h-80 flex flex-col`}
                       style={{ borderTop: `3px solid ${colorScheme.borderTop}` }}
                     >
                       {isCoursePastArchiveDate && (
@@ -544,7 +544,7 @@ export default function Courses() {
                         </div>
                       </CardHeader>
                       
-                      <CardContent className="p-4">
+                      <CardContent className="p-4 flex-1">
                         <div className="space-y-3">
                           <div className="flex justify-between items-center text-sm">
                             <div className="flex items-center gap-1 text-gray-600">
