@@ -241,13 +241,13 @@ export default function CourseDetails() {
         >
           <CardHeader className={`${colors.headerBg} pb-6 text-white`}>
             <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-              <div>
-                <div className="flex items-center">
+              <div className="text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start">
                   <BookOpen className="h-6 w-6 mr-2" />
                   <CardTitle className="text-2xl font-bold">{course.name}</CardTitle>
                 </div>
                 <CardDescription className="text-white text-opacity-90 mt-1">
-                  <div className="flex items-center mt-1">
+                  <div className="flex items-center justify-center md:justify-start mt-1">
                     <Building2 className="h-4 w-4 mr-1" />
                     {getSchoolName(course.schoolId)}
                   </div>
