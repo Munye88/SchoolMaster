@@ -225,7 +225,7 @@ export default function CourseDetails() {
               {/* Key Information */}
               <Card className={`${colors.lightBg} border ${colors.borderColor}`}>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-semibold">Course Details</CardTitle>
+                  <CardTitle className="text-lg font-semibold text-center">Course Details</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
@@ -274,7 +274,7 @@ export default function CourseDetails() {
               {/* Progress */}
               <Card className="border shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-semibold">Course Progress</CardTitle>
+                  <CardTitle className="text-lg font-semibold text-center">Course Progress</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center pb-6">
                   <div className="flex flex-col items-center justify-center w-full mb-6 text-center">
@@ -307,7 +307,7 @@ export default function CourseDetails() {
               {/* Student Info */}
               <Card className="border shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-semibold">Student Information</CardTitle>
+                  <CardTitle className="text-lg font-semibold text-center">Student Information</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-center mb-4">
