@@ -175,6 +175,22 @@ export default function StaffLeaveTracker() {
       comments: '',
     },
   });
+
+  // Form schema for editing PTO balance
+  const editPtoBalanceSchema = z.object({
+    totalDays: z.number().min(0),
+    usedDays: z.number().min(0),
+    adjustments: z.number().optional(),
+  });
+
+  const editPtoForm = useForm<z.infer<typeof editPtoBalanceSchema>>({
+    resolver: zodResolver(editPtoBalanceSchema),
+    defaultValues: {
+      totalDays: 0,
+      usedDays: 0,
+      adjustments: 0,
+    },
+  });
   
   // Find the current school from all schools
   const currentSchool = schools.find(school => school.code === schoolCode);
@@ -205,6 +221,8 @@ export default function StaffLeaveTracker() {
   // For PTO balance deletion
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [ptoBalanceToDelete, setPtoBalanceToDelete] = useState<any>(null);
+  const [editPtoDialogOpen, setEditPtoDialogOpen] = useState(false);
+  const [ptoBalanceToEdit, setPtoBalanceToEdit] = useState<any>(null);
   
   // Fetch staff leave data from API
   const { 
@@ -298,6 +316,43 @@ export default function StaffLeaveTracker() {
       toast({
         title: "Error",
         description: "Failed to delete PTO balance record. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update PTO balance mutation
+  const updatePtoBalanceMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+      const res = await fetch(`/api/pto-balance/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || 'Failed to update PTO balance');
+      }
+      
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "PTO balance has been updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/pto-balance'] });
+      setEditPtoDialogOpen(false);
+      setPtoBalanceToEdit(null);
+    },
+    onError: (error) => {
+      console.error('Error updating PTO balance:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update PTO balance. Please try again.",
         variant: "destructive",
       });
     },
@@ -1289,12 +1344,13 @@ export default function StaffLeaveTracker() {
                               variant="ghost"
                               size="sm"
                               onClick={() => {
-                                // Open a dialog to edit PTO balance
-                                // We'll implement this in the next iteration
-                                toast({
-                                  title: "Coming Soon",
-                                  description: "PTO balance editing will be available in the next update",
+                                setPtoBalanceToEdit(balance);
+                                editPtoForm.reset({
+                                  totalDays: balance.totalDays,
+                                  usedDays: balance.usedDays,
+                                  adjustments: balance.adjustments || 0,
                                 });
+                                setEditPtoDialogOpen(true);
                               }}
                             >
                               <PencilIcon className="h-4 w-4 mr-1" />
@@ -1829,6 +1885,114 @@ export default function StaffLeaveTracker() {
               )}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit PTO Balance Dialog */}
+      <Dialog open={editPtoDialogOpen} onOpenChange={setEditPtoDialogOpen}>
+        <DialogContent className="dialog-content-enhanced sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="text-center">Edit PTO Balance</DialogTitle>
+            <DialogDescription className="text-center">
+              Update PTO balance for {ptoBalanceToEdit?.instructorName}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...editPtoForm}>
+            <form onSubmit={editPtoForm.handleSubmit(async (values) => {
+              if (!ptoBalanceToEdit) return;
+              
+              await updatePtoBalanceMutation.mutateAsync({
+                id: ptoBalanceToEdit.id,
+                data: values
+              });
+            })} className="space-y-4">
+              
+              <FormField
+                control={editPtoForm.control}
+                name="totalDays"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Total Hours</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={editPtoForm.control}
+                name="usedDays"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Used Hours</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={editPtoForm.control}
+                name="adjustments"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Adjustments</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Positive for additional hours, negative for deductions
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setEditPtoDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit"
+                  disabled={updatePtoBalanceMutation.isPending}
+                  className="bg-[#0A2463]"
+                >
+                  {updatePtoBalanceMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      Updating...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Update Balance
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>
