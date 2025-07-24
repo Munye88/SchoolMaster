@@ -26,7 +26,8 @@ const Administration = () => {
     "employee-handbook": "Employee Handbook",
     "performance-policy": "Performance Evaluation Policy",
     "classroom-evaluation": "Training Guide Classroom Evaluation",
-    "instructor-performance-policy": "Instructor Performance & Evaluation Policy"
+    "instructor-performance-policy": "Instructor Performance & Evaluation Policy",
+    "eltp-sop": "ELTP Standard Operating Procedure"
   };
 
   // Get documents
@@ -63,7 +64,8 @@ const Administration = () => {
         "employee-handbook": "handbook",
         "performance-policy": "performance",
         "classroom-evaluation": "training",
-        "instructor-performance-policy": "instructor-policy"
+        "instructor-performance-policy": "instructor-policy",
+        "eltp-sop": "sop"
       };
       
       const mappedCategory = documentTypeMap[documentType];
@@ -113,6 +115,9 @@ const Administration = () => {
   
   const isEmployeeHandbook = documentType === "employee-handbook";
   const employeeHandbookPdfUrl = "/documents/SAMS_Employee_Handbook.pdf";
+  
+  const isEltpSop = documentType === "eltp-sop";
+  const eltpSopPdfUrl = "/documents/ELTP_Standard_Operating_Procedure.pdf";
   
 
 
@@ -606,6 +611,52 @@ const Administration = () => {
                 src={employeeHandbookPdfUrl} 
                 className="w-full h-full border-0" 
                 title="SAMS Employee Handbook"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (isEltpSop) {
+    return (
+      <div className="flex-1 overflow-auto p-6 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-[#0A2463] text-center">
+                ELTP Standard Operating Procedure
+              </h1>
+              <p className="text-gray-600 mt-1 text-center">
+                Standard Operating Procedures for the English Language Training Program
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <a
+                href={eltpSopPdfUrl}
+                download="ELTP_Standard_Operating_Procedure.pdf"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download PDF
+              </a>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-6 border-b border-gray-200">
+              <p className="text-gray-700 text-center px-4">
+                This manual defines the Standard Operating Procedures for the English Language Training Program (ELTP) 
+                under GovCIO-Salient Arabia for Military Support (SAMS). It outlines the required instructional, 
+                administrative, and operational protocols to ensure consistency, quality, and compliance across all schoolhouses.
+              </p>
+            </div>
+            <div className="aspect-auto h-[800px]">
+              <iframe 
+                src={eltpSopPdfUrl} 
+                className="w-full h-full border-0" 
+                title="ELTP Standard Operating Procedure"
               ></iframe>
             </div>
           </div>

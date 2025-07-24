@@ -294,6 +294,12 @@ const HorizontalNavbar = () => {
                     )}>
                       Employee Handbook
                     </Link>
+                    <Link href="/administration/eltp-sop" className={cn(
+                      "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
+                      isActive("/administration/eltp-sop") && "text-[#0A2463] bg-gray-100 font-medium"
+                    )}>
+                      ELTP SOP
+                    </Link>
                     <Link href="/administration/performance-policy" className={cn(
                       "flex items-center px-3 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 rounded-md transition-colors",
                       isActive("/administration/performance-policy") && "text-[#0A2463] bg-gray-100 font-medium"
