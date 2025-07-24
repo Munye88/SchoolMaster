@@ -36,7 +36,7 @@ import {
   LayoutGrid,
   LayoutList,
   ChevronRight,
-
+  Calendar,
   Archive,
   CalendarDays,
   UserCircle2
