@@ -387,6 +387,8 @@ The system manages multiple interconnected entities:
 - July 15, 2025: DIALOG POSITIONING FIX - Fixed all Staff Leave Tracker dialogs to appear centered on screen instead of at bottom, enhanced with dark overlay backdrop and proper z-index layering for improved visibility and user experience
 - July 15, 2025: DROPDOWN Z-INDEX FIX - Fixed all dropdown menus (instructor selection, leave type, status) to appear above dialog modals with proper z-index hierarchy (overlay: 999, dialog: 1000, dropdowns: 1100) ensuring full visibility and functionality
 - July 15, 2025: TABLE HEADER VISIBILITY FIX - Enhanced table headers in Staff Leave Tracker by removing all borders, changing background to clean white, increasing text contrast to gray-900, and making text bold for improved readability of column headers (INSTRUCTOR, LEAVE TYPE, PERIOD, etc.)
+- July 15, 2025: COURSE TYPES AND BENCHMARKS SECTION REMOVAL - Removed the "Course Types and Benchmarks" accordion section from the courses page as requested by user, including courseTypes data and related imports for cleaner page layout
+- July 15, 2025: COURSE CARD ALIGNMENT FIX - Fixed course card height alignment issue by adding fixed height (h-80/320px) and flexbox layout, ensuring all course cards display with uniform heights regardless of content differences
 
 ## User Preferences
 

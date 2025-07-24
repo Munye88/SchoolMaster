@@ -11,12 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
 import {
   Table,
   TableBody,
@@ -41,9 +36,7 @@ import {
   LayoutGrid,
   LayoutList,
   ChevronRight,
-  Bookmark,
-  Calendar,
-  Trophy,
+
   Archive,
   CalendarDays,
   UserCircle2
@@ -57,36 +50,7 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Course type information
-const courseTypes = [
-  {
-    id: 1,
-    name: "Aviation",
-    duration: "One year",
-    benchmarks: [
-      { test: "ALCPT", score: "80" },
-      { test: "ECL", score: "80" },
-      { test: "OPI", score: "2/2" }
-    ]
-  },
-  {
-    id: 2,
-    name: "Refresher",
-    duration: "Six months",
-    benchmarks: [
-      { test: "ALCPT", score: "70" },
-      { test: "ALCPT", score: "55" },
-      { test: "ALCPT", score: "50" }
-    ]
-  },
-  {
-    id: 3,
-    name: "Cadets",
-    duration: "Three months",
-    benchmarks: [
-      { test: "ALCPT", score: "40" }
-    ]
-  }
-];
+
 
 // Function to check if a course is archived (completed more than 30 days ago)
 const checkIfArchived = (course: Course) => {
@@ -106,7 +70,6 @@ const checkIfArchived = (course: Course) => {
 
 export default function Courses() {
   const [selectedSchool, setSelectedSchool] = useState<number | null>(null);
-  const [activeAccordion, setActiveAccordion] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('all');
@@ -689,43 +652,7 @@ export default function Courses() {
           </div>
         )}
         
-        {/* Course Types Information */}
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6 overflow-hidden">
-          <Accordion type="single" collapsible>
-            <AccordionItem value="courseTypes">
-              <AccordionTrigger className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                <Bookmark className="h-5 w-5 text-blue-600" />
-                Course Types and Benchmarks
-              </AccordionTrigger>
-              <AccordionContent className="pt-4">
-                {courseTypes.map((type) => (
-                  <div key={type.id} className="mb-6 last:mb-0">
-                    <div className="flex gap-2 items-center mb-3">
-                      <GraduationCap className={`h-5 w-5 ${type.name === 'Aviation' ? 'text-blue-600' : type.name === 'Refresher' ? 'text-green-600' : 'text-purple-600'}`} />
-                      <h3 className="text-lg font-medium">{type.name}</h3>
-                      <span className="text-sm text-gray-500">({type.duration})</span>
-                    </div>
-                    
-                    <div className="pl-7">
-                      <p className="text-sm text-gray-600 mb-2 flex items-center gap-1">
-                        <Trophy className="h-4 w-4 text-amber-500" />
-                        Benchmarks:
-                      </p>
-                      <ul className="space-y-1 text-sm">
-                        {type.benchmarks.map((benchmark, idx) => (
-                          <li key={idx} className="flex items-center gap-2">
-                            <span className="inline-block w-16 font-medium">{benchmark.test}:</span>
-                            <span>{benchmark.score}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                ))}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
+
         
         {/* Print Button for Courses Report */}
         <div className="mt-4 text-right">
