@@ -556,7 +556,6 @@ const InstructorLookup = () => {
                               <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Date</th>
                               <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Score</th>
                               <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Type</th>
-                              <th className="px-6 py-4 text-center text-sm font-bold text-gray-900 uppercase tracking-wider">Feedback</th>
                             </tr>
                           </thead>
                           <tbody className="bg-white divide-y divide-gray-200">
@@ -577,9 +576,6 @@ const InstructorLookup = () => {
                                   {evaluation.evaluationType ? 
                                     (evaluation.evaluationType.charAt(0).toUpperCase() + evaluation.evaluationType.slice(1)) 
                                     : 'Unknown'}
-                                </td>
-                                <td className="px-6 py-4 text-center text-sm text-gray-700 max-w-xs truncate">
-                                  {evaluation.feedback || 'No feedback provided'}
                                 </td>
                               </tr>
                             ))}
