@@ -479,7 +479,7 @@ export default function StaffEvaluationsComplete() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="rounded-none">
           <CardContent className="p-4">
             <div className="flex items-center">
@@ -499,18 +499,6 @@ export default function StaffEvaluationsComplete() {
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-600">Completed</p>
                 <p className="text-2xl font-bold text-gray-900">{completedEvaluations}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-none">
-          <CardContent className="p-4">
-            <div className="flex items-center">
-              <FileText className="h-8 w-8 text-yellow-600" />
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Draft</p>
-                <p className="text-2xl font-bold text-gray-900">{draftEvaluations}</p>
               </div>
             </div>
           </CardContent>
@@ -551,7 +539,6 @@ export default function StaffEvaluationsComplete() {
               </SelectTrigger>
               <SelectContent className="rounded-none">
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
                 <SelectItem value="in-progress">In Progress</SelectItem>
                 <SelectItem value="completed">Completed</SelectItem>
                 <SelectItem value="reviewed">Reviewed</SelectItem>
