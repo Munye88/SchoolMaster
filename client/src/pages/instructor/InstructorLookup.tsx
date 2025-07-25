@@ -562,7 +562,7 @@ const InstructorLookup = () => {
                 <CardContent>
                   {instructorAttendance.length > 0 ? (
                     <div className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <Card>
                           <CardContent className="pt-6">
                             <div className="text-center">
@@ -589,6 +589,16 @@ const InstructorLookup = () => {
                               <div className="text-xl font-bold mb-3 text-gray-900">Late Days</div>
                               <div className="text-4xl font-bold text-amber-600">
                                 {instructorAttendance.filter(a => a.status.toLowerCase() === "late").length}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent className="pt-6">
+                            <div className="text-center">
+                              <div className="text-xl font-bold mb-3 text-gray-900">Sick Days</div>
+                              <div className="text-4xl font-bold text-blue-600">
+                                {instructorAttendance.filter(a => a.status.toLowerCase() === "sick").length}
                               </div>
                             </div>
                           </CardContent>
