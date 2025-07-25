@@ -1163,6 +1163,7 @@ export default function StaffLeaveTracker() {
                               startDate: format(new Date(leave.startDate), 'yyyy-MM-dd'),
                               endDate: format(new Date(leave.endDate), 'yyyy-MM-dd'),
                               returnDate: format(new Date(leave.returnDate), 'yyyy-MM-dd'),
+                              leaveBalance: leave.leaveBalance || 0,
                               ptodays: leave.ptodays,
                               rrdays: leave.rrdays,
                               leaveType: leave.leaveType,
