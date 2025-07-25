@@ -61,6 +61,7 @@ import AccessRequests from "./pages/admin/AccessRequests";
 import TestTrackerEnhanced from "./pages/test-tracker/TestTrackerEnhanced";
 import SchoolHome from "./pages/schools/SchoolHome";
 import EmployeeHandbook from "./pages/administration/EmployeeHandbook";
+import EltpSop from "./pages/administration/EltpSop";
 
 function NavigationWithAuth() {
   const { user } = useAuth();
@@ -125,6 +126,10 @@ function Router() {
           <ProtectedRoute
             path="/administration/employee-handbook"
             component={Administration}
+          />
+          <ProtectedRoute
+            path="/administration/eltp-sop"
+            component={EltpSop}
           />
           <ProtectedRoute
             path="/administration/performance-policy"
