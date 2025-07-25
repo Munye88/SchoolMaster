@@ -320,6 +320,15 @@ const SimpleHorizontalNavbar = () => {
                     Employee Handbook
                   </Link>
                   <Link 
+                    href="/administration/eltp-sop" 
+                    onClick={() => setAdminDropdownOpen(false)}
+                    className={cn(
+                    "block px-4 py-2 text-sm text-gray-700 hover:text-[#0A2463] hover:bg-gray-100 transition-colors",
+                    isActive("/administration/eltp-sop") && "text-[#0A2463] bg-gray-100 font-medium"
+                  )}>
+                    ELTP SOP
+                  </Link>
+                  <Link 
                     href="/administration/performance-policy" 
                     onClick={() => setAdminDropdownOpen(false)}
                     className={cn(

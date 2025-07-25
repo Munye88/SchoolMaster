@@ -61,6 +61,7 @@ export default function TopNavigation() {
         { label: "Instructor Performance Policy", path: "/administration/instructor-performance-policy" },
         { label: "Evaluation Guidelines", path: "/administration/evaluation-guideline" },
         { label: "Employee Handbook", path: "/administration/employee-handbook" },
+        { label: "ELTP SOP", path: "/administration/eltp-sop" },
         { label: "Schedule Management", path: "/admin/schedules" },
       ]
     },
