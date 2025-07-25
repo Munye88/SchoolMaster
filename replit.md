@@ -389,6 +389,7 @@ The system manages multiple interconnected entities:
 - July 15, 2025: TABLE HEADER VISIBILITY FIX - Enhanced table headers in Staff Leave Tracker by removing all borders, changing background to clean white, increasing text contrast to gray-900, and making text bold for improved readability of column headers (INSTRUCTOR, LEAVE TYPE, PERIOD, etc.)
 - July 15, 2025: COURSE TYPES AND BENCHMARKS SECTION REMOVAL - Removed the "Course Types and Benchmarks" accordion section from the courses page as requested by user, including courseTypes data and related imports for cleaner page layout
 - July 15, 2025: COURSE CARD ALIGNMENT FIX - Fixed course card height alignment issue by adding fixed height (h-80/320px) and flexbox layout, ensuring all course cards display with uniform heights regardless of content differences
+- July 15, 2025: ELTP SOP DOCUMENT INTEGRATION - Added ELTP Standard Operating Procedure to Administration tab with full PDF document upload, inline viewing, download functionality, and navigation integration matching Employee Handbook structure
 
 ## User Preferences
 
