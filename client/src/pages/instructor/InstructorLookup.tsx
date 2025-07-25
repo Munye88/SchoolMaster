@@ -43,9 +43,15 @@ const InstructorLookup = () => {
     enabled: !!selectedInstructor,
   });
 
-  // Fetch recognitions
-  const { data: recognitions = [], isLoading: loadingRecognitions } = useQuery<any[]>({
-    queryKey: ['/api/recognitions'],
+  // Fetch quarterly recognition data for selected instructor
+  const { data: quarterlyRecognition = null, isLoading: loadingRecognitions } = useQuery<any>({
+    queryKey: ['/api/recognition/instructor', selectedInstructor?.id, 'Q1', '2025'],
+    queryFn: async () => {
+      if (!selectedInstructor) return null;
+      const response = await fetch(`/api/recognition/instructor/${selectedInstructor.id}?quarter=Q1&year=2025`);
+      if (!response.ok) return null;
+      return await response.json();
+    },
     refetchOnWindowFocus: false,
     enabled: !!selectedInstructor,
   });
@@ -130,10 +136,38 @@ const InstructorLookup = () => {
   // Use attendance data directly since it's already filtered by instructor
   const instructorAttendance = attendance;
   
-  // Filter instructor recognitions
-  const instructorRecognitions = recognitions.filter(
-    r => selectedInstructor && r.instructorId === selectedInstructor.id
-  );
+  // Generate instructor recognitions based on quarterly performance
+  const instructorRecognitions = quarterlyRecognition ? (() => {
+    const awards = [];
+    if (quarterlyRecognition.summary?.qualifiesForAttendance) {
+      awards.push({
+        id: `attendance-${selectedInstructor?.id}-Q1-2025`,
+        awardTitle: "Perfect Attendance Recognition",
+        awardDate: new Date().toISOString(),
+        description: "Recognized for maintaining perfect attendance with no absent, late, or sick days during Q1 2025",
+        category: "attendance"
+      });
+    }
+    if (quarterlyRecognition.summary?.qualifiesForEvaluation) {
+      awards.push({
+        id: `evaluation-${selectedInstructor?.id}-Q1-2025`,
+        awardTitle: "Exceptional Evaluation Recognition",
+        awardDate: new Date().toISOString(),
+        description: `Recognized for achieving an outstanding evaluation score of ${quarterlyRecognition.summary?.evaluationScore}% during Q1 2025`,
+        category: "evaluation"
+      });
+    }
+    if (quarterlyRecognition.summary?.qualifiesForAttendance && quarterlyRecognition.summary?.qualifiesForEvaluation) {
+      awards.push({
+        id: `dual-${selectedInstructor?.id}-Q1-2025`,
+        awardTitle: "Dual Excellence Recognition",
+        awardDate: new Date().toISOString(),
+        description: "Recognized for achieving both perfect attendance and exceptional evaluation scores during Q1 2025",
+        category: "dual"
+      });
+    }
+    return awards;
+  })() : [];
   
   // Use staff counseling records as-is since they should already be filtered by instructor
   const instructorCounselingRecords = staffCounselingRecords;
