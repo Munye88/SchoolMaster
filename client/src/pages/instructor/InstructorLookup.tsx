@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSchool } from "@/hooks/useSchool";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,9 +13,19 @@ import { format } from "date-fns";
 
 const InstructorLookup = () => {
   const { selectedSchool } = useSchool();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedInstructor, setSelectedInstructor] = useState<any | null>(null);
   const [activeTab, setActiveTab] = useState("profile");
+
+  // Function to handle tab changes and refresh data
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    if (value === "evaluations") {
+      // Refresh evaluations data when evaluations tab is clicked
+      queryClient.invalidateQueries({ queryKey: ['/api/evaluations'] });
+    }
+  };
 
   // Fetch all instructors
   const { data: instructors = [], isLoading: loadingInstructors } = useQuery<any[]>({
@@ -26,7 +36,8 @@ const InstructorLookup = () => {
   // Fetch evaluations
   const { data: evaluations = [], isLoading: loadingEvaluations } = useQuery<any[]>({
     queryKey: ['/api/evaluations'],
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    staleTime: 0,
     enabled: !!selectedInstructor,
   });
 
@@ -128,9 +139,9 @@ const InstructorLookup = () => {
       )
     : [];
     
-  // Filter data for selected instructor
+  // Filter data for selected instructor - show 2025 evaluations
   const instructorEvaluations = evaluations.filter(
-    e => selectedInstructor && e.instructorId === selectedInstructor.id
+    e => selectedInstructor && e.instructorId === selectedInstructor.id && e.year === "2025"
   );
   
   // Use attendance data directly since it's already filtered by instructor
@@ -410,7 +421,7 @@ const InstructorLookup = () => {
           </div>
 
           {/* Tabbed Content */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="profile">Profile</TabsTrigger>
               <TabsTrigger value="evaluations">Evaluations</TabsTrigger>
