@@ -703,7 +703,7 @@ const InstructorLookup = () => {
                   {instructorRecognitions.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {instructorRecognitions.map(recognition => (
-                        <Card key={recognition.id} className="rounded-none border border-gray-200">
+                        <Card key={recognition.id}>
                           <CardContent className="pt-6">
                             <div className="text-center">
                               <div className="flex justify-center mb-4">
