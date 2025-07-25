@@ -731,8 +731,15 @@ export default function StaffEvaluationsComplete() {
       {/* View Evaluation Dialog */}
       <Dialog open={showViewDialog} onOpenChange={setShowViewDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-none">
-          <DialogHeader>
-            <DialogTitle>Evaluation Details</DialogTitle>
+          <DialogHeader className="relative">
+            <DialogTitle className="text-center text-lg font-bold">Evaluation Details</DialogTitle>
+            <button
+              onClick={() => setShowViewDialog(false)}
+              className="absolute right-0 top-0 p-2 hover:bg-gray-100 rounded-none border border-gray-300 bg-white text-gray-700 hover:text-gray-900 transition-colors"
+              aria-label="Close dialog"
+            >
+              ✕
+            </button>
           </DialogHeader>
           {viewingEvaluation && (
             <div className="space-y-6">
