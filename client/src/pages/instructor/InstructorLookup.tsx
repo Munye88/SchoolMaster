@@ -703,26 +703,28 @@ const InstructorLookup = () => {
                   {instructorRecognitions.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {instructorRecognitions.map(recognition => (
-                        <div key={recognition.id} className="p-6 bg-white">
-                          <div className="text-center">
-                            <div className="flex justify-center mb-4">
-                              <div className="h-16 w-16 rounded-none bg-blue-100 text-blue-600 flex items-center justify-center">
-                                <Award className="h-8 w-8" />
+                        <Card key={recognition.id} className="rounded-none border border-gray-200">
+                          <CardContent className="pt-6">
+                            <div className="text-center">
+                              <div className="flex justify-center mb-4">
+                                <div className="h-16 w-16 rounded-none bg-blue-100 text-blue-600 flex items-center justify-center">
+                                  <Award className="h-8 w-8" />
+                                </div>
                               </div>
+                              <h3 className="font-bold text-lg text-gray-900 mb-2">{recognition.awardTitle}</h3>
+                              <p className="text-sm font-medium text-gray-600 mb-3">
+                                Awarded on {recognition.awardDate ? format(new Date(recognition.awardDate), 'MMMM dd, yyyy') : 'Unknown date'}
+                              </p>
+                              <p className="text-sm text-gray-700 mb-4">{recognition.description}</p>
+                              {recognition.certificateUrl && (
+                                <Button variant="outline" className="rounded-none gap-2">
+                                  <FileText className="h-4 w-4" />
+                                  View Certificate
+                                </Button>
+                              )}
                             </div>
-                            <h3 className="font-bold text-lg text-gray-900 mb-2">{recognition.awardTitle}</h3>
-                            <p className="text-sm font-medium text-gray-600 mb-3">
-                              Awarded on {recognition.awardDate ? format(new Date(recognition.awardDate), 'MMMM dd, yyyy') : 'Unknown date'}
-                            </p>
-                            <p className="text-sm text-gray-700 mb-4">{recognition.description}</p>
-                            {recognition.certificateUrl && (
-                              <Button variant="outline" className="rounded-none gap-2">
-                                <FileText className="h-4 w-4" />
-                                View Certificate
-                              </Button>
-                            )}
-                          </div>
-                        </div>
+                          </CardContent>
+                        </Card>
                       ))}
                     </div>
                   ) : (
