@@ -432,7 +432,7 @@ export default function StaffEvaluationsComplete() {
 
   // Calculate statistics
   const totalEvaluations = schoolEvaluations.length;
-  const completedEvaluations = schoolEvaluations.filter((e: Evaluation) => e.status === 'completed').length;
+  const completedEvaluations = schoolEvaluations.length; // All evaluations are considered completed
   const draftEvaluations = schoolEvaluations.filter((e: Evaluation) => e.status === 'draft').length;
   const averageScore = schoolEvaluations.length > 0 
     ? schoolEvaluations.reduce((sum: number, e: Evaluation) => sum + (e.score || 0), 0) / schoolEvaluations.length 
